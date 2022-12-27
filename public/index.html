@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="<%= htmlWebpackPlugin.options.lang %>">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="<%= htmlWebpackPlugin.options.author %>">
+  <meta name="renderer" content="webkit">
+
+  <meta itemprop="author" name="author" content="<%= htmlWebpackPlugin.options.author %>">
+  <meta itemprop="name" name="title" content="<%= htmlWebpackPlugin.options.title %>">
+  <meta itemprop="url" content="<%= htmlWebpackPlugin.options.url %>">
+  <meta itemprop="image" content="<%= htmlWebpackPlugin.options.image %>">
+  <meta itemprop="thumbnailUrl" content="<%= htmlWebpackPlugin.options.image %>">
+  <meta itemprop="description" name="description" content="<%= htmlWebpackPlugin.options.description %>">
+
+  <!-- Open Graph Metadata -->
+  <meta property="og:type" content="video">
+  <meta property="og:title" content="<%= htmlWebpackPlugin.options.title %>">
+  <meta property="og:url" content="<%= htmlWebpackPlugin.options.url %>">
+  <meta property="og:image" content="<%= htmlWebpackPlugin.options.image %>">
+  <meta property="og:description" content="<%= htmlWebpackPlugin.options.description %>">
+
+  <!-- Twitter Card Metadata -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= htmlWebpackPlugin.options.title %>">
+  <meta name="twitter:description" content="<%= htmlWebpackPlugin.options.description %>">
+  <meta name="twitter:image:src" content="<%= htmlWebpackPlugin.options.image %>">
+
+  <!-- https://github.com/jantimon/html-webpack-plugin/tree/main/examples/custom-insertion-position -->
+  <%= htmlWebpackPlugin
+        .tags
+        .headTags
+        .filter((tag)=> tag.attributes.rel !== 'stylesheet')
+      .join('')
+  %>
+
+  <title><%= htmlWebpackPlugin.options.description %></title>
+  <link rel="canonical" href="<%= htmlWebpackPlugin.options.url %>">
+  <link rel="icon" type="image/x-icon" href="favicon.svg">
+  <link rel="apple-touch-icon" href="favicon.svg">
+  <style>
+    html,
+    body,
+    [data-elm-hot="true"] {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    /** https://loading.io/css/ */
+    #loading {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background-color: rgb(251, 252, 247);
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      z-index: 100;
+      position: absolute;
+    }
+
+    #loading>svg {
+      width: 15em;
+      height: 15em;
+    }
+  </style>
+  <script>
+    function onReady() {
+      runApp();
+
+      var fadeTimeout = 500;
+      var checkPageReady = function () {
+        if (document.getElementById('_page_is_ready_')) {
+          var loading = document.getElementById('loading');
+          loading.style.transition = (fadeTimeout / 1000.0) + 's';
+          loading.style.opacity = '0';
+
+          setTimeout(function () {
+            loading.remove();
+          }, fadeTimeout);
+          return;
+        }
+
+        checkPageReady();
+      };
+      setTimeout(checkPageReady, fadeTimeout);
+    }
+  </script>
+</head>
+
+<body onload="onReady()">
+  <div id="app"></div>
+  <div id="loading">
+    <!-- https://loading.io/spinner/square/-square-window-zoom-scale-rectangle-block -->
+    <svg
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    viewBox="0 0 100 100"
+    preserveAspectRatio="xMidYMid"
+    >
+    <g transform="translate(20 20)">
+      <rect x="-15" y="-15" width="30" height="30" fill="#e15b64">
+        <animateTransform
+          attributeName="transform"
+          type="scale"
+          repeatCount="indefinite"
+          calcMode="spline"
+          dur="1s"
+          values="1;1;0.2;1;1"
+          keyTimes="0;0.2;0.5;0.8;1"
+          keySplines="0.5 0.5 0.5 0.5;0 0.1 0.9 1;0.1 0 1 0.9;0.5 0.5 0.5 0.5"
+          begin="-0.4s"
+        ></animateTransform>
+      </rect>
+    </g>
+    <g transform="translate(50 20)">
+      <rect x="-15" y="-15" width="30" height="30" fill="#f47e60">
+        <animateTransform
+          attributeName="transform"
+          type="scale"
+          repeatCount="indefinite"
+          calcMode="spline"
+          dur="1s"
+          values="1;1;0.2;1;1"
+          keyTimes="0;0.2;0.5;0.8;1"
+          keySplines="0.5 0.5 0.5 0.5;0 0.1 0.9 1;0.1 0 1 0.9;0.5 0.5 0.5 0.5"
+          begin="-0.3s"
+        ></animateTransform>
+      </rect>
+    </g>
+    <g transform="translate(80 20)">
+      <rect x="-15" y="-15" width="30" height="30" fill="#f8b26a">
+        <animateTransform
+          attributeName="transform"
+          type="scale"
+          repeatCount="indefinite"
+          calcMode="spline"
+          dur="1s"
+          values="1;1;0.2;1;1"
+          keyTimes="0;0.2;0.5;0.8;1"
+          keySplines="0.5 0.5 0.5 0.5;0 0.1 0.9 1;0.1 0 1 0.9;0.5 0.5 0.5 0.5"
+          begin="-0.2s"
+        ></animateTransform>
+      </rect>
+    </g>
+    <g transform="translate(20 50)">
+      <rect x="-15" y="-15" width="30" height="30" fill="#f47e60">
+        <animateTransform
+          attributeName="transform"
+          type="scale"
+          repeatCount="indefinite"
+          calcMode="spline"
+          dur="1s"
+          values="1;1;0.2;1;1"
+          keyTimes="0;0.2;0.5;0.8;1"
+          keySplines="0.5 0.5 0.5 0.5;0 0.1 0.9 1;0.1 0 1 0.9;0.5 0.5 0.5 0.5"
+          begin="-0.3s"
+        ></animateTransform>
+      </rect>
+    </g>
+    <g transform="translate(50 50)">
+      <rect x="-15" y="-15" width="30" height="30" fill="#f8b26a">
+        <animateTransform
+          attributeName="transform"
+          type="scale"
+          repeatCount="indefinite"
+          calcMode="spline"
+          dur="1s"
+          values="1;1;0.2;1;1"
+          keyTimes="0;0.2;0.5;0.8;1"
+          keySplines="0.5 0.5 0.5 0.5;0 0.1 0.9 1;0.1 0 1 0.9;0.5 0.5 0.5 0.5"
+          begin="-0.2s"
+        ></animateTransform>
+      </rect>
+    </g>
+    <g transform="translate(80 50)">
+      <rect x="-15" y="-15" width="30" height="30" fill="#abbd81">
+        <animateTransform
+          attributeName="transform"
+          type="scale"
+          repeatCount="indefinite"
+          calcMode="spline"
+          dur="1s"
+          values="1;1;0.2;1;1"
+          keyTimes="0;0.2;0.5;0.8;1"
+          keySplines="0.5 0.5 0.5 0.5;0 0.1 0.9 1;0.1 0 1 0.9;0.5 0.5 0.5 0.5"
+          begin="-0.1s"
+        ></animateTransform>
+      </rect>
+    </g>
+    <g transform="translate(20 80)">
+      <rect x="-15" y="-15" width="30" height="30" fill="#f8b26a">
+        <animateTransform
+          attributeName="transform"
+          type="scale"
+          repeatCount="indefinite"
+          calcMode="spline"
+          dur="1s"
+          values="1;1;0.2;1;1"
+          keyTimes="0;0.2;0.5;0.8;1"
+          keySplines="0.5 0.5 0.5 0.5;0 0.1 0.9 1;0.1 0 1 0.9;0.5 0.5 0.5 0.5"
+          begin="-0.2s"
+        ></animateTransform>
+      </rect>
+    </g>
+    <g transform="translate(50 80)">
+      <rect x="-15" y="-15" width="30" height="30" fill="#abbd81">
+        <animateTransform
+          attributeName="transform"
+          type="scale"
+          repeatCount="indefinite"
+          calcMode="spline"
+          dur="1s"
+          values="1;1;0.2;1;1"
+          keyTimes="0;0.2;0.5;0.8;1"
+          keySplines="0.5 0.5 0.5 0.5;0 0.1 0.9 1;0.1 0 1 0.9;0.5 0.5 0.5 0.5"
+          begin="-0.1s"
+        ></animateTransform>
+      </rect>
+    </g>
+    <g transform="translate(80 80)">
+      <rect x="-15" y="-15" width="30" height="30" fill="#849b87">
+        <animateTransform
+          attributeName="transform"
+          type="scale"
+          repeatCount="indefinite"
+          calcMode="spline"
+          dur="1s"
+          values="1;1;0.2;1;1"
+          keyTimes="0;0.2;0.5;0.8;1"
+          keySplines="0.5 0.5 0.5 0.5;0 0.1 0.9 1;0.1 0 1 0.9;0.5 0.5 0.5 0.5"
+          begin="0s"
+        ></animateTransform>
+      </rect>
+    </g>
+    </svg>
+  </div>
+  <!-- https://github.com/jantimon/html-webpack-plugin/tree/main/examples/custom-insertion-position -->
+  <%= htmlWebpackPlugin
+        .tags
+        .headTags
+        .filter((tag)=> tag.attributes.rel === 'stylesheet')
+        .join('')
+  %>
+  <%= htmlWebpackPlugin.tags.bodyTags %>
+</body>
+
+</html>

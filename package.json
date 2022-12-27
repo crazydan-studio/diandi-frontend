@@ -1,0 +1,55 @@
+{
+  "name": "diandi-webapp",
+  "version": "0.1.0",
+  "private": true,
+  "author": "flytreeleft@crazydan.org",
+  "title": "点滴(DianDi)",
+  "description": "点滴(DianDi) - 聚沙成塔，集腋成裘",
+  "url": "https://diandi.studio.crazydan.org",
+  "image": "https://diandi.studio.crazydan.org/img/icon.png",
+  "lang": "zh_CN",
+  "scripts": {
+    "dev": "webpack-dev-server --hot --port 3010",
+    "prod": "webpack",
+    "test": "elm-test",
+    "analyse": "elm-analyse -s -p 3001 -o"
+  },
+  "dependencies": {
+    "purecss": "^2.0.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
+    "babel-loader": "^8.1.0",
+    "clean-webpack-plugin": "^4.0.0",
+    "closure-webpack-plugin": "^2.3.0",
+    "copy-webpack-plugin": "^10.2.4",
+    "css-loader": "^6.7.1",
+    "elm": "^0.19.1-5",
+    "elm-analyse": "^0.16.5",
+    "elm-format": "^0.8.4",
+    "elm-hot-webpack-loader": "^1.1.7",
+    "elm-test": "^0.19.1-revision4",
+    "elm-webpack-loader": "^8.0.0",
+    "express": "^4.17.3",
+    "file-loader": "^6.1.0",
+    "fs-extra": "^10.0.1",
+    "google-closure-compiler": "^20220301.0.0",
+    "html-webpack-plugin": "^5.5.0",
+    "mini-css-extract-plugin": "^2.6.0",
+    "optimize-css-assets-webpack-plugin": "^6.0.1",
+    "resolve-url-loader": "^5.0.0",
+    "style-loader": "^3.3.1",
+    "url-loader": "^4.1.0",
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-middleware": "^5.3.1",
+    "webpack-dev-server": "^4.7.4",
+    "webpack-hot-middleware": "^2.25.1",
+    "webpack-merge": "^5.1.4",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "prettier": {
+    "tabWidth": 2
+  }
+}

@@ -81,35 +81,13 @@
       height: 15em;
     }
   </style>
-  <script>
-    function onReady() {
-      runApp();
-
-      var fadeTimeout = 500;
-      var checkPageReady = function () {
-        if (document.getElementById('_page_is_ready_')) {
-          var loading = document.getElementById('loading');
-          loading.style.transition = (fadeTimeout / 1000.0) + 's';
-          loading.style.opacity = '0';
-
-          setTimeout(function () {
-            loading.remove();
-          }, fadeTimeout);
-          return;
-        }
-
-        checkPageReady();
-      };
-      setTimeout(checkPageReady, fadeTimeout);
-    }
-  </script>
 </head>
 
-<body onload="onReady()">
-  <div id="app"></div>
+<body>
   <div id="loading">
     <%= htmlWebpackPlugin.options.loading %>
   </div>
+
   <!-- https://github.com/jantimon/html-webpack-plugin/tree/main/examples/custom-insertion-position -->
   <%= htmlWebpackPlugin
         .tags

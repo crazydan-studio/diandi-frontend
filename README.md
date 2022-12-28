@@ -22,3 +22,12 @@ npm run dev
 ```bash
 npm run prod
 ```
+
+## 参考资料
+
+- [elm/browser](https://package.elm-lang.org/packages/elm/browser/latest/Browser):
+  编写URL路由的单页面应用
+- [elm/http](https://package.elm-lang.org/packages/elm/http/latest/Http):
+  如何做HTTP请求
+- [NoRedInk/json-decode-pipeline](https://package.elm-lang.org/packages/NoRedInk/elm-json-decode-pipeline/latest):
+  JSON编解码库

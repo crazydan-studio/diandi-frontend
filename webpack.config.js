@@ -1,4 +1,5 @@
 // https://github.com/simonh1000/elm-webpack-starter/blob/master/webpack.config.js
+const fs = require("fs");
 const path = require("path");
 const { merge } = require("webpack-merge");
 
@@ -10,7 +11,6 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 // Production CSS assets - separate, minimised file
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const packageJson = require("./package.json");
 
 const MODE =
   process.env.npm_lifecycle_event === "prod" ? "production" : "development";
@@ -29,6 +29,9 @@ function filepath(...paths) {
   return path.join(__ROOT__, ...paths);
 }
 
+const packageJson = require("./package.json");
+const loadingSvg = fs.readFileSync(filepath(publicDir, "assets/img/loading.svg"), "utf-8");
+
 const common = {
   mode: MODE,
   entry: filepath(publicDir, "index.js"),
@@ -46,6 +49,7 @@ const common = {
       image: packageJson.image,
       lang: packageJson.lang,
       description: packageJson.description,
+      loading: loadingSvg,
 
       // Use this template to get basic responsive meta tags
       template: filepath(publicDir, "index.html"),

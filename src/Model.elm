@@ -1,26 +1,14 @@
-module Model exposing (Flags, RootModel, init, sub, update)
+module Model exposing (Flags, init, sub, update)
 
 import Browser.Navigation as Nav
 import Http
+import Model.Root exposing (RootModel)
 import Model.User as User
 import Msg exposing (..)
-import Page.Type as PageType exposing (ErrorPage)
+import Page.Type as PageType
 import Remote exposing (RemoteMsg, getMyUserInfo)
+import Route
 import Url
-
-
-type alias RootModel =
-    { title : String
-    , description : String
-    , lang : String
-
-    -- 当前用户信息
-    , me : User.User
-
-    -- 远程请求错误信息
-    , remoteError : Maybe String
-    , errorPage : ErrorPage
-    }
 
 
 type alias Flags =
@@ -32,15 +20,20 @@ type alias Flags =
 
 init : Flags -> Url.Url -> Nav.Key -> ( RootModel, Cmd RootMsg )
 init flags url key =
-    ( { title = flags.title
-      , description = flags.description
-      , lang = flags.lang
-      , me = User.None
-      , remoteError = Nothing
-      , errorPage = PageType.Loading
-      }
-    , remote getMyUserInfo
-    )
+    { title = flags.title
+    , description = flags.description
+    , lang = flags.lang
+
+    --
+    , navKey = key
+    , navUrl = url
+
+    --
+    , me = User.None
+    , remoteError = Nothing
+    , currentPage = PageType.Loading
+    }
+        |> routeUpdateHelper url
 
 
 sub : RootModel -> Sub RootMsg
@@ -53,6 +46,9 @@ update msg model =
     case msg of
         RemoteFetched remoteMsg ->
             remoteUpdateHelper remoteMsg model
+
+        UrlChanged url ->
+            routeUpdateHelper url model
 
         _ ->
             ( model, Cmd.none )
@@ -77,20 +73,13 @@ remoteUpdateHelper msg model =
         Remote.GotMyUserInfo result ->
             case result of
                 Ok user ->
-                    -- TODO 获取首页数据
-                    ( { model | me = User.User user, errorPage = PageType.None }, Cmd.none )
+                    Route.gotoHome { model | me = User.User user }
 
-                Err error ->
-                    let
-                        ( newModel, newMsg ) =
-                            remoteErrorUpdateHelper error model
-                    in
-                    case newModel.errorPage of
-                        PageType.NotFound ->
-                            ( { newModel | errorPage = PageType.Login }, Cmd.none )
+                Err _ ->
+                    Route.gotoLogin model
 
-                        _ ->
-                            ( newModel, newMsg )
+        Remote.UserLogout _ ->
+            Route.gotoLogin model
 
         _ ->
             ( model, Cmd.none )
@@ -103,13 +92,13 @@ remoteErrorUpdateHelper error model =
     case error of
         Http.BadStatus status ->
             if status == 401 then
-                ( { model | errorPage = PageType.Login }, Cmd.none )
+                Route.gotoLogin model
 
             else if status == 403 then
-                ( { model | errorPage = PageType.Forbidden }, Cmd.none )
+                Route.goto403 model
 
             else if status == 404 then
-                ( { model | errorPage = PageType.NotFound }, Cmd.none )
+                Route.goto404 model
 
             else
                 ( model, Cmd.none )
@@ -122,3 +111,26 @@ remoteErrorUpdateHelper error model =
 
         _ ->
             ( model, Cmd.none )
+
+
+routeUpdateHelper : Url.Url -> RootModel -> ( RootModel, Cmd RootMsg )
+routeUpdateHelper url model =
+    let
+        ( page, cmd ) =
+            case Route.route url of
+                Route.Login ->
+                    ( PageType.Login, Cmd.none )
+
+                Route.Logout ->
+                    ( PageType.Login, remote Remote.logout )
+
+                Route.Home ->
+                    ( PageType.Home, remote getMyUserInfo )
+
+                Route.Forbidden ->
+                    ( PageType.Forbidden, Cmd.none )
+
+                Route.NotFound ->
+                    ( PageType.NotFound, Cmd.none )
+    in
+    ( { model | currentPage = page, navUrl = url }, cmd )

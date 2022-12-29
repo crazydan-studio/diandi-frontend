@@ -1,9 +1,9 @@
-module Page.Type exposing (ErrorPage(..))
+module Page.Type exposing (Type(..))
 
 
-type ErrorPage
-    = None
-    | Login
+type Type
+    = Login
+    | Home
     | NotFound
     | Forbidden
     | Loading

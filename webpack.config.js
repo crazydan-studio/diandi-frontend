@@ -53,6 +53,7 @@ const common = {
 
       // Use this template to get basic responsive meta tags
       template: filepath(publicDir, "index.html"),
+      publicPath: "/",
       // disable css and js inject to allow to put the resources at any location manually
       inject: false,
     }),

@@ -5,7 +5,7 @@ import Element exposing (Element, fill, height, width)
 import Element.Font as Font
 import Html
 import Html.Attributes as HtmlAttr
-import Model exposing (RootModel)
+import Model.Root exposing (RootModel)
 import Msg exposing (RootMsg)
 import Page.Forbidden
 import Page.Home
@@ -37,7 +37,7 @@ create model =
 
 title : RootModel -> String
 title model =
-    case model.errorPage of
+    case model.currentPage of
         PageType.Login ->
             model.title ++ " - " ++ "用户登录"
 
@@ -56,7 +56,7 @@ title model =
 
 page : RootModel -> Element RootMsg
 page model =
-    case model.errorPage of
+    case model.currentPage of
         PageType.Login ->
             Page.Login.create model
 
@@ -69,5 +69,5 @@ page model =
         PageType.Loading ->
             Page.Loading.create model
 
-        PageType.None ->
+        PageType.Home ->
             Page.Home.create model

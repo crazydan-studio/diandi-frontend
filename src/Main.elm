@@ -1,7 +1,8 @@
 module Main exposing (main)
 
 import Browser
-import Model exposing (Flags, RootModel)
+import Model exposing (Flags)
+import Model.Root exposing (RootModel)
 import Msg exposing (..)
 import View
 

@@ -1,7 +1,7 @@
 module Page.Login exposing (create)
 
 import Element exposing (..)
-import Model exposing (RootModel)
+import Model.Root exposing (RootModel)
 import Msg exposing (RootMsg)
 
 

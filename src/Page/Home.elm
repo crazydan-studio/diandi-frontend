@@ -4,6 +4,7 @@ import Element exposing (..)
 import Model.Root exposing (RootModel)
 import Model.User
 import Msg exposing (RootMsg)
+import Style.Home
 
 
 create : RootModel -> Element RootMsg
@@ -12,14 +13,37 @@ create model =
         [ width fill
         , height fill
         ]
-        [ text
-            ("Home Page: "
-                ++ (case model.me of
-                        Model.User.None ->
-                            "Anonymous"
-
-                        Model.User.User u ->
-                            u.name ++ "(" ++ Maybe.withDefault "" u.email ++ ")"
-                   )
+        [ row
+            (Style.Home.topBar
+                ++ [ width fill
+                   ]
             )
+            [ el
+                (Style.Home.userAvatar
+                    ++ [ alignRight
+                       ]
+                )
+                (text (userName model.me))
+            ]
+        , row
+            [ width fill
+            , height fill
+            ]
+            []
+        , row
+            (Style.Home.bottomBar
+                ++ [ width fill
+                   ]
+            )
+            []
         ]
+
+
+userName : Model.User.User -> String
+userName user =
+    case user of
+        Model.User.None ->
+            "匿名"
+
+        Model.User.User u ->
+            u.name

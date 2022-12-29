@@ -7,6 +7,7 @@ import Html
 import Html.Attributes as HtmlAttr
 import Model.Root exposing (RootModel)
 import Msg exposing (RootMsg)
+import Page.Blank
 import Page.Forbidden
 import Page.Home
 import Page.Loading
@@ -23,6 +24,7 @@ create model =
             [ Font.family
                 [ Font.serif
                 ]
+            , Font.size 14
             , width fill
             , height fill
             ]
@@ -68,6 +70,9 @@ page model =
 
         PageType.Loading ->
             Page.Loading.create model
+
+        PageType.Blank ->
+            Page.Blank.create model
 
         PageType.Home ->
             Page.Home.create model

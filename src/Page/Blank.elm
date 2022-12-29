@@ -1,4 +1,4 @@
-module Page.Loading exposing (create)
+module Page.Blank exposing (create)
 
 import Element exposing (..)
 import Model.Root exposing (RootModel)
@@ -7,13 +7,8 @@ import Msg exposing (RootMsg)
 
 create : RootModel -> Element RootMsg
 create model =
-    column
+    el
         [ width fill
         , height fill
         ]
-        [ el
-            [ centerX
-            , centerY
-            ]
-            (text "加载中...")
-        ]
+        none

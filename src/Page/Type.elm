@@ -7,3 +7,4 @@ type Type
     | NotFound
     | Forbidden
     | Loading
+    | Blank

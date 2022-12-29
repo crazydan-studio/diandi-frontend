@@ -73,7 +73,11 @@ remoteUpdateHelper msg model =
         Remote.GotMyUserInfo result ->
             case result of
                 Ok user ->
-                    Route.gotoHome { model | me = User.User user }
+                    ( { model
+                        | me = User.User user
+                      }
+                    , Cmd.none
+                    )
 
                 Err _ ->
                     Route.gotoLogin model

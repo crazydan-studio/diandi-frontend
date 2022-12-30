@@ -1,6 +1,7 @@
 module Model.Root exposing (RootModel)
 
 import Browser.Navigation as Nav
+import Model.Card
 import Model.User as User
 import Page.Type
 import Url
@@ -19,4 +20,7 @@ type alias RootModel =
     -- 远程请求错误信息
     , remoteError : Maybe String
     , currentPage : Page.Type.Type
+
+    --
+    , cards : List Model.Card.Card
     }

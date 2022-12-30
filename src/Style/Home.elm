@@ -1,9 +1,8 @@
 module Style.Home exposing (bottomBar, topBar, userAvatar)
 
-import Element exposing (Attribute, height, padding, px, rgb255)
+import Element exposing (Attribute, height, padding, paddingXY, px, rgb255)
 import Element.Background as Background
 import Element.Border as Border
-import Element exposing (paddingXY)
 
 
 topBar : List (Attribute msg)

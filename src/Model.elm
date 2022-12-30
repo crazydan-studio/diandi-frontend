@@ -32,6 +32,9 @@ init flags url key =
     , me = User.None
     , remoteError = Nothing
     , currentPage = PageType.Loading
+
+    --
+    , cards = []
     }
         |> routeUpdateHelper url
 

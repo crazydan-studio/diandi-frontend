@@ -2,7 +2,6 @@ module View exposing (create)
 
 import Browser
 import Element exposing (Element, fill, height, width)
-import Element.Font as Font
 import Html
 import Html.Attributes as HtmlAttr
 import Model.Root exposing (RootModel)
@@ -14,6 +13,7 @@ import Page.Loading
 import Page.Login
 import Page.NotFound
 import Page.Type as PageType
+import Style.Root
 
 
 create : RootModel -> Browser.Document RootMsg
@@ -21,13 +21,11 @@ create model =
     { title = title model
     , body =
         [ Element.layout
-            [ Font.family
-                [ Font.serif
-                ]
-            , Font.size 14
-            , width fill
-            , height fill
-            ]
+            (Style.Root.rootLayout
+                ++ [ width fill
+                   , height fill
+                   ]
+            )
             (page model)
         , Html.div
             [ HtmlAttr.id "_page_is_ready_"

@@ -18,7 +18,12 @@ create model =
                 ++ [ width fill
                    ]
             )
-            [ el
+            [ image
+                [ alignLeft
+                , height (px 32)
+                ]
+                { src = "/logo.svg", description = "" }
+            , el
                 (Style.Home.userAvatar
                     ++ [ alignRight
                        ]

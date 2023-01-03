@@ -79,7 +79,7 @@ remoteUpdateHelper msg model =
                     ( { model
                         | me = User.User user
                       }
-                    , Cmd.none
+                    , remote Remote.getAllMyCards
                     )
 
                 Err _ ->
@@ -87,6 +87,18 @@ remoteUpdateHelper msg model =
 
         Remote.UserLogout _ ->
             Route.gotoLogin model
+
+        Remote.QueryMyCards result ->
+            case result of
+                Ok cards ->
+                    ( { model
+                        | cards = cards
+                      }
+                    , Cmd.none
+                    )
+
+                Err error ->
+                    remoteErrorUpdateHelper error model
 
         _ ->
             ( model, Cmd.none )

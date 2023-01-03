@@ -1,7 +1,8 @@
 module Style.Root exposing (rootLayout)
 
-import Element exposing (Attribute, rgb255)
+import Element exposing (Attribute)
 import Element.Font as Font
+import Style.Basic
 
 
 rootLayout : List (Attribute msg)
@@ -9,6 +10,6 @@ rootLayout =
     [ Font.family
         [ Font.serif
         ]
-    , Font.size 14
-    , Font.color (rgb255 6 126 213)
+    , Font.size Style.Basic.majorFontSize
+    , Font.color Style.Basic.majorFontColor
     ]

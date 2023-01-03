@@ -1,6 +1,8 @@
 module Style.Card exposing
     ( card
     , cardBody
+    , cardBodyDefaultBgColor
+    , cardBodyDefaultFgColor
     , cardFooter
     , contentInCardBody
     , indexInCardBody
@@ -12,12 +14,12 @@ module Style.Card exposing
 import Element
     exposing
         ( Attribute
+        , Color
         , clip
         , fill
         , height
         , padding
         , paddingEach
-        , paddingXY
         , px
         , rgb255
         , rgba255
@@ -60,6 +62,16 @@ cardBody =
         , bottomRight = 0
         }
     ]
+
+
+cardBodyDefaultBgColor : Color
+cardBodyDefaultBgColor =
+    rgb255 0 150 136
+
+
+cardBodyDefaultFgColor : Color
+cardBodyDefaultFgColor =
+    rgb255 255 255 255
 
 
 contentInCardBody : List (Attribute msg)

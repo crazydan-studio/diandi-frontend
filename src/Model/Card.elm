@@ -30,8 +30,8 @@ type alias Card =
     , tags : List Tag
 
     -- 颜色表: https://blog.avada.io/css/color-palettes#material-design-color-palette-badboy
-    , bgColor : Color
-    , fontColor : Color
+    , bgColor : Maybe Color
+    , fgColor : Maybe Color
 
     -- 上级卡片id
     , superior : String
@@ -60,8 +60,8 @@ cardDecoder =
         |> required "id" string
         |> required "content" string
         |> required "tags" (list cardTagDecoder)
-        |> required "bgColor" colorDecoder
-        |> required "fontColor" colorDecoder
+        |> optional "bgColor" (nullable colorDecoder) Nothing
+        |> optional "fgColor" (nullable colorDecoder) Nothing
         |> optional "superior" string ""
         |> required "createdAt" string
 

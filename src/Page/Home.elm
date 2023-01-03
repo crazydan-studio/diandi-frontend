@@ -68,9 +68,14 @@ userName user =
             u.name
 
 
-fromCardColor : Model.Card.Color -> Color
-fromCardColor color =
-    rgb255 color.r color.g color.b
+fromCardColor : Maybe Model.Card.Color -> Color -> Color
+fromCardColor colorMaybe colorDefault =
+    case colorMaybe of
+        Just color ->
+            rgb255 color.r color.g color.b
+
+        Nothing ->
+            colorDefault
 
 
 cardList : List Model.Card.Card -> Element RootMsg
@@ -90,7 +95,10 @@ cardList cards =
                     [ row
                         (Style.Card.cardBody
                             ++ [ width fill
-                               , Background.color (fromCardColor card.bgColor)
+                               , Background.color
+                                    (fromCardColor card.bgColor
+                                        Style.Card.cardBodyDefaultBgColor
+                                    )
                                ]
                         )
                         [ el
@@ -98,7 +106,10 @@ cardList cards =
                                 ++ []
                             )
                             (paragraph
-                                [ Font.color (fromCardColor card.fontColor)
+                                [ Font.color
+                                    (fromCardColor card.fgColor
+                                        Style.Card.cardBodyDefaultFgColor
+                                    )
                                 ]
                                 [ el Style.Card.indexInCardBody
                                     (text (String.fromInt i))

@@ -3,6 +3,9 @@ module Style.Card exposing
     , cardBody
     , cardBodyDefaultColor
     , cardFooter
+    , cardPadding
+    , cardSpacing
+    , cardWidth
     , contentInCardBody
     , indexInCardBody
     , labelInCardFooter
@@ -13,7 +16,6 @@ module Style.Card exposing
 import Element
     exposing
         ( Attribute
-        , Color
         , clip
         , fill
         , height
@@ -37,16 +39,26 @@ cardCornerRadius =
     4
 
 
+cardWidth : Int
+cardWidth =
+    456
+
+
+cardSpacing : Int
+cardSpacing =
+    16
+
+
+cardPadding : Int
+cardPadding =
+    16
+
+
 card : List (Attribute msg)
 card =
     [ Border.rounded cardCornerRadius
     , Background.color (rgb255 255 255 255)
-    , Style.Html.style
-        "box-shadow"
-        ("0 1.35pt 2.25pt rgba(0, 0, 0, 0.14)"
-            ++ ", 0 0.3pt 2.7pt 0.3pt rgba(0, 0, 0, 0.12)"
-            ++ ", 0 0.75pt 1.2pt -0.45pt rgba(0, 0, 0, 0.4)"
-        )
+    , Style.Html.class "card"
     ]
 
 

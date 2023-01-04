@@ -1,7 +1,6 @@
 module Page.Card.ListView exposing (create)
 
 import Element exposing (..)
-import Element.Background as Background
 import Model.Card
 import Model.ColorPalette
 import Model.Root exposing (RootModel)
@@ -19,8 +18,11 @@ create model =
 -- ---------------------------------------------------------------
 
 
-fromCardColorPalette : Maybe Model.ColorPalette.Palette -> List (Attribute msg) -> List (Attribute msg)
-fromCardColorPalette palette defaultColor =
+fromColorPalette :
+    Maybe Model.ColorPalette.Palette
+    -> List (Attribute msg)
+    -> List (Attribute msg)
+fromColorPalette palette defaultColor =
     case palette of
         Just p ->
             Style.Color.fromPalette p
@@ -32,21 +34,22 @@ fromCardColorPalette palette defaultColor =
 cardList : List Model.Card.Card -> Element RootMsg
 cardList cards =
     wrappedRow
-        [ width shrink
-        , spacing 16
-        , padding 16
+        [ width (fill |> maximum ((Style.Card.cardWidth + Style.Card.cardSpacing) * 4))
+        , spacing Style.Card.cardSpacing
+        , padding Style.Card.cardPadding
+        , centerX
         ]
         (cards
             |> List.indexedMap
                 (\i card ->
                     column
                         (Style.Card.card
-                            ++ [ width (px 456)
+                            ++ [ width (px Style.Card.cardWidth)
                                ]
                         )
                         [ row
                             (Style.Card.cardBody
-                                ++ fromCardColorPalette card.colorPalette
+                                ++ fromColorPalette card.colorPalette
                                     Style.Card.cardBodyDefaultColor
                                 ++ [ width fill
                                    ]

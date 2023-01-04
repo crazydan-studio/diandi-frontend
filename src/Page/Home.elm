@@ -41,7 +41,7 @@ create model =
             [ el
                 [ width fill
                 , height fill
-                , paddingXY 482 0
+                -- , paddingXY 482 0
                 , scrollbarY
                 ]
                 (Page.Card.ListView.create model)

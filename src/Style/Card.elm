@@ -79,7 +79,7 @@ contentInCardBody =
     [ width fill
     , height fill
     , scrollbarY
-    , Font.size (Style.Basic.majorFontSize * 2)
+    , Font.size (toFloat Style.Basic.majorFontSize * 1.5 |> round)
     ]
 
 

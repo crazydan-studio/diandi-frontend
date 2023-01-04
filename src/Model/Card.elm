@@ -26,15 +26,20 @@ import Json.Decode.Pipeline exposing (optional, required)
 -}
 type alias Card =
     { id : String
+
+    -- 父卡片id
+    , superior : Maybe String
+
+    -- 前序卡片id
+    , previous : Maybe String
+
+    --
     , content : String
     , tags : List Tag
 
     -- 颜色表: https://blog.avada.io/css/color-palettes#material-design-color-palette-badboy
     , bgColor : Maybe Color
     , fgColor : Maybe Color
-
-    -- 上级卡片id
-    , superior : String
 
     -- 创建信息
     , createdAt : String
@@ -58,11 +63,12 @@ cardDecoder : Decoder Card
 cardDecoder =
     Decode.succeed Card
         |> required "id" string
+        |> optional "superior" (nullable string) Nothing
+        |> optional "previous" (nullable string) Nothing
         |> required "content" string
         |> required "tags" (list cardTagDecoder)
         |> optional "bgColor" (nullable colorDecoder) Nothing
         |> optional "fgColor" (nullable colorDecoder) Nothing
-        |> optional "superior" string ""
         |> required "createdAt" string
 
 

@@ -1,6 +1,5 @@
 module Model.Card exposing
     ( Card
-    , Color
     , Tag
     , cardDecoder
     , cardListDecoder
@@ -11,12 +10,12 @@ module Model.Card exposing
 import Json.Decode as Decode
     exposing
         ( Decoder
-        , int
         , list
         , nullable
         , string
         )
 import Json.Decode.Pipeline exposing (optional, required)
+import Model.ColorPalette exposing (Palette, maybePaletteDecoder)
 
 
 {-| 点滴卡
@@ -37,17 +36,12 @@ type alias Card =
     , content : String
     , tags : List Tag
 
-    -- 颜色表: https://blog.avada.io/css/color-palettes#material-design-color-palette-badboy
-    , bgColor : Maybe Color
-    , fgColor : Maybe Color
+    -- 调色板
+    , colorPalette : Maybe Palette
 
     -- 创建信息
     , createdAt : String
     }
-
-
-type alias Color =
-    { r : Int, g : Int, b : Int }
 
 
 type alias Tag =
@@ -67,19 +61,10 @@ cardDecoder =
         |> optional "previous" (nullable string) Nothing
         |> required "content" string
         |> required "tags" (list cardTagDecoder)
-        |> optional "bgColor" (nullable colorDecoder) Nothing
-        |> optional "fgColor" (nullable colorDecoder) Nothing
+        |> optional "colorPalette" maybePaletteDecoder Nothing
         |> required "createdAt" string
 
 
 cardTagDecoder : Decoder Tag
 cardTagDecoder =
     Decode.string
-
-
-colorDecoder : Decoder Color
-colorDecoder =
-    Decode.succeed Color
-        |> required "r" int
-        |> required "g" int
-        |> required "b" int

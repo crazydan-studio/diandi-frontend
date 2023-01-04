@@ -1,8 +1,7 @@
 module Style.Card exposing
     ( card
     , cardBody
-    , cardBodyDefaultBgColor
-    , cardBodyDefaultFgColor
+    , cardBodyDefaultColor
     , cardFooter
     , contentInCardBody
     , indexInCardBody
@@ -22,7 +21,6 @@ import Element
         , paddingEach
         , px
         , rgb255
-        , rgba255
         , scrollbarY
         , spacing
         , width
@@ -31,22 +29,24 @@ import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Style.Basic
+import Style.Html
 
 
 cardCornerRadius : Int
 cardCornerRadius =
-    8
+    4
 
 
 card : List (Attribute msg)
 card =
     [ Border.rounded cardCornerRadius
-    , Border.shadow
-        { offset = ( 0, 0 )
-        , size = 2
-        , blur = 10
-        , color = rgba255 0 0 0 0.05
-        }
+    , Background.color (rgb255 255 255 255)
+    , Style.Html.style
+        "box-shadow"
+        ("0 1.35pt 2.25pt rgba(0, 0, 0, 0.14)"
+            ++ ", 0 0.3pt 2.7pt 0.3pt rgba(0, 0, 0, 0.12)"
+            ++ ", 0 0.75pt 1.2pt -0.45pt rgba(0, 0, 0, 0.4)"
+        )
     ]
 
 
@@ -64,14 +64,11 @@ cardBody =
     ]
 
 
-cardBodyDefaultBgColor : Color
-cardBodyDefaultBgColor =
-    rgb255 0 150 136
-
-
-cardBodyDefaultFgColor : Color
-cardBodyDefaultFgColor =
-    rgb255 255 255 255
+cardBodyDefaultColor : List (Attribute msg)
+cardBodyDefaultColor =
+    [ Background.color (rgb255 0 150 136)
+    , Font.color (rgb255 255 255 255)
+    ]
 
 
 contentInCardBody : List (Attribute msg)
@@ -101,7 +98,6 @@ cardFooter =
     [ padding 8
     , spacing 8
     , Font.size fontSizeInCardFooter
-    , Background.color (rgb255 255 255 255)
     , Border.roundEach
         { topLeft = 0
         , topRight = 0

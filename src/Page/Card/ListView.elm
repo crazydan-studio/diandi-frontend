@@ -2,11 +2,12 @@ module Page.Card.ListView exposing (create)
 
 import Element exposing (..)
 import Element.Background as Background
-import Element.Font as Font
 import Model.Card
+import Model.ColorPalette
 import Model.Root exposing (RootModel)
 import Msg exposing (RootMsg)
 import Style.Card
+import Style.Color
 
 
 create : RootModel -> Element RootMsg
@@ -18,14 +19,14 @@ create model =
 -- ---------------------------------------------------------------
 
 
-fromCardColor : Maybe Model.Card.Color -> Color -> Color
-fromCardColor colorMaybe colorDefault =
-    case colorMaybe of
-        Just color ->
-            rgb255 color.r color.g color.b
+fromCardColorPalette : Maybe Model.ColorPalette.Palette -> List (Attribute msg) -> List (Attribute msg)
+fromCardColorPalette palette defaultColor =
+    case palette of
+        Just p ->
+            Style.Color.fromPalette p
 
         Nothing ->
-            colorDefault
+            defaultColor
 
 
 cardList : List Model.Card.Card -> Element RootMsg
@@ -45,11 +46,9 @@ cardList cards =
                         )
                         [ row
                             (Style.Card.cardBody
+                                ++ fromCardColorPalette card.colorPalette
+                                    Style.Card.cardBodyDefaultColor
                                 ++ [ width fill
-                                   , Background.color
-                                        (fromCardColor card.bgColor
-                                            Style.Card.cardBodyDefaultBgColor
-                                        )
                                    ]
                             )
                             [ el
@@ -57,13 +56,9 @@ cardList cards =
                                     ++ []
                                 )
                                 (paragraph
-                                    [ Font.color
-                                        (fromCardColor card.fgColor
-                                            Style.Card.cardBodyDefaultFgColor
-                                        )
-                                    ]
+                                    []
                                     [ el Style.Card.indexInCardBody
-                                        (text (String.fromInt i))
+                                        (text (String.fromInt (i + 1)))
                                     , text card.content
                                     ]
                                 )

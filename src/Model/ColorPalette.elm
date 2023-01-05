@@ -57,7 +57,7 @@ type PaletteGroup
 ```js
 var allPalettes = [];
 var paletteGroups = {};
-var toColor = function (c) { return c.replaceAll(/rgb\((\d+), (\d+), (\d+)\)/g, '(rgb255 $1 $2 $3)'); };
+var toColor = function (c) { return c.replaceAll(/rgb\((\d+), (\d+), (\d+)\)/g, '$1 $2 $3'); };
 
 document.querySelectorAll('card list').forEach(function (list) {
   var paletteGroupName = '';
@@ -71,7 +71,7 @@ document.querySelectorAll('card list').forEach(function (list) {
     if (index == 0 && !name.includes('Black') && !name.includes('White')) { return; }
 
     var style = getComputedStyle(item);
-    var value = [name, 'Background.color ' + toColor(style.backgroundColor), 'Font.color ' + toColor(style.color)];
+    var value = [name, 'bgColor ' + toColor(style.backgroundColor), 'fgColor ' + toColor(style.color)];
 
     palettes.push(value);
   });

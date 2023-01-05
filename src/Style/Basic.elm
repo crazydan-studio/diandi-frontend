@@ -1,4 +1,4 @@
-module Style.Basic exposing (majorFontColor, majorFontSize, minorFontSize)
+module Style.Basic exposing (juniorFontSize, majorFontColor, majorFontSize, minorFontSize)
 
 {-| -}
 
@@ -24,3 +24,10 @@ majorFontColor =
 minorFontSize : Int
 minorFontSize =
     12
+
+
+{-| 最次要字体大小
+-}
+juniorFontSize : Int
+juniorFontSize =
+    10

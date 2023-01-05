@@ -1,6 +1,9 @@
 module Page.Card.ListView exposing (create)
 
 import Element exposing (..)
+import Element.Background as Background
+import Element.Border as Border
+import Element.Font as Font
 import Model.Card
 import Model.ColorPalette
 import Model.Root exposing (RootModel)
@@ -33,58 +36,39 @@ fromColorPalette palette defaultColor =
 
 cardList : List Model.Card.Card -> Element RootMsg
 cardList cards =
-    wrappedRow
-        [ width (fill |> maximum ((Style.Card.cardWidth + Style.Card.cardSpacing) * 4))
-        , spacing Style.Card.cardSpacing
-        , padding Style.Card.cardPadding
-        , centerX
-        ]
+    column
+        Style.Card.cardList
         (cards
-            |> List.indexedMap
-                (\i card ->
+            |> List.map
+                (\card ->
                     column
-                        (Style.Card.card
-                            ++ [ width (px Style.Card.cardWidth)
-                               ]
-                        )
+                        Style.Card.card
                         [ row
+                            Style.Card.cardHeader
+                            [ paragraph
+                                [ width fill
+                                ]
+                                (cardTagList card.tags)
+                            ]
+                        , row
                             (Style.Card.cardBody
                                 ++ fromColorPalette card.colorPalette
                                     Style.Card.cardBodyDefaultColor
-                                ++ [ width fill
-                                   ]
                             )
                             [ el
-                                (Style.Card.contentInCardBody
-                                    ++ []
-                                )
-                                (paragraph
-                                    []
-                                    [ el Style.Card.indexInCardBody
-                                        (text (String.fromInt (i + 1)))
-                                    , text card.content
-                                    ]
-                                )
-                            ]
-                        , column
-                            (Style.Card.cardFooter
-                                ++ [ width fill
-                                   ]
-                            )
-                            [ row
                                 [ width fill
+                                , padding 8
                                 ]
-                                [ el
-                                    (Style.Card.labelInCardFooter 3
-                                        ++ []
+                                (el
+                                    Style.Card.contentInCardBody
+                                    (paragraph
+                                        [ height shrink
+                                        , centerY
+                                        ]
+                                        [ text card.content
+                                        ]
                                     )
-                                    (text "标签:")
-                                , wrappedRow
-                                    [ width fill
-                                    , spacing 4
-                                    ]
-                                    (cardTagList card.tags)
-                                ]
+                                )
                             ]
                         ]
                 )
@@ -98,14 +82,12 @@ cardTagList tags =
             (\tag els ->
                 els
                     ++ [ el
-                            (Style.Card.tagSeparatorInCardFooter
-                                ++ []
-                            )
-                            (text "/")
+                            [ width (px 10)
+                            , Font.center
+                            ]
+                            (text ">")
                        , el
-                            (Style.Card.tagInCardFooter tag
-                                ++ []
-                            )
+                            []
                             (text tag)
                        ]
             )

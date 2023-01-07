@@ -15,20 +15,12 @@ create model =
         , height fill
         ]
         [ row
-            (Style.Home.topBar
-                ++ [ width fill
-                   ]
-            )
+            Style.Home.topBar
             [ image
-                [ alignLeft
-                , height (px 32)
-                ]
+                Style.Home.logoInTopBar
                 { src = "/logo.svg", description = "" }
             , el
-                (Style.Home.userAvatar
-                    ++ [ alignRight
-                       ]
-                )
+                Style.Home.userAvatarInTopBar
                 (text (userName model.me))
             ]
         , row
@@ -41,16 +33,12 @@ create model =
             [ el
                 [ width fill
                 , height fill
-                -- , paddingXY 482 0
                 , scrollbarY
                 ]
                 (Page.Card.ListView.create model)
             ]
         , row
-            (Style.Home.bottomBar
-                ++ [ width fill
-                   ]
-            )
+            Style.Home.bottomBar
             []
         ]
 

@@ -23,7 +23,7 @@ type RemoteMsg
 getMyUserInfo : Cmd RemoteMsg
 getMyUserInfo =
     Http.get
-        { url = "/api/v1/user/me"
+        { url = "/demo/me.json"
         , expect = Http.expectJson GotMyUserInfo userInfoDecoder
         }
 

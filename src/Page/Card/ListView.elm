@@ -49,6 +49,10 @@ cardList cards =
                                 [ width fill
                                 ]
                                 (cardTagList card.tags)
+                            , el
+                                [ alignRight
+                                ]
+                                (text "设置")
                             ]
                         , row
                             (Style.Card.cardBody

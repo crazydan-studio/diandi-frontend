@@ -1,8 +1,13 @@
 module Style.Html exposing
-    ( class
+    ( allPointerEvents
+    , class
+    , cursor
     , draggable
     , id
+    , noPointerEvents
+    , noUserSelect
     , style
+    , zIndex
     )
 
 {-| -}
@@ -29,3 +34,32 @@ style name val =
 draggable : String -> Attribute msg
 draggable val =
     HtmlAttr.draggable val |> htmlAttribute
+
+
+
+-- TODO 参考Element UI实现css动态嵌入机制
+
+
+zIndex : Int -> Attribute msg
+zIndex val =
+    style "z-index" (String.fromInt val)
+
+
+cursor : String -> Attribute msg
+cursor val =
+    style "cursor" val
+
+
+noUserSelect : Attribute msg
+noUserSelect =
+    style "user-select" "none"
+
+
+noPointerEvents : Attribute msg
+noPointerEvents =
+    style "pointer-events" "none"
+
+
+allPointerEvents : Attribute msg
+allPointerEvents =
+    style "pointer-events" "all"

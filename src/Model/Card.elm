@@ -61,8 +61,8 @@ cardDecoder =
         |> optional "previous" (nullable string) Nothing
         |> required "content" string
         |> required "tags" (list cardTagDecoder)
-        |> optional "colorPalette" maybePaletteDecoder Nothing
-        |> required "createdAt" string
+        |> optional "color_palette" maybePaletteDecoder Nothing
+        |> required "created_at" string
 
 
 cardTagDecoder : Decoder Tag

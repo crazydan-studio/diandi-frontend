@@ -132,6 +132,7 @@ cardHeader : List (Attribute msg)
 cardHeader =
     [ width fill
     , height shrink
+    , spacing 8
     , paddingXY 8 4
     , Font.size fontSizeInCardHeader
     , Font.color (rgba255 0 0 0 0.2)
@@ -142,4 +143,5 @@ cardHeader =
         , bottomLeft = 0
         , bottomRight = 0
         }
+    , Style.Html.style "display" "none"
     ]

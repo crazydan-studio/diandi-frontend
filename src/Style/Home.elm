@@ -9,7 +9,6 @@ import Element
     exposing
         ( Attribute
         , alignLeft
-        , alignRight
         , fill
         , height
         , padding
@@ -21,49 +20,54 @@ import Element
         )
 import Element.Background as Background
 import Element.Border as Border
+import Element.Font as Font
+import Style.Basic
 
 
 topBar : List (Attribute msg)
 topBar =
-    [ width fill
-    , height (px 48)
-    , Border.solid
-    , Border.color (rgb255 223 225 230)
-    , Border.widthEach { top = 0, bottom = 1, left = 0, right = 0 }
-    , Background.color (rgb255 255 255 255)
-    , paddingXY 16 8
-    ]
+    Style.Basic.boundaryBorderEach
+        { top = 0
+        , bottom = 1
+        , left = 0
+        , right = 0
+        }
+        ++ [ width fill
+           , height (px 64)
+           , Background.color (rgb255 255 255 255)
+           , paddingXY 16 8
+           ]
 
 
 logoInTopBar : List (Attribute msg)
 logoInTopBar =
     [ width shrink
     , height (px 32)
-    , alignLeft
     ]
 
 
 userAvatarInTopBar : List (Attribute msg)
 userAvatarInTopBar =
-    [ width shrink
-    , height fill
-    , alignRight
-    , padding 8
-    , Background.color (rgb255 255 255 255)
-    , Border.solid
-    , Border.color (rgb255 223 225 230)
-    , Border.width 1
-    , Border.rounded 16
-    ]
+    Style.Basic.boundaryBorderAll 1
+        ++ [ width shrink
+           , height fill
+           , padding 8
+           , Background.color (rgb255 255 255 255)
+           , Border.rounded 16
+           , Font.center
+           ]
 
 
 bottomBar : List (Attribute msg)
 bottomBar =
-    [ width fill
-    , height (px 32)
-    , Border.solid
-    , Border.color (rgb255 223 225 230)
-    , Border.widthEach { top = 1, bottom = 0, left = 0, right = 0 }
-    , Background.color (rgb255 255 255 255)
-    , paddingXY 16 4
-    ]
+    Style.Basic.boundaryBorderEach
+        { top = 1
+        , bottom = 0
+        , left = 0
+        , right = 0
+        }
+        ++ [ width fill
+           , height (px 32)
+           , Background.color (rgb255 255 255 255)
+           , paddingXY 16 4
+           ]

@@ -3,8 +3,8 @@ module Model.Root exposing (RootModel)
 import Browser.Navigation as Nav
 import Model.Topic
 import Model.User as User
-import Page.Type
 import Url
+import View.Type
 
 
 type alias RootModel =
@@ -19,7 +19,7 @@ type alias RootModel =
 
     -- 远程请求错误信息
     , remoteError : Maybe String
-    , currentPage : Page.Type.Type
+    , currentPage : View.Type.Type
 
     --
     , topics : List Model.Topic.Topic

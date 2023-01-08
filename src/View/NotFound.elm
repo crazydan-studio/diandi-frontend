@@ -1,4 +1,4 @@
-module Page.Forbidden exposing (create)
+module View.NotFound exposing (create)
 
 import Element exposing (..)
 import Model.Root exposing (RootModel)
@@ -11,4 +11,4 @@ create model =
         [ width fill
         , height fill
         ]
-        [ text "Forbidden Page" ]
+        [ text "Page Not Found" ]

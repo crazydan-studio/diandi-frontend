@@ -1,4 +1,4 @@
-module Page.Loading exposing (create)
+module View.Loading exposing (create)
 
 import Element exposing (..)
 import Model.Root exposing (RootModel)

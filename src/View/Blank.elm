@@ -1,4 +1,4 @@
-module Page.Login exposing (create)
+module View.Blank exposing (create)
 
 import Element exposing (..)
 import Model.Root exposing (RootModel)
@@ -7,8 +7,8 @@ import Msg exposing (RootMsg)
 
 create : RootModel -> Element RootMsg
 create model =
-    column
+    el
         [ width fill
         , height fill
         ]
-        [ text "Login Page" ]
+        none

@@ -6,13 +6,13 @@ import Html
 import Html.Attributes as HtmlAttr
 import Model.Root exposing (RootModel)
 import Msg exposing (RootMsg)
-import Page.Blank
-import Page.Forbidden
-import Page.Home
-import Page.Loading
-import Page.Login
-import Page.NotFound
-import Page.Type as PageType
+import View.Blank
+import View.Forbidden
+import View.Home
+import View.Loading
+import View.Login
+import View.NotFound
+import View.Type as ViewType
 import Style.Root
 
 
@@ -38,16 +38,16 @@ create model =
 title : RootModel -> String
 title model =
     case model.currentPage of
-        PageType.Login ->
+        ViewType.Login ->
             model.title ++ " - " ++ "用户登录"
 
-        PageType.NotFound ->
+        ViewType.NotFound ->
             model.title ++ " - " ++ "页面不存在"
 
-        PageType.Forbidden ->
+        ViewType.Forbidden ->
             model.title ++ " - " ++ "无操作权限"
 
-        PageType.Loading ->
+        ViewType.Loading ->
             model.title ++ " - " ++ "页面加载中..."
 
         _ ->
@@ -57,20 +57,20 @@ title model =
 page : RootModel -> Element RootMsg
 page model =
     case model.currentPage of
-        PageType.Login ->
-            Page.Login.create model
+        ViewType.Login ->
+            View.Login.create model
 
-        PageType.NotFound ->
-            Page.NotFound.create model
+        ViewType.NotFound ->
+            View.NotFound.create model
 
-        PageType.Forbidden ->
-            Page.Forbidden.create model
+        ViewType.Forbidden ->
+            View.Forbidden.create model
 
-        PageType.Loading ->
-            Page.Loading.create model
+        ViewType.Loading ->
+            View.Loading.create model
 
-        PageType.Blank ->
-            Page.Blank.create model
+        ViewType.Blank ->
+            View.Blank.create model
 
-        PageType.Home ->
-            Page.Home.create model
+        ViewType.Home ->
+            View.Home.create model

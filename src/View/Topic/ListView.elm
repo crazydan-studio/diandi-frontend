@@ -1,4 +1,4 @@
-module Page.Topic.ListView exposing (create)
+module View.Topic.ListView exposing (create)
 
 import Element exposing (..)
 import Element.Background as Background
@@ -8,8 +8,9 @@ import Model.ColorPalette
 import Model.Root exposing (RootModel)
 import Model.Topic
 import Msg exposing (RootMsg)
-import Style.Topic
 import Style.Color
+import Style.Topic
+import View.Markdown
 
 
 create : RootModel -> Element RootMsg
@@ -69,7 +70,7 @@ topicList topics =
                                         [ height shrink
                                         , centerY
                                         ]
-                                        [ text topic.content
+                                        [ View.Markdown.render topic.content
                                         ]
                                     )
                                 )

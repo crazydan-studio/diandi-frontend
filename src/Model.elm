@@ -5,7 +5,7 @@ import Http
 import Model.Root exposing (RootModel)
 import Model.User as User
 import Msg exposing (..)
-import Page.Type as PageType
+import View.Type as ViewType
 import Remote exposing (RemoteMsg, getMyUserInfo)
 import Route
 import Url
@@ -31,7 +31,7 @@ init flags url key =
     --
     , me = User.None
     , remoteError = Nothing
-    , currentPage = PageType.Loading
+    , currentPage = ViewType.Loading
 
     --
     , topics = []
@@ -138,18 +138,18 @@ routeUpdateHelper url model =
         ( page, cmd ) =
             case Route.route url of
                 Route.Login ->
-                    ( PageType.Login, Cmd.none )
+                    ( ViewType.Login, Cmd.none )
 
                 Route.Logout ->
-                    ( PageType.Login, remote Remote.logout )
+                    ( ViewType.Login, remote Remote.logout )
 
                 Route.Home ->
-                    ( PageType.Home, remote getMyUserInfo )
+                    ( ViewType.Home, remote getMyUserInfo )
 
                 Route.Forbidden ->
-                    ( PageType.Forbidden, Cmd.none )
+                    ( ViewType.Forbidden, Cmd.none )
 
                 Route.NotFound ->
-                    ( PageType.NotFound, Cmd.none )
+                    ( ViewType.NotFound, Cmd.none )
     in
     ( { model | currentPage = page, navUrl = url }, cmd )

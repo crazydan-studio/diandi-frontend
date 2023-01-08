@@ -1,7 +1,9 @@
 module View.Home exposing (create)
 
 import Element exposing (..)
+import Element.Border as Border
 import Element.Font as Font
+import Element.Input as Input
 import Model.Root exposing (RootModel)
 import Model.User
 import Msg exposing (RootMsg)
@@ -15,6 +17,9 @@ create model =
     row
         [ width fill
         , height fill
+
+        -- for child scrollbar: https://github.com/mdgriffith/elm-ui/issues/149#issuecomment-582229271
+        , clip
         ]
         [ column
             (Style.Basic.boundaryBorderEach
@@ -25,7 +30,6 @@ create model =
                 }
                 ++ [ width (px 256)
                    , height fill
-                   , clip
                    ]
             )
             [ row
@@ -35,10 +39,14 @@ create model =
                     { src = "/logo.svg", description = "" }
 
                 -- TODO 点击后向左展开输入框，失焦后还原
-                , el
-                    [ alignRight
+                , Input.button
+                    [ width (px 32)
+                    , alignRight
+                    , Font.center
                     ]
-                    (text "搜索")
+                    { onPress = Just Msg.NoOp
+                    , label = text "搜索"
+                    }
                 ]
             , row
                 (Style.Basic.boundaryBorderEach
@@ -52,14 +60,22 @@ create model =
                        , padding 8
                        ]
                 )
-                [ el
-                    [ alignLeft
+                [ Input.button
+                    [ width (px 32)
+                    , alignLeft
+                    , Font.center
                     ]
-                    (text "返回")
-                , el
-                    [ alignRight
+                    { onPress = Just Msg.NoOp
+                    , label = text "返回"
+                    }
+                , Input.button
+                    [ width (px 32)
+                    , alignRight
+                    , Font.center
                     ]
-                    (text "添加")
+                    { onPress = Just Msg.NoOp
+                    , label = text "添加"
+                    }
                 ]
             , column
                 [ width fill
@@ -104,9 +120,6 @@ create model =
         , row
             [ width fill
             , height fill
-
-            -- for child scrollbar: https://github.com/mdgriffith/elm-ui/issues/149#issuecomment-582229271
-            , clip
             ]
             [ column
                 [ width fill
@@ -117,40 +130,65 @@ create model =
                         ++ [ width fill
                            ]
                     )
-                    [ el
+                    [ row
                         [ width fill
                         , height shrink
+                        , spacing 8
                         , centerY
-                        , Font.size 20
                         ]
-                        (text "点滴")
-                    , paragraph
-                        [ width shrink
-                        , height shrink
-                        , alignRight
+                        [ image
+                            [ width (px (64 - 8 * 2))
+                            ]
+                            { src = "/icon.svg", description = "" }
+                        , column
+                            [ spacing 8
+                            ]
+                            [ el
+                                [ Font.size 20
+                                ]
+                                (text "点滴")
+                            , el
+                                [ Font.size 10
+                                ]
+                                (text "这里是分类描述")
+                            ]
                         ]
-                        [ paragraph
-                            []
-                            ([ "待办 (20)", "知识 (10)", "疑问 (5)" ]
-                                |> List.map
-                                    (\e ->
-                                        el [ paddingXY 8 0 ] (text e)
+                    , row
+                        [ width fill
+                        , paddingXY 8 0
+                        , spacing 8
+                        ]
+                        (([ "待办 (20)", "知识 (10)", "疑问 (5)" ]
+                            |> List.map
+                                (\t ->
+                                    Input.button
+                                        [ alignRight
+                                        ]
+                                        { onPress = Just Msg.NoOp
+                                        , label = text t
+                                        }
+                                )
+                         )
+                            ++ [ el
+                                    (Style.Basic.boundaryBorderEach
+                                        { top = 0
+                                        , right = 1
+                                        , bottom = 0
+                                        , left = 0
+                                        }
+                                        ++ [ height fill
+                                           , alignRight
+                                           ]
                                     )
-                            )
-                        , el
-                            (Style.Basic.boundaryBorderEach
-                                { top = 0
-                                , right = 1
-                                , bottom = 0
-                                , left = 0
-                                }
-                                ++ [ width fill
-                                   , height fill
-                                   ]
-                            )
-                            none
-                        , el [ paddingXY 8 0 ] (text "过滤")
-                        ]
+                                    none
+                               , Input.button
+                                    [ alignRight
+                                    ]
+                                    { onPress = Just Msg.NoOp
+                                    , label = text "过滤"
+                                    }
+                               ]
+                        )
                     ]
                 , el
                     [ width fill
@@ -166,11 +204,107 @@ create model =
                         , left = 0
                         }
                         ++ [ width fill
-                           , height (px (128 * 1))
+                           , height (px 224)
                            , padding 8
+                           , spacing 8
                            ]
                     )
-                    []
+                    [ row
+                        [ width fill
+                        , spacing 8
+                        ]
+                        ([ "表情", "图片", "附件", "语音", "视频" ]
+                            |> List.map
+                                (\t ->
+                                    Input.button
+                                        [ width (px 32)
+                                        , alignLeft
+                                        , Font.center
+                                        ]
+                                        { onPress = Just Msg.NoOp
+                                        , label = text t
+                                        }
+                                )
+                        )
+                    , column
+                        (Style.Basic.boundaryBorderAll 1
+                            ++ [ width fill
+                               , height fill
+                               , Border.rounded 3
+                               ]
+                        )
+                        [ Input.multiline
+                            [ width fill
+                            , height
+                                (fill
+                                    |> maximum 150
+                                )
+                            , Border.width 0
+
+                            -- , padding 0
+                            ]
+                            { onChange = \_ -> Msg.NoOp
+                            , text = "a\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\n"
+                            , placeholder =
+                                Just
+                                    (Input.placeholder
+                                        []
+                                        (text "又有什么奇妙的想法呢？赶紧记下来吧 :)")
+                                    )
+                            , label = Input.labelHidden ""
+                            , spellcheck = False
+                            }
+                        , column
+                            [ width fill
+                            , paddingXY 8 0
+                            ]
+                            [ el
+                                (Style.Basic.boundaryBorderEach
+                                    { top = 1
+                                    , right = 0
+                                    , bottom = 0
+                                    , left = 0
+                                    }
+                                    ++ [ width fill
+                                       ]
+                                )
+                                none
+                            ]
+                        , row
+                            [ width fill
+                            , spacing 8
+                            , padding 8
+                            ]
+                            [ paragraph
+                                []
+                                (List.singleton (text "分类: ")
+                                    ++ ([ "产品开发", "点滴(DianDi)", "功能设计" ]
+                                            |> List.map
+                                                (\t ->
+                                                    text (t ++ " > ")
+                                                )
+                                       )
+                                )
+                            , paragraph
+                                []
+                                (List.singleton (text "标签: ")
+                                    ++ ([ "待办", "知识", "疑问", "+" ]
+                                            |> List.map
+                                                (\t ->
+                                                    text (t ++ " ")
+                                                )
+                                       )
+                                )
+                            , Input.button
+                                [ alignRight
+                                , Font.center
+                                ]
+                                { onPress = Just Msg.NoOp
+                                , label = text "记下来！"
+                                }
+                            ]
+                        ]
+                    ]
                 ]
             , column
                 (Style.Basic.boundaryBorderEach

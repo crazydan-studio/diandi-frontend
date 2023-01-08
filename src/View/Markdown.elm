@@ -30,8 +30,7 @@ render markdown =
     case markdownView markdown of
         Ok rendered ->
             Element.column
-                [ Element.width
-                    Element.fill
+                [ Element.width Element.fill
                 , Element.centerX
                 ]
                 rendered
@@ -58,8 +57,38 @@ renderer =
     { elmUiRenderer
         | html =
             Markdown.Html.oneOf
-                []
+                [ Markdown.Html.tag "img"
+                    (\src width height _ ->
+                        imgView src width height
+                    )
+                    |> Markdown.Html.withAttribute "src"
+                    |> Markdown.Html.withOptionalAttribute "width"
+                    |> Markdown.Html.withOptionalAttribute "height"
+                ]
     }
+
+
+imgView : String -> Maybe String -> Maybe String -> Element msg
+imgView src width height =
+    Element.image
+        [ Element.width
+            (case width of
+                Just w ->
+                    Element.px (Maybe.withDefault 0 (String.toInt w))
+
+                Nothing ->
+                    Element.fill
+            )
+        , Element.height
+            (case height of
+                Just h ->
+                    Element.px (Maybe.withDefault 0 (String.toInt h))
+
+                Nothing ->
+                    Element.fill
+            )
+        ]
+        { src = src, description = "" }
 
 
 elmUiRenderer : Markdown.Renderer.Renderer (Element msg)

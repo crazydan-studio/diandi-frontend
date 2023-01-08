@@ -34,7 +34,7 @@ init flags url key =
     , currentPage = PageType.Loading
 
     --
-    , cards = []
+    , topics = []
     }
         |> routeUpdateHelper url
 
@@ -79,7 +79,7 @@ remoteUpdateHelper msg model =
                     ( { model
                         | me = User.User user
                       }
-                    , remote Remote.getAllMyCards
+                    , remote Remote.getAllMyTopics
                     )
 
                 Err _ ->
@@ -88,11 +88,11 @@ remoteUpdateHelper msg model =
         Remote.UserLogout _ ->
             Route.gotoLogin model
 
-        Remote.QueryMyCards result ->
+        Remote.QueryMyTopics result ->
             case result of
-                Ok cards ->
+                Ok topics ->
                     ( { model
-                        | cards = cards
+                        | topics = topics
                       }
                     , Cmd.none
                     )

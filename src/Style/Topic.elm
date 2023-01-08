@@ -1,14 +1,14 @@
-module Style.Card exposing
-    ( card
-    , cardBody
-    , cardBodyDefaultColor
-    , cardHeader
-    , cardList
-    , cardPadding
-    , cardSpacing
-    , cardWidth
-    , contentInCardBody
-    , indexInCardBody
+module Style.Topic exposing
+    ( topic
+    , topicBody
+    , topicBodyDefaultColor
+    , topicHeader
+    , topicList
+    , topicPadding
+    , topicSpacing
+    , topicWidth
+    , contentInTopicBody
+    , indexInTopicBody
     )
 
 import Element
@@ -35,88 +35,88 @@ import Style.Basic
 import Style.Html
 
 
-cardCornerRadius : Int
-cardCornerRadius =
+topicCornerRadius : Int
+topicCornerRadius =
     2
 
 
-cardWidth : Int
-cardWidth =
+topicWidth : Int
+topicWidth =
     456 * 2
 
 
-cardSpacing : Int
-cardSpacing =
+topicSpacing : Int
+topicSpacing =
     8
 
 
-cardPadding : Int
-cardPadding =
+topicPadding : Int
+topicPadding =
     16
 
 
-contentFontSizeInCardBody : Int
-contentFontSizeInCardBody =
-    18
+contentFontSizeInTopicBody : Int
+contentFontSizeInTopicBody =
+    Style.Basic.majorFontSize
 
 
-fontSizeInCardHeader : Int
-fontSizeInCardHeader =
+fontSizeInTopicHeader : Int
+fontSizeInTopicHeader =
     Style.Basic.juniorFontSize
 
 
-cardList : List (Attribute msg)
-cardList =
-    [ width (px cardWidth)
+topicList : List (Attribute msg)
+topicList =
+    [ width (px topicWidth)
     , height fill
-    , spacing cardSpacing
-    , padding cardPadding
+    , spacing topicSpacing
+    , padding topicPadding
     , centerX
     ]
 
 
-card : List (Attribute msg)
-card =
+topic : List (Attribute msg)
+topic =
     [ width fill
     , height shrink
     , Background.color (rgb255 255 255 255)
-    , Border.rounded cardCornerRadius
-    , Style.Html.class "card"
+    , Border.rounded topicCornerRadius
+    , Style.Html.class "topic"
     ]
 
 
-cardBody : List (Attribute msg)
-cardBody =
+topicBody : List (Attribute msg)
+topicBody =
     [ width fill
     , Border.roundEach
         { topLeft = 0
         , topRight = 0
-        , bottomLeft = cardCornerRadius
-        , bottomRight = cardCornerRadius
+        , bottomLeft = topicCornerRadius
+        , bottomRight = topicCornerRadius
         }
     ]
 
 
-cardBodyDefaultColor : List (Attribute msg)
-cardBodyDefaultColor =
+topicBodyDefaultColor : List (Attribute msg)
+topicBodyDefaultColor =
     [ Background.color (rgb255 0 150 136)
     , Font.color (rgb255 255 255 255)
     ]
 
 
-contentInCardBody : List (Attribute msg)
-contentInCardBody =
+contentInTopicBody : List (Attribute msg)
+contentInTopicBody =
     [ width fill
     , height
         (fill
-            |> minimum (contentFontSizeInCardBody * 2)
+            |> minimum (contentFontSizeInTopicBody * 2)
         )
-    , Font.size contentFontSizeInCardBody
+    , Font.size contentFontSizeInTopicBody
     ]
 
 
-indexInCardBody : List (Attribute msg)
-indexInCardBody =
+indexInTopicBody : List (Attribute msg)
+indexInTopicBody =
     [ paddingEach
         { left = 0
         , top = 0
@@ -128,18 +128,18 @@ indexInCardBody =
     ]
 
 
-cardHeader : List (Attribute msg)
-cardHeader =
+topicHeader : List (Attribute msg)
+topicHeader =
     [ width fill
     , height shrink
     , spacing 8
     , paddingXY 8 4
-    , Font.size fontSizeInCardHeader
+    , Font.size fontSizeInTopicHeader
     , Font.color (rgba255 0 0 0 0.2)
     , Background.color (rgb255 255 255 255)
     , Border.roundEach
-        { topLeft = cardCornerRadius
-        , topRight = cardCornerRadius
+        { topLeft = topicCornerRadius
+        , topRight = topicCornerRadius
         , bottomLeft = 0
         , bottomRight = 0
         }

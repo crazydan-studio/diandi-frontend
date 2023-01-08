@@ -1,8 +1,8 @@
-module Model.Card exposing
-    ( Card
-    , Tag
-    , cardDecoder
-    , cardListDecoder
+module Model.Topic exposing
+    ( Tag
+    , Topic
+    , topicDecoder
+    , topicListDecoder
     )
 
 {-| -}
@@ -23,14 +23,11 @@ import Model.ColorPalette exposing (Palette, maybePaletteDecoder)
 任务、知识等内容的载体
 
 -}
-type alias Card =
+type alias Topic =
     { id : String
 
     -- 父卡片id
     , superior : Maybe String
-
-    -- 前序卡片id
-    , previous : Maybe String
 
     --
     , content : String
@@ -48,23 +45,22 @@ type alias Tag =
     String
 
 
-cardListDecoder : Decoder (List Card)
-cardListDecoder =
-    list cardDecoder
+topicListDecoder : Decoder (List Topic)
+topicListDecoder =
+    list topicDecoder
 
 
-cardDecoder : Decoder Card
-cardDecoder =
-    Decode.succeed Card
+topicDecoder : Decoder Topic
+topicDecoder =
+    Decode.succeed Topic
         |> required "id" string
         |> optional "superior" (nullable string) Nothing
-        |> optional "previous" (nullable string) Nothing
         |> required "content" string
-        |> required "tags" (list cardTagDecoder)
+        |> required "tags" (list topicTagDecoder)
         |> optional "color_palette" maybePaletteDecoder Nothing
         |> required "created_at" string
 
 
-cardTagDecoder : Decoder Tag
-cardTagDecoder =
+topicTagDecoder : Decoder Tag
+topicTagDecoder =
     Decode.string

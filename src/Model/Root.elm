@@ -1,7 +1,7 @@
 module Model.Root exposing (RootModel)
 
 import Browser.Navigation as Nav
-import Model.Card
+import Model.Topic
 import Model.User as User
 import Page.Type
 import Url
@@ -22,5 +22,5 @@ type alias RootModel =
     , currentPage : Page.Type.Type
 
     --
-    , cards : List Model.Card.Card
+    , topics : List Model.Topic.Topic
     }

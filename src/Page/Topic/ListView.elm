@@ -1,20 +1,20 @@
-module Page.Card.ListView exposing (create)
+module Page.Topic.ListView exposing (create)
 
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
-import Model.Card
 import Model.ColorPalette
 import Model.Root exposing (RootModel)
+import Model.Topic
 import Msg exposing (RootMsg)
-import Style.Card
+import Style.Topic
 import Style.Color
 
 
 create : RootModel -> Element RootMsg
 create model =
-    cardList model.cards
+    topicList model.topics
 
 
 
@@ -34,42 +34,42 @@ fromColorPalette palette defaultColor =
             defaultColor
 
 
-cardList : List Model.Card.Card -> Element RootMsg
-cardList cards =
+topicList : List Model.Topic.Topic -> Element RootMsg
+topicList topics =
     column
-        Style.Card.cardList
-        (cards
+        Style.Topic.topicList
+        (topics
             |> List.map
-                (\card ->
+                (\topic ->
                     column
-                        Style.Card.card
+                        Style.Topic.topic
                         [ row
-                            Style.Card.cardHeader
+                            Style.Topic.topicHeader
                             [ paragraph
                                 [ width fill
                                 ]
-                                (cardTagList card.tags)
+                                (topicTagList topic.tags)
                             , el
                                 [ alignRight
                                 ]
                                 (text "设置")
                             ]
                         , row
-                            (Style.Card.cardBody
-                                ++ fromColorPalette card.colorPalette
-                                    Style.Card.cardBodyDefaultColor
+                            (Style.Topic.topicBody
+                                ++ fromColorPalette topic.colorPalette
+                                    Style.Topic.topicBodyDefaultColor
                             )
                             [ el
                                 [ width fill
                                 , padding 8
                                 ]
                                 (el
-                                    Style.Card.contentInCardBody
+                                    Style.Topic.contentInTopicBody
                                     (paragraph
                                         [ height shrink
                                         , centerY
                                         ]
-                                        [ text card.content
+                                        [ text topic.content
                                         ]
                                     )
                                 )
@@ -79,8 +79,8 @@ cardList cards =
         )
 
 
-cardTagList : List Model.Card.Tag -> List (Element RootMsg)
-cardTagList tags =
+topicTagList : List Model.Topic.Tag -> List (Element RootMsg)
+topicTagList tags =
     tags
         |> List.foldl
             (\tag els ->

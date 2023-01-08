@@ -1,13 +1,13 @@
 module Remote exposing
     ( RemoteMsg(..)
-    , getAllMyCards
+    , getAllMyTopics
     , getMyUserInfo
     , logout
-    , queryMyCards
+    , queryMyTopics
     )
 
 import Http
-import Model.Card exposing (Card, cardListDecoder)
+import Model.Topic exposing (Topic, topicListDecoder)
 import Model.User exposing (UserInfo, userInfoDecoder)
 
 
@@ -15,7 +15,7 @@ type RemoteMsg
     = NoOp
     | GotMyUserInfo (Result Http.Error UserInfo)
     | UserLogout (Result Http.Error ())
-    | QueryMyCards (Result Http.Error (List Card))
+    | QueryMyTopics (Result Http.Error (List Topic))
 
 
 {-| 获取当前用户的用户信息
@@ -38,14 +38,14 @@ logout =
         }
 
 
-getAllMyCards : Cmd RemoteMsg
-getAllMyCards =
-    queryMyCards {}
+getAllMyTopics : Cmd RemoteMsg
+getAllMyTopics =
+    queryMyTopics {}
 
 
-queryMyCards : {} -> Cmd RemoteMsg
-queryMyCards param =
+queryMyTopics : {} -> Cmd RemoteMsg
+queryMyTopics param =
     Http.get
-        { url = "/demo/cards.json"
-        , expect = Http.expectJson QueryMyCards cardListDecoder
+        { url = "/demo/topics.json"
+        , expect = Http.expectJson QueryMyTopics topicListDecoder
         }

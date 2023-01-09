@@ -1,9 +1,6 @@
 module View.Topic.ListView exposing (create)
 
 import Element exposing (..)
-import Element.Background as Background
-import Element.Border as Border
-import Element.Font as Font
 import Model.ColorPalette
 import Model.Root exposing (RootModel)
 import Model.Topic
@@ -45,17 +42,6 @@ topicList topics =
                     column
                         Style.Topic.topic
                         [ row
-                            Style.Topic.topicHeader
-                            [ paragraph
-                                [ width fill
-                                ]
-                                (topicTagList topic.tags)
-                            , el
-                                [ alignRight
-                                ]
-                                (text "设置")
-                            ]
-                        , row
                             (Style.Topic.topicBody
                                 ++ fromColorPalette topic.colorPalette
                                     Style.Topic.topicBodyDefaultColor
@@ -78,24 +64,3 @@ topicList topics =
                         ]
                 )
         )
-
-
-topicTagList : List Model.Topic.Tag -> List (Element RootMsg)
-topicTagList tags =
-    tags
-        |> List.foldl
-            (\tag els ->
-                els
-                    ++ [ el
-                            [ width (px 10)
-                            , Font.center
-                            ]
-                            (text ">")
-                       , el
-                            []
-                            (text tag)
-                       ]
-            )
-            []
-        |> List.tail
-        |> Maybe.withDefault []

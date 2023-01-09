@@ -1,6 +1,5 @@
 module Model.Topic exposing
-    ( Tag
-    , Topic
+    ( Topic
     , topicDecoder
     , topicListDecoder
     )
@@ -31,7 +30,8 @@ type alias Topic =
 
     --
     , content : String
-    , tags : List Tag
+    , category : Maybe String
+    , tags : List String
 
     -- 调色板
     , colorPalette : Maybe Palette
@@ -39,10 +39,6 @@ type alias Topic =
     -- 创建信息
     , createdAt : String
     }
-
-
-type alias Tag =
-    String
 
 
 topicListDecoder : Decoder (List Topic)
@@ -56,11 +52,7 @@ topicDecoder =
         |> required "id" string
         |> optional "superior" (nullable string) Nothing
         |> required "content" string
-        |> required "tags" (list topicTagDecoder)
+        |> optional "category" (nullable string) Nothing
+        |> optional "tags" (list string) []
         |> optional "color_palette" maybePaletteDecoder Nothing
         |> required "created_at" string
-
-
-topicTagDecoder : Decoder Tag
-topicTagDecoder =
-    Decode.string

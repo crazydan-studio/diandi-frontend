@@ -35,3 +35,6 @@ npm run prod
   Elm Markdown解析库
   - [Custom HTML Block Rendering (with elm-ui)](https://ellie-app.com/d7R3b9FsHfCa1):
     通过Elm UI渲染Markdown，可以自定义样式，对自定义标签的渲染等
+- [Ant Design Icons for Elm](https://package.elm-lang.org/packages/lemol/ant-design-icons-elm/latest/):
+  Elm的Ant Design Svg图标
+  - [图标列表](https://ant.design/components/icon): 方便查看

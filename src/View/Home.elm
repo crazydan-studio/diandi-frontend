@@ -4,11 +4,13 @@ import Element exposing (..)
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
+import Model.Icon
 import Model.Root exposing (RootModel)
 import Model.User
 import Msg exposing (RootMsg)
 import Style.Basic
 import Style.Home
+import Style.Icon as Icon
 import View.Topic.ListView
 
 
@@ -39,14 +41,11 @@ create model =
                     { src = "/logo.svg", description = "" }
 
                 -- TODO 点击后向左展开输入框，失焦后还原
-                , Input.button
-                    [ width (px 32)
-                    , alignRight
-                    , Font.center
+                , iconBtn
+                    [ alignRight
                     ]
-                    { onPress = Just Msg.NoOp
-                    , label = text "搜索"
-                    }
+                    Msg.NoOp
+                    Model.Icon.SearchOutlined
                 ]
             , row
                 (Style.Basic.boundaryBorderEach
@@ -56,26 +55,18 @@ create model =
                     , left = 0
                     }
                     ++ [ width fill
-                       , height shrink
                        , padding 8
                        ]
                 )
-                [ Input.button
-                    [ width (px 32)
-                    , alignLeft
-                    , Font.center
+                [ iconBtn
+                    []
+                    Msg.NoOp
+                    Model.Icon.ArrowLeftOutlined
+                , iconBtn
+                    [ alignRight
                     ]
-                    { onPress = Just Msg.NoOp
-                    , label = text "返回"
-                    }
-                , Input.button
-                    [ width (px 32)
-                    , alignRight
-                    , Font.center
-                    ]
-                    { onPress = Just Msg.NoOp
-                    , label = text "添加"
-                    }
+                    Msg.NoOp
+                    Model.Icon.PlusOutlined
                 ]
             , column
                 [ width fill
@@ -181,12 +172,11 @@ create model =
                                            ]
                                     )
                                     none
-                               , Input.button
+                               , iconBtn
                                     [ alignRight
                                     ]
-                                    { onPress = Just Msg.NoOp
-                                    , label = text "过滤"
-                                    }
+                                    Msg.NoOp
+                                    Model.Icon.FilterOutlined
                                ]
                         )
                     ]
@@ -213,7 +203,7 @@ create model =
                         [ width fill
                         , spacing 8
                         ]
-                        ([ "表情", "图片", "附件", "语音", "视频" ]
+                        (([ "表情", "图片", "附件", "语音", "视频" ]
                             |> List.map
                                 (\t ->
                                     Input.button
@@ -225,6 +215,14 @@ create model =
                                         , label = text t
                                         }
                                 )
+                         )
+                            ++ [ Input.button
+                                    [ alignRight
+                                    ]
+                                    { onPress = Just Msg.NoOp
+                                    , label = text "实时预览"
+                                    }
+                               ]
                         )
                     , column
                         (Style.Basic.boundaryBorderAll 1
@@ -297,7 +295,6 @@ create model =
                                 )
                             , Input.button
                                 [ alignRight
-                                , Font.center
                                 ]
                                 { onPress = Just Msg.NoOp
                                 , label = text "记下来！"
@@ -335,3 +332,27 @@ userName user =
 
         Model.User.User u ->
             u.name
+
+
+icon : Model.Icon.Icon -> Element msg
+icon =
+    Icon.icon
+        { size = 16
+        , color = rgb255 6 126 213
+        }
+
+
+iconBtn :
+    List (Attribute msg)
+    -> msg
+    -> Model.Icon.Icon
+    -> Element msg
+iconBtn attr onPress i =
+    Input.button
+        (attr
+            ++ [ width (px 16)
+               ]
+        )
+        { onPress = Just onPress
+        , label = icon i
+        }

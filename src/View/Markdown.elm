@@ -7,6 +7,7 @@ module View.Markdown exposing (render)
 
 -}
 
+import Array
 import Element exposing (Element)
 import Element.Background
 import Element.Border
@@ -23,6 +24,7 @@ import Markdown.Block as Block
 import Markdown.Html
 import Markdown.Parser
 import Markdown.Renderer
+import Regex
 
 
 render : String -> Element msg
@@ -118,22 +120,45 @@ elmUiRenderer =
     , hardLineBreak = Html.br [] [] |> Element.html
     , image =
         \image ->
-            case image.title of
-                Just title ->
-                    Element.image
-                        [ Element.width Element.fill
-                        ]
-                        { src = image.src
-                        , description = image.alt
-                        }
+            let
+                matched =
+                    image.src
+                        |> Regex.find
+                            (Maybe.withDefault
+                                Regex.never
+                                (Regex.fromString
+                                    -- image.src是编码后的字符串，且地址中不会包含空格
+                                    "^(.+?)(%7C((\\d+)?(x(\\d+)?)?)?)?$"
+                                )
+                            )
+                        |> List.map .submatches
+                        |> List.concat
+                        |> List.map (Maybe.withDefault "")
+                        |> Array.fromList
 
-                Nothing ->
-                    Element.image
-                        [ Element.width Element.fill
-                        ]
-                        { src = image.src
-                        , description = image.alt
-                        }
+                src =
+                    Array.get 0 matched |> Maybe.withDefault image.src
+
+                getSizeFrom i a =
+                    Array.get i a
+                        |> Maybe.withDefault ""
+                        |> String.toInt
+                        |> Maybe.map Element.px
+                        |> Maybe.withDefault Element.fill
+
+                width =
+                    getSizeFrom 3 matched
+
+                height =
+                    getSizeFrom 5 matched
+            in
+            Element.image
+                [ Element.width width
+                , Element.height height
+                ]
+                { src = src
+                , description = image.alt
+                }
     , blockQuote =
         \children ->
             Element.column

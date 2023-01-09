@@ -37,10 +37,12 @@ create model =
             [ row
                 Style.Home.topBar
                 [ image
-                    (Style.Home.logoInTopBar ++ [ alignLeft ])
+                    (Style.Home.logoInTopBar
+                        ++ [ alignLeft, pointer ]
+                    )
                     { src = "/logo.svg", description = "" }
 
-                -- TODO 点击后向左展开输入框，失焦后还原
+                -- TODO 点击后，弹出搜索窗口，并在输入时实时查询结果，同时，展示常用搜索和收藏的搜索
                 , iconBtn
                     [ alignRight
                     ]
@@ -86,6 +88,7 @@ create model =
                                     }
                                     ++ [ width fill
                                        , height (px 64)
+                                       , pointer
                                        ]
                                 )
                                 [ el [ centerX ] (text e) ]
@@ -103,9 +106,13 @@ create model =
                        , padding 8
                        ]
                 )
-                [ paragraph
-                    (Style.Home.userAvatarInTopBar ++ [ width (px 64) ])
-                    [ text (userName model.me) ]
+                [ Input.button
+                    (Style.Home.userAvatarInTopBar
+                        ++ [ width (px 64) ]
+                    )
+                    { onPress = Just Msg.NoOp
+                    , label = text (userName model.me)
+                    }
                 ]
             ]
         , row
@@ -239,6 +246,7 @@ create model =
                                     |> maximum 150
                                 )
                             , Border.width 0
+                            , focused []
                             ]
                             { onChange = \_ -> Msg.NoOp
                             , text = "a\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\n"
@@ -351,6 +359,7 @@ iconBtn attr onPress i =
     Input.button
         (attr
             ++ [ width (px 16)
+               , focused []
                ]
         )
         { onPress = Just onPress

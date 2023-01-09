@@ -234,12 +234,11 @@ create model =
                         [ Input.multiline
                             [ width fill
                             , height
+                                -- TODO 未得到焦点时，保持最小高度，在得到焦点后，自动扩展高度至最大
                                 (fill
                                     |> maximum 150
                                 )
                             , Border.width 0
-
-                            -- , padding 0
                             ]
                             { onChange = \_ -> Msg.NoOp
                             , text = "a\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\n"
@@ -312,13 +311,14 @@ create model =
                     }
                     ++ [ width (px (128 * 3))
                        , height fill
+                       , padding 8
                        ]
                 )
-                [ el
+                [ paragraph
                     [ centerX
                     , centerY
                     ]
-                    (text "这里是主题详情展示页，默认显示当前分类的信息")
+                    [ text "这里是主题详情展示页，默认显示当前分类的信息。PS：实时预览也在这里" ]
                 ]
             ]
         ]

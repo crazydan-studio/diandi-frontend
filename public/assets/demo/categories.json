@@ -1,0 +1,15 @@
+[
+  {
+    "id": "0",
+    "name": "产品开发",
+    "icon": "",
+    "description": ""
+  },
+  {
+    "id": "1",
+    "name": "点滴(DianDi)",
+    "parent": "0",
+    "icon": "",
+    "description": ""
+  }
+]

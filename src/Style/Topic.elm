@@ -67,10 +67,10 @@ fontSizeInTopicHeader =
 
 topicList : List (Attribute msg)
 topicList =
-    [ width (px topicWidth)
+    [ width fill
     , height fill
     , spacing topicSpacing
-    , padding topicPadding
+    , paddingXY (topicPadding * 4) topicPadding
     , centerX
     ]
 

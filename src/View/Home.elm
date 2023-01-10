@@ -12,7 +12,7 @@ import Msg exposing (RootMsg)
 import Style.Default
 import Style.Home
 import Style.Icon as Icon
-import View.I18n.Home exposing (i18n)
+import View.I18n.Home exposing (i18nText)
 import View.Topic.ListView
 
 
@@ -151,7 +151,7 @@ create model =
                                 [ Font.size 10
                                 ]
                                 ((lang :: "TopBar" :: "这里是类别描述信息" :: done)
-                                    |> i18n En_US
+                                    |> i18nText En_US
                                 )
                             ]
                         ]
@@ -167,7 +167,7 @@ create model =
                                         [ alignRight
                                         ]
                                         { onPress = Just Msg.NoOp
-                                        , label = lang :: t |> i18n En_US
+                                        , label = lang :: t |> i18nText En_US
                                         }
                                 )
                          )

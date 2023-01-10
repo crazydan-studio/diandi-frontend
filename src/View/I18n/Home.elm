@@ -1,4 +1,4 @@
-module View.I18n.Home exposing (i18n)
+module View.I18n.Home exposing (i18nText)
 
 import Element exposing (Element)
 import I18n.Helper exposing (i18nElementText)
@@ -10,8 +10,8 @@ import I18n.Lang
 import View.I18n.Default
 
 
-i18n : Lang -> List String -> Element msg
-i18n langType originalTextList =
+i18nText : Lang -> List String -> Element msg
+i18nText langType originalTextList =
     i18nElementText (i18nTranslator langType) originalTextList
 
 

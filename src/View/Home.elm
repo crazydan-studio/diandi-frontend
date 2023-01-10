@@ -4,13 +4,15 @@ import Element exposing (..)
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
+import I18n.Lang exposing (Lang(..), done, lang)
 import Model.Icon
 import Model.Root exposing (RootModel)
 import Model.User
 import Msg exposing (RootMsg)
-import Style.Basic
+import Style.Default
 import Style.Home
 import Style.Icon as Icon
+import View.I18n.Home exposing (i18n)
 import View.Topic.ListView
 
 
@@ -24,7 +26,7 @@ create model =
         , clip
         ]
         [ column
-            (Style.Basic.boundaryBorderEach
+            (Style.Default.boundaryBorderEach
                 { top = 0
                 , right = 1
                 , bottom = 0
@@ -50,7 +52,7 @@ create model =
                     Model.Icon.SearchOutlined
                 ]
             , row
-                (Style.Basic.boundaryBorderEach
+                (Style.Default.boundaryBorderEach
                     { top = 0
                     , right = 0
                     , bottom = 1
@@ -80,7 +82,7 @@ create model =
                     |> List.map
                         (\e ->
                             row
-                                (Style.Basic.boundaryBorderEach
+                                (Style.Default.boundaryBorderEach
                                     { top = 0
                                     , right = 0
                                     , bottom = 1
@@ -95,7 +97,7 @@ create model =
                         )
                 )
             , row
-                (Style.Basic.boundaryBorderEach
+                (Style.Default.boundaryBorderEach
                     { top = 1
                     , right = 0
                     , bottom = 0
@@ -148,7 +150,9 @@ create model =
                             , el
                                 [ Font.size 10
                                 ]
-                                (text "这里是分类描述")
+                                ((lang :: "TopBar" :: "这里是类别描述信息" :: done)
+                                    |> i18n En_US
+                                )
                             ]
                         ]
                     , row
@@ -156,19 +160,19 @@ create model =
                         , paddingXY 8 0
                         , spacing 8
                         ]
-                        (([ "待办 (20)", "知识 (10)", "疑问 (5)" ]
+                        (([ [ "待办", "20" ], [ "知识", "10" ], [ "疑问", "5" ] ]
                             |> List.map
                                 (\t ->
                                     Input.button
                                         [ alignRight
                                         ]
                                         { onPress = Just Msg.NoOp
-                                        , label = text t
+                                        , label = lang :: t |> i18n En_US
                                         }
                                 )
                          )
                             ++ [ el
-                                    (Style.Basic.boundaryBorderEach
+                                    (Style.Default.boundaryBorderEach
                                         { top = 0
                                         , right = 1
                                         , bottom = 0
@@ -194,7 +198,7 @@ create model =
                     ]
                     (View.Topic.ListView.create model)
                 , column
-                    (Style.Basic.boundaryBorderEach
+                    (Style.Default.boundaryBorderEach
                         { top = 1
                         , right = 0
                         , bottom = 0
@@ -232,7 +236,7 @@ create model =
                                ]
                         )
                     , column
-                        (Style.Basic.boundaryBorderAll 1
+                        (Style.Default.boundaryBorderAll 1
                             ++ [ width fill
                                , height fill
                                , Border.rounded 3
@@ -264,7 +268,7 @@ create model =
                             , paddingXY 8 0
                             ]
                             [ el
-                                (Style.Basic.boundaryBorderEach
+                                (Style.Default.boundaryBorderEach
                                     { top = 1
                                     , right = 0
                                     , bottom = 0
@@ -311,7 +315,7 @@ create model =
                     ]
                 ]
             , column
-                (Style.Basic.boundaryBorderEach
+                (Style.Default.boundaryBorderEach
                     { top = 0
                     , right = 0
                     , bottom = 0

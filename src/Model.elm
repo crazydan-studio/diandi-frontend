@@ -2,13 +2,15 @@ module Model exposing (Flags, init, sub, update)
 
 import Browser.Navigation as Nav
 import Http
+import I18n.Lang
 import Model.Root exposing (RootModel)
 import Model.User as User
 import Msg exposing (..)
-import View.Type as ViewType
 import Remote exposing (RemoteMsg, getMyUserInfo)
 import Route
 import Url
+import View.Type as ViewType
+import View.I18n.Default
 
 
 type alias Flags =
@@ -22,7 +24,7 @@ init : Flags -> Url.Url -> Nav.Key -> ( RootModel, Cmd RootMsg )
 init flags url key =
     { title = flags.title
     , description = flags.description
-    , lang = flags.lang
+    , lang = I18n.Lang.fromStringWithDefault View.I18n.Default.lang flags.lang
 
     --
     , navKey = key

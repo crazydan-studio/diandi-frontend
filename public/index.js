@@ -18,7 +18,7 @@ function runApp() {
     flags: {
       title: pkg.title,
       description: pkg.description,
-      lang: getFirstBrowserLanguage(),
+      lang: getFirstBrowserLanguage().replaceAll("-", "_"),
     },
   });
 }

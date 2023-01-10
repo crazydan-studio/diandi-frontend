@@ -4,6 +4,7 @@ module I18n.Lang exposing
     , all
     , done
     , fromString
+    , fromStringWithDefault
     , lang
     , toString
     )
@@ -49,6 +50,20 @@ fromString str =
 
         _ ->
             Unknown
+
+
+fromStringWithDefault : Lang -> String -> Lang
+fromStringWithDefault defaultLang str =
+    let
+        lng =
+            fromString str
+    in
+    case lng of
+        Unknown ->
+            defaultLang
+
+        _ ->
+            lng
 
 
 toString : Lang -> String

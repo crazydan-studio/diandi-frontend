@@ -10,6 +10,10 @@ export function getFirstBrowserLanguage() {
     "userLanguage",
   ];
 
+  if (document.documentElement && document.documentElement.lang) {
+    return document.documentElement.lang;
+  }
+
   // support for HTML 5.1 "navigator.languages"
   if (Array.isArray(nav.languages)) {
     for (let i = 0; i < nav.languages.length; i++) {

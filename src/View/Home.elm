@@ -4,7 +4,7 @@ import Element exposing (..)
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
-import I18n.Lang exposing (Lang(..), done, lang)
+import I18n.Lang exposing (done, lang)
 import Model.Icon
 import Model.Root exposing (RootModel)
 import Model.User
@@ -151,7 +151,7 @@ create model =
                                 [ Font.size 10
                                 ]
                                 ((lang :: "TopBar" :: "这里是类别描述信息" :: done)
-                                    |> i18nText En_US
+                                    |> i18nText model.lang
                                 )
                             ]
                         ]
@@ -167,7 +167,7 @@ create model =
                                         [ alignRight
                                         ]
                                         { onPress = Just Msg.NoOp
-                                        , label = lang :: t |> i18nText En_US
+                                        , label = lang :: t |> i18nText model.lang
                                         }
                                 )
                          )

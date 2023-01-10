@@ -1,5 +1,7 @@
 module Style.Topic exposing
-    ( topic
+    ( contentInTopicBody
+    , indexInTopicBody
+    , topic
     , topicBody
     , topicBodyDefaultColor
     , topicHeader
@@ -7,8 +9,6 @@ module Style.Topic exposing
     , topicPadding
     , topicSpacing
     , topicWidth
-    , contentInTopicBody
-    , indexInTopicBody
     )
 
 import Element
@@ -31,7 +31,7 @@ import Element
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
-import Style.Basic
+import Style.Default
 import Style.Html
 
 
@@ -57,12 +57,12 @@ topicPadding =
 
 contentFontSizeInTopicBody : Int
 contentFontSizeInTopicBody =
-    Style.Basic.majorFontSize
+    Style.Default.majorFontSize
 
 
 fontSizeInTopicHeader : Int
 fontSizeInTopicHeader =
-    Style.Basic.juniorFontSize
+    Style.Default.juniorFontSize
 
 
 topicList : List (Attribute msg)
@@ -123,7 +123,7 @@ indexInTopicBody =
         , right = 8
         , bottom = 0
         }
-    , Font.size (Style.Basic.majorFontSize * 3)
+    , Font.size (Style.Default.majorFontSize * 3)
     , Font.bold
     ]
 

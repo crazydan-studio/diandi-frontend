@@ -1,4 +1,4 @@
-module Style.Basic exposing
+module Style.Default exposing
     ( boundaryBorderAll
     , boundaryBorderEach
     , juniorFontSize

@@ -8,7 +8,6 @@ module Style.Home exposing
 import Element
     exposing
         ( Attribute
-        , alignLeft
         , fill
         , height
         , padding
@@ -21,12 +20,12 @@ import Element
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
-import Style.Basic
+import Style.Default
 
 
 topBar : List (Attribute msg)
 topBar =
-    Style.Basic.boundaryBorderEach
+    Style.Default.boundaryBorderEach
         { top = 0
         , bottom = 1
         , left = 0
@@ -48,7 +47,7 @@ logoInTopBar =
 
 userAvatarInTopBar : List (Attribute msg)
 userAvatarInTopBar =
-    Style.Basic.boundaryBorderAll 1
+    Style.Default.boundaryBorderAll 1
         ++ [ width shrink
            , height fill
            , padding 8
@@ -60,7 +59,7 @@ userAvatarInTopBar =
 
 bottomBar : List (Attribute msg)
 bottomBar =
-    Style.Basic.boundaryBorderEach
+    Style.Default.boundaryBorderEach
         { top = 1
         , bottom = 0
         , left = 0

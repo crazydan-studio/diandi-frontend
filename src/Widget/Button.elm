@@ -1,4 +1,7 @@
-module Widget.Button exposing (primary)
+module Widget.Button exposing
+    ( link
+    , primary
+    )
 
 import Element
     exposing
@@ -16,19 +19,22 @@ import Element
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
-import Theme.Color
 import Theme.Color.Element
+import Theme.Theme
 import Widget.Helper exposing (css)
 
 
+{-| 主按钮
+-}
 primary :
     List (Attribute msg)
     ->
         { content : Element msg
         , onPress : Maybe msg
+        , theme : Theme.Theme.Theme
         }
     -> Element msg
-primary attrs { content, onPress } =
+primary attrs { content, onPress, theme } =
     Input.button
         ([ width
             (shrink
@@ -43,9 +49,16 @@ primary attrs { content, onPress } =
          , mouseOver []
          , focused []
          ]
-            ++ Theme.Color.Element.defaultPalette Theme.Color.Blue800
+            ++ Theme.Theme.primaryBtn theme
             ++ attrs
         )
         { onPress = onPress
         , label = content
         }
+
+
+{-| 链接按钮
+-}
+link : Element msg
+link =
+    Element.none

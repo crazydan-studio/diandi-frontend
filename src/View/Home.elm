@@ -5,6 +5,7 @@ import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import I18n.Lang exposing (lang_end)
+import I18n.Port
 import Model.Icon
 import Model.Root exposing (RootModel)
 import Model.User
@@ -114,6 +115,12 @@ create model =
                     )
                     { onPress = Just Msg.NoOp
                     , label = text (userName model.me)
+                    }
+                , Input.button
+                    [ alignRight
+                    ]
+                    { onPress = Just (I18n.Port.find Msg.I18nPorts)
+                    , label = "语言" :: lang_end |> i18nText model.lang
                     }
                 ]
             ]

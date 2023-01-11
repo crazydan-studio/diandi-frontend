@@ -3,14 +3,15 @@ module Model exposing (Flags, init, sub, update)
 import Browser.Navigation as Nav
 import Http
 import I18n.Lang
+import I18n.Port
 import Model.Root exposing (RootModel)
 import Model.User as User
 import Msg exposing (..)
 import Remote exposing (RemoteMsg, getMyUserInfo)
 import Route
 import Url
-import View.Type as ViewType
 import View.I18n.Default
+import View.Type as ViewType
 
 
 type alias Flags =
@@ -24,7 +25,10 @@ init : Flags -> Url.Url -> Nav.Key -> ( RootModel, Cmd RootMsg )
 init flags url key =
     { title = flags.title
     , description = flags.description
+
+    --
     , lang = I18n.Lang.fromStringWithDefault View.I18n.Default.lang flags.lang
+    , textsWithoutI18n = []
 
     --
     , navKey = key
@@ -43,7 +47,9 @@ init flags url key =
 
 sub : RootModel -> Sub RootMsg
 sub _ =
-    Sub.none
+    Sub.batch
+        [ I18n.Port.sub I18nPorts
+        ]
 
 
 update : RootMsg -> RootModel -> ( RootModel, Cmd RootMsg )
@@ -54,6 +60,9 @@ update msg model =
 
         UrlChanged url ->
             routeUpdateHelper url model
+
+        I18nPorts i18nMsg ->
+            i18nUpdateHelper i18nMsg model
 
         _ ->
             ( model, Cmd.none )
@@ -155,3 +164,10 @@ routeUpdateHelper url model =
                     ( ViewType.NotFound, Cmd.none )
     in
     ( { model | currentPage = page, navUrl = url }, cmd )
+
+
+i18nUpdateHelper : I18n.Port.Msg -> RootModel -> ( RootModel, Cmd RootMsg )
+i18nUpdateHelper msg model =
+    case I18n.Port.update msg of
+        ( r, m ) ->
+            ( { model | textsWithoutI18n = r.results }, m )

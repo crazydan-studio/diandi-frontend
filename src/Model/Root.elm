@@ -1,7 +1,7 @@
 module Model.Root exposing (RootModel)
 
 import Browser.Navigation as Nav
-import I18n.Lang exposing (Lang)
+import I18n.Lang exposing (Lang, TextsNeedToBeTranslated)
 import Model.Topic
 import Model.User as User
 import Url
@@ -11,7 +11,12 @@ import View.Type
 type alias RootModel =
     { title : String
     , description : String
+
+    -- 国际化
     , lang : Lang
+    , textsWithoutI18n : List TextsNeedToBeTranslated
+
+    -- 路由
     , navKey : Nav.Key
     , navUrl : Url.Url
 

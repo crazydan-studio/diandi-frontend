@@ -2,8 +2,8 @@
 
 // https://stackoverflow.com/questions/1043339/javascript-for-detecting-browser-language-preference#answer-29106129
 export function getFirstBrowserLanguage() {
-  let nav = window.navigator;
-  let browserLanguagePropertyKeys = [
+  const nav = window.navigator;
+  const browserLanguagePropertyKeys = [
     "language",
     "browserLanguage",
     "systemLanguage",
@@ -33,4 +33,19 @@ export function getFirstBrowserLanguage() {
   }
 
   return "";
+}
+
+export function findNotTranslatedTexts() {
+  const results = [];
+
+  document
+    .querySelectorAll('[need-to-translate="true"]')
+    .forEach(function (node) {
+      const modules = node.getAttribute("need-to-translate-modules");
+      const text = node.innerText;
+
+      results.push({ modules: modules, text: text });
+    });
+
+  return results;
 }

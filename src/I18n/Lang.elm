@@ -1,5 +1,6 @@
 module I18n.Lang exposing
     ( Lang(..)
+    , TextsNeedToBeTranslated
     , TranslateResult(..)
     , all
     , fromString
@@ -18,7 +19,11 @@ type Lang
 type TranslateResult
     = Translated String
     | NoNeedsToTranslate (List String)
-    | WaitingToTranslate { modules : List String, texts : List String }
+    | WaitingToTranslate TextsNeedToBeTranslated
+
+
+type alias TextsNeedToBeTranslated =
+    { modules : List String, texts : List String }
 
 
 lang_end : List String

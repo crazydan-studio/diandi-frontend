@@ -10,7 +10,7 @@ module I18n.Element exposing (text)
 
 import Element exposing (Attribute, Element)
 import Html.Attributes as HtmlAttr
-import I18n.Helper exposing (i18nTextJoiner)
+import I18n.Helper exposing (joinI18nModules, joinI18nTexts)
 import I18n.Lang
     exposing
         ( Lang
@@ -29,23 +29,21 @@ text translator langType texts =
             Element.text result
 
         NoNeedsToTranslate result ->
-            Element.text (i18nTextJoiner result)
+            Element.text (joinI18nTexts result)
 
         WaitingToTranslate result ->
             -- 记录未做国际化的内容信息，便于通过js做统一展示处理
             Element.el
                 (noTransAttrs result.modules)
-                (Element.text (i18nTextJoiner result.texts))
+                (Element.text (joinI18nTexts result.texts))
 
 
 noTransAttrs : List String -> List (Attribute msg)
 noTransAttrs modules =
-    [ HtmlAttr.attribute
-        "need-to-translate"
-        "true"
+    [ HtmlAttr.attribute "need-to-translate" "true"
         |> Element.htmlAttribute
     , HtmlAttr.attribute
-        "need-to-translate-module"
-        (modules |> String.join "/")
+        "need-to-translate-modules"
+        (joinI18nModules modules)
         |> Element.htmlAttribute
     ]

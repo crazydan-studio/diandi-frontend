@@ -1,7 +1,7 @@
 "use strict";
 
 import { Elm } from "../src/Main";
-import { getFirstBrowserLanguage } from "./js/lang";
+import { getFirstBrowserLanguage, findNotTranslatedTexts } from "./js/lang";
 import pkg from "../package.json";
 
 import "./index.css";
@@ -20,6 +20,12 @@ function runApp() {
       description: pkg.description,
       lang: getFirstBrowserLanguage().replaceAll("-", "_"),
     },
+  });
+
+  app.ports.findNotTranslatedTexts.subscribe(function () {
+    const results = findNotTranslatedTexts();
+
+    app.ports.getNotTranslatedTexts.send(results);
   });
 }
 

@@ -1,59 +1,40 @@
 module View.I18n.Home exposing (i18nText)
 
 import Element exposing (Element)
-import I18n.Helper exposing (i18nElementText)
+import I18n.Element
+import I18n.Helper exposing (i18nWaiting)
 import I18n.Lang
     exposing
         ( Lang(..)
-        , TranslatedResult(..)
+        , TranslateResult(..)
         )
 import View.I18n.Default
 
 
 i18nText : Lang -> List String -> Element msg
-i18nText langType originalTextList =
-    i18nElementText (i18nTranslator langType) originalTextList
+i18nText =
+    I18n.Element.text i18nTranslator
 
 
-i18nWaiting : List String -> List String -> TranslatedResult
-i18nWaiting textModules textList =
-    WaitingToTranslate ("Home" :: textModules) textList
-
-
-i18nWithLang :
-    Lang
-    -> List String
-    -> List String
-    -> TranslatedResult
-i18nWithLang langType textModules textList =
-    if langType == View.I18n.Default.lang then
-        NoNeedsToTranslate textList
-
-    else
-        i18nWaiting textModules textList
-
-
-i18nTranslator : Lang -> List String -> TranslatedResult
-i18nTranslator langType textList =
+i18nTranslator : Lang -> List String -> TranslateResult
+i18nTranslator langType texts =
     let
-        defaultI18n =
-            i18nWithLang langType
-    in
-    case textList of
-        -- TopBar:: 用于区别文本相同，但国际化结果不同的信息
-        ("TopBar" as m) :: actualTextList ->
-            case actualTextList of
-                [ "这里是类别描述信息" ] ->
-                    case langType of
-                        En_US ->
-                            Translated
-                                "Here is the description for the category"
+        i18nTopModule =
+            "Home"
 
-                        _ ->
-                            defaultI18n [ m ] actualTextList
+        i18nDefault subModules =
+            View.I18n.Default.i18n langType (i18nTopModule :: subModules)
+    in
+    case texts of
+        -- TopBar 用于区别文本相同但国际化结果不同的信息
+        ("TopBar" as m) :: ([ "这里是类别描述信息" ] as actualTexts) ->
+            case langType of
+                En_US ->
+                    Translated
+                        "Here is the description for the category"
 
                 _ ->
-                    i18nWaiting [ m ] actualTextList
+                    i18nDefault [ m ] actualTexts
 
         [ "待办" as t, n ] ->
             case langType of
@@ -62,7 +43,7 @@ i18nTranslator langType textList =
                         ("TODO (" ++ n ++ ")")
 
                 _ ->
-                    defaultI18n [] [ t, " (", n, ")" ]
+                    i18nDefault [] [ t, " (", n, ")" ]
 
         [ "知识" as t, n ] ->
             case langType of
@@ -71,7 +52,7 @@ i18nTranslator langType textList =
                         ("Knowledge (" ++ n ++ ")")
 
                 _ ->
-                    defaultI18n [] [ t, " (", n, ")" ]
+                    i18nDefault [] [ t, " (", n, ")" ]
 
         [ "疑问" as t, n ] ->
             case langType of
@@ -80,7 +61,7 @@ i18nTranslator langType textList =
                         ("Question (" ++ n ++ ")")
 
                 _ ->
-                    defaultI18n [] [ t, " (", n, ")" ]
+                    i18nDefault [] [ t, " (", n, ")" ]
 
         _ ->
-            i18nWaiting [] textList
+            i18nWaiting [ i18nTopModule ] texts

@@ -4,6 +4,7 @@ import Browser.Navigation as Nav
 import I18n.Lang exposing (Lang, TextsNeedToBeTranslated)
 import Model.Topic
 import Model.User as User
+import Theme.Theme
 import Url
 import View.Type
 
@@ -15,6 +16,7 @@ type alias RootModel =
     -- 国际化
     , lang : Lang
     , textsWithoutI18n : List TextsNeedToBeTranslated
+    , theme : Theme.Theme.Theme
 
     -- 路由
     , navKey : Nav.Key

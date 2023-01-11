@@ -19,11 +19,11 @@ import Widget.Button
 
 
 create : RootModel -> Element RootMsg
-create model =
+create ({ theme, lang } as model) =
     let
         i18nText =
             -- View.I18n.Home.i18nText I18n.Lang.En_US
-            View.I18n.Home.i18nText model.lang
+            View.I18n.Home.i18nText lang
     in
     row
         [ width fill
@@ -125,7 +125,8 @@ create model =
                 , Widget.Button.primary
                     [ alignRight
                     ]
-                    { content =
+                    { theme = theme
+                    , content =
                         row
                             [ spacing 8
                             ]
@@ -341,7 +342,8 @@ create model =
                             , Widget.Button.primary
                                 [ alignRight
                                 ]
-                                { content =
+                                { theme = theme
+                                , content =
                                     (i18nBtnModule :: "记下来!" :: langEnd)
                                         |> i18nText
                                 , onPress = Nothing

@@ -2,10 +2,12 @@ module View exposing (create)
 
 import Browser
 import Element exposing (Element, fill, height, width)
+import Element.Font as Font
 import Html
 import Html.Attributes as HtmlAttr
 import Model.Root exposing (RootModel)
 import Msg exposing (RootMsg)
+import Theme.Theme
 import View.Blank
 import View.Forbidden
 import View.Home
@@ -13,19 +15,23 @@ import View.Loading
 import View.Login
 import View.NotFound
 import View.Type as ViewType
-import Style.Root
 
 
 create : RootModel -> Browser.Document RootMsg
-create model =
+create ({ theme } as model) =
     { title = title model
     , body =
         [ Element.layout
-            (Style.Root.rootLayout
-                ++ [ width fill
-                   , height fill
-                   ]
-            )
+            [ width fill
+            , height fill
+            , Font.family
+                [ Font.typeface "Roboto"
+                , Font.sansSerif
+                ]
+            , Font.size theme.primaryFontSize
+            , Font.color
+                (Theme.Theme.primaryFontColor theme)
+            ]
             (page model)
         , Html.div
             [ HtmlAttr.id "_page_is_ready_"

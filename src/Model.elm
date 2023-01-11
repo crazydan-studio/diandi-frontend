@@ -9,6 +9,7 @@ import Model.User as User
 import Msg exposing (..)
 import Remote exposing (RemoteMsg, getMyUserInfo)
 import Route
+import Theme.Type.Default
 import Url
 import View.I18n.Default
 import View.Type as ViewType
@@ -29,6 +30,7 @@ init flags url key =
     --
     , lang = I18n.Lang.fromStringWithDefault View.I18n.Default.lang flags.lang
     , textsWithoutI18n = []
+    , theme = Theme.Type.Default.theme
 
     --
     , navKey = key

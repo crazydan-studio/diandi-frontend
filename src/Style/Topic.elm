@@ -1,6 +1,5 @@
 module Style.Topic exposing
     ( contentInTopicBody
-    , indexInTopicBody
     , topic
     , topicBody
     , topicBodyDefaultPalette
@@ -58,7 +57,7 @@ topicPadding =
 
 contentFontSizeInTopicBody : Int
 contentFontSizeInTopicBody =
-    Style.Default.primaryFontSize
+    14
 
 
 topicList : List (Attribute msg)
@@ -106,17 +105,4 @@ contentInTopicBody =
             |> minimum (contentFontSizeInTopicBody * 2)
         )
     , Font.size contentFontSizeInTopicBody
-    ]
-
-
-indexInTopicBody : List (Attribute msg)
-indexInTopicBody =
-    [ paddingEach
-        { left = 0
-        , top = 0
-        , right = 8
-        , bottom = 0
-        }
-    , Font.size (Style.Default.primaryFontSize * 3)
-    , Font.bold
     ]

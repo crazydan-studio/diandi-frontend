@@ -162,7 +162,7 @@ i18nBtnTranslator langType i18nDefault modules texts =
                 _ ->
                     i18nDefault [] texts
 
-        [ "记下来！" ] ->
+        [ "记下来!" ] ->
             case langType of
                 En_US ->
                     Translated

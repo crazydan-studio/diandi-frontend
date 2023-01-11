@@ -15,6 +15,7 @@ import Style.Home
 import Style.Icon as Icon
 import View.I18n.Home exposing (i18nBtnModule, i18nLabelModule)
 import View.Topic.ListView
+import Widget.Button
 
 
 create : RootModel -> Element RootMsg
@@ -118,16 +119,25 @@ create model =
                     (Style.Home.userAvatarInTopBar
                         ++ [ width (px 64) ]
                     )
-                    { onPress = Just Msg.NoOp
+                    { onPress = Nothing
                     , label = text (userName model.me)
                     }
-                , Input.button
+                , Widget.Button.primary
                     [ alignRight
                     ]
-                    { onPress = Just (I18n.Port.find Msg.I18nPorts)
-                    , label =
-                        (i18nBtnModule :: "语言" :: langEnd)
-                            |> i18nText
+                    { content =
+                        row
+                            [ spacing 8
+                            ]
+                            [ Icon.icon
+                                { size = 16
+                                , color = rgb255 255 255 255
+                                }
+                                Model.Icon.GlobalOutlined
+                            , (i18nBtnModule :: "语言" :: langEnd)
+                                |> i18nText
+                            ]
+                    , onPress = Just (I18n.Port.find Msg.I18nPorts)
                     }
                 ]
             ]
@@ -180,7 +190,7 @@ create model =
                                     Input.button
                                         [ alignRight
                                         ]
-                                        { onPress = Just Msg.NoOp
+                                        { onPress = Nothing
                                         , label = t |> i18nText
                                         }
                                 )
@@ -219,7 +229,7 @@ create model =
                         , left = 0
                         }
                         ++ [ width fill
-                           , height (px 224)
+                           , height (px 234)
                            , padding 8
                            , spacing 8
                            ]
@@ -236,7 +246,7 @@ create model =
                                         , alignLeft
                                         , Font.center
                                         ]
-                                        { onPress = Just Msg.NoOp
+                                        { onPress = Nothing
                                         , label = text t
                                         }
                                 )
@@ -244,7 +254,7 @@ create model =
                             ++ [ Input.button
                                     [ alignRight
                                     ]
-                                    { onPress = Just Msg.NoOp
+                                    { onPress = Nothing
                                     , label =
                                         (i18nBtnModule :: "实时预览" :: langEnd)
                                             |> i18nText
@@ -328,13 +338,13 @@ create model =
                                                 )
                                        )
                                 )
-                            , Input.button
+                            , Widget.Button.primary
                                 [ alignRight
                                 ]
-                                { onPress = Just Msg.NoOp
-                                , label =
-                                    (i18nBtnModule :: "记下来！" :: langEnd)
+                                { content =
+                                    (i18nBtnModule :: "记下来!" :: langEnd)
                                         |> i18nText
+                                , onPress = Nothing
                                 }
                             ]
                         ]

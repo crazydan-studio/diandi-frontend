@@ -5,7 +5,7 @@ module I18n.Lang exposing
     , all
     , fromString
     , fromStringWithDefault
-    , lang_end
+    , langEnd
     , toString
     )
 
@@ -26,8 +26,8 @@ type alias TextsNeedToBeTranslated =
     { modules : List String, texts : List String }
 
 
-lang_end : List String
-lang_end =
+langEnd : List String
+langEnd =
     []
 
 

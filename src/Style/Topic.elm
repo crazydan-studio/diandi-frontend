@@ -16,12 +16,8 @@ import Element
         , fill
         , height
         , minimum
-        , padding
-        , paddingEach
         , paddingXY
-        , px
         , rgb255
-        , rgba255
         , shrink
         , spacing
         , width
@@ -29,7 +25,6 @@ import Element
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
-import Style.Default
 import Style.Html
 import Theme.Color
 import Theme.Color.Element

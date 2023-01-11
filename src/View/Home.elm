@@ -4,7 +4,7 @@ import Element exposing (..)
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
-import I18n.Lang exposing (lang_end)
+import I18n.Lang exposing (langEnd)
 import I18n.Port
 import Model.Icon
 import Model.Root exposing (RootModel)
@@ -13,12 +13,17 @@ import Msg exposing (RootMsg)
 import Style.Default
 import Style.Home
 import Style.Icon as Icon
-import View.I18n.Home exposing (i18nText)
+import View.I18n.Home exposing (i18nBtnModule, i18nLabelModule)
 import View.Topic.ListView
 
 
 create : RootModel -> Element RootMsg
 create model =
+    let
+        i18nText =
+            -- View.I18n.Home.i18nText I18n.Lang.En_US
+            View.I18n.Home.i18nText model.lang
+    in
     row
         [ width fill
         , height fill
@@ -120,7 +125,9 @@ create model =
                     [ alignRight
                     ]
                     { onPress = Just (I18n.Port.find Msg.I18nPorts)
-                    , label = "语言" :: lang_end |> i18nText model.lang
+                    , label =
+                        (i18nBtnModule :: "语言" :: langEnd)
+                            |> i18nText
                     }
                 ]
             ]
@@ -157,8 +164,8 @@ create model =
                             , el
                                 [ Font.size 10
                                 ]
-                                (("TopBar" :: "这里是类别描述信息" :: lang_end)
-                                    |> i18nText model.lang
+                                (("这里是类别描述信息" :: langEnd)
+                                    |> i18nText
                                 )
                             ]
                         ]
@@ -174,7 +181,7 @@ create model =
                                         [ alignRight
                                         ]
                                         { onPress = Just Msg.NoOp
-                                        , label = t |> i18nText model.lang
+                                        , label = t |> i18nText
                                         }
                                 )
                          )
@@ -238,7 +245,9 @@ create model =
                                     [ alignRight
                                     ]
                                     { onPress = Just Msg.NoOp
-                                    , label = text "实时预览"
+                                    , label =
+                                        (i18nBtnModule :: "实时预览" :: langEnd)
+                                            |> i18nText
                                     }
                                ]
                         )
@@ -265,7 +274,9 @@ create model =
                                 Just
                                     (Input.placeholder
                                         []
-                                        (text "又有什么奇妙的想法呢？赶紧记下来吧 :)")
+                                        (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langEnd)
+                                            |> i18nText
+                                        )
                                     )
                             , label = Input.labelHidden ""
                             , spellcheck = False
@@ -293,7 +304,10 @@ create model =
                             ]
                             [ paragraph
                                 []
-                                (List.singleton (text "分类: ")
+                                (List.singleton
+                                    ((i18nLabelModule :: "分类：" :: langEnd)
+                                        |> i18nText
+                                    )
                                     ++ ([ "产品开发", "点滴(DianDi)", "功能设计" ]
                                             |> List.map
                                                 (\t ->
@@ -303,7 +317,10 @@ create model =
                                 )
                             , paragraph
                                 []
-                                (List.singleton (text "标签: ")
+                                (List.singleton
+                                    ((i18nLabelModule :: "标签：" :: langEnd)
+                                        |> i18nText
+                                    )
                                     ++ ([ "待办", "知识", "疑问", "+" ]
                                             |> List.map
                                                 (\t ->
@@ -315,7 +332,9 @@ create model =
                                 [ alignRight
                                 ]
                                 { onPress = Just Msg.NoOp
-                                , label = text "记下来！"
+                                , label =
+                                    (i18nBtnModule :: "记下来！" :: langEnd)
+                                        |> i18nText
                                 }
                             ]
                         ]
@@ -337,7 +356,9 @@ create model =
                     [ centerX
                     , centerY
                     ]
-                    [ text "这里是主题详情展示页，默认显示当前分类的信息。PS：实时预览也在这里" ]
+                    [ ("这里是主题详情展示页，默认显示当前分类的信息。注：实时预览也在这里" :: langEnd)
+                        |> i18nText
+                    ]
                 ]
             ]
         ]

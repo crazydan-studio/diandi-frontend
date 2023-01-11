@@ -7,7 +7,7 @@ import Model.Topic
 import Msg exposing (RootMsg)
 import Style.Color
 import Style.Topic
-import View.Markdown
+import Widget.Markdown
 
 
 create : RootModel -> Element RootMsg
@@ -56,7 +56,7 @@ topicList topics =
                                         [ height shrink
                                         , centerY
                                         ]
-                                        [ View.Markdown.render topic.content
+                                        [ Widget.Markdown.render topic.content
                                         ]
                                     )
                                 )

@@ -1,4 +1,4 @@
-module View.Markdown exposing (render)
+module Widget.Markdown exposing (render)
 
 {-| Markdown渲染参考示例
 

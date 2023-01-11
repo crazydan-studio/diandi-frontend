@@ -1,44 +1,38 @@
 module Style.Default exposing
     ( boundaryBorderAll
     , boundaryBorderEach
-    , juniorFontSize
-    , majorFontColor
-    , majorFontSize
-    , minorFontSize
+    , primaryFontColor
+    , primaryFontSize
+    , secondaryFontSize
     )
 
 {-| -}
 
 import Element exposing (Attribute, Color, rgb255)
 import Element.Border as Border
+import Theme.Color
+import Theme.Color.Element
 
 
-{-| 主要字体大小
+{-| 一级字体大小
 -}
-majorFontSize : Int
-majorFontSize =
+primaryFontSize : Int
+primaryFontSize =
     14
 
 
-{-| 主要字体颜色
+{-| 一级字体颜色
 -}
-majorFontColor : Color
-majorFontColor =
-    rgb255 6 126 213
+primaryFontColor : Color
+primaryFontColor =
+    Theme.Color.Element.toRgbColor Theme.Color.Blue600
 
 
-{-| 次要字体大小
+{-| 二级字体大小
 -}
-minorFontSize : Int
-minorFontSize =
+secondaryFontSize : Int
+secondaryFontSize =
     12
-
-
-{-| 最次要字体大小
--}
-juniorFontSize : Int
-juniorFontSize =
-    10
 
 
 {-| 各边的样式

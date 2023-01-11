@@ -14,7 +14,7 @@ import Json.Decode as Decode
         , string
         )
 import Json.Decode.Pipeline exposing (optional, required)
-import Model.ColorPalette exposing (Palette, maybePaletteDecoder)
+import Theme.Color exposing (maybeColorDecoder)
 
 
 {-| 点滴卡
@@ -33,8 +33,8 @@ type alias Topic =
     , category : Maybe String
     , tags : List String
 
-    -- 调色板
-    , colorPalette : Maybe Palette
+    -- 配色
+    , color : Maybe Theme.Color.Color
 
     -- 创建信息
     , createdAt : String
@@ -54,5 +54,5 @@ topicDecoder =
         |> required "content" string
         |> optional "category" (nullable string) Nothing
         |> optional "tags" (list string) []
-        |> optional "color_palette" maybePaletteDecoder Nothing
+        |> optional "color" maybeColorDecoder Nothing
         |> required "created_at" string

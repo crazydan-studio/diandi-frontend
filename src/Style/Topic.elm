@@ -3,8 +3,7 @@ module Style.Topic exposing
     , indexInTopicBody
     , topic
     , topicBody
-    , topicBodyDefaultColor
-    , topicHeader
+    , topicBodyDefaultPalette
     , topicList
     , topicPadding
     , topicSpacing
@@ -33,6 +32,8 @@ import Element.Border as Border
 import Element.Font as Font
 import Style.Default
 import Style.Html
+import Theme.Color
+import Theme.Color.Element
 
 
 topicCornerRadius : Int
@@ -57,12 +58,7 @@ topicPadding =
 
 contentFontSizeInTopicBody : Int
 contentFontSizeInTopicBody =
-    Style.Default.majorFontSize
-
-
-fontSizeInTopicHeader : Int
-fontSizeInTopicHeader =
-    Style.Default.juniorFontSize
+    Style.Default.primaryFontSize
 
 
 topicList : List (Attribute msg)
@@ -97,11 +93,9 @@ topicBody =
     ]
 
 
-topicBodyDefaultColor : List (Attribute msg)
-topicBodyDefaultColor =
-    [ Background.color (rgb255 0 150 136)
-    , Font.color (rgb255 255 255 255)
-    ]
+topicBodyDefaultPalette : List (Attribute msg)
+topicBodyDefaultPalette =
+    Theme.Color.Element.defaultPalette Theme.Color.Blue600
 
 
 contentInTopicBody : List (Attribute msg)
@@ -123,25 +117,6 @@ indexInTopicBody =
         , right = 8
         , bottom = 0
         }
-    , Font.size (Style.Default.majorFontSize * 3)
+    , Font.size (Style.Default.primaryFontSize * 3)
     , Font.bold
-    ]
-
-
-topicHeader : List (Attribute msg)
-topicHeader =
-    [ width fill
-    , height shrink
-    , spacing 8
-    , paddingXY 8 4
-    , Font.size fontSizeInTopicHeader
-    , Font.color (rgba255 0 0 0 0.2)
-    , Background.color (rgb255 255 255 255)
-    , Border.roundEach
-        { topLeft = topicCornerRadius
-        , topRight = topicCornerRadius
-        , bottomLeft = 0
-        , bottomRight = 0
-        }
-    , Style.Html.style "display" "none"
     ]

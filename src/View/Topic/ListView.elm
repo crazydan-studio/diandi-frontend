@@ -1,12 +1,12 @@
 module View.Topic.ListView exposing (create)
 
 import Element exposing (..)
-import Model.ColorPalette
 import Model.Root exposing (RootModel)
 import Model.Topic
 import Msg exposing (RootMsg)
-import Style.Color
 import Style.Topic
+import Theme.Color
+import Theme.Color.Element
 import Widget.Markdown
 
 
@@ -19,17 +19,17 @@ create model =
 -- ---------------------------------------------------------------
 
 
-fromColorPalette :
-    Maybe Model.ColorPalette.Palette
+getPaletteWithDefault :
+    Maybe Theme.Color.Color
     -> List (Attribute msg)
     -> List (Attribute msg)
-fromColorPalette palette defaultColor =
-    case palette of
-        Just p ->
-            Style.Color.fromPalette p
+getPaletteWithDefault bgColor defaultPalette =
+    case bgColor of
+        Just color ->
+            Theme.Color.Element.defaultPalette color
 
         Nothing ->
-            defaultColor
+            defaultPalette
 
 
 topicList : List Model.Topic.Topic -> Element RootMsg
@@ -43,8 +43,8 @@ topicList topics =
                         Style.Topic.topic
                         [ row
                             (Style.Topic.topicBody
-                                ++ fromColorPalette topic.colorPalette
-                                    Style.Topic.topicBodyDefaultColor
+                                ++ getPaletteWithDefault topic.color
+                                    Style.Topic.topicBodyDefaultPalette
                             )
                             [ el
                                 [ width fill

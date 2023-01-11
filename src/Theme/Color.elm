@@ -1,10 +1,11 @@
-module Model.ColorPalette exposing
-    ( Palette(..)
-    , PaletteGroup
+module Theme.Color exposing
+    ( Color(..)
+    , ColorGroup
+    , colorDecoder
     , fromString
-    , maybePaletteDecoder
-    , paletteDecoder
-    , paletteGroups
+    , groups
+    , maybeColorDecoder
+    , toRgb
     )
 
 {-| -}
@@ -12,99 +13,67 @@ module Model.ColorPalette exposing
 import Json.Decode as Decode exposing (Decoder)
 
 
-paletteDecoder : Decoder Palette
-paletteDecoder =
-    paletteDecoderHelper
-        (\v -> v)
-        (\p -> Decode.fail ("Unknown color palette: " ++ p))
-
-
-maybePaletteDecoder : Decoder (Maybe Palette)
-maybePaletteDecoder =
-    paletteDecoderHelper
-        (\v -> Just v)
-        (\_ -> Decode.succeed Nothing)
-
-
-paletteDecoderHelper : (Palette -> a) -> (String -> Decoder a) -> Decoder a
-paletteDecoderHelper success fail =
-    Decode.string
-        |> Decode.andThen
-            (\p ->
-                case fromString p of
-                    Just v ->
-                        Decode.succeed (success v)
-
-                    Nothing ->
-                        fail p
-            )
-
-
-{-| 调色板分组
-
-    PaletteGroup 分组名 [调色板列表, ...]
-
--}
-type PaletteGroup
-    = PaletteGroup String (List Palette)
-
-
-{-| 调色板
+{-| 配色
 配色信息来自于[Material Design Color Palette by](https://blog.avada.io/css/color-palettes#material-design-color-palette-badboy)
 
 代码生成JS脚本(通过浏览器元素选择器，选中配色表所在的iframe)：
 
 ```js
-var allPalettes = [];
-var paletteGroups = {};
+var allColors = [];
+var colorGroups = {};
 var toColor = function (c) { return c.replaceAll(/rgb\((\d+), (\d+), (\d+)\)/g, '$1 $2 $3'); };
 
 document.querySelectorAll('card list').forEach(function (list) {
-  var paletteGroupName = '';
-  var palettes = [];
+  var colorGroupName = '';
+  var colors = [];
 
   list.querySelectorAll('item').forEach(function(item, index) {
     var name = item.firstElementChild.innerText.replaceAll(/\n+.+/g, '').replaceAll(/((^|-)(.))/g, function ($0, $1, $2, $3) {
        return $3.toUpperCase();
     });
-    if (index == 0) { paletteGroupName = name; }
+    if (index == 0) { colorGroupName = name; }
     if (index == 0 && !name.includes('Black') && !name.includes('White')) { return; }
 
     var style = getComputedStyle(item);
-    var value = [name, 'bgColor ' + toColor(style.backgroundColor), 'fgColor ' + toColor(style.color)];
+    var value = [name, toColor(style.backgroundColor), toColor(style.color)];
 
-    palettes.push(value);
+    colors.push(value);
   });
 
-  paletteGroups[paletteGroupName] = palettes;
-  allPalettes = allPalettes.concat(palettes);
+  colorGroups[colorGroupName] = colors;
+  allColors = allColors.concat(colors);
 });
 
 // 数据定义
-console.log(allPalettes.map(function (p) { return p[0]; }).join(' | '));
+console.log(allColors.map(function (p) { return p[0]; }).join(' | '));
 
-// 转换为Element.Color
-console.log('    case palette of\n' + allPalettes.map(function (p) {
-  return '        ' + p[0] + ' ->\n            [' + p[1] + ', ' + p[2] + ']';
+// 获取前景色
+console.log('    case bg of\n' + allColors.map(function (p) {
+  return '        ' + p[0] + ' ->\n            rgb255 ' + p[2];
 }).join('\n'));
 
-// 从字符串转换Palette
-console.log('    case (String.toLower p) of\n' + allPalettes.map(function (p) {
+// 转换为RGB
+console.log('    case color of\n' + allColors.map(function (p) {
+  return '        ' + p[0] + ' ->\n            (' + p[1].replaceAll(/\s+/g, ',') + ')';
+}).join('\n'));
+
+// 从字符串转换Color
+console.log('    case (String.toLower s) of\n' + allColors.map(function (p) {
   var name = p[0];
   return '        "' + name.toLowerCase() + '" ->\n            Just ' + name + '';
 }).join('\n') + '\n        _ ->\n            Nothing');
 
-// 调色板分组表
-console.log('    [' + Object.keys(paletteGroups).map(function (group) {
-  var palettes = paletteGroups[group];
-  return 'PaletteGroup "' + group
-    + '" [' + palettes.map(function (p) { return p[0]; }).join('\n        , ')
+// 配色分组表
+console.log('    [' + Object.keys(colorGroups).map(function (group) {
+  var colors = colorGroups[group];
+  return 'ColorGroup "' + group
+    + '" [' + colors.map(function (p) { return p[0]; }).join('\n        , ')
     + ']';
 }).join('\n    , ') + ']');
 ```
 
 -}
-type Palette
+type Color
     = -- Red
       Red50
     | Red100
@@ -378,11 +347,51 @@ type Palette
     | BlueGrey700
     | BlueGrey800
     | BlueGrey900
+      --
+    | White
+    | Black
 
 
-fromString : String -> Maybe Palette
-fromString p =
-    case String.toLower p of
+{-| 配色分组
+
+    ColorGroup 分组名 [调色板列表, ...]
+
+-}
+type ColorGroup
+    = ColorGroup String (List Color)
+
+
+colorDecoder : Decoder Color
+colorDecoder =
+    colorDecoderHelper
+        (\v -> v)
+        (\p -> Decode.fail ("Unknown color: " ++ p))
+
+
+maybeColorDecoder : Decoder (Maybe Color)
+maybeColorDecoder =
+    colorDecoderHelper
+        (\v -> Just v)
+        (\_ -> Decode.succeed Nothing)
+
+
+colorDecoderHelper : (Color -> a) -> (String -> Decoder a) -> Decoder a
+colorDecoderHelper success fail =
+    Decode.string
+        |> Decode.andThen
+            (\str ->
+                case fromString str of
+                    Just v ->
+                        Decode.succeed (success v)
+
+                    Nothing ->
+                        fail str
+            )
+
+
+fromString : String -> Maybe Color
+fromString str =
+    case String.toLower str of
         "red50" ->
             Just Red50
 
@@ -1145,13 +1154,19 @@ fromString p =
         "bluegrey900" ->
             Just BlueGrey900
 
+        "white" ->
+            Just White
+
+        "black" ->
+            Just Black
+
         _ ->
             Nothing
 
 
-paletteGroups : List PaletteGroup
-paletteGroups =
-    [ PaletteGroup "Red"
+groups : List ColorGroup
+groups =
+    [ ColorGroup "Red"
         [ Red50
         , Red100
         , Red200
@@ -1167,7 +1182,7 @@ paletteGroups =
         , RedA400
         , RedA700
         ]
-    , PaletteGroup "Pink"
+    , ColorGroup "Pink"
         [ Pink50
         , Pink100
         , Pink200
@@ -1183,7 +1198,7 @@ paletteGroups =
         , PinkA400
         , PinkA700
         ]
-    , PaletteGroup "Purple"
+    , ColorGroup "Purple"
         [ Purple50
         , Purple100
         , Purple200
@@ -1199,7 +1214,7 @@ paletteGroups =
         , PurpleA400
         , PurpleA700
         ]
-    , PaletteGroup "Deep Purple"
+    , ColorGroup "Deep Purple"
         [ DeepPurple50
         , DeepPurple100
         , DeepPurple200
@@ -1215,7 +1230,7 @@ paletteGroups =
         , DeepPurpleA400
         , DeepPurpleA700
         ]
-    , PaletteGroup "Indigo"
+    , ColorGroup "Indigo"
         [ Indigo50
         , Indigo100
         , Indigo200
@@ -1231,7 +1246,7 @@ paletteGroups =
         , IndigoA400
         , IndigoA700
         ]
-    , PaletteGroup "Blue"
+    , ColorGroup "Blue"
         [ Blue50
         , Blue100
         , Blue200
@@ -1247,7 +1262,7 @@ paletteGroups =
         , BlueA400
         , BlueA700
         ]
-    , PaletteGroup "Light Blue"
+    , ColorGroup "Light Blue"
         [ LightBlue50
         , LightBlue100
         , LightBlue200
@@ -1263,7 +1278,7 @@ paletteGroups =
         , LightBlueA400
         , LightBlueA700
         ]
-    , PaletteGroup "Cyan"
+    , ColorGroup "Cyan"
         [ Cyan50
         , Cyan100
         , Cyan200
@@ -1279,7 +1294,7 @@ paletteGroups =
         , CyanA400
         , CyanA700
         ]
-    , PaletteGroup "Teal"
+    , ColorGroup "Teal"
         [ Teal50
         , Teal100
         , Teal200
@@ -1295,7 +1310,7 @@ paletteGroups =
         , TealA400
         , TealA700
         ]
-    , PaletteGroup "Green"
+    , ColorGroup "Green"
         [ Green50
         , Green100
         , Green200
@@ -1311,7 +1326,7 @@ paletteGroups =
         , GreenA400
         , GreenA700
         ]
-    , PaletteGroup "Light Green"
+    , ColorGroup "Light Green"
         [ LightGreen50
         , LightGreen100
         , LightGreen200
@@ -1327,7 +1342,7 @@ paletteGroups =
         , LightGreenA400
         , LightGreenA700
         ]
-    , PaletteGroup "Lime"
+    , ColorGroup "Lime"
         [ Lime50
         , Lime100
         , Lime200
@@ -1343,7 +1358,7 @@ paletteGroups =
         , LimeA400
         , LimeA700
         ]
-    , PaletteGroup "Yellow"
+    , ColorGroup "Yellow"
         [ Yellow50
         , Yellow100
         , Yellow200
@@ -1359,7 +1374,7 @@ paletteGroups =
         , YellowA400
         , YellowA700
         ]
-    , PaletteGroup "Amber"
+    , ColorGroup "Amber"
         [ Amber50
         , Amber100
         , Amber200
@@ -1375,7 +1390,7 @@ paletteGroups =
         , AmberA400
         , AmberA700
         ]
-    , PaletteGroup "Orange"
+    , ColorGroup "Orange"
         [ Orange50
         , Orange100
         , Orange200
@@ -1391,7 +1406,7 @@ paletteGroups =
         , OrangeA400
         , OrangeA700
         ]
-    , PaletteGroup "Deep Orange"
+    , ColorGroup "Deep Orange"
         [ DeepOrange50
         , DeepOrange100
         , DeepOrange200
@@ -1407,7 +1422,7 @@ paletteGroups =
         , DeepOrangeA400
         , DeepOrangeA700
         ]
-    , PaletteGroup "Brown"
+    , ColorGroup "Brown"
         [ Brown50
         , Brown100
         , Brown200
@@ -1419,7 +1434,7 @@ paletteGroups =
         , Brown800
         , Brown900
         ]
-    , PaletteGroup "Grey"
+    , ColorGroup "Grey"
         [ Grey50
         , Grey100
         , Grey200
@@ -1431,7 +1446,7 @@ paletteGroups =
         , Grey800
         , Grey900
         ]
-    , PaletteGroup "Blue Grey"
+    , ColorGroup "Blue Grey"
         [ BlueGrey50
         , BlueGrey100
         , BlueGrey200
@@ -1443,4 +1458,787 @@ paletteGroups =
         , BlueGrey800
         , BlueGrey900
         ]
+    , ColorGroup "White" [ White ]
+    , ColorGroup "Black" [ Black ]
     ]
+
+
+toRgb : Color -> { r : Int, g : Int, b : Int }
+toRgb color =
+    let
+        ( r, g, b ) =
+            toRgbHelper color
+    in
+    { r = r, g = g, b = b }
+
+
+toRgbHelper : Color -> ( Int, Int, Int )
+toRgbHelper color =
+    case color of
+        Red50 ->
+            ( 255, 235, 238 )
+
+        Red100 ->
+            ( 255, 205, 210 )
+
+        Red200 ->
+            ( 239, 154, 154 )
+
+        Red300 ->
+            ( 229, 115, 115 )
+
+        Red400 ->
+            ( 239, 83, 80 )
+
+        Red500 ->
+            ( 244, 67, 54 )
+
+        Red600 ->
+            ( 229, 57, 53 )
+
+        Red700 ->
+            ( 211, 47, 47 )
+
+        Red800 ->
+            ( 198, 40, 40 )
+
+        Red900 ->
+            ( 183, 28, 28 )
+
+        RedA100 ->
+            ( 255, 138, 128 )
+
+        RedA200 ->
+            ( 255, 82, 82 )
+
+        RedA400 ->
+            ( 255, 23, 68 )
+
+        RedA700 ->
+            ( 213, 0, 0 )
+
+        Pink50 ->
+            ( 252, 228, 236 )
+
+        Pink100 ->
+            ( 248, 187, 208 )
+
+        Pink200 ->
+            ( 244, 143, 177 )
+
+        Pink300 ->
+            ( 240, 98, 146 )
+
+        Pink400 ->
+            ( 236, 64, 122 )
+
+        Pink500 ->
+            ( 233, 30, 99 )
+
+        Pink600 ->
+            ( 216, 27, 96 )
+
+        Pink700 ->
+            ( 194, 24, 91 )
+
+        Pink800 ->
+            ( 173, 20, 87 )
+
+        Pink900 ->
+            ( 136, 14, 79 )
+
+        PinkA100 ->
+            ( 255, 128, 171 )
+
+        PinkA200 ->
+            ( 255, 64, 129 )
+
+        PinkA400 ->
+            ( 245, 0, 87 )
+
+        PinkA700 ->
+            ( 197, 17, 98 )
+
+        Purple50 ->
+            ( 243, 229, 245 )
+
+        Purple100 ->
+            ( 225, 190, 231 )
+
+        Purple200 ->
+            ( 206, 147, 216 )
+
+        Purple300 ->
+            ( 186, 104, 200 )
+
+        Purple400 ->
+            ( 171, 71, 188 )
+
+        Purple500 ->
+            ( 156, 39, 176 )
+
+        Purple600 ->
+            ( 142, 36, 170 )
+
+        Purple700 ->
+            ( 123, 31, 162 )
+
+        Purple800 ->
+            ( 106, 27, 154 )
+
+        Purple900 ->
+            ( 74, 20, 140 )
+
+        PurpleA100 ->
+            ( 234, 128, 252 )
+
+        PurpleA200 ->
+            ( 224, 64, 251 )
+
+        PurpleA400 ->
+            ( 213, 0, 249 )
+
+        PurpleA700 ->
+            ( 170, 0, 255 )
+
+        DeepPurple50 ->
+            ( 237, 231, 246 )
+
+        DeepPurple100 ->
+            ( 209, 196, 233 )
+
+        DeepPurple200 ->
+            ( 179, 157, 219 )
+
+        DeepPurple300 ->
+            ( 149, 117, 205 )
+
+        DeepPurple400 ->
+            ( 126, 87, 194 )
+
+        DeepPurple500 ->
+            ( 103, 58, 183 )
+
+        DeepPurple600 ->
+            ( 94, 53, 177 )
+
+        DeepPurple700 ->
+            ( 81, 45, 168 )
+
+        DeepPurple800 ->
+            ( 69, 39, 160 )
+
+        DeepPurple900 ->
+            ( 49, 27, 146 )
+
+        DeepPurpleA100 ->
+            ( 179, 136, 255 )
+
+        DeepPurpleA200 ->
+            ( 124, 77, 255 )
+
+        DeepPurpleA400 ->
+            ( 101, 31, 255 )
+
+        DeepPurpleA700 ->
+            ( 98, 0, 234 )
+
+        Indigo50 ->
+            ( 232, 234, 246 )
+
+        Indigo100 ->
+            ( 197, 202, 233 )
+
+        Indigo200 ->
+            ( 159, 168, 218 )
+
+        Indigo300 ->
+            ( 121, 134, 203 )
+
+        Indigo400 ->
+            ( 92, 107, 192 )
+
+        Indigo500 ->
+            ( 63, 81, 181 )
+
+        Indigo600 ->
+            ( 57, 73, 171 )
+
+        Indigo700 ->
+            ( 48, 63, 159 )
+
+        Indigo800 ->
+            ( 40, 53, 147 )
+
+        Indigo900 ->
+            ( 26, 35, 126 )
+
+        IndigoA100 ->
+            ( 140, 158, 255 )
+
+        IndigoA200 ->
+            ( 83, 109, 254 )
+
+        IndigoA400 ->
+            ( 61, 90, 254 )
+
+        IndigoA700 ->
+            ( 48, 79, 254 )
+
+        Blue50 ->
+            ( 227, 242, 253 )
+
+        Blue100 ->
+            ( 187, 222, 251 )
+
+        Blue200 ->
+            ( 144, 202, 249 )
+
+        Blue300 ->
+            ( 100, 181, 246 )
+
+        Blue400 ->
+            ( 66, 165, 245 )
+
+        Blue500 ->
+            ( 33, 150, 243 )
+
+        Blue600 ->
+            ( 30, 136, 229 )
+
+        Blue700 ->
+            ( 25, 118, 210 )
+
+        Blue800 ->
+            ( 21, 101, 192 )
+
+        Blue900 ->
+            ( 13, 71, 161 )
+
+        BlueA100 ->
+            ( 130, 177, 255 )
+
+        BlueA200 ->
+            ( 68, 138, 255 )
+
+        BlueA400 ->
+            ( 41, 121, 255 )
+
+        BlueA700 ->
+            ( 41, 98, 255 )
+
+        LightBlue50 ->
+            ( 225, 245, 254 )
+
+        LightBlue100 ->
+            ( 179, 229, 252 )
+
+        LightBlue200 ->
+            ( 129, 212, 250 )
+
+        LightBlue300 ->
+            ( 79, 195, 247 )
+
+        LightBlue400 ->
+            ( 41, 182, 246 )
+
+        LightBlue500 ->
+            ( 3, 169, 244 )
+
+        LightBlue600 ->
+            ( 3, 155, 229 )
+
+        LightBlue700 ->
+            ( 2, 136, 209 )
+
+        LightBlue800 ->
+            ( 2, 119, 189 )
+
+        LightBlue900 ->
+            ( 1, 87, 155 )
+
+        LightBlueA100 ->
+            ( 128, 216, 255 )
+
+        LightBlueA200 ->
+            ( 64, 196, 255 )
+
+        LightBlueA400 ->
+            ( 0, 176, 255 )
+
+        LightBlueA700 ->
+            ( 0, 145, 234 )
+
+        Cyan50 ->
+            ( 224, 247, 250 )
+
+        Cyan100 ->
+            ( 178, 235, 242 )
+
+        Cyan200 ->
+            ( 128, 222, 234 )
+
+        Cyan300 ->
+            ( 77, 208, 225 )
+
+        Cyan400 ->
+            ( 38, 198, 218 )
+
+        Cyan500 ->
+            ( 0, 188, 212 )
+
+        Cyan600 ->
+            ( 0, 172, 193 )
+
+        Cyan700 ->
+            ( 0, 151, 167 )
+
+        Cyan800 ->
+            ( 0, 131, 143 )
+
+        Cyan900 ->
+            ( 0, 96, 100 )
+
+        CyanA100 ->
+            ( 132, 255, 255 )
+
+        CyanA200 ->
+            ( 24, 255, 255 )
+
+        CyanA400 ->
+            ( 0, 229, 255 )
+
+        CyanA700 ->
+            ( 0, 184, 212 )
+
+        Teal50 ->
+            ( 224, 242, 241 )
+
+        Teal100 ->
+            ( 178, 223, 219 )
+
+        Teal200 ->
+            ( 128, 203, 196 )
+
+        Teal300 ->
+            ( 77, 182, 172 )
+
+        Teal400 ->
+            ( 38, 166, 154 )
+
+        Teal500 ->
+            ( 0, 150, 136 )
+
+        Teal600 ->
+            ( 0, 137, 123 )
+
+        Teal700 ->
+            ( 0, 121, 107 )
+
+        Teal800 ->
+            ( 0, 105, 92 )
+
+        Teal900 ->
+            ( 0, 77, 64 )
+
+        TealA100 ->
+            ( 167, 255, 235 )
+
+        TealA200 ->
+            ( 100, 255, 218 )
+
+        TealA400 ->
+            ( 29, 233, 182 )
+
+        TealA700 ->
+            ( 0, 191, 165 )
+
+        Green50 ->
+            ( 232, 245, 233 )
+
+        Green100 ->
+            ( 200, 230, 201 )
+
+        Green200 ->
+            ( 165, 214, 167 )
+
+        Green300 ->
+            ( 129, 199, 132 )
+
+        Green400 ->
+            ( 102, 187, 106 )
+
+        Green500 ->
+            ( 76, 175, 80 )
+
+        Green600 ->
+            ( 67, 160, 71 )
+
+        Green700 ->
+            ( 56, 142, 60 )
+
+        Green800 ->
+            ( 46, 125, 50 )
+
+        Green900 ->
+            ( 27, 94, 32 )
+
+        GreenA100 ->
+            ( 185, 246, 202 )
+
+        GreenA200 ->
+            ( 105, 240, 174 )
+
+        GreenA400 ->
+            ( 0, 230, 118 )
+
+        GreenA700 ->
+            ( 0, 200, 83 )
+
+        LightGreen50 ->
+            ( 241, 248, 233 )
+
+        LightGreen100 ->
+            ( 220, 237, 200 )
+
+        LightGreen200 ->
+            ( 197, 225, 165 )
+
+        LightGreen300 ->
+            ( 174, 213, 129 )
+
+        LightGreen400 ->
+            ( 156, 204, 101 )
+
+        LightGreen500 ->
+            ( 139, 195, 74 )
+
+        LightGreen600 ->
+            ( 124, 179, 66 )
+
+        LightGreen700 ->
+            ( 104, 159, 56 )
+
+        LightGreen800 ->
+            ( 85, 139, 47 )
+
+        LightGreen900 ->
+            ( 51, 105, 30 )
+
+        LightGreenA100 ->
+            ( 204, 255, 144 )
+
+        LightGreenA200 ->
+            ( 178, 255, 89 )
+
+        LightGreenA400 ->
+            ( 118, 255, 3 )
+
+        LightGreenA700 ->
+            ( 100, 221, 23 )
+
+        Lime50 ->
+            ( 249, 251, 231 )
+
+        Lime100 ->
+            ( 240, 244, 195 )
+
+        Lime200 ->
+            ( 230, 238, 156 )
+
+        Lime300 ->
+            ( 220, 231, 117 )
+
+        Lime400 ->
+            ( 212, 225, 87 )
+
+        Lime500 ->
+            ( 205, 220, 57 )
+
+        Lime600 ->
+            ( 192, 202, 51 )
+
+        Lime700 ->
+            ( 175, 180, 43 )
+
+        Lime800 ->
+            ( 158, 157, 36 )
+
+        Lime900 ->
+            ( 130, 119, 23 )
+
+        LimeA100 ->
+            ( 244, 255, 129 )
+
+        LimeA200 ->
+            ( 238, 255, 65 )
+
+        LimeA400 ->
+            ( 198, 255, 0 )
+
+        LimeA700 ->
+            ( 174, 234, 0 )
+
+        Yellow50 ->
+            ( 255, 253, 231 )
+
+        Yellow100 ->
+            ( 255, 249, 196 )
+
+        Yellow200 ->
+            ( 255, 245, 157 )
+
+        Yellow300 ->
+            ( 255, 241, 118 )
+
+        Yellow400 ->
+            ( 255, 238, 88 )
+
+        Yellow500 ->
+            ( 255, 235, 59 )
+
+        Yellow600 ->
+            ( 253, 216, 53 )
+
+        Yellow700 ->
+            ( 251, 192, 45 )
+
+        Yellow800 ->
+            ( 249, 168, 37 )
+
+        Yellow900 ->
+            ( 245, 127, 23 )
+
+        YellowA100 ->
+            ( 255, 255, 141 )
+
+        YellowA200 ->
+            ( 255, 255, 0 )
+
+        YellowA400 ->
+            ( 255, 234, 0 )
+
+        YellowA700 ->
+            ( 255, 214, 0 )
+
+        Amber50 ->
+            ( 255, 248, 225 )
+
+        Amber100 ->
+            ( 255, 236, 179 )
+
+        Amber200 ->
+            ( 255, 224, 130 )
+
+        Amber300 ->
+            ( 255, 213, 79 )
+
+        Amber400 ->
+            ( 255, 202, 40 )
+
+        Amber500 ->
+            ( 255, 193, 7 )
+
+        Amber600 ->
+            ( 255, 179, 0 )
+
+        Amber700 ->
+            ( 255, 160, 0 )
+
+        Amber800 ->
+            ( 255, 143, 0 )
+
+        Amber900 ->
+            ( 255, 111, 0 )
+
+        AmberA100 ->
+            ( 255, 229, 127 )
+
+        AmberA200 ->
+            ( 255, 215, 64 )
+
+        AmberA400 ->
+            ( 255, 196, 0 )
+
+        AmberA700 ->
+            ( 255, 171, 0 )
+
+        Orange50 ->
+            ( 255, 243, 224 )
+
+        Orange100 ->
+            ( 255, 224, 178 )
+
+        Orange200 ->
+            ( 255, 204, 128 )
+
+        Orange300 ->
+            ( 255, 183, 77 )
+
+        Orange400 ->
+            ( 255, 167, 38 )
+
+        Orange500 ->
+            ( 255, 152, 0 )
+
+        Orange600 ->
+            ( 251, 140, 0 )
+
+        Orange700 ->
+            ( 245, 124, 0 )
+
+        Orange800 ->
+            ( 239, 108, 0 )
+
+        Orange900 ->
+            ( 230, 81, 0 )
+
+        OrangeA100 ->
+            ( 255, 209, 128 )
+
+        OrangeA200 ->
+            ( 255, 171, 64 )
+
+        OrangeA400 ->
+            ( 255, 145, 0 )
+
+        OrangeA700 ->
+            ( 255, 109, 0 )
+
+        DeepOrange50 ->
+            ( 251, 233, 231 )
+
+        DeepOrange100 ->
+            ( 255, 204, 188 )
+
+        DeepOrange200 ->
+            ( 255, 171, 145 )
+
+        DeepOrange300 ->
+            ( 255, 138, 101 )
+
+        DeepOrange400 ->
+            ( 255, 112, 67 )
+
+        DeepOrange500 ->
+            ( 255, 87, 34 )
+
+        DeepOrange600 ->
+            ( 244, 81, 30 )
+
+        DeepOrange700 ->
+            ( 230, 74, 25 )
+
+        DeepOrange800 ->
+            ( 216, 67, 21 )
+
+        DeepOrange900 ->
+            ( 191, 54, 12 )
+
+        DeepOrangeA100 ->
+            ( 255, 158, 128 )
+
+        DeepOrangeA200 ->
+            ( 255, 110, 64 )
+
+        DeepOrangeA400 ->
+            ( 255, 61, 0 )
+
+        DeepOrangeA700 ->
+            ( 221, 44, 0 )
+
+        Brown50 ->
+            ( 239, 235, 233 )
+
+        Brown100 ->
+            ( 215, 204, 200 )
+
+        Brown200 ->
+            ( 188, 170, 164 )
+
+        Brown300 ->
+            ( 161, 136, 127 )
+
+        Brown400 ->
+            ( 141, 110, 99 )
+
+        Brown500 ->
+            ( 121, 85, 72 )
+
+        Brown600 ->
+            ( 109, 76, 65 )
+
+        Brown700 ->
+            ( 93, 64, 55 )
+
+        Brown800 ->
+            ( 78, 52, 46 )
+
+        Brown900 ->
+            ( 62, 39, 35 )
+
+        Grey50 ->
+            ( 250, 250, 250 )
+
+        Grey100 ->
+            ( 245, 245, 245 )
+
+        Grey200 ->
+            ( 238, 238, 238 )
+
+        Grey300 ->
+            ( 224, 224, 224 )
+
+        Grey400 ->
+            ( 189, 189, 189 )
+
+        Grey500 ->
+            ( 158, 158, 158 )
+
+        Grey600 ->
+            ( 117, 117, 117 )
+
+        Grey700 ->
+            ( 97, 97, 97 )
+
+        Grey800 ->
+            ( 66, 66, 66 )
+
+        Grey900 ->
+            ( 33, 33, 33 )
+
+        BlueGrey50 ->
+            ( 236, 239, 241 )
+
+        BlueGrey100 ->
+            ( 207, 216, 220 )
+
+        BlueGrey200 ->
+            ( 176, 190, 197 )
+
+        BlueGrey300 ->
+            ( 144, 164, 174 )
+
+        BlueGrey400 ->
+            ( 120, 144, 156 )
+
+        BlueGrey500 ->
+            ( 96, 125, 139 )
+
+        BlueGrey600 ->
+            ( 84, 110, 122 )
+
+        BlueGrey700 ->
+            ( 69, 90, 100 )
+
+        BlueGrey800 ->
+            ( 55, 71, 79 )
+
+        BlueGrey900 ->
+            ( 38, 50, 56 )
+
+        White ->
+            ( 255, 255, 255 )
+
+        Black ->
+            ( 0, 0, 0 )

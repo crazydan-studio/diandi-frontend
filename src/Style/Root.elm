@@ -8,8 +8,9 @@ import Style.Default
 rootLayout : List (Attribute msg)
 rootLayout =
     [ Font.family
-        [ Font.serif
+        [ Font.typeface "Roboto"
+        , Font.sansSerif
         ]
-    , Font.size Style.Default.majorFontSize
-    , Font.color Style.Default.majorFontColor
+    , Font.size Style.Default.primaryFontSize
+    , Font.color Style.Default.primaryFontColor
     ]

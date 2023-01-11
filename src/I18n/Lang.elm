@@ -1,11 +1,10 @@
 module I18n.Lang exposing
     ( Lang(..)
-    , TranslatedResult(..)
+    , TranslateResult(..)
     , all
-    , done
     , fromString
     , fromStringWithDefault
-    , lang
+    , lang_end
     , toString
     )
 
@@ -16,19 +15,14 @@ type Lang
     | Unknown
 
 
-type TranslatedResult
+type TranslateResult
     = Translated String
     | NoNeedsToTranslate (List String)
-    | WaitingToTranslate (List String) (List String)
+    | WaitingToTranslate { modules : List String, texts : List String }
 
 
-lang : String
-lang =
-    "@_@"
-
-
-done : List String
-done =
+lang_end : List String
+lang_end =
     []
 
 

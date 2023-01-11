@@ -1,65 +1,39 @@
-module I18n.Helper exposing (i18nElementText, i18nHelper)
+module I18n.Helper exposing
+    ( i18nTextJoiner
+    , i18nWaiting
+    , i18nWaitingByLang
+    )
 
-import Element exposing (Element)
-import Html.Attributes as HtmlAttr
-import I18n.Lang
-    exposing
-        ( TranslatedResult(..)
-        , lang
-        )
+import I18n.Lang exposing (Lang, TranslateResult(..))
 
 
-i18nHelper :
-    (List String -> TranslatedResult)
-    -> List String
-    -> TranslatedResult
-i18nHelper translator textList =
-    let
-        textListHead =
-            textList |> List.head |> Maybe.withDefault ""
-
-        actualTextList =
-            if textListHead == lang then
-                textList |> List.tail |> Maybe.withDefault []
-
-            else
-                textList
-    in
-    case actualTextList of
-        [] ->
-            Translated ""
-
-        _ ->
-            translator actualTextList
-
-
-i18nElementText :
-    (List String -> TranslatedResult)
-    -> List String
-    -> Element msg
-i18nElementText translator textList =
-    case i18nHelper translator textList of
-        Translated str ->
-            Element.text str
-
-        NoNeedsToTranslate list ->
-            Element.text (translateJoiner list)
-
-        WaitingToTranslate textModules list ->
-            -- 记录未做国际化的内容信息，便于通过js做统一展示处理
-            Element.el
-                [ HtmlAttr.attribute
-                    "need-to-translate"
-                    "true"
-                    |> Element.htmlAttribute
-                , HtmlAttr.attribute
-                    "need-to-translate-module"
-                    (textModules |> List.foldl (\m s -> s ++ "/" ++ m) "")
-                    |> Element.htmlAttribute
-                ]
-                (Element.text (translateJoiner list))
-
-
-translateJoiner : List String -> String
-translateJoiner =
+{-| 拼接国际化文本
+-}
+i18nTextJoiner : List String -> String
+i18nTextJoiner =
     List.foldr (++) ""
+
+
+{-| 返回结果[WaitingToTranslate](I18n.Lang#WaitingToTranslate)
+-}
+i18nWaiting : List String -> List String -> TranslateResult
+i18nWaiting modules texts =
+    WaitingToTranslate { modules = modules, texts = texts }
+
+
+{-| 根据默认Lang和当前Lang确定结果是否为[WaitingToTranslate](I18n.Lang#WaitingToTranslate)
+
+当前Lang与默认Lang相同时，返回`NoNeedsToTranslate`，否则，返回`WaitingToTranslate`
+
+-}
+i18nWaitingByLang :
+    { default : Lang, current : Lang }
+    -> List String
+    -> List String
+    -> TranslateResult
+i18nWaitingByLang lang modules texts =
+    if lang.current == lang.default then
+        NoNeedsToTranslate texts
+
+    else
+        i18nWaiting modules texts

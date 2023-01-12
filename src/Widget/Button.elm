@@ -1,6 +1,7 @@
 module Widget.Button exposing
     ( link
     , primary
+    , secondary
     )
 
 import Element
@@ -23,7 +24,7 @@ import Theme.Theme
 import Widget.Helper exposing (css)
 
 
-{-| 主按钮
+{-| 一级按钮
 -}
 primary :
     List (Attribute msg)
@@ -33,7 +34,41 @@ primary :
         , theme : Theme.Theme.Theme
         }
     -> Element msg
-primary attrs { content, onPress, theme } =
+primary =
+    btnCreator Theme.Theme.primaryBtn
+
+
+{-| 二级按钮
+-}
+secondary :
+    List (Attribute msg)
+    ->
+        { content : Element msg
+        , onPress : Maybe msg
+        , theme : Theme.Theme.Theme
+        }
+    -> Element msg
+secondary =
+    btnCreator Theme.Theme.secondaryBtn
+
+
+{-| 链接按钮
+-}
+link : Element msg
+link =
+    Element.none
+
+
+btnCreator :
+    (Theme.Theme.Theme -> List (Attribute msg))
+    -> List (Attribute msg)
+    ->
+        { content : Element msg
+        , onPress : Maybe msg
+        , theme : Theme.Theme.Theme
+        }
+    -> Element msg
+btnCreator fromTheme attrs { content, onPress, theme } =
     Input.button
         ([ width
             (shrink
@@ -48,16 +83,9 @@ primary attrs { content, onPress, theme } =
          , mouseOver []
          , focused []
          ]
-            ++ Theme.Theme.primaryBtn theme
+            ++ fromTheme theme
             ++ attrs
         )
         { onPress = onPress
         , label = content
         }
-
-
-{-| 链接按钮
--}
-link : Element msg
-link =
-    Element.none

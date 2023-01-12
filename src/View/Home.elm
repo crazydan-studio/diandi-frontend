@@ -6,13 +6,13 @@ import Element.Font as Font
 import Element.Input as Input
 import I18n.Lang exposing (langEnd)
 import I18n.Port
-import Model.Icon
 import Model.Root exposing (RootModel)
 import Model.User
 import Msg exposing (RootMsg)
 import Style.Default
 import Style.Home
-import Style.Icon as Icon
+import Theme.Icon
+import Theme.Icon.Element
 import View.I18n.Home exposing (i18nBtnModule, i18nLabelModule)
 import View.Topic.ListView
 import Widget.Button
@@ -56,7 +56,7 @@ create ({ theme, lang } as model) =
                     [ alignRight
                     ]
                     Msg.NoOp
-                    Model.Icon.SearchOutlined
+                    Theme.Icon.SearchOutlined
                 ]
             , row
                 (Style.Default.boundaryBorderEach
@@ -72,12 +72,12 @@ create ({ theme, lang } as model) =
                 [ iconBtn
                     []
                     Msg.NoOp
-                    Model.Icon.ArrowLeftOutlined
+                    Theme.Icon.ArrowLeftOutlined
                 , iconBtn
                     [ alignRight
                     ]
                     Msg.NoOp
-                    Model.Icon.PlusOutlined
+                    Theme.Icon.PlusOutlined
                 ]
             , column
                 [ width fill
@@ -115,32 +115,23 @@ create ({ theme, lang } as model) =
                        , padding 8
                        ]
                 )
-                [ Input.button
-                    (Style.Home.userAvatarInTopBar
-                        ++ [ width (px 64) ]
-                    )
-                    { onPress = Nothing
-                    , label =
-                        -- TODO 点击后，在左侧弹出侧边栏，该侧边栏中放置用户设置、语言切换、主题切换等
-                        text (userName model.me)
-                    }
-                , Widget.Button.primary
-                    [ alignRight
-                    ]
+                [ Widget.Button.secondary
+                    []
                     { theme = theme
                     , content =
                         row
                             [ spacing 8
                             ]
-                            [ Icon.icon
+                            [ Theme.Icon.Element.icon
                                 { size = 16
                                 , color = rgb255 255 255 255
                                 }
-                                Model.Icon.GlobalOutlined
-                            , (i18nBtnModule :: "语言" :: langEnd)
+                                Theme.Icon.SettingOutlined
+                            , -- TODO 点击后，在左侧弹出侧边栏，该侧边栏中展示用户头像/名称、语言切换、主题切换等
+                              (i18nBtnModule :: "设置" :: langEnd)
                                 |> i18nText
                             ]
-                    , onPress = Just (I18n.Port.find Msg.I18nPorts)
+                    , onPress = Nothing
                     }
                 ]
             ]
@@ -214,7 +205,7 @@ create ({ theme, lang } as model) =
                                     [ alignRight
                                     ]
                                     Msg.NoOp
-                                    Model.Icon.FilterOutlined
+                                    Theme.Icon.FilterOutlined
                                ]
                         )
                     ]
@@ -391,9 +382,9 @@ userName user =
             u.name
 
 
-icon : Model.Icon.Icon -> Element msg
+icon : Theme.Icon.Icon -> Element msg
 icon =
-    Icon.icon
+    Theme.Icon.Element.icon
         { size = 16
         , color = rgb255 6 126 213
         }
@@ -402,7 +393,7 @@ icon =
 iconBtn :
     List (Attribute msg)
     -> msg
-    -> Model.Icon.Icon
+    -> Theme.Icon.Icon
     -> Element msg
 iconBtn attr onPress i =
     Input.button

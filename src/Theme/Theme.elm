@@ -2,6 +2,7 @@ module Theme.Theme exposing
     ( Theme
     , primaryBtn
     , primaryFontColor
+    , secondaryBtn
     )
 
 import Element
@@ -14,6 +15,7 @@ type alias Theme =
     , primaryFontColor : Theme.Color.Color
     , secondaryFontSize : Int
     , primaryBtnColor : Theme.Color.Color
+    , secondaryBtnColor : Theme.Color.Color
     }
 
 
@@ -26,3 +28,7 @@ primaryFontColor theme =
 primaryBtn : Theme -> List (Element.Attribute msg)
 primaryBtn theme =
     Theme.Color.Element.defaultPalette theme.primaryBtnColor
+
+secondaryBtn : Theme -> List (Element.Attribute msg)
+secondaryBtn theme =
+    Theme.Color.Element.defaultPalette theme.secondaryBtnColor

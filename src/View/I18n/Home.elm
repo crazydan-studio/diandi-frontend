@@ -171,6 +171,15 @@ i18nBtnTranslator langType i18nDefault modules texts =
                 _ ->
                     i18nDefault [] texts
 
+        [ "设置" ] ->
+            case langType of
+                En_US ->
+                    Translated
+                        "Settings"
+
+                _ ->
+                    i18nDefault [] texts
+
         _ ->
             i18nWaiting modules texts
 

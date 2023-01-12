@@ -72,19 +72,20 @@
 
       content: "";
       background-image: url("data:image/svg+xml;base64,<%= htmlWebpackPlugin.options.loading %>");
+      background-color: white; /* 遮挡底部元素 */
       background-position: center;
       background-size: 15em;
       background-repeat: no-repeat;
 
       opacity: 1;
       transition: opacity 0.5s ease-out;
-      transition-delay: 0.5s;
+      transition-delay: 0.2s;
       pointer-events: none;
     }
 
     body > * {
       opacity: 0;
-      transition: opacity 0.8s ease-in;
+      transition: opacity 0.5s ease-in;
     }
     /** End: 在 elm 渲染结束前，都以透明方式隐藏元素 */
   </style>

@@ -11,6 +11,13 @@ create _ =
         [ -- 隐藏加载动画，显示body下的元素
           Html.text "body::after {opacity: 0;} body > * {opacity: 1;}"
 
-        -- 原始的 .s.r > .s 选择的文本宽度始终为0
-        , Html.text ".button > .s.r > .s {flex-basis: auto;}"
+        -- 解决原始的 .s.r > .s 选择的文本宽度始终为0的问题
+        , Html.text
+            (([ ".s.r > .s.button"
+              , ".button > .s.r > .s"
+              ]
+                |> String.join ","
+             )
+                ++ " {flex-basis: auto;}"
+            )
         ]

@@ -62,31 +62,34 @@
       flex-direction: column;
     }
 
-    /** https://loading.io/css/ */
-    #loading {
+    /** Start: 通过 ::after 显示加载动画，再在 elm 渲染结束后隐藏动画，从而确保加载动画可以渐进消失 */
+    body::after {
       height: 100%;
       width: 100%;
       overflow: hidden;
-      display: flex;
-      align-items: center;
-      flex-direction: column;
-      justify-content: center;
       z-index: 100;
       position: absolute;
+
+      content: "";
+      background-image: url("data:image/svg+xml;base64,<%= htmlWebpackPlugin.options.loading %>");
+      background-position: center;
+      background-size: 15em;
+      background-repeat: no-repeat;
+
+      opacity: 1;
+      transition: opacity 0.5s ease-out;
+      pointer-events: none;
     }
 
-    #loading>svg {
-      width: 15em;
-      height: 15em;
+    body > * {
+      opacity: 0;
+      transition: opacity 0.8s ease-in;
     }
+    /** End: 在 elm 渲染结束前，都以透明方式隐藏元素 */
   </style>
 </head>
 
 <body>
-  <div id="loading">
-    <%= htmlWebpackPlugin.options.loading %>
-  </div>
-
   <!-- https://github.com/jantimon/html-webpack-plugin/tree/main/examples/custom-insertion-position -->
   <%= htmlWebpackPlugin
         .tags

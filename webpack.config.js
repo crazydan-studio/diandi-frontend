@@ -30,7 +30,10 @@ function filepath(...paths) {
 }
 
 const packageJson = require("./package.json");
-const loadingSvg = fs.readFileSync(filepath(publicDir, "assets/img/loading.svg"), "utf-8");
+const loadingSvg = fs.readFileSync(
+  filepath(publicDir, "assets/img/loading.svg"),
+  "utf-8"
+);
 
 const common = {
   mode: MODE,
@@ -49,7 +52,7 @@ const common = {
       image: packageJson.image,
       lang: packageJson.lang,
       description: packageJson.description,
-      loading: loadingSvg,
+      loading: Buffer.from(loadingSvg, "utf-8").toString("base64"),
 
       // Use this template to get basic responsive meta tags
       template: filepath(publicDir, "index.html"),

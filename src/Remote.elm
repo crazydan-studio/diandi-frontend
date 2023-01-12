@@ -44,7 +44,7 @@ getAllMyTopics =
 
 
 queryMyTopics : {} -> Cmd RemoteMsg
-queryMyTopics param =
+queryMyTopics _ =
     Http.get
         { url = "/demo/topics.json"
         , expect = Http.expectJson QueryMyTopics topicListDecoder

@@ -77,11 +77,11 @@ i18nTranslator langType texts =
                 _ ->
                     i18nDefault [] texts
 
-        [ "这里是主题详情展示页，默认显示当前分类的信息。注：实时预览也在这里" ] ->
+        [ "这里是主题详情展示页，默认显示当前分类的信息" ] ->
             case langType of
                 En_US ->
                     Translated
-                        "Here is the details page for the topic, it will default show the information of the category. PS: Live preview is also here"
+                        "Here is the details page for the topic, it will default show the information of the category"
 
                 _ ->
                     i18nDefault [] texts

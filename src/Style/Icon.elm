@@ -1,7 +1,7 @@
 module Style.Icon exposing (icon)
 
 import Ant.Icons.Svg as Icons
-import Element exposing (Color, Element, html, toRgb)
+import Element exposing (Color, Element, el, html, toRgb)
 import Html exposing (Html)
 import Model.Icon exposing (..)
 import Svg.Attributes exposing (fill, height, width)
@@ -21,30 +21,32 @@ icon attr icn =
         c =
             toRgb attr.color
     in
-    fromIcon icn
-        [ width s
-        , height s
+    el []
+        (fromIcon icn
+            [ width s
+            , height s
 
-        -- Note: svg不支持rgba模式
-        , fill
-            ("rgb("
-                ++ ([ c.red, c.green, c.blue ]
-                        |> List.indexedMap
-                            (\i n ->
-                                (if i == 0 then
-                                    ""
+            -- Note: svg不支持rgba模式
+            , fill
+                ("rgb("
+                    ++ ([ c.red, c.green, c.blue ]
+                            |> List.indexedMap
+                                (\i n ->
+                                    (if i == 0 then
+                                        ""
 
-                                 else
-                                    " "
+                                     else
+                                        " "
+                                    )
+                                        ++ String.fromFloat (n * 255)
                                 )
-                                    ++ String.fromFloat (n * 255)
-                            )
-                        |> List.foldr (++) ""
-                   )
-                ++ ")"
-            )
-        ]
-        |> html
+                            |> List.foldr (++) ""
+                       )
+                    ++ ")"
+                )
+            ]
+            |> html
+        )
 
 
 {-| 转换代码

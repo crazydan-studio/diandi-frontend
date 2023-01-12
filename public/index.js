@@ -10,8 +10,6 @@ const fadeTimeout = 500;
 const loading = document.getElementById("loading");
 
 function runApp() {
-  loading.remove();
-
   // Note: 采用 Browser.application 方式初始化，无需挂载到dom节点
   const app = Elm.Main.init({
     // https://guide.elm-lang.org/interop/flags.html
@@ -27,6 +25,8 @@ function runApp() {
 
     app.ports.getNotTranslatedTexts.send(results);
   });
+
+  loading.remove();
 }
 
 loading.style.transition = fadeTimeout / 1000.0 + "s";

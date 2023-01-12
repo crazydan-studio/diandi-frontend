@@ -120,7 +120,9 @@ create ({ theme, lang } as model) =
                         ++ [ width (px 64) ]
                     )
                     { onPress = Nothing
-                    , label = text (userName model.me)
+                    , label =
+                        -- TODO 点击后，在左侧弹出侧边栏，该侧边栏中放置用户设置、语言切换、主题切换等
+                        text (userName model.me)
                     }
                 , Widget.Button.primary
                     [ alignRight
@@ -222,6 +224,8 @@ create ({ theme, lang } as model) =
                     , scrollbarY
                     ]
                     (View.Topic.ListView.create model)
+
+                -- TODO 输入框，待提取，以支持以弹窗方式添加子主题
                 , column
                     (Style.Default.boundaryBorderEach
                         { top = 1
@@ -230,7 +234,7 @@ create ({ theme, lang } as model) =
                         , left = 0
                         }
                         ++ [ width fill
-                           , height (px 234)
+                           , height (px (244 - 70))
                            , padding 8
                            , spacing 8
                            ]
@@ -257,6 +261,7 @@ create ({ theme, lang } as model) =
                                     ]
                                     { onPress = Nothing
                                     , label =
+                                        -- TODO 改为切换开关，开启后，在上部或下部以浮窗形式展开，固定高度并显示滚动条
                                         (i18nBtnModule :: "实时预览" :: langEnd)
                                             |> i18nText
                                     }
@@ -274,13 +279,13 @@ create ({ theme, lang } as model) =
                             , height
                                 -- TODO 未得到焦点时，保持最小高度，在得到焦点后，自动扩展高度至最大
                                 (fill
-                                    |> maximum 150
+                                    |> maximum (150 - 70)
                                 )
                             , Border.width 0
                             , focused []
                             ]
                             { onChange = \_ -> Msg.NoOp
-                            , text = "a\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\na\n"
+                            , text = ""
                             , placeholder =
                                 Just
                                     (Input.placeholder
@@ -368,7 +373,7 @@ create ({ theme, lang } as model) =
                     [ centerX
                     , centerY
                     ]
-                    [ ("这里是主题详情展示页，默认显示当前分类的信息。注：实时预览也在这里" :: langEnd)
+                    [ ("这里是主题详情展示页，默认显示当前分类的信息" :: langEnd)
                         |> i18nText
                     ]
                 ]

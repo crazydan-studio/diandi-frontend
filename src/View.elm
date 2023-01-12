@@ -3,10 +3,9 @@ module View exposing (create)
 import Browser
 import Element exposing (Element, fill, height, width)
 import Element.Font as Font
-import Html
-import Html.Attributes as HtmlAttr
 import Model.Root exposing (RootModel)
 import Msg exposing (RootMsg)
+import Theme.StyleSheet
 import Theme.Theme
 import View.Blank
 import View.Forbidden
@@ -33,10 +32,7 @@ create ({ theme } as model) =
                 (Theme.Theme.primaryFontColor theme)
             ]
             (page model)
-        , Html.div
-            [ HtmlAttr.id "_page_is_ready_"
-            ]
-            []
+        , Theme.StyleSheet.create theme
         ]
     }
 

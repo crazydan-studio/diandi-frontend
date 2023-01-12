@@ -1,6 +1,6 @@
 module Model.Tag exposing (..)
 
-import Model.Icon exposing (Icon)
+import Theme.Icon exposing (Icon)
 
 
 type alias Tag =

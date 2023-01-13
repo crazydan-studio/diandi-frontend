@@ -1,10 +1,11 @@
-module View.Topic.ListView exposing (create)
+module View.Topic.List exposing (create)
 
+import Data.TreeStore
 import Element exposing (..)
 import Element.Keyed
 import Element.Lazy
-import Model.Root exposing (RootModel)
-import Model.Topic
+import Model.Root exposing (RemoteData(..), RootModel)
+import Model.Topic exposing (Topic)
 import Msg exposing (RootMsg)
 import Style.Topic
 import Theme.Color
@@ -14,7 +15,15 @@ import Widget.Markdown
 
 create : RootModel -> Element RootMsg
 create model =
-    topicListView model.topics
+    case model.topics of
+        DataLoaded topics ->
+            topicListView topics
+
+        DataLoading ->
+            text "数据加载中，请稍候..."
+
+        DataLoadingError error ->
+            text error
 
 
 
@@ -34,7 +43,7 @@ getPaletteWithDefault bgColor defaultPalette =
             defaultPalette
 
 
-topicListView : List Model.Topic.Topic -> Element RootMsg
+topicListView : Data.TreeStore.Tree Topic -> Element RootMsg
 topicListView topics =
     -- 列表增删改性能提升方案，同时lazy可确保在刷新页面时，有滚动条的列表的滚动位置可被浏览器记录，刷新后能够自动恢复浏览位置
     -- https://guide.elm-lang.org/optimization/keyed.html
@@ -43,16 +52,14 @@ topicListView topics =
     Element.Keyed.column
         Style.Topic.topicList
         (topics
-            |> List.map
-                (\topic ->
-                    ( topic.id
-                    , Element.Lazy.lazy topicView topic
-                    )
+            |> Data.TreeStore.traverseDepth 1
+                (\_ topic _ ->
+                    ( topic.id, Element.Lazy.lazy topicView topic )
                 )
         )
 
 
-topicView : Model.Topic.Topic -> Element RootMsg
+topicView : Topic -> Element RootMsg
 topicView topic =
     column
         Style.Topic.topic

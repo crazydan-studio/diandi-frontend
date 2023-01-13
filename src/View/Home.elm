@@ -5,8 +5,7 @@ import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import I18n.Lang exposing (langEnd)
-import I18n.Port
-import Model.Root exposing (RootModel)
+import Model.Root exposing (RemoteData(..), RootModel)
 import Model.User
 import Msg exposing (RootMsg)
 import Style.Default
@@ -14,7 +13,8 @@ import Style.Home
 import Theme.Icon
 import Theme.Icon.Element
 import View.I18n.Home exposing (i18nBtnModule, i18nLabelModule)
-import View.Topic.ListView
+import View.Topic.Category.List
+import View.Topic.List
 import Widget.Button
 
 
@@ -79,30 +79,12 @@ create ({ theme, lang } as model) =
                     Msg.NoOp
                     Theme.Icon.PlusOutlined
                 ]
-            , column
+            , el
                 [ width fill
                 , height fill
-                , paddingEach { top = 0, left = 0, right = 0, bottom = 16 }
                 , scrollbarY
                 ]
-                ([ "点滴", "点滴", "点滴", "点滴", "点滴", "点滴", "点滴", "点滴" ]
-                    |> List.map
-                        (\e ->
-                            row
-                                (Style.Default.boundaryBorderEach
-                                    { top = 0
-                                    , right = 0
-                                    , bottom = 1
-                                    , left = 0
-                                    }
-                                    ++ [ width fill
-                                       , height (px 64)
-                                       , pointer
-                                       ]
-                                )
-                                [ el [ centerX ] (text e) ]
-                        )
-                )
+                (View.Topic.Category.List.create model)
             , row
                 (Style.Default.boundaryBorderEach
                     { top = 1
@@ -214,7 +196,7 @@ create ({ theme, lang } as model) =
                     , height fill
                     , scrollbarY
                     ]
-                    (View.Topic.ListView.create model)
+                    (View.Topic.List.create model)
 
                 -- TODO 输入框，待提取，以支持以弹窗方式添加子主题
                 , column

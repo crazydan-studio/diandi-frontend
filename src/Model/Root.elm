@@ -1,8 +1,15 @@
-module Model.Root exposing (RootModel)
+module Model.Root exposing
+    ( RemoteData(..)
+    , RootModel
+    , createTopicCategoryTree
+    , createTopicTree
+    )
 
 import Browser.Navigation as Nav
+import Data.TreeStore
 import I18n.Lang exposing (Lang, TextsNeedToBeTranslated)
-import Model.Topic
+import Model.Topic exposing (Topic)
+import Model.Topic.Category exposing (Category)
 import Model.User as User
 import Theme.Theme
 import Url
@@ -29,6 +36,33 @@ type alias RootModel =
     , remoteError : Maybe String
     , currentPage : View.Type.Type
 
-    --
-    , topics : List Model.Topic.Topic
+    -- 业务数据
+    , topics : RemoteData (Data.TreeStore.Tree Topic)
+    , categories : RemoteData (Data.TreeStore.Tree Category)
     }
+
+
+type RemoteData dataType
+    = DataLoaded dataType
+    | DataLoading
+    | DataLoadingError String
+
+
+createTopicTree : List Topic -> Data.TreeStore.Tree Topic
+createTopicTree topics =
+    Data.TreeStore.create
+        { idGetter = .id
+        , parentGetter = .superior
+        , sorter = Nothing
+        }
+        topics
+
+
+createTopicCategoryTree : List Category -> Data.TreeStore.Tree Category
+createTopicCategoryTree categories =
+    Data.TreeStore.create
+        { idGetter = .id
+        , parentGetter = .parent
+        , sorter = Nothing
+        }
+        categories

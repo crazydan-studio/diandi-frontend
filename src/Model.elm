@@ -4,10 +4,16 @@ import Browser.Navigation as Nav
 import Http
 import I18n.Lang
 import I18n.Port
-import Model.Root exposing (RootModel)
+import Model.Root
+    exposing
+        ( RemoteData(..)
+        , RootModel
+        , createTopicCategoryTree
+        , createTopicTree
+        )
 import Model.User as User
 import Msg exposing (..)
-import Remote exposing (RemoteMsg, getMyUserInfo)
+import Remote exposing (RemoteMsg)
 import Route
 import Theme.Type.Default
 import Url
@@ -42,7 +48,8 @@ init flags url key =
     , currentPage = ViewType.Loading
 
     --
-    , topics = []
+    , topics = DataLoading
+    , categories = DataLoading
     }
         |> routeUpdateHelper url
 
@@ -92,7 +99,10 @@ remoteUpdateHelper msg model =
                     ( { model
                         | me = User.User user
                       }
-                    , remote Remote.getAllMyTopics
+                    , Cmd.batch
+                        [ remote Remote.getAllMyTopics
+                        , remote Remote.getAllMyTopicCategories
+                        ]
                     )
 
                 Err _ ->
@@ -105,13 +115,33 @@ remoteUpdateHelper msg model =
             case result of
                 Ok topics ->
                     ( { model
-                        | topics = topics
+                        | topics = DataLoaded (createTopicTree topics)
                       }
                     , Cmd.none
                     )
 
                 Err error ->
-                    remoteErrorUpdateHelper error model
+                    ( { model
+                        | topics = DataLoadingError (Remote.parseError error)
+                      }
+                    , Cmd.none
+                    )
+
+        Remote.QueryMyTopicCategories result ->
+            case result of
+                Ok categories ->
+                    ( { model
+                        | categories = DataLoaded (createTopicCategoryTree categories)
+                      }
+                    , Cmd.none
+                    )
+
+                Err error ->
+                    ( { model
+                        | categories = DataLoadingError (Remote.parseError error)
+                      }
+                    , Cmd.none
+                    )
 
         _ ->
             ( model, Cmd.none )
@@ -135,14 +165,12 @@ remoteErrorUpdateHelper error model =
             else
                 ( model, Cmd.none )
 
-        Http.Timeout ->
-            ( { model | remoteError = Just "网络请求超时，请稍后再试" }, Cmd.none )
-
-        Http.NetworkError ->
-            ( { model | remoteError = Just "网络连接异常，请稍后再试" }, Cmd.none )
-
         _ ->
-            ( model, Cmd.none )
+            ( { model
+                | remoteError = Just (Remote.parseError error)
+              }
+            , Cmd.none
+            )
 
 
 routeUpdateHelper : Url.Url -> RootModel -> ( RootModel, Cmd RootMsg )
@@ -157,7 +185,7 @@ routeUpdateHelper url model =
                     ( ViewType.Login, remote Remote.logout )
 
                 Route.Home ->
-                    ( ViewType.Home, remote getMyUserInfo )
+                    ( ViewType.Home, remote Remote.getMyUserInfo )
 
                 Route.Forbidden ->
                     ( ViewType.Forbidden, Cmd.none )

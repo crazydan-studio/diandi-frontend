@@ -26,6 +26,10 @@ type alias TextsNeedToBeTranslated =
     { modules : List String, texts : List String }
 
 
+
+-- TODO 支持用户修改、添加国际化
+
+
 langEnd : List String
 langEnd =
     []

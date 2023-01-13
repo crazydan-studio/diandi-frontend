@@ -175,13 +175,18 @@ elmUiRenderer =
                 children
     , unorderedList =
         \items ->
-            Element.column [ Element.spacing 15 ]
+            Element.column
+                [ Element.spacing 15
+                ]
                 (items
                     |> List.map
                         (\(ListItem task children) ->
-                            Element.row [ Element.spacing 5 ]
-                                [ Element.row
-                                    [ Element.alignTop ]
+                            Element.row
+                                [ Element.spacing 5
+                                ]
+                                [ Element.paragraph
+                                    [ Element.alignTop
+                                    ]
                                     ((case task of
                                         IncompleteTask ->
                                             Element.Input.defaultCheckbox False
@@ -205,8 +210,11 @@ elmUiRenderer =
                     |> List.indexedMap
                         (\index itemBlocks ->
                             Element.row [ Element.spacing 5 ]
-                                [ Element.row [ Element.alignTop ]
-                                    (Element.text (String.fromInt (index + startingIndex) ++ " ") :: itemBlocks)
+                                [ Element.paragraph [ Element.alignTop ]
+                                    (Element.text
+                                        (String.fromInt (index + startingIndex) ++ " ")
+                                        :: itemBlocks
+                                    )
                                 ]
                         )
                 )

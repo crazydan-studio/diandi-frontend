@@ -10,7 +10,7 @@ module View.Route exposing
 
 import Browser.Navigation as Nav
 import Model.Root exposing (RootModel)
-import Msg exposing (RootMsg)
+import Msg
 import Url
 import Url.Parser exposing ((</>), Parser, map, oneOf, parse, s, top)
 
@@ -30,27 +30,27 @@ route url =
     Maybe.withDefault NotFound (parse routeHelper url)
 
 
-gotoLogin : RootModel -> ( RootModel, Cmd RootMsg )
+gotoLogin : RootModel -> ( RootModel, Cmd Msg.Msg )
 gotoLogin model =
     goto "/login" model
 
 
-gotoLogout : RootModel -> ( RootModel, Cmd RootMsg )
+gotoLogout : RootModel -> ( RootModel, Cmd Msg.Msg )
 gotoLogout model =
     goto "/logout" model
 
 
-gotoHome : RootModel -> ( RootModel, Cmd RootMsg )
+gotoHome : RootModel -> ( RootModel, Cmd Msg.Msg )
 gotoHome model =
     goto "/" model
 
 
-goto403 : RootModel -> ( RootModel, Cmd RootMsg )
+goto403 : RootModel -> ( RootModel, Cmd Msg.Msg )
 goto403 model =
     goto "/error/403" model
 
 
-goto404 : RootModel -> ( RootModel, Cmd RootMsg )
+goto404 : RootModel -> ( RootModel, Cmd Msg.Msg )
 goto404 model =
     goto "/error/404" model
 
@@ -70,6 +70,6 @@ routeHelper =
         ]
 
 
-goto : String -> RootModel -> ( RootModel, Cmd RootMsg )
+goto : String -> RootModel -> ( RootModel, Cmd Msg.Msg )
 goto url model =
     ( model, Nav.pushUrl model.navKey url )

@@ -2,10 +2,10 @@ module View.Page.Blank exposing (view)
 
 import Element exposing (..)
 import Model.Root exposing (RootModel)
-import Msg exposing (RootMsg)
+import Msg
 
 
-view : RootModel -> Element RootMsg
+view : RootModel -> Element Msg.Msg
 view _ =
     el
         [ width fill

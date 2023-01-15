@@ -6,8 +6,7 @@ import Element.Font as Font
 import Element.Input as Input
 import I18n.Lang exposing (langEnd)
 import Model.Root exposing (RemoteData(..), RootModel)
-import Model.User
-import Msg exposing (RootMsg)
+import Msg
 import Style.Default
 import Style.Home
 import Theme.Icon
@@ -18,7 +17,7 @@ import View.Page.Topic.List
 import Widget.Button
 
 
-view : RootModel -> Element RootMsg
+view : RootModel -> Element Msg.Msg
 view ({ theme, lang } as model) =
     let
         i18nText =
@@ -352,16 +351,6 @@ view ({ theme, lang } as model) =
                 ]
             ]
         ]
-
-
-userName : Model.User.User -> String
-userName user =
-    case user of
-        Model.User.None ->
-            "匿名"
-
-        Model.User.User u ->
-            u.name
 
 
 icon : Theme.Icon.Icon -> Element msg

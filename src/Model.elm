@@ -17,7 +17,7 @@ import Model.Root
         , createTopicTree
         )
 import Model.User as User
-import Msg exposing (..)
+import Msg
 import Theme.Type.Default
 import Url
 import View.I18n.Default
@@ -32,7 +32,7 @@ type alias Flags =
     }
 
 
-init : Flags -> Url.Url -> Nav.Key -> ( RootModel, Cmd RootMsg )
+init : Flags -> Url.Url -> Nav.Key -> ( RootModel, Cmd Msg.Msg )
 init flags url key =
     { title = flags.title
     , description = flags.description
@@ -61,23 +61,23 @@ init flags url key =
         |> routeUpdateHelper url
 
 
-sub : RootModel -> Sub RootMsg
+sub : RootModel -> Sub Msg.Msg
 sub _ =
     Sub.batch
-        [ I18n.Port.sub I18nPorts
+        [ I18n.Port.sub Msg.I18nPorts
         ]
 
 
-update : RootMsg -> RootModel -> ( RootModel, Cmd RootMsg )
+update : Msg.Msg -> RootModel -> ( RootModel, Cmd Msg.Msg )
 update msg model =
     case msg of
-        RemoteFetched remoteMsg ->
+        Msg.RemoteFetched remoteMsg ->
             remoteUpdateHelper remoteMsg model
 
-        UrlChanged url ->
+        Msg.UrlChanged url ->
             routeUpdateHelper url model
 
-        I18nPorts i18nMsg ->
+        Msg.I18nPorts i18nMsg ->
             i18nUpdateHelper i18nMsg model
 
         _ ->
@@ -93,7 +93,7 @@ update msg model =
 remoteUpdateHelper :
     RemoteMsg.Msg
     -> RootModel
-    -> ( RootModel, Cmd RootMsg )
+    -> ( RootModel, Cmd Msg.Msg )
 remoteUpdateHelper msg model =
     case msg of
         RemoteMsg.GotMyUserInfo result ->
@@ -103,8 +103,8 @@ remoteUpdateHelper msg model =
                         | me = User.User user
                       }
                     , Cmd.batch
-                        [ toRemoteCmd RemoteTopic.getMyAllTopics
-                        , toRemoteCmd RemoteTopic.getMyAllCategories
+                        [ Msg.toRemoteCmd RemoteTopic.getMyAllTopics
+                        , Msg.toRemoteCmd RemoteTopic.getMyAllCategories
                         ]
                     )
 
@@ -152,7 +152,7 @@ remoteUpdateHelper msg model =
 
 {-| 远程请求异常的统一处理
 -}
-remoteErrorUpdateHelper : Http.Error -> RootModel -> ( RootModel, Cmd RootMsg )
+remoteErrorUpdateHelper : Http.Error -> RootModel -> ( RootModel, Cmd Msg.Msg )
 remoteErrorUpdateHelper error model =
     case error of
         Http.BadStatus status ->
@@ -176,7 +176,7 @@ remoteErrorUpdateHelper error model =
             )
 
 
-routeUpdateHelper : Url.Url -> RootModel -> ( RootModel, Cmd RootMsg )
+routeUpdateHelper : Url.Url -> RootModel -> ( RootModel, Cmd Msg.Msg )
 routeUpdateHelper url model =
     let
         ( page, cmd ) =
@@ -185,10 +185,10 @@ routeUpdateHelper url model =
                     ( PageType.Login, Cmd.none )
 
                 View.Route.Logout ->
-                    ( PageType.Login, toRemoteCmd RemoteAuth.logout )
+                    ( PageType.Login, Msg.toRemoteCmd RemoteAuth.logout )
 
                 View.Route.Home ->
-                    ( PageType.Home, toRemoteCmd RemoteUser.getMyUserInfo )
+                    ( PageType.Home, Msg.toRemoteCmd RemoteUser.getMyUserInfo )
 
                 View.Route.Forbidden ->
                     ( PageType.Forbidden, Cmd.none )
@@ -199,7 +199,7 @@ routeUpdateHelper url model =
     ( { model | currentPage = page, navUrl = url }, cmd )
 
 
-i18nUpdateHelper : I18n.Port.Msg -> RootModel -> ( RootModel, Cmd RootMsg )
+i18nUpdateHelper : I18n.Port.Msg -> RootModel -> ( RootModel, Cmd Msg.Msg )
 i18nUpdateHelper msg model =
     case I18n.Port.update msg of
         ( r, m ) ->

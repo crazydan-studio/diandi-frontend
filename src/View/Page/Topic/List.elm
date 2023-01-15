@@ -6,14 +6,14 @@ import Element.Keyed
 import Element.Lazy
 import Model.Root exposing (RemoteData(..), RootModel)
 import Model.Topic exposing (Topic)
-import Msg exposing (RootMsg)
+import Msg
 import Style.Topic
 import Theme.Color
 import Theme.Color.Element
 import Widget.Markdown
 
 
-view : RootModel -> Element RootMsg
+view : RootModel -> Element Msg.Msg
 view model =
     case model.topics of
         DataLoaded topics ->
@@ -43,7 +43,7 @@ getPaletteWithDefault bgColor defaultPalette =
             defaultPalette
 
 
-topicListView : Data.TreeStore.Tree Topic -> Element RootMsg
+topicListView : Data.TreeStore.Tree Topic -> Element Msg.Msg
 topicListView topics =
     -- 列表增删改性能提升方案，同时lazy可确保在刷新页面时，有滚动条的列表的滚动位置可被浏览器记录，刷新后能够自动恢复浏览位置
     -- https://guide.elm-lang.org/optimization/keyed.html
@@ -59,7 +59,7 @@ topicListView topics =
         )
 
 
-topicView : Topic -> Element RootMsg
+topicView : Topic -> Element Msg.Msg
 topicView topic =
     column
         Style.Topic.topic

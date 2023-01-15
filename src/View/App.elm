@@ -4,7 +4,7 @@ import Browser
 import Element exposing (Element, fill, height, width)
 import Element.Font as Font
 import Model.Root exposing (RootModel)
-import Msg exposing (RootMsg)
+import Msg
 import Theme.StyleSheet
 import Theme.Theme
 import View.Page as PageType
@@ -16,7 +16,7 @@ import View.Page.Login
 import View.Page.NotFound
 
 
-view : RootModel -> Browser.Document RootMsg
+view : RootModel -> Browser.Document Msg.Msg
 view ({ theme } as model) =
     { title = title model
     , body =
@@ -56,7 +56,7 @@ title model =
             model.description
 
 
-page : RootModel -> Element RootMsg
+page : RootModel -> Element Msg.Msg
 page model =
     case model.currentPage of
         PageType.Login ->

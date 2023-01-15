@@ -6,11 +6,11 @@ import Element.Keyed
 import Element.Lazy
 import Model.Root exposing (RemoteData(..), RootModel)
 import Model.Topic.Category exposing (Category)
-import Msg exposing (RootMsg)
+import Msg
 import Style.Default
 
 
-view : RootModel -> Element RootMsg
+view : RootModel -> Element Msg.Msg
 view model =
     case model.categories of
         DataLoaded categories ->
@@ -27,7 +27,7 @@ view model =
 -- ---------------------------------------------------
 
 
-categoryListView : Data.TreeStore.Tree Category -> Element RootMsg
+categoryListView : Data.TreeStore.Tree Category -> Element Msg.Msg
 categoryListView categories =
     Element.Keyed.column
         [ width fill
@@ -47,8 +47,8 @@ categoryListView categories =
 categoryView :
     Int
     -> Category
-    -> List ( String, Element RootMsg )
-    -> Element RootMsg
+    -> List ( String, Element Msg.Msg )
+    -> Element Msg.Msg
 categoryView depth category childElements =
     column
         [ width fill

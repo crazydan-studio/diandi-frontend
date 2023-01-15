@@ -11,4 +11,5 @@ theme =
     , secondaryFontSize = 12
     , primaryBtnColor = Theme.Color.Blue800
     , secondaryBtnColor = Theme.Color.Purple800
+    , placeholderFontColor = Theme.Color.Grey500
     }

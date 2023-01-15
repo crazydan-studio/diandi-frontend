@@ -4,26 +4,22 @@ import Data.TreeStore
 import Element exposing (..)
 import Element.Keyed
 import Element.Lazy
-import Model.Root exposing (RemoteData(..), RootModel)
+import Model
 import Model.Topic exposing (Topic)
 import Msg
 import Style.Topic
 import Theme.Color
 import Theme.Color.Element
+import View.Page.RemoteData
 import Widget.Markdown
 
 
-view : RootModel -> Element Msg.Msg
-view model =
-    case model.topics of
-        DataLoaded topics ->
-            topicListView topics
-
-        DataLoading ->
-            text "数据加载中，请稍候..."
-
-        DataLoadingError error ->
-            text error
+view : Model.State -> Element Msg.Msg
+view { app } =
+    View.Page.RemoteData.view
+        app.theme
+        topicListView
+        app.topics
 
 
 

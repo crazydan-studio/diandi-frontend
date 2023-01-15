@@ -5,24 +5,27 @@ import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import I18n.Lang exposing (langEnd)
-import Model.Root exposing (RemoteData(..), RootModel)
+import Model
 import Msg
 import Style.Default
 import Style.Home
+import Theme.Color
+import Theme.Color.Element
 import Theme.Icon
 import Theme.Icon.Element
+import Theme.Theme
 import View.I18n.Home exposing (i18nBtnModule, i18nLabelModule)
 import View.Page.Topic.Category.List
 import View.Page.Topic.List
 import Widget.Button
 
 
-view : RootModel -> Element Msg.Msg
-view ({ theme, lang } as model) =
+view : Model.State -> Element Msg.Msg
+view ({ app } as state) =
     let
         i18nText =
             -- View.I18n.Home.i18nText I18n.Lang.En_US
-            View.I18n.Home.i18nText lang
+            View.I18n.Home.i18nText app.lang
     in
     row
         [ width fill
@@ -83,7 +86,7 @@ view ({ theme, lang } as model) =
                 , height fill
                 , scrollbarY
                 ]
-                (View.Page.Topic.Category.List.view model)
+                (View.Page.Topic.Category.List.view state)
             , row
                 (Style.Default.boundaryBorderEach
                     { top = 1
@@ -98,7 +101,7 @@ view ({ theme, lang } as model) =
                 )
                 [ Widget.Button.secondary
                     []
-                    { theme = theme
+                    { theme = app.theme
                     , content =
                         row
                             [ spacing 8
@@ -195,7 +198,7 @@ view ({ theme, lang } as model) =
                     , height fill
                     , scrollbarY
                     ]
-                    (View.Page.Topic.List.view model)
+                    (View.Page.Topic.List.view state)
 
                 -- TODO 输入框，待提取，以支持以弹窗方式添加子主题
                 , column
@@ -261,7 +264,7 @@ view ({ theme, lang } as model) =
                             , placeholder =
                                 Just
                                     (Input.placeholder
-                                        []
+                                        (Theme.Theme.placeholderFont app.theme)
                                         (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langEnd)
                                             |> i18nText
                                         )
@@ -319,7 +322,7 @@ view ({ theme, lang } as model) =
                             , Widget.Button.primary
                                 [ alignRight
                                 ]
-                                { theme = theme
+                                { theme = app.theme
                                 , content =
                                     (i18nBtnModule :: "记下来!" :: langEnd)
                                         |> i18nText

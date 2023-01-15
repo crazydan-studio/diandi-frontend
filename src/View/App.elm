@@ -3,7 +3,8 @@ module View.App exposing (view)
 import Browser
 import Element exposing (Element, fill, height, width)
 import Element.Font as Font
-import Model.Root exposing (RootModel)
+import Model
+import Model.App
 import Msg
 import Theme.StyleSheet
 import Theme.Theme
@@ -16,9 +17,9 @@ import View.Page.Login
 import View.Page.NotFound
 
 
-view : RootModel -> Browser.Document Msg.Msg
-view ({ theme } as model) =
-    { title = title model
+view : Model.State -> Browser.Document Msg.Msg
+view ({ app } as state) =
+    { title = title app
     , body =
         [ Element.layout
             [ width fill
@@ -27,17 +28,17 @@ view ({ theme } as model) =
                 [ Font.typeface "Roboto"
                 , Font.sansSerif
                 ]
-            , Font.size theme.primaryFontSize
+            , Font.size app.theme.primaryFontSize
             , Font.color
-                (Theme.Theme.primaryFontColor theme)
+                (Theme.Theme.primaryFontColor app.theme)
             ]
-            (page model)
-        , Theme.StyleSheet.create theme
+            (page state)
+        , Theme.StyleSheet.create app.theme
         ]
     }
 
 
-title : RootModel -> String
+title : Model.App.State -> String
 title model =
     case model.currentPage of
         PageType.Login ->
@@ -56,23 +57,23 @@ title model =
             model.description
 
 
-page : RootModel -> Element Msg.Msg
-page model =
-    case model.currentPage of
+page : Model.State -> Element Msg.Msg
+page ({ app } as state) =
+    case app.currentPage of
         PageType.Login ->
-            View.Page.Login.view model
+            View.Page.Login.view state
 
         PageType.NotFound ->
-            View.Page.NotFound.view model
+            View.Page.NotFound.view state
 
         PageType.Forbidden ->
-            View.Page.Forbidden.view model
+            View.Page.Forbidden.view state
 
         PageType.Loading ->
-            View.Page.Loading.view model
+            View.Page.Loading.view state
 
         PageType.Blank ->
-            View.Page.Blank.view model
+            View.Page.Blank.view state
 
         PageType.Home ->
-            View.Page.Home.view model
+            View.Page.Home.view state

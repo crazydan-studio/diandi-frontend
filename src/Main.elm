@@ -1,13 +1,12 @@
 module Main exposing (main)
 
 import Browser
-import Model exposing (Flags)
-import Model.Root exposing (RootModel)
+import Model
 import Msg
 import View.App
 
 
-main : Program Flags RootModel Msg.Msg
+main : Program Model.Config Model.State Msg.Msg
 main =
     -- https://guide.elm-lang.org/webapps/navigation.html
     Browser.application

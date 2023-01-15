@@ -4,23 +4,19 @@ import Data.TreeStore
 import Element exposing (..)
 import Element.Keyed
 import Element.Lazy
-import Model.Root exposing (RemoteData(..), RootModel)
+import Model
 import Model.Topic.Category exposing (Category)
 import Msg
 import Style.Default
+import View.Page.RemoteData
 
 
-view : RootModel -> Element Msg.Msg
-view model =
-    case model.categories of
-        DataLoaded categories ->
-            categoryListView categories
-
-        DataLoading ->
-            text "数据加载中，请稍候..."
-
-        DataLoadingError error ->
-            text error
+view : Model.State -> Element Msg.Msg
+view { app } =
+    View.Page.RemoteData.view
+        app.theme
+        categoryListView
+        app.categories
 
 
 

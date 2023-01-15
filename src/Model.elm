@@ -1,87 +1,80 @@
-module Model exposing (Flags, init, sub, update)
+module Model exposing
+    ( Config
+    , State
+    , init
+    , sub
+    , update
+    )
 
 import Browser.Navigation as Nav
 import Http
-import I18n.Lang
 import I18n.Port
+import Model.App
 import Model.Remote as Remote
 import Model.Remote.Auth as RemoteAuth
 import Model.Remote.Msg as RemoteMsg
 import Model.Remote.Topic as RemoteTopic
 import Model.Remote.User as RemoteUser
-import Model.Root
-    exposing
-        ( RemoteData(..)
-        , RootModel
-        , createTopicCategoryTree
-        , createTopicTree
-        )
 import Model.User as User
 import Msg
-import Theme.Type.Default
 import Url
-import View.I18n.Default
 import View.Page as PageType
 import View.Route
+import Widget.Widget
 
 
-type alias Flags =
+type alias Config =
     { title : String
     , description : String
     , lang : String
     }
 
 
-init : Flags -> Url.Url -> Nav.Key -> ( RootModel, Cmd Msg.Msg )
-init flags url key =
-    { title = flags.title
-    , description = flags.description
+type alias State =
+    { -- 应用状态数据
+      app : Model.App.State
 
-    --
-    , lang =
-        I18n.Lang.fromStringWithDefault
-            View.I18n.Default.lang
-            flags.lang
-    , textsWithoutI18n = []
-    , theme = Theme.Type.Default.theme
-
-    --
-    , navKey = key
-    , navUrl = url
-
-    --
-    , me = User.None
-    , remoteError = Nothing
-    , currentPage = PageType.Loading
-
-    --
-    , topics = DataLoading
-    , categories = DataLoading
+    -- 组件状态数据，仅用于维护组件内部状态
+    , ui : Widget.Widget.State
     }
-        |> routeUpdateHelper url
 
 
-sub : RootModel -> Sub Msg.Msg
+init : Config -> Url.Url -> Nav.Key -> ( State, Cmd Msg.Msg )
+init config navUrl navKey =
+    { app =
+        Model.App.init
+            { title = config.title
+            , description = config.description
+            , lang = config.lang
+            , navKey = navKey
+            , navUrl = navUrl
+            }
+    , ui = Widget.Widget.init
+    }
+        |> routeUpdateHelper navUrl
+
+
+sub : State -> Sub Msg.Msg
 sub _ =
     Sub.batch
         [ I18n.Port.sub Msg.I18nPorts
         ]
 
 
-update : Msg.Msg -> RootModel -> ( RootModel, Cmd Msg.Msg )
-update msg model =
+update : Msg.Msg -> State -> ( State, Cmd Msg.Msg )
+update msg state =
     case msg of
         Msg.RemoteFetched remoteMsg ->
-            remoteUpdateHelper remoteMsg model
+            remoteUpdateHelper remoteMsg state
 
         Msg.UrlChanged url ->
-            routeUpdateHelper url model
+            routeUpdateHelper url state
 
         Msg.I18nPorts i18nMsg ->
-            i18nUpdateHelper i18nMsg model
+            i18nUpdateHelper i18nMsg state
 
         _ ->
-            ( model, Cmd.none )
+            ( state, Cmd.none )
 
 
 
@@ -92,15 +85,20 @@ update msg model =
 -}
 remoteUpdateHelper :
     RemoteMsg.Msg
-    -> RootModel
-    -> ( RootModel, Cmd Msg.Msg )
-remoteUpdateHelper msg model =
+    -> State
+    -> ( State, Cmd Msg.Msg )
+remoteUpdateHelper msg ({ app } as state) =
     case msg of
         RemoteMsg.GotMyUserInfo result ->
             case result of
                 Ok user ->
-                    ( { model
-                        | me = User.User user
+                    ( { state
+                        | app =
+                            { app
+                                | me = User.User user
+                                , topics = Model.App.loading
+                                , categories = Model.App.loading
+                            }
                       }
                     , Cmd.batch
                         [ Msg.toRemoteCmd RemoteTopic.getMyAllTopics
@@ -109,78 +107,60 @@ remoteUpdateHelper msg model =
                     )
 
                 Err _ ->
-                    View.Route.gotoLogin model
+                    ( state, View.Route.gotoLogin app )
 
         RemoteMsg.UserLogout _ ->
-            View.Route.gotoLogin model
+            ( state, View.Route.gotoLogin app )
 
         RemoteMsg.QueryMyTopics result ->
-            case result of
-                Ok topics ->
-                    ( { model
-                        | topics = DataLoaded (createTopicTree topics)
-                      }
-                    , Cmd.none
-                    )
-
-                Err error ->
-                    ( { model
-                        | topics = DataLoadingError (Remote.parseError error)
-                      }
-                    , Cmd.none
-                    )
+            ( { state
+                | app = app |> Model.App.loadTopics result
+              }
+            , Cmd.none
+            )
 
         RemoteMsg.QueryMyTopicCategories result ->
-            case result of
-                Ok categories ->
-                    ( { model
-                        | categories = DataLoaded (createTopicCategoryTree categories)
-                      }
-                    , Cmd.none
-                    )
-
-                Err error ->
-                    ( { model
-                        | categories = DataLoadingError (Remote.parseError error)
-                      }
-                    , Cmd.none
-                    )
+            ( { state
+                | app = app |> Model.App.loadTopicCategories result
+              }
+            , Cmd.none
+            )
 
         _ ->
-            ( model, Cmd.none )
+            ( state, Cmd.none )
 
 
 {-| 远程请求异常的统一处理
 -}
-remoteErrorUpdateHelper : Http.Error -> RootModel -> ( RootModel, Cmd Msg.Msg )
-remoteErrorUpdateHelper error model =
+remoteErrorUpdateHelper : Http.Error -> State -> ( State, Cmd Msg.Msg )
+remoteErrorUpdateHelper error ({ app } as state) =
     case error of
         Http.BadStatus status ->
             if status == 401 then
-                View.Route.gotoLogin model
+                ( state, View.Route.gotoLogin app )
 
             else if status == 403 then
-                View.Route.goto403 model
+                ( state, View.Route.goto403 app )
 
             else if status == 404 then
-                View.Route.goto404 model
+                ( state, View.Route.goto404 app )
 
             else
-                ( model, Cmd.none )
+                ( state, Cmd.none )
 
         _ ->
-            ( { model
-                | remoteError = Just (Remote.parseError error)
+            ( { state
+                | app = { app | remoteError = Just (Remote.parseError error) }
               }
             , Cmd.none
             )
 
 
-routeUpdateHelper : Url.Url -> RootModel -> ( RootModel, Cmd Msg.Msg )
-routeUpdateHelper url model =
+routeUpdateHelper : Url.Url -> State -> ( State, Cmd Msg.Msg )
+routeUpdateHelper navUrl ({ app } as state) =
     let
         ( page, cmd ) =
-            case View.Route.route url of
+            case View.Route.route navUrl of
                 View.Route.Login ->
                     ( PageType.Login, Cmd.none )
 
@@ -196,11 +176,19 @@ routeUpdateHelper url model =
                 View.Route.NotFound ->
                     ( PageType.NotFound, Cmd.none )
     in
-    ( { model | currentPage = page, navUrl = url }, cmd )
+    ( { state
+        | app = { app | currentPage = page, navUrl = navUrl }
+      }
+    , cmd
+    )
 
 
-i18nUpdateHelper : I18n.Port.Msg -> RootModel -> ( RootModel, Cmd Msg.Msg )
-i18nUpdateHelper msg model =
+i18nUpdateHelper : I18n.Port.Msg -> State -> ( State, Cmd Msg.Msg )
+i18nUpdateHelper msg ({ app } as state) =
     case I18n.Port.update msg of
         ( r, m ) ->
-            ( { model | textsWithoutI18n = r.results }, m )
+            ( { state
+                | app = { app | textsWithoutI18n = r.results }
+              }
+            , m
+            )

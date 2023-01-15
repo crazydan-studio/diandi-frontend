@@ -12,7 +12,7 @@ main =
     -- https://guide.elm-lang.org/webapps/navigation.html
     Browser.application
         { init = Model.init
-        , view = View.create
+        , view = View.view
         , update = Model.update
         , subscriptions = Model.sub
         , onUrlChange = UrlChanged

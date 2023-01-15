@@ -1,4 +1,4 @@
-module View.Topic.Category.List exposing (create)
+module View.Topic.Category.List exposing (view)
 
 import Data.TreeStore
 import Element exposing (..)
@@ -10,8 +10,8 @@ import Msg exposing (RootMsg)
 import Style.Default
 
 
-create : RootModel -> Element RootMsg
-create model =
+view : RootModel -> Element RootMsg
+view model =
     case model.categories of
         DataLoaded categories ->
             categoryListView categories

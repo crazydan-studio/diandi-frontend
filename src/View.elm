@@ -1,4 +1,4 @@
-module View exposing (create)
+module View exposing (view)
 
 import Browser
 import Element exposing (Element, fill, height, width)
@@ -16,8 +16,8 @@ import View.NotFound
 import View.Type as ViewType
 
 
-create : RootModel -> Browser.Document RootMsg
-create ({ theme } as model) =
+view : RootModel -> Browser.Document RootMsg
+view ({ theme } as model) =
     { title = title model
     , body =
         [ Element.layout
@@ -60,19 +60,19 @@ page : RootModel -> Element RootMsg
 page model =
     case model.currentPage of
         ViewType.Login ->
-            View.Login.create model
+            View.Login.view model
 
         ViewType.NotFound ->
-            View.NotFound.create model
+            View.NotFound.view model
 
         ViewType.Forbidden ->
-            View.Forbidden.create model
+            View.Forbidden.view model
 
         ViewType.Loading ->
-            View.Loading.create model
+            View.Loading.view model
 
         ViewType.Blank ->
-            View.Blank.create model
+            View.Blank.view model
 
         ViewType.Home ->
-            View.Home.create model
+            View.Home.view model

@@ -1,4 +1,4 @@
-module View.Home exposing (create)
+module View.Home exposing (view)
 
 import Element exposing (..)
 import Element.Border as Border
@@ -18,8 +18,8 @@ import View.Topic.List
 import Widget.Button
 
 
-create : RootModel -> Element RootMsg
-create ({ theme, lang } as model) =
+view : RootModel -> Element RootMsg
+view ({ theme, lang } as model) =
     let
         i18nText =
             -- View.I18n.Home.i18nText I18n.Lang.En_US
@@ -84,7 +84,7 @@ create ({ theme, lang } as model) =
                 , height fill
                 , scrollbarY
                 ]
-                (View.Topic.Category.List.create model)
+                (View.Topic.Category.List.view model)
             , row
                 (Style.Default.boundaryBorderEach
                     { top = 1
@@ -196,7 +196,7 @@ create ({ theme, lang } as model) =
                     , height fill
                     , scrollbarY
                     ]
-                    (View.Topic.List.create model)
+                    (View.Topic.List.view model)
 
                 -- TODO 输入框，待提取，以支持以弹窗方式添加子主题
                 , column

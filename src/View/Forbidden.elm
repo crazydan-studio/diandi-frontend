@@ -1,12 +1,12 @@
-module View.Forbidden exposing (create)
+module View.Forbidden exposing (view)
 
 import Element exposing (..)
 import Model.Root exposing (RootModel)
 import Msg exposing (RootMsg)
 
 
-create : RootModel -> Element RootMsg
-create model =
+view : RootModel -> Element RootMsg
+view _ =
     column
         [ width fill
         , height fill

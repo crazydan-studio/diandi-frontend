@@ -1,4 +1,4 @@
-module View.Topic.List exposing (create)
+module View.Topic.List exposing (view)
 
 import Data.TreeStore
 import Element exposing (..)
@@ -13,8 +13,8 @@ import Theme.Color.Element
 import Widget.Markdown
 
 
-create : RootModel -> Element RootMsg
-create model =
+view : RootModel -> Element RootMsg
+view model =
     case model.topics of
         DataLoaded topics ->
             topicListView topics

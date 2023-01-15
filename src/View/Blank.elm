@@ -1,12 +1,12 @@
-module View.Blank exposing (create)
+module View.Blank exposing (view)
 
 import Element exposing (..)
 import Model.Root exposing (RootModel)
 import Msg exposing (RootMsg)
 
 
-create : RootModel -> Element RootMsg
-create model =
+view : RootModel -> Element RootMsg
+view _ =
     el
         [ width fill
         , height fill

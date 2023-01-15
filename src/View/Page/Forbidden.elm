@@ -1,4 +1,4 @@
-module View.Loading exposing (view)
+module View.Page.Forbidden exposing (view)
 
 import Element exposing (..)
 import Model.Root exposing (RootModel)
@@ -11,9 +11,4 @@ view _ =
         [ width fill
         , height fill
         ]
-        [ el
-            [ centerX
-            , centerY
-            ]
-            (text "加载中...")
-        ]
+        [ text "Forbidden Page" ]

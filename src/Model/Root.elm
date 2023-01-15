@@ -13,7 +13,7 @@ import Model.Topic.Category exposing (Category)
 import Model.User as User
 import Theme.Theme
 import Url
-import View.Type
+import View.Page
 
 
 type alias RootModel =
@@ -34,7 +34,7 @@ type alias RootModel =
 
     -- 远程请求错误信息
     , remoteError : Maybe String
-    , currentPage : View.Type.Type
+    , currentPage : View.Page.Type
 
     -- 业务数据
     , topics : RemoteData (Data.TreeStore.Tree Topic)

@@ -1,4 +1,4 @@
-module View.Home exposing (view)
+module View.Page.Home exposing (view)
 
 import Element exposing (..)
 import Element.Border as Border
@@ -13,8 +13,8 @@ import Style.Home
 import Theme.Icon
 import Theme.Icon.Element
 import View.I18n.Home exposing (i18nBtnModule, i18nLabelModule)
-import View.Topic.Category.List
-import View.Topic.List
+import View.Page.Topic.Category.List
+import View.Page.Topic.List
 import Widget.Button
 
 
@@ -84,7 +84,7 @@ view ({ theme, lang } as model) =
                 , height fill
                 , scrollbarY
                 ]
-                (View.Topic.Category.List.view model)
+                (View.Page.Topic.Category.List.view model)
             , row
                 (Style.Default.boundaryBorderEach
                     { top = 1
@@ -196,7 +196,7 @@ view ({ theme, lang } as model) =
                     , height fill
                     , scrollbarY
                     ]
-                    (View.Topic.List.view model)
+                    (View.Page.Topic.List.view model)
 
                 -- TODO 输入框，待提取，以支持以弹窗方式添加子主题
                 , column

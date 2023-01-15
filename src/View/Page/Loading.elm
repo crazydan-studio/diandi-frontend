@@ -1,4 +1,4 @@
-module View.Login exposing (view)
+module View.Page.Loading exposing (view)
 
 import Element exposing (..)
 import Model.Root exposing (RootModel)
@@ -11,4 +11,9 @@ view _ =
         [ width fill
         , height fill
         ]
-        [ text "Login Page" ]
+        [ el
+            [ centerX
+            , centerY
+            ]
+            (text "加载中...")
+        ]

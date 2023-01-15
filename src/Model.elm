@@ -14,11 +14,11 @@ import Model.Root
 import Model.User as User
 import Msg exposing (..)
 import Remote exposing (RemoteMsg)
-import Route
 import Theme.Type.Default
 import Url
 import View.I18n.Default
-import View.Type as ViewType
+import View.Page as PageType
+import View.Route
 
 
 type alias Flags =
@@ -45,7 +45,7 @@ init flags url key =
     --
     , me = User.None
     , remoteError = Nothing
-    , currentPage = ViewType.Loading
+    , currentPage = PageType.Loading
 
     --
     , topics = DataLoading
@@ -106,10 +106,10 @@ remoteUpdateHelper msg model =
                     )
 
                 Err _ ->
-                    Route.gotoLogin model
+                    View.Route.gotoLogin model
 
         Remote.UserLogout _ ->
-            Route.gotoLogin model
+            View.Route.gotoLogin model
 
         Remote.QueryMyTopics result ->
             case result of
@@ -154,13 +154,13 @@ remoteErrorUpdateHelper error model =
     case error of
         Http.BadStatus status ->
             if status == 401 then
-                Route.gotoLogin model
+                View.Route.gotoLogin model
 
             else if status == 403 then
-                Route.goto403 model
+                View.Route.goto403 model
 
             else if status == 404 then
-                Route.goto404 model
+                View.Route.goto404 model
 
             else
                 ( model, Cmd.none )
@@ -177,21 +177,21 @@ routeUpdateHelper : Url.Url -> RootModel -> ( RootModel, Cmd RootMsg )
 routeUpdateHelper url model =
     let
         ( page, cmd ) =
-            case Route.route url of
-                Route.Login ->
-                    ( ViewType.Login, Cmd.none )
+            case View.Route.route url of
+                View.Route.Login ->
+                    ( PageType.Login, Cmd.none )
 
-                Route.Logout ->
-                    ( ViewType.Login, remote Remote.logout )
+                View.Route.Logout ->
+                    ( PageType.Login, remote Remote.logout )
 
-                Route.Home ->
-                    ( ViewType.Home, remote Remote.getMyUserInfo )
+                View.Route.Home ->
+                    ( PageType.Home, remote Remote.getMyUserInfo )
 
-                Route.Forbidden ->
-                    ( ViewType.Forbidden, Cmd.none )
+                View.Route.Forbidden ->
+                    ( PageType.Forbidden, Cmd.none )
 
-                Route.NotFound ->
-                    ( ViewType.NotFound, Cmd.none )
+                View.Route.NotFound ->
+                    ( PageType.NotFound, Cmd.none )
     in
     ( { model | currentPage = page, navUrl = url }, cmd )
 

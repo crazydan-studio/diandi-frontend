@@ -1,4 +1,4 @@
-module View exposing (view)
+module View.App exposing (view)
 
 import Browser
 import Element exposing (Element, fill, height, width)
@@ -7,13 +7,13 @@ import Model.Root exposing (RootModel)
 import Msg exposing (RootMsg)
 import Theme.StyleSheet
 import Theme.Theme
-import View.Blank
-import View.Forbidden
-import View.Home
-import View.Loading
-import View.Login
-import View.NotFound
-import View.Type as ViewType
+import View.Page as PageType
+import View.Page.Blank
+import View.Page.Forbidden
+import View.Page.Home
+import View.Page.Loading
+import View.Page.Login
+import View.Page.NotFound
 
 
 view : RootModel -> Browser.Document RootMsg
@@ -40,16 +40,16 @@ view ({ theme } as model) =
 title : RootModel -> String
 title model =
     case model.currentPage of
-        ViewType.Login ->
+        PageType.Login ->
             model.title ++ " - " ++ "用户登录"
 
-        ViewType.NotFound ->
+        PageType.NotFound ->
             model.title ++ " - " ++ "页面不存在"
 
-        ViewType.Forbidden ->
+        PageType.Forbidden ->
             model.title ++ " - " ++ "无操作权限"
 
-        ViewType.Loading ->
+        PageType.Loading ->
             model.title ++ " - " ++ "页面加载中..."
 
         _ ->
@@ -59,20 +59,20 @@ title model =
 page : RootModel -> Element RootMsg
 page model =
     case model.currentPage of
-        ViewType.Login ->
-            View.Login.view model
+        PageType.Login ->
+            View.Page.Login.view model
 
-        ViewType.NotFound ->
-            View.NotFound.view model
+        PageType.NotFound ->
+            View.Page.NotFound.view model
 
-        ViewType.Forbidden ->
-            View.Forbidden.view model
+        PageType.Forbidden ->
+            View.Page.Forbidden.view model
 
-        ViewType.Loading ->
-            View.Loading.view model
+        PageType.Loading ->
+            View.Page.Loading.view model
 
-        ViewType.Blank ->
-            View.Blank.view model
+        PageType.Blank ->
+            View.Page.Blank.view model
 
-        ViewType.Home ->
-            View.Home.view model
+        PageType.Home ->
+            View.Page.Home.view model

@@ -1,4 +1,4 @@
-module View.Type exposing (Type(..))
+module View.Page exposing (Type(..))
 
 
 type Type

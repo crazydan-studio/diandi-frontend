@@ -1,4 +1,4 @@
-module View.Topic.List exposing (view)
+module View.Page.Topic.List exposing (view)
 
 import Data.TreeStore
 import Element exposing (..)

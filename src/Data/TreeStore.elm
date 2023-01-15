@@ -38,7 +38,10 @@ type alias TreeSorter dataType =
 
 
 type alias TreeTraveller dataType resultType =
-    Int -> dataType -> List resultType -> resultType
+    { depth : Int, index : Int }
+    -> dataType
+    -> List resultType
+    -> resultType
 
 
 type alias TreeData dataType =
@@ -62,7 +65,10 @@ empty config =
         }
 
 
-create : TreeConfig dataType -> List dataType -> Tree dataType
+create :
+    TreeConfig dataType
+    -> List dataType
+    -> Tree dataType
 create config =
     empty config
         |> List.foldl add
@@ -109,8 +115,8 @@ traverse :
     TreeTraveller dataType resultType
     -> Tree dataType
     -> List resultType
-traverse traverler ((Tree _ { roots }) as tree) =
-    traverseHelper traverler 1 -1 roots tree
+traverse traverler tree =
+    traverseDepth -1 traverler tree
 
 
 {-| 遍历有多个root节点的树并构造结果集（指定遍历深度）
@@ -121,7 +127,14 @@ traverseDepth :
     -> Tree dataType
     -> List resultType
 traverseDepth maxDepth traverler ((Tree _ { roots }) as tree) =
-    traverseHelper traverler 1 maxDepth roots tree
+    traverseHelper
+        traverler
+        { depth = 1
+        , maxDepth = maxDepth
+        , nodesIndex = -1
+        }
+        roots
+        tree
 
 
 {-| 遍历仅有单个root节点的树并构造结果
@@ -221,12 +234,15 @@ addNewIdToSortedIdListHelper sorterMaybe newId dataDict sortedIdList =
 
 traverseHelper :
     TreeTraveller dataType resultType
-    -> Int
-    -> Int
+    -> { depth : Int, maxDepth : Int, nodesIndex : Int }
     -> List String
     -> Tree dataType
     -> List resultType
-traverseHelper traverler depth maxDepth nodeIds ((Tree _ { data, nodes }) as tree) =
+traverseHelper traverler opts nodeIds ((Tree _ { data, nodes }) as tree) =
+    let
+        { depth, maxDepth, nodesIndex } =
+            opts
+    in
     (if depth > maxDepth && maxDepth >= 0 then
         []
 
@@ -246,15 +262,28 @@ traverseHelper traverler depth maxDepth nodeIds ((Tree _ { data, nodes }) as tre
                                     (\childNodeId childResults ->
                                         traverseHelper
                                             traverler
-                                            (depth + 1)
-                                            maxDepth
+                                            { depth = depth + 1
+                                            , maxDepth = maxDepth
+                                            , nodesIndex = List.length childResults
+                                            }
                                             [ childNodeId ]
                                             tree
                                             |> (++) childResults
                                     )
                                     []
                               )
-                                |> traverler depth nodeData
+                                |> traverler
+                                    { depth = depth
+                                    , index =
+                                        -- Note: 遍历深度为1时，所处节点为根节点，
+                                        -- 故，根节点序号为结果集长度
+                                        if depth == 1 then
+                                            List.length results
+
+                                        else
+                                            nodesIndex
+                                    }
+                                    nodeData
                             ]
                                 |> (++) results
                         )

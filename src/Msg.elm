@@ -8,6 +8,7 @@ import Browser
 import I18n.Port
 import Model.Remote.Msg as RemoteMsg
 import Url
+import Widget.Model
 
 
 type Msg
@@ -18,6 +19,8 @@ type Msg
     | RemoteFetched RemoteMsg.Msg
       -- 国际化
     | I18nPorts I18n.Port.Msg
+      -- 组件消息
+    | WidgetMsg Widget.Model.Msg
 
 
 toCmd : Msg -> Cmd Msg

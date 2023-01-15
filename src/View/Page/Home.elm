@@ -19,7 +19,7 @@ import Widget.Button
 
 
 view : Model.State -> Element Msg.Msg
-view ({ app } as state) =
+view ({ app, ui } as state) =
     let
         i18nText =
             -- View.I18n.Home.i18nText I18n.Lang.En_US
@@ -98,8 +98,9 @@ view ({ app } as state) =
                        ]
                 )
                 [ Widget.Button.secondary
-                    []
+                    { id = "btn-personal-setting-in-home", state = ui }
                     { theme = app.theme
+                    , attrs = []
                     , content =
                         row
                             [ spacing 8
@@ -318,9 +319,11 @@ view ({ app } as state) =
                                        )
                                 )
                             , Widget.Button.primary
-                                [ alignRight
-                                ]
+                                { id = "btn-write-it-down-in-home", state = ui }
                                 { theme = app.theme
+                                , attrs =
+                                    [ alignRight
+                                    ]
                                 , content =
                                     (i18nBtnModule :: "记下来!" :: langEnd)
                                         |> i18nText

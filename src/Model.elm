@@ -35,7 +35,7 @@ type alias State =
       app : Model.App.State
 
     -- 组件内部状态
-    , ui : Widget.Model.State
+    , ui : Widget.Model.State Msg.Msg
     }
 
 
@@ -49,7 +49,7 @@ init config navUrl navKey =
             , navKey = navKey
             , navUrl = navUrl
             }
-    , ui = Widget.Model.init
+    , ui = Widget.Model.init Msg.WidgetMsg
     }
         |> routeUpdateHelper navUrl
 
@@ -72,6 +72,13 @@ update msg state =
 
         Msg.I18nPorts i18nMsg ->
             i18nUpdateHelper i18nMsg state
+
+        Msg.WidgetMsg widgetMsg ->
+            ( { state
+                | ui = state.ui |> Widget.Model.update widgetMsg
+              }
+            , Cmd.none
+            )
 
         _ ->
             ( state, Cmd.none )

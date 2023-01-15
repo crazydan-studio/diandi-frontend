@@ -1,8 +1,12 @@
-module Msg exposing (RootMsg(..), toCmd)
+module Msg exposing
+    ( RootMsg(..)
+    , toCmd
+    , toRemoteCmd
+    )
 
 import Browser
 import I18n.Port
-import Remote exposing (RemoteMsg)
+import Model.Remote.Msg as RemoteMsg
 import Url
 
 
@@ -11,7 +15,7 @@ type RootMsg
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
       -- 请求远端数据
-    | RemoteFetched RemoteMsg
+    | RemoteFetched RemoteMsg.Msg
       -- 国际化
     | I18nPorts I18n.Port.Msg
 
@@ -23,3 +27,10 @@ toCmd msg =
             msg
         )
         Cmd.none
+
+
+{-| 发起远程请求
+-}
+toRemoteCmd : Cmd RemoteMsg.Msg -> Cmd RootMsg
+toRemoteCmd msg =
+    Cmd.map RemoteFetched msg

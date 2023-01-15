@@ -4,6 +4,11 @@ import Browser.Navigation as Nav
 import Http
 import I18n.Lang
 import I18n.Port
+import Model.Remote as Remote
+import Model.Remote.Auth as RemoteAuth
+import Model.Remote.Msg as RemoteMsg
+import Model.Remote.Topic as RemoteTopic
+import Model.Remote.User as RemoteUser
 import Model.Root
     exposing
         ( RemoteData(..)
@@ -13,7 +18,6 @@ import Model.Root
         )
 import Model.User as User
 import Msg exposing (..)
-import Remote exposing (RemoteMsg)
 import Theme.Type.Default
 import Url
 import View.I18n.Default
@@ -34,7 +38,10 @@ init flags url key =
     , description = flags.description
 
     --
-    , lang = I18n.Lang.fromStringWithDefault View.I18n.Default.lang flags.lang
+    , lang =
+        I18n.Lang.fromStringWithDefault
+            View.I18n.Default.lang
+            flags.lang
     , textsWithoutI18n = []
     , theme = Theme.Type.Default.theme
 
@@ -81,37 +88,33 @@ update msg model =
 -- -------------------------------------------------------------------
 
 
-{-| 发起远程请求
--}
-remote : Cmd RemoteMsg -> Cmd RootMsg
-remote msg =
-    Cmd.map RemoteFetched msg
-
-
 {-| 远程请求更新
 -}
-remoteUpdateHelper : RemoteMsg -> RootModel -> ( RootModel, Cmd RootMsg )
+remoteUpdateHelper :
+    RemoteMsg.Msg
+    -> RootModel
+    -> ( RootModel, Cmd RootMsg )
 remoteUpdateHelper msg model =
     case msg of
-        Remote.GotMyUserInfo result ->
+        RemoteMsg.GotMyUserInfo result ->
             case result of
                 Ok user ->
                     ( { model
                         | me = User.User user
                       }
                     , Cmd.batch
-                        [ remote Remote.getAllMyTopics
-                        , remote Remote.getAllMyTopicCategories
+                        [ toRemoteCmd RemoteTopic.getMyAllTopics
+                        , toRemoteCmd RemoteTopic.getMyAllCategories
                         ]
                     )
 
                 Err _ ->
                     View.Route.gotoLogin model
 
-        Remote.UserLogout _ ->
+        RemoteMsg.UserLogout _ ->
             View.Route.gotoLogin model
 
-        Remote.QueryMyTopics result ->
+        RemoteMsg.QueryMyTopics result ->
             case result of
                 Ok topics ->
                     ( { model
@@ -127,7 +130,7 @@ remoteUpdateHelper msg model =
                     , Cmd.none
                     )
 
-        Remote.QueryMyTopicCategories result ->
+        RemoteMsg.QueryMyTopicCategories result ->
             case result of
                 Ok categories ->
                     ( { model
@@ -182,10 +185,10 @@ routeUpdateHelper url model =
                     ( PageType.Login, Cmd.none )
 
                 View.Route.Logout ->
-                    ( PageType.Login, remote Remote.logout )
+                    ( PageType.Login, toRemoteCmd RemoteAuth.logout )
 
                 View.Route.Home ->
-                    ( PageType.Home, remote Remote.getMyUserInfo )
+                    ( PageType.Home, toRemoteCmd RemoteUser.getMyUserInfo )
 
                 View.Route.Forbidden ->
                     ( PageType.Forbidden, Cmd.none )

@@ -57,21 +57,21 @@ init config navUrl navKey =
 sub : State -> Sub Msg.Msg
 sub _ =
     Sub.batch
-        [ I18n.Port.sub Msg.I18nPorts
+        [ I18n.Port.sub Msg.I18nPortMsg
         ]
 
 
 update : Msg.Msg -> State -> ( State, Cmd Msg.Msg )
 update msg state =
     case msg of
-        Msg.RemoteFetched remoteMsg ->
+        Msg.RemoteMsg remoteMsg ->
             remoteUpdateHelper remoteMsg state
 
         Msg.UrlChanged url ->
             routeUpdateHelper url state
 
-        Msg.I18nPorts i18nMsg ->
-            i18nUpdateHelper i18nMsg state
+        Msg.I18nPortMsg i18nPortMsg ->
+            i18nUpdateHelper i18nPortMsg state
 
         Msg.WidgetMsg widgetMsg ->
             ( { state

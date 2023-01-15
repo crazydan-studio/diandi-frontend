@@ -15,10 +15,10 @@ type Msg
     = NoOp
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
-      -- 请求远端数据
-    | RemoteFetched RemoteMsg.Msg
-      -- 国际化
-    | I18nPorts I18n.Port.Msg
+      -- 远端消息
+    | RemoteMsg RemoteMsg.Msg
+      -- 国际化Port消息
+    | I18nPortMsg I18n.Port.Msg
       -- 组件消息
     | WidgetMsg Widget.Model.Msg
 
@@ -36,4 +36,4 @@ toCmd msg =
 -}
 toRemoteCmd : Cmd RemoteMsg.Msg -> Cmd Msg
 toRemoteCmd msg =
-    Cmd.map RemoteFetched msg
+    Cmd.map RemoteMsg msg

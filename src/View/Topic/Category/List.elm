@@ -36,9 +36,9 @@ categoryListView categories =
         ]
         (categories
             |> Data.TreeStore.traverse
-                (\depth category childElements ->
+                (\{ depth } category childElements ->
                     ( category.id
-                    , Element.Lazy.lazy3 categoryView depth childElements category
+                    , Element.Lazy.lazy3 categoryView depth category childElements
                     )
                 )
         )
@@ -46,10 +46,10 @@ categoryListView categories =
 
 categoryView :
     Int
-    -> List ( String, Element RootMsg )
     -> Category
+    -> List ( String, Element RootMsg )
     -> Element RootMsg
-categoryView depth childElements category =
+categoryView depth category childElements =
     column
         [ width fill
         ]
@@ -64,7 +64,7 @@ categoryView depth childElements category =
                    , height (px 64)
                    , paddingEach
                         { top = 0
-                        , left = (depth + 1) * 16
+                        , left = depth * 16
                         , right = 16
                         , bottom = 0
                         }

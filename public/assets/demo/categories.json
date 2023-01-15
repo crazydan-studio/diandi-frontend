@@ -2,49 +2,48 @@
   {
     "id": "1",
     "name": "产品开发",
-    "icon": "",
+    "description": ""
+  },
+  {
+    "id": "2",
+    "name": "思维碎片",
     "description": ""
   },
   {
     "id": "1-1",
     "name": "点滴(DianDi)",
     "parent": "1",
-    "icon": "",
+    "icon": "./icon.svg",
     "description": ""
   },
   {
     "id": "1-1-1",
     "name": "开发实现",
     "parent": "1-1",
-    "icon": "",
     "description": ""
   },
   {
     "id": "1-1-1-1",
     "name": "前端",
     "parent": "1-1-1",
-    "icon": "",
     "description": ""
   },
   {
     "id": "1-1-2",
     "name": "功能设计",
     "parent": "1-1",
-    "icon": "",
     "description": ""
   },
   {
     "id": "1-1-2-1",
     "name": "主题",
     "parent": "1-1-2",
-    "icon": "",
     "description": ""
   },
   {
     "id": "1-1-2-2",
     "name": "标签",
     "parent": "1-1-2",
-    "icon": "",
     "description": ""
   }
 ]

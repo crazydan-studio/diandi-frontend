@@ -20,7 +20,7 @@ import Msg
 import Url
 import View.Page as PageType
 import View.Route
-import Widget.Widget
+import Widget.Model
 
 
 type alias Config =
@@ -31,11 +31,11 @@ type alias Config =
 
 
 type alias State =
-    { -- 应用状态数据
+    { -- 应用状态
       app : Model.App.State
 
-    -- 组件状态数据，仅用于维护组件内部状态
-    , ui : Widget.Widget.State
+    -- 组件内部状态
+    , ui : Widget.Model.State
     }
 
 
@@ -49,7 +49,7 @@ init config navUrl navKey =
             , navKey = navKey
             , navUrl = navUrl
             }
-    , ui = Widget.Widget.init
+    , ui = Widget.Model.init
     }
         |> routeUpdateHelper navUrl
 

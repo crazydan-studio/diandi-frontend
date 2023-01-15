@@ -1,4 +1,4 @@
-module Widget.Widget exposing (State, init)
+module Widget.Model exposing (State, init)
 
 
 type alias State =

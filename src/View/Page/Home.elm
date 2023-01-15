@@ -9,8 +9,6 @@ import Model
 import Msg
 import Style.Default
 import Style.Home
-import Theme.Color
-import Theme.Color.Element
 import Theme.Icon
 import Theme.Icon.Element
 import Theme.Theme

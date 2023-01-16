@@ -26,14 +26,15 @@ import Widget.Helper exposing (css)
 import Widget.Model
     exposing
         ( Msg(..)
-        , Widget
-        , WidgetStateUpdater
+        , WidgetUpdater
+        , Widgets
         )
 import Widget.Model.Button
 
 
 type alias Config msg =
-    { content : Element msg
+    { id : String
+    , content : Element msg
     , onPress : Maybe msg
     , theme : Theme.Theme.Theme
     , attrs : List (Attribute msg)
@@ -42,14 +43,14 @@ type alias Config msg =
 
 {-| 一级按钮
 -}
-primary : Widget msg -> Config msg -> Element msg
+primary : Widgets msg -> Config msg -> Element msg
 primary =
     btnCreator Theme.Theme.primaryBtn
 
 
 {-| 二级按钮
 -}
-secondary : Widget msg -> Config msg -> Element msg
+secondary : Widgets msg -> Config msg -> Element msg
 secondary =
     btnCreator Theme.Theme.secondaryBtn
 
@@ -67,10 +68,10 @@ link =
 
 btnCreator :
     (Theme.Theme.Theme -> List (Attribute msg))
-    -> Widget msg
+    -> Widgets msg
     -> Config msg
     -> Element msg
-btnCreator fromTheme widget { content, onPress, theme, attrs } =
+btnCreator fromTheme widgets { id, content, onPress, theme, attrs } =
     Input.button
         ([ width
             (shrink
@@ -90,24 +91,29 @@ btnCreator fromTheme widget { content, onPress, theme, attrs } =
         )
         { onPress =
             Just
-                (widget
-                    |> onButtonMsg
-                        (\state -> { state | disabled = not state.disabled })
+                (widgets
+                    |> onButtonMsg id
+                        (\state ->
+                            { state
+                                | disabled = not state.disabled
+                            }
+                        )
                 )
         , label = content
         }
 
 
 onButtonMsg :
-    WidgetStateUpdater Widget.Model.Button.State
-    -> Widget msg
+    String
+    -> WidgetUpdater Widget.Model.Button.State
+    -> Widgets msg
     -> msg
-onButtonMsg updateState widget =
-    widget
-        |> Widget.Model.onMsg
-            (\id ->
-                UpdateButtonState
-                    id
-                    (\() -> Widget.Model.Button.init)
-                    updateState
-            )
+onButtonMsg id updateState =
+    Widget.Model.onMsg
+        (\() ->
+            UpdateButtonState
+                { id = id
+                , init = \() -> Widget.Model.Button.init
+                , update = updateState
+                }
+        )

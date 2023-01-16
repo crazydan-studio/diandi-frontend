@@ -1,8 +1,7 @@
 module Widget.Model exposing
     ( Msg(..)
-    , State
-    , Widget
-    , WidgetStateUpdater
+    , WidgetUpdater
+    , Widgets
     , init
     , onMsg
     , update
@@ -13,57 +12,63 @@ import Widget.Model.Button as Button
 
 
 type Msg
-    = UpdateButtonState String (() -> Button.State) (WidgetStateUpdater Button.State)
+    = UpdateButtonState (WidgetUpdateConfig Button.State)
 
 
-type alias WidgetStateUpdater widgetState =
+type alias WidgetUpdateConfig widgetState =
+    { id : String
+    , init : () -> widgetState
+    , update : WidgetUpdater widgetState
+    }
+
+
+type alias WidgetUpdater widgetState =
     widgetState -> widgetState
 
 
-type alias State rootMsg =
-    { toRootMsg : Msg -> rootMsg
+type alias Widgets rootMsg =
+    { config : Config rootMsg
     , button : Dict String Button.State
     }
 
 
-type alias Widget rootMsg =
-    { id : String
-    , state : State rootMsg
+type alias Config rootMsg =
+    { toRootMsg : Msg -> rootMsg
     }
 
 
 init :
-    (Msg -> rootMsg)
-    -> State rootMsg
-init toRootMsg =
-    { toRootMsg = toRootMsg
+    Config rootMsg
+    -> Widgets rootMsg
+init config =
+    { config = config
     , button = Dict.empty
     }
 
 
 update :
     Msg
-    -> State rootMsg
-    -> State rootMsg
-update msg state =
+    -> Widgets rootMsg
+    -> Widgets rootMsg
+update msg widgets =
     case msg of
-        UpdateButtonState id initState updateState ->
+        UpdateButtonState config ->
             let
                 newState =
-                    Dict.get id state.button
-                        |> Maybe.withDefault (initState ())
-                        |> updateState
+                    Dict.get config.id widgets.button
+                        |> Maybe.withDefault (config.init ())
+                        |> config.update
             in
-            { state
+            { widgets
                 | button =
-                    state.button
-                        |> Dict.insert id newState
+                    widgets.button
+                        |> Dict.insert config.id newState
             }
 
 
 onMsg :
-    (String -> Msg)
-    -> Widget rootMsg
+    (() -> Msg)
+    -> Widgets rootMsg
     -> rootMsg
-onMsg toMsg { id, state } =
-    toMsg id |> state.toRootMsg
+onMsg toMsg widgets =
+    toMsg () |> widgets.config.toRootMsg

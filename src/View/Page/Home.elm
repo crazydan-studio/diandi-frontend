@@ -97,9 +97,9 @@ view ({ app, widgets } as state) =
                        , padding 8
                        ]
                 )
-                [ Widget.Button.secondary
-                    { id = "btn-personal-setting-in-home", state = widgets }
-                    { theme = app.theme
+                [ Widget.Button.secondary widgets
+                    { id = "btn-personal-setting-in-home"
+                    , theme = app.theme
                     , attrs = []
                     , content =
                         row
@@ -318,9 +318,9 @@ view ({ app, widgets } as state) =
                                                 )
                                        )
                                 )
-                            , Widget.Button.primary
-                                { id = "btn-write-it-down-in-home", state = widgets }
-                                { theme = app.theme
+                            , Widget.Button.primary widgets
+                                { id = "btn-write-it-down-in-home"
+                                , theme = app.theme
                                 , attrs =
                                     [ alignRight
                                     ]

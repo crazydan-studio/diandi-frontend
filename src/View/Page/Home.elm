@@ -19,7 +19,7 @@ import Widget.Button
 
 
 view : Model.State -> Element Msg.Msg
-view ({ app, ui } as state) =
+view ({ app, widgets } as state) =
     let
         i18nText =
             -- View.I18n.Home.i18nText I18n.Lang.En_US
@@ -98,7 +98,7 @@ view ({ app, ui } as state) =
                        ]
                 )
                 [ Widget.Button.secondary
-                    { id = "btn-personal-setting-in-home", state = ui }
+                    { id = "btn-personal-setting-in-home", state = widgets }
                     { theme = app.theme
                     , attrs = []
                     , content =
@@ -319,7 +319,7 @@ view ({ app, ui } as state) =
                                        )
                                 )
                             , Widget.Button.primary
-                                { id = "btn-write-it-down-in-home", state = ui }
+                                { id = "btn-write-it-down-in-home", state = widgets }
                                 { theme = app.theme
                                 , attrs =
                                     [ alignRight

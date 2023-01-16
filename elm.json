@@ -1,5 +1,6 @@
 {
     "type": "application",
+    "license": "GPLv3",
     "source-directories": [
         "src"
     ],

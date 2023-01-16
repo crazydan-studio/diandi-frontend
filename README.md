@@ -23,6 +23,10 @@ npm run dev
 npm run prod
 ```
 
+## 许可证
+
+[GPLv3](./LICENSE)
+
 ## 参考资料
 
 ### 设计

@@ -8,6 +8,7 @@
   "url": "https://diandi.studio.crazydan.org",
   "image": "https://diandi.studio.crazydan.org/img/icon.png",
   "lang": "zh_CN",
+  "license": "GPLv3",
   "scripts": {
     "dev": "webpack-dev-server --hot --port 3010",
     "prod": "webpack",

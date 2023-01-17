@@ -26,7 +26,7 @@ module Widget.Model exposing
 
 import Dict exposing (Dict)
 import Widget.Model.Button as Button
-import Widget.Msg exposing (Msg(..))
+import Widget.Msg exposing (Msg(..), WidgetUpdateConfig)
 
 
 type State appMsg
@@ -68,14 +68,29 @@ updateHelper : Msg -> WidgetStates -> WidgetStates
 updateHelper msg widgets =
     case msg of
         UpdateButtonState widget ->
-            let
-                newState =
-                    Dict.get widget.id widgets.button
-                        |> Maybe.withDefault (widget.init ())
-                        |> widget.update
-            in
             { widgets
                 | button =
                     widgets.button
-                        |> Dict.insert widget.id newState
+                        |> updateWidgetHelper
+                            widget
             }
+
+
+updateWidgetHelper :
+    WidgetUpdateConfig widgetState
+    -> Dict String widgetState
+    -> Dict String widgetState
+updateWidgetHelper updateConfig stateDict =
+    case
+        stateDict
+            |> Dict.get updateConfig.id
+            |> Maybe.withDefault (updateConfig.init ())
+            |> updateConfig.update
+    of
+        Nothing ->
+            stateDict
+                |> Dict.remove updateConfig.id
+
+        Just state ->
+            stateDict
+                |> Dict.insert updateConfig.id state

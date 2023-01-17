@@ -17,7 +17,7 @@
 -}
 
 
-module Widget.Msg exposing (Msg(..))
+module Widget.Msg exposing (Msg(..), WidgetUpdateConfig)
 
 import Widget.Model.Button as Button
 
@@ -29,7 +29,12 @@ type Msg
 
 
 type alias WidgetUpdateConfig widgetState =
-    { id : String
+    { -- 组件唯一标识，同类型的不同组件不允许相同，否则组件状态会被相互覆盖
+      id : String
+
+    -- 组件状态初始化函数，其在首次触发组件更新时调用
     , init : () -> widgetState
-    , update : widgetState -> widgetState
+
+    -- 组件状态更新函数，若返回Nothing，则表示需移除该状态
+    , update : widgetState -> Maybe widgetState
     }

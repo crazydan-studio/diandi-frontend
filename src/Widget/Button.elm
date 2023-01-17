@@ -78,9 +78,10 @@ button state { id, content, onPress, attrs } =
                 (state
                     |> onMsg id
                         (\s ->
-                            { s
-                                | disabled = not s.disabled
-                            }
+                            Just
+                                { s
+                                    | disabled = not s.disabled
+                                }
                         )
                 )
         , label = content
@@ -100,7 +101,7 @@ link =
 
 onMsg :
     String
-    -> (Button.State -> Button.State)
+    -> (Button.State -> Maybe Button.State)
     -> State msg
     -> msg
 onMsg id updateState =

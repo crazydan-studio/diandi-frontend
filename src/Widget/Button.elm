@@ -76,7 +76,7 @@ button state { id, content, onPress, attrs } =
         { onPress =
             Just
                 (state
-                    |> onButtonMsg id
+                    |> onMsg id
                         (\s ->
                             { s
                                 | disabled = not s.disabled
@@ -98,12 +98,12 @@ link =
 -- ---------------------------------------------------------------
 
 
-onButtonMsg :
+onMsg :
     String
     -> (Button.State -> Button.State)
     -> State msg
     -> msg
-onButtonMsg id updateState =
+onMsg id updateState =
     Widget.Model.onMsg
         (\() ->
             UpdateButtonState

@@ -1,12 +1,31 @@
+{-
+   点滴(DianDi) - 聚沙成塔，集腋成裘
+   Copyright (C) 2022 by Crazydan Studio (https://studio.crazydan.org/)
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-}
+
+
 module View.I18n.Home exposing
-    ( i18nBtnModule
-    , i18nLabelModule
-    , i18nText
+    ( btnModule
+    , labelModule
+    , text
     )
 
 import Element exposing (Element)
 import I18n.Element
-import I18n.Helper exposing (i18nWaiting)
+import I18n.Helper exposing (translateWaiting)
 import I18n.Lang
     exposing
         ( Lang(..)
@@ -15,31 +34,31 @@ import I18n.Lang
 import View.I18n.Default
 
 
-i18nText : Lang -> List String -> Element msg
-i18nText =
-    I18n.Element.text i18nTranslator
+text : Lang -> List String -> Element msg
+text =
+    I18n.Element.text translator
 
 
-i18nRootModule : String
-i18nRootModule =
+rootModule : String
+rootModule =
     "Home"
 
 
-i18nBtnModule : String
-i18nBtnModule =
+btnModule : String
+btnModule =
     "Btn"
 
 
-i18nLabelModule : String
-i18nLabelModule =
+labelModule : String
+labelModule =
     "Label"
 
 
-getI18nTranslatorBySubModule :
+getTranslatorBySubModule :
     String
     -> List ( String, t )
     -> Maybe t
-getI18nTranslatorBySubModule subModule translators =
+getTranslatorBySubModule subModule translators =
     translators
         |> List.foldl
             (\( m, t ) r ->
@@ -52,11 +71,13 @@ getI18nTranslatorBySubModule subModule translators =
             Nothing
 
 
-i18nTranslator : Lang -> List String -> TranslateResult
-i18nTranslator langType texts =
+translator : Lang -> List String -> TranslateResult
+translator langType texts =
     let
-        i18nDefault subModules =
-            View.I18n.Default.i18n langType (i18nRootModule :: subModules)
+        translateDefault subModules =
+            View.I18n.Default.translator
+                langType
+                (rootModule :: subModules)
     in
     case texts of
         [ "又有什么奇妙的想法呢？赶紧记下来吧 :)" ] ->
@@ -66,7 +87,7 @@ i18nTranslator langType texts =
                         "Have any amazing ideas? Git it down right now :)"
 
                 _ ->
-                    i18nDefault [] texts
+                    translateDefault [] texts
 
         [ "这里是类别描述信息" ] ->
             case langType of
@@ -75,7 +96,7 @@ i18nTranslator langType texts =
                         "Here is the description for the category"
 
                 _ ->
-                    i18nDefault [] texts
+                    translateDefault [] texts
 
         [ "这里是主题详情展示页，默认显示当前分类的信息" ] ->
             case langType of
@@ -84,7 +105,7 @@ i18nTranslator langType texts =
                         "Here is the details page for the topic, it will default show the information of the category"
 
                 _ ->
-                    i18nDefault [] texts
+                    translateDefault [] texts
 
         [ "待办" as t, n ] ->
             case langType of
@@ -93,7 +114,7 @@ i18nTranslator langType texts =
                         ("TODO (" ++ n ++ ")")
 
                 _ ->
-                    i18nDefault [] [ t, " (", n, ")" ]
+                    translateDefault [] [ t, " (", n, ")" ]
 
         [ "知识" as t, n ] ->
             case langType of
@@ -102,7 +123,7 @@ i18nTranslator langType texts =
                         ("Knowledge (" ++ n ++ ")")
 
                 _ ->
-                    i18nDefault [] [ t, " (", n, ")" ]
+                    translateDefault [] [ t, " (", n, ")" ]
 
         [ "疑问" as t, n ] ->
             case langType of
@@ -111,38 +132,38 @@ i18nTranslator langType texts =
                         ("Question (" ++ n ++ ")")
 
                 _ ->
-                    i18nDefault [] [ t, " (", n, ")" ]
+                    translateDefault [] [ t, " (", n, ")" ]
 
         -- 处理子模块的国际化
         i18nSubModule :: actualTexts ->
             let
                 translatorMaybe =
-                    [ ( i18nBtnModule, i18nBtnTranslator )
-                    , ( i18nLabelModule, i18nLabelTranslator )
+                    [ ( btnModule, btnTranslator )
+                    , ( labelModule, labelTranslator )
                     ]
-                        |> getI18nTranslatorBySubModule i18nSubModule
+                        |> getTranslatorBySubModule i18nSubModule
             in
             case translatorMaybe of
-                Just translator ->
-                    translator langType
-                        i18nDefault
-                        [ i18nRootModule, i18nSubModule ]
+                Just t ->
+                    t langType
+                        translateDefault
+                        [ rootModule, i18nSubModule ]
                         actualTexts
 
                 Nothing ->
-                    i18nWaiting [ i18nRootModule ] texts
+                    translateWaiting [ rootModule ] texts
 
         _ ->
-            i18nWaiting [ i18nRootModule ] texts
+            translateWaiting [ rootModule ] texts
 
 
-i18nBtnTranslator :
+btnTranslator :
     Lang
     -> (List String -> List String -> TranslateResult)
     -> List String
     -> List String
     -> TranslateResult
-i18nBtnTranslator langType i18nDefault modules texts =
+btnTranslator langType i18nDefault modules texts =
     case texts of
         [ "实时预览" ] ->
             case langType of
@@ -181,16 +202,16 @@ i18nBtnTranslator langType i18nDefault modules texts =
                     i18nDefault [] texts
 
         _ ->
-            i18nWaiting modules texts
+            translateWaiting modules texts
 
 
-i18nLabelTranslator :
+labelTranslator :
     Lang
     -> (List String -> List String -> TranslateResult)
     -> List String
     -> List String
     -> TranslateResult
-i18nLabelTranslator langType i18nDefault modules texts =
+labelTranslator langType i18nDefault modules texts =
     case texts of
         [ "分类：" ] ->
             case langType of
@@ -211,4 +232,4 @@ i18nLabelTranslator langType i18nDefault modules texts =
                     i18nDefault [] texts
 
         _ ->
-            i18nWaiting modules texts
+            translateWaiting modules texts

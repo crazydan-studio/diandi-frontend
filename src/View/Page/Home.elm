@@ -31,7 +31,7 @@ import Style.Home
 import Theme.Icon
 import Theme.Icon.Element
 import Theme.Theme
-import View.I18n.Home exposing (i18nBtnModule, i18nLabelModule)
+import View.I18n.Home as I18n
 import View.Page.Topic.Category.List
 import View.Page.Topic.List
 import Widget.Button
@@ -41,8 +41,7 @@ view : Model.State -> Element Msg.Msg
 view ({ app, widgets } as state) =
     let
         i18nText =
-            -- View.I18n.Home.i18nText I18n.Lang.En_US
-            View.I18n.Home.i18nText app.lang
+            I18n.text app.lang
     in
     row
         [ width fill
@@ -129,7 +128,7 @@ view ({ app, widgets } as state) =
                                 }
                                 Theme.Icon.SettingOutlined
                             , -- TODO 点击后，在左侧弹出侧边栏，该侧边栏中展示用户头像/名称、语言切换、主题切换等
-                              (i18nBtnModule :: "设置" :: langEnd)
+                              (I18n.btnModule :: "设置" :: langEnd)
                                 |> i18nText
                             ]
                     , onPress = Nothing
@@ -254,7 +253,7 @@ view ({ app, widgets } as state) =
                                     { onPress = Nothing
                                     , label =
                                         -- TODO 改为切换开关，开启后，在上部或下部以浮窗形式展开，固定高度并显示滚动条
-                                        (i18nBtnModule :: "实时预览" :: langEnd)
+                                        (I18n.btnModule :: "实时预览" :: langEnd)
                                             |> i18nText
                                     }
                                ]
@@ -313,7 +312,7 @@ view ({ app, widgets } as state) =
                             [ paragraph
                                 []
                                 (List.singleton
-                                    ((i18nLabelModule :: "分类：" :: langEnd)
+                                    ((I18n.labelModule :: "分类：" :: langEnd)
                                         |> i18nText
                                     )
                                     ++ ([ "产品开发", "点滴(DianDi)", "功能设计" ]
@@ -326,7 +325,7 @@ view ({ app, widgets } as state) =
                             , paragraph
                                 []
                                 (List.singleton
-                                    ((i18nLabelModule :: "标签：" :: langEnd)
+                                    ((I18n.labelModule :: "标签：" :: langEnd)
                                         |> i18nText
                                     )
                                     ++ ([ "待办", "知识", "疑问", "+" ]
@@ -343,7 +342,7 @@ view ({ app, widgets } as state) =
                                         ++ [ alignRight
                                            ]
                                 , content =
-                                    (i18nBtnModule :: "记下来!" :: langEnd)
+                                    (I18n.btnModule :: "记下来!" :: langEnd)
                                         |> i18nText
                                 , onPress = Nothing
                                 }

@@ -19,9 +19,8 @@
 
 module Widget.Button exposing
     ( Config
+    , button
     , link
-    , primary
-    , secondary
     )
 
 import Element
@@ -40,7 +39,6 @@ import Element
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
-import Theme.Theme
 import Widget.Helper exposing (css)
 import Widget.Model exposing (State)
 import Widget.Model.Button as Button
@@ -51,42 +49,14 @@ type alias Config msg =
     { id : String
     , content : Element msg
     , onPress : Maybe msg
-    , theme : Theme.Theme.Theme
     , attrs : List (Attribute msg)
     }
 
 
-{-| 一级按钮
+{-| 普通按钮
 -}
-primary : State msg -> Config msg -> Element msg
-primary =
-    btnCreator Theme.Theme.primaryBtn
-
-
-{-| 二级按钮
--}
-secondary : State msg -> Config msg -> Element msg
-secondary =
-    btnCreator Theme.Theme.secondaryBtn
-
-
-{-| 链接按钮
--}
-link : Element msg
-link =
-    Element.none
-
-
-
--- ---------------------------------------------------------------
-
-
-btnCreator :
-    (Theme.Theme.Theme -> List (Attribute msg))
-    -> State msg
-    -> Config msg
-    -> Element msg
-btnCreator fromTheme widgets { id, content, onPress, theme, attrs } =
+button : State msg -> Config msg -> Element msg
+button state { id, content, onPress, attrs } =
     Input.button
         ([ width
             (shrink
@@ -101,21 +71,31 @@ btnCreator fromTheme widgets { id, content, onPress, theme, attrs } =
          , mouseOver []
          , focused []
          ]
-            ++ fromTheme theme
             ++ attrs
         )
         { onPress =
             Just
-                (widgets
+                (state
                     |> onButtonMsg id
-                        (\state ->
-                            { state
-                                | disabled = not state.disabled
+                        (\s ->
+                            { s
+                                | disabled = not s.disabled
                             }
                         )
                 )
         , label = content
         }
+
+
+{-| 链接按钮
+-}
+link : Element msg
+link =
+    Element.none
+
+
+
+-- ---------------------------------------------------------------
 
 
 onButtonMsg :

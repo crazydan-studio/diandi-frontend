@@ -1,47 +1,51 @@
 {-
-点滴(DianDi) - 聚沙成塔，集腋成裘
-Copyright (C) 2022 by Crazydan Studio (https://studio.crazydan.org/)
+   点滴(DianDi) - 聚沙成塔，集腋成裘
+   Copyright (C) 2022 by Crazydan Studio (https://studio.crazydan.org/)
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -}
+
 
 module Model.Remote exposing (parseError)
 
 import Http
+import I18n.Lang exposing (Lang, TranslateResult, langEnd)
+import Model.I18n.Remote as I18n
 
 
-parseError : Http.Error -> String
-parseError error =
+parseError : Lang -> Http.Error -> TranslateResult
+parseError lang error =
     case error of
         Http.BadStatus status ->
             if status == 401 then
-                "用户未登录"
+                "用户未登录" :: langEnd |> I18n.translator lang
 
             else if status == 403 then
-                "请求未授权"
+                "请求未授权" :: langEnd |> I18n.translator lang
 
             else if status == 404 then
-                "请求URL不存在"
+                "请求URL不存在" :: langEnd |> I18n.translator lang
 
             else
-                "异常请求状态码：" ++ String.fromInt status
+                ("异常请求状态码：" :: String.fromInt status :: langEnd)
+                    |> I18n.translator lang
 
         Http.Timeout ->
-            "网络请求超时，请稍后再试"
+            "网络请求超时，请稍后再试" :: langEnd |> I18n.translator lang
 
         Http.NetworkError ->
-            "网络连接异常，请稍后再试"
+            "网络连接异常，请稍后再试" :: langEnd |> I18n.translator lang
 
         _ ->
-            "未知异常"
+            "未知异常" :: langEnd |> I18n.translator lang

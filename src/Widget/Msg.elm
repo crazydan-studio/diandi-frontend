@@ -17,42 +17,19 @@
 -}
 
 
-module Msg exposing
-    ( Msg(..)
-    , toCmd
-    , toRemoteCmd
-    )
+module Widget.Msg exposing (Msg(..))
 
-import Browser
-import I18n.Port
-import Model.Remote.Msg as RemoteMsg
-import Url
-import Widget.Msg
+import Widget.Model.Button as Button
 
 
 type Msg
-    = NoOp
-    | LinkClicked Browser.UrlRequest
-    | UrlChanged Url.Url
-      -- 远端消息
-    | RemoteMsg RemoteMsg.Msg
-      -- 国际化Port消息
-    | I18nPortMsg I18n.Port.Msg
-      -- 组件消息
-    | WidgetMsg Widget.Msg.Msg
+    = -- TODO 数据删除消息需包装一次，携带组件id和业务消息，并先移除组件状态，
+      -- 再触发业务消息，同时支持批量删除消息
+      UpdateButtonState (WidgetUpdateConfig Button.State)
 
 
-toCmd : Msg -> Cmd Msg
-toCmd msg =
-    Cmd.map
-        (\_ ->
-            msg
-        )
-        Cmd.none
-
-
-{-| 发起远程请求
--}
-toRemoteCmd : Cmd RemoteMsg.Msg -> Cmd Msg
-toRemoteCmd msg =
-    Cmd.map RemoteMsg msg
+type alias WidgetUpdateConfig widgetState =
+    { id : String
+    , init : () -> widgetState
+    , update : widgetState -> widgetState
+    }

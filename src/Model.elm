@@ -53,7 +53,7 @@ type alias State =
       app : Model.App.State
 
     -- 组件内部状态
-    , widgets : Widget.Model.Widgets Msg.Msg
+    , widgets : Widget.Model.State Msg.Msg
     }
 
 
@@ -69,7 +69,7 @@ init config navUrl navKey =
             }
     , widgets =
         Widget.Model.init
-            { toRootMsg = Msg.WidgetMsg
+            { toAppMsg = Msg.WidgetMsg
             }
     }
         |> routeUpdateHelper navUrl

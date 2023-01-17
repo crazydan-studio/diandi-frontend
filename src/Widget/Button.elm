@@ -1,20 +1,21 @@
 {-
-点滴(DianDi) - 聚沙成塔，集腋成裘
-Copyright (C) 2022 by Crazydan Studio (https://studio.crazydan.org/)
+   点滴(DianDi) - 聚沙成塔，集腋成裘
+   Copyright (C) 2022 by Crazydan Studio (https://studio.crazydan.org/)
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -}
+
 
 module Widget.Button exposing
     ( Config
@@ -41,13 +42,9 @@ import Element.Font as Font
 import Element.Input as Input
 import Theme.Theme
 import Widget.Helper exposing (css)
-import Widget.Model
-    exposing
-        ( Msg(..)
-        , WidgetUpdater
-        , Widgets
-        )
-import Widget.Model.Button
+import Widget.Model exposing (State)
+import Widget.Model.Button as Button
+import Widget.Msg exposing (Msg(..))
 
 
 type alias Config msg =
@@ -61,14 +58,14 @@ type alias Config msg =
 
 {-| 一级按钮
 -}
-primary : Widgets msg -> Config msg -> Element msg
+primary : State msg -> Config msg -> Element msg
 primary =
     btnCreator Theme.Theme.primaryBtn
 
 
 {-| 二级按钮
 -}
-secondary : Widgets msg -> Config msg -> Element msg
+secondary : State msg -> Config msg -> Element msg
 secondary =
     btnCreator Theme.Theme.secondaryBtn
 
@@ -86,7 +83,7 @@ link =
 
 btnCreator :
     (Theme.Theme.Theme -> List (Attribute msg))
-    -> Widgets msg
+    -> State msg
     -> Config msg
     -> Element msg
 btnCreator fromTheme widgets { id, content, onPress, theme, attrs } =
@@ -123,15 +120,15 @@ btnCreator fromTheme widgets { id, content, onPress, theme, attrs } =
 
 onButtonMsg :
     String
-    -> WidgetUpdater Widget.Model.Button.State
-    -> Widgets msg
+    -> (Button.State -> Button.State)
+    -> State msg
     -> msg
 onButtonMsg id updateState =
     Widget.Model.onMsg
         (\() ->
             UpdateButtonState
                 { id = id
-                , init = \() -> Widget.Model.Button.init
+                , init = \() -> Button.init
                 , update = updateState
                 }
         )

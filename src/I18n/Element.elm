@@ -1,22 +1,23 @@
 {-
-点滴(DianDi) - 聚沙成塔，集腋成裘
-Copyright (C) 2022 by Crazydan Studio (https://studio.crazydan.org/)
+   点滴(DianDi) - 聚沙成塔，集腋成裘
+   Copyright (C) 2022 by Crazydan Studio (https://studio.crazydan.org/)
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
-module I18n.Element exposing (text)
+
+module I18n.Element exposing (text, textWithResult)
 
 {-| Elm UI国际化支持
 
@@ -42,7 +43,13 @@ text :
     -> List String
     -> Element msg
 text translator langType texts =
-    case translator langType texts of
+    translator langType texts
+        |> textWithResult
+
+
+textWithResult : TranslateResult -> Element msg
+textWithResult translateResult =
+    case translateResult of
         Translated result ->
             Element.text result
 
@@ -58,10 +65,10 @@ text translator langType texts =
 
 noTransAttrs : List String -> List (Attribute msg)
 noTransAttrs modules =
-    [ HtmlAttr.attribute "need-to-translate" "true"
+    [ HtmlAttr.attribute "i18n-not-translated" "true"
         |> Element.htmlAttribute
     , HtmlAttr.attribute
-        "need-to-translate-modules"
+        "i18n-not-translated-modules"
         (joinI18nModules modules)
         |> Element.htmlAttribute
     ]

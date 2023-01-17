@@ -12,7 +12,7 @@ const app = Elm.Main.init({
   flags: {
     title: pkg.title,
     description: pkg.description,
-    lang: getFirstBrowserLanguage().replaceAll("-", "_"),
+    lang: getFirstBrowserLanguage(),
   },
 });
 

@@ -39,9 +39,9 @@ export function findNotTranslatedTexts() {
   const results = [];
 
   document
-    .querySelectorAll('[need-to-translate="true"]')
+    .querySelectorAll('[i18n-not-translated="true"]')
     .forEach(function (node) {
-      const modules = node.getAttribute("need-to-translate-modules");
+      const modules = node.getAttribute("i18n-not-translated-modules");
       const text = node.innerText;
 
       results.push({ modules: modules, text: text });

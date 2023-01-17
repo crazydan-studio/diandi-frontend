@@ -17,8 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -}
 
 module I18n.Helper exposing
-    ( i18nWaiting
-    , i18nWaitingByLang
+    ( translateWaiting
+    , translateWaitingByLang
     , joinI18nModules
     , joinI18nTexts
     , splitI18nModulesFrom
@@ -50,8 +50,8 @@ splitI18nModulesFrom =
 
 {-| 返回结果[WaitingToTranslate](I18n.Lang#WaitingToTranslate)
 -}
-i18nWaiting : List String -> List String -> TranslateResult
-i18nWaiting modules texts =
+translateWaiting : List String -> List String -> TranslateResult
+translateWaiting modules texts =
     WaitingToTranslate { modules = modules, texts = texts }
 
 
@@ -60,14 +60,14 @@ i18nWaiting modules texts =
 当前Lang与默认Lang相同时，返回`NoNeedsToTranslate`，否则，返回`WaitingToTranslate`
 
 -}
-i18nWaitingByLang :
+translateWaitingByLang :
     { default : Lang, current : Lang }
     -> List String
     -> List String
     -> TranslateResult
-i18nWaitingByLang lang modules texts =
+translateWaitingByLang lang modules texts =
     if lang.current == lang.default then
         NoNeedsToTranslate texts
 
     else
-        i18nWaiting modules texts
+        translateWaiting modules texts

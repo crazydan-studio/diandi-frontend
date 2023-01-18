@@ -39,7 +39,7 @@ import Element
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
-import Widget.Helper exposing (css)
+import Widget.Html exposing (class)
 import Widget.Model exposing (State)
 import Widget.Model.Button as Button
 import Widget.Msg exposing (Msg(..))
@@ -64,7 +64,7 @@ button state { id, content, onPress, attrs } =
             )
          , height (px 36)
          , paddingXY 16 0
-         , css "button"
+         , class "button"
          , Font.size 14
          , Font.letterSpacing 1.25
          , Border.rounded 4

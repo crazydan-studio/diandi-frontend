@@ -98,7 +98,7 @@ elmUiRenderer =
     { heading = heading
     , paragraph =
         Element.paragraph
-            [ Element.spacing 18 ]
+            [ Element.spacing 19 ]
     , thematicBreak = Element.none
     , text = Element.text
     , strong = \content -> Element.row [ Font.bold ] content
@@ -176,7 +176,7 @@ elmUiRenderer =
     , unorderedList =
         \items ->
             Element.column
-                [ Element.spacing 12
+                [ Element.spacing 16
                 , Element.paddingXY 0 8
                 ]
                 (items

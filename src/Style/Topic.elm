@@ -2,7 +2,7 @@ module Style.Topic exposing
     ( contentInTopicBody
     , topic
     , topicBody
-    , topicBodyDefaultPalette
+    , topicDefaultColor
     , topicList
     , topicPadding
     , topicSpacing
@@ -20,6 +20,7 @@ import Element
         , paddingEach
         , paddingXY
         , rgb255
+        , rgba
         , rgba255
         , shrink
         , spacing
@@ -28,9 +29,9 @@ import Element
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
-import Style.Html
 import Theme.Color
 import Theme.Color.Element
+import Widget.Html
 
 
 topicCornerRadius : Int
@@ -75,8 +76,7 @@ topic =
     , clip
     , Background.color (rgb255 255 255 255)
     , Border.rounded topicCornerRadius
-    , Style.Html.class "topic"
-    , paddingEach { top = 0, left = 36, right = 0, bottom = 0 }
+    , Widget.Html.class "topic"
     ]
 
 
@@ -84,28 +84,33 @@ topicBody : List (Attribute msg)
 topicBody =
     [ width fill
     , height fill
-    , Style.Html.class "topic-body"
     , Border.roundEach
         { topLeft = 0
         , topRight = 0
         , bottomLeft = topicCornerRadius
         , bottomRight = topicCornerRadius
         }
+    , Background.color (rgba255 0 0 0 0)
     ]
+        ++ Widget.Html.styles
+            [ ( "background-image", "linear-gradient(#91d1d3 1px, transparent 0)" )
+            , ( "background-size"
+              , "100% "
+                    ++ String.fromInt ((contentFontSizeInTopicBody + 2) * 2)
+                    ++ "px"
+              )
+            , ( "background-position", "0 " ++ String.fromInt (contentFontSizeInTopicBody + 2) ++ "px" )
+            ]
 
 
-topicBodyDefaultPalette : List (Attribute msg)
-topicBodyDefaultPalette =
-    -- Theme.Color.Element.defaultPalette Theme.Color.Blue600
-    []
+topicDefaultColor : Theme.Color.Color
+topicDefaultColor =
+    Theme.Color.Blue600
 
 
 contentInTopicBody : List (Attribute msg)
 contentInTopicBody =
     [ width fill
-    , height
-        (fill
-            |> minimum (contentFontSizeInTopicBody * 2)
-        )
+    , height fill
     , Font.size contentFontSizeInTopicBody
     ]

@@ -21,6 +21,8 @@ module View.Page.Topic.List exposing (view)
 
 import Data.TreeStore
 import Element exposing (..)
+import Element.Background as Background
+import Element.Border as Border
 import Element.Keyed
 import Element.Lazy
 import Model
@@ -30,8 +32,8 @@ import Style.Topic
 import Theme.Color
 import Theme.Color.Element
 import View.Page.RemoteData
+import Widget.Html
 import Widget.Markdown
-import Style.Html
 
 
 view : Model.State -> Element Msg.Msg
@@ -48,18 +50,14 @@ view { app } =
 -- ---------------------------------------------------------------
 
 
-getPaletteWithDefault :
+toRgbColorWithDefault :
     Maybe Theme.Color.Color
-    -> List (Attribute msg)
-    -> List (Attribute msg)
-getPaletteWithDefault bgColor defaultPalette =
-    case bgColor of
-        Just color ->
-            -- Theme.Color.Element.defaultPalette color
-            []
-
-        Nothing ->
-            defaultPalette
+    -> Theme.Color.Color
+    -> Color
+toRgbColorWithDefault color defaultColor =
+    color
+        |> Maybe.withDefault defaultColor
+        |> Theme.Color.Element.toRgbColor
 
 
 topicListView : Data.TreeStore.Tree Topic -> Element Msg.Msg
@@ -80,18 +78,98 @@ topicListView topics =
 
 topicView : Topic -> Element Msg.Msg
 topicView topic =
+    let
+        -- 空洞宽度
+        cardHoleWidth =
+            32
+
+        -- 孔洞左侧留白大小
+        cardHolePaddingLeft =
+            8
+
+        -- 打孔区域宽度
+        cardHolePaneWidth =
+            48
+
+        -- 打孔区域分隔线宽度
+        cardHolePaneSeparatorWidth =
+            3
+
+        -- 打孔区域可见区域宽度
+        cardHolePaneDisplayWidth =
+            cardHolePaneWidth - gridLineMoveLeft - cardHolePaneSeparatorWidth
+
+        -- 格线左移位置
+        gridLineMoveLeft =
+            8
+
+        -- 主题内容的横向留白大小
+        contentPaddingX =
+            16 + gridLineMoveLeft + cardHolePaneSeparatorWidth
+
+        contentPaddingY =
+            16
+    in
     column
-        Style.Topic.topic
+        (Style.Topic.topic
+            ++ [ paddingEach
+                    { top = 0
+                    , right = 0
+                    , left = cardHolePaneDisplayWidth
+                    , bottom = 0
+                    }
+               ]
+        )
         [ row
             (Style.Topic.topicBody
-                ++ getPaletteWithDefault topic.color
-                    Style.Topic.topicBodyDefaultPalette
+                ++ [ inFront
+                        (el
+                            [ width (px cardHolePaneWidth)
+                            , height fill
+                            , moveLeft cardHolePaneDisplayWidth
+                            , paddingEach
+                                { top = contentPaddingY - 1
+                                , left = 0
+                                , right = 0
+                                , bottom = 0
+                                }
+                            , Widget.Html.noPointerEvents
+                            , Border.widthEach
+                                { top = 0
+                                , left = 0
+                                , right = cardHolePaneSeparatorWidth
+                                , bottom = 0
+                                }
+                            , Border.solid
+                            , Border.color
+                                (toRgbColorWithDefault
+                                    topic.color
+                                    Style.Topic.topicDefaultColor
+                                )
+                            ]
+                            (el
+                                ([ width fill
+                                 , height fill
+                                 , Background.tiledY "/img/hole.svg"
+                                 ]
+                                    ++ Widget.Html.styles
+                                        [ ( "background-size"
+                                          , String.fromInt cardHoleWidth ++ "px"
+                                          )
+                                        , ( "background-position"
+                                          , String.fromInt cardHolePaddingLeft ++ "px 0"
+                                          )
+                                        ]
+                                )
+                                none
+                            )
+                        )
+                   ]
             )
             [ el
                 [ width fill
-                , paddingXY 24 18
+                , paddingXY contentPaddingX contentPaddingY
                 , alignTop
-                , Style.Html.style "line-height" "32px"
                 ]
                 (el
                     Style.Topic.contentInTopicBody

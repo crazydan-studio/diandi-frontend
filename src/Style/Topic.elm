@@ -13,11 +13,14 @@ import Element
     exposing
         ( Attribute
         , centerX
+        , clip
         , fill
         , height
         , minimum
+        , paddingEach
         , paddingXY
         , rgb255
+        , rgba255
         , shrink
         , spacing
         , width
@@ -32,7 +35,7 @@ import Theme.Color.Element
 
 topicCornerRadius : Int
 topicCornerRadius =
-    2
+    4
 
 
 topicWidth : Int
@@ -42,7 +45,7 @@ topicWidth =
 
 topicSpacing : Int
 topicSpacing =
-    8
+    16
 
 
 topicPadding : Int
@@ -62,22 +65,26 @@ topicList =
     , spacing topicSpacing
     , paddingXY (topicPadding * 4) topicPadding
     , centerX
+    , Background.color (rgba255 0 0 0 0.1)
     ]
 
 
 topic : List (Attribute msg)
 topic =
     [ width fill
-    , height shrink
+    , clip
     , Background.color (rgb255 255 255 255)
     , Border.rounded topicCornerRadius
     , Style.Html.class "topic"
+    , paddingEach { top = 0, left = 36, right = 0, bottom = 0 }
     ]
 
 
 topicBody : List (Attribute msg)
 topicBody =
     [ width fill
+    , height fill
+    , Style.Html.class "topic-body"
     , Border.roundEach
         { topLeft = 0
         , topRight = 0
@@ -89,7 +96,8 @@ topicBody =
 
 topicBodyDefaultPalette : List (Attribute msg)
 topicBodyDefaultPalette =
-    Theme.Color.Element.defaultPalette Theme.Color.Blue600
+    -- Theme.Color.Element.defaultPalette Theme.Color.Blue600
+    []
 
 
 contentInTopicBody : List (Attribute msg)

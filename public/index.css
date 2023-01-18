@@ -1,5 +1,32 @@
 .topic {
-  box-shadow: rgba(0, 0, 0, 0.14) 0px 1.35pt 2.25pt, rgba(0, 0, 0, 0.12) 0px 0.3pt 2.7pt 0.3pt, rgba(0, 0, 0, 0.4) 0px 0.75pt 1.2pt -0.45pt;
+  /* box-shadow: rgba(0, 0, 0, 0.14) 0px 1.35pt 2.25pt, rgba(0, 0, 0, 0.12) 0px 0.3pt 2.7pt 0.3pt, rgba(0, 0, 0, 0.4) 0px 0.75pt 1.2pt -0.45pt; */
+  margin: 0 auto;
+  background: #fafafa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
+  overflow: hidden;
+  flex-basis: auto !important;
+}
+
+/* https://codepen.io/MarcMalignan/pen/QbaXGg */
+.topic::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 48px;
+  border-right: 3px solid #d44147;
+  box-sizing: border-box;
+
+  background-image: url(/img/hole.svg);
+  background-size: 40px;
+  background-repeat: repeat-y;
+}
+
+.topic-body {
+  background: transparent linear-gradient(#91d1d3 1px, transparent 0);
+  background-position: 0 16px;
+  background-size: 100% 32px;
 }
 
 .button {

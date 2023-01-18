@@ -98,7 +98,7 @@ elmUiRenderer =
     { heading = heading
     , paragraph =
         Element.paragraph
-            [ Element.spacing 15 ]
+            [ Element.spacing 18 ]
     , thematicBreak = Element.none
     , text = Element.text
     , strong = \content -> Element.row [ Font.bold ] content
@@ -176,7 +176,8 @@ elmUiRenderer =
     , unorderedList =
         \items ->
             Element.column
-                [ Element.spacing 15
+                [ Element.spacing 12
+                , Element.paddingXY 0 8
                 ]
                 (items
                     |> List.map
@@ -205,7 +206,10 @@ elmUiRenderer =
                 )
     , orderedList =
         \startingIndex items ->
-            Element.column [ Element.spacing 15 ]
+            Element.column
+                [ Element.spacing 12
+                , Element.paddingXY 0 8
+                ]
                 (items
                     |> List.indexedMap
                         (\index itemBlocks ->

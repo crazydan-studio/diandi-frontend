@@ -1,0 +1,19 @@
+<!-- https://stackoverflow.com/questions/62539360/svg-how-to-drop-an-inset-shadow-on-a-path-that-has-an-rgba-fill#answer-62627106 -->
+<svg xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink" width="120px" height="120px" viewBox="0 0 64 120">
+    <defs>
+        <filter id="inset-shadow">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0
+        0 0 0 0 0
+        0 0 0 0 0
+        0 0 0 100 0" result="opaque-source"/>
+            <feGaussianBlur stdDeviation="5"/>
+            <!-- 阴影偏移 -->
+            <feOffset dy="8"/>
+            <feComposite operator="xor" in2="opaque-source"/>
+            <feComposite operator="in" in2="opaque-source"/>
+            <feComposite operator="over" in2="SourceGraphic"/>
+        </filter>
+    </defs>
+    <circle filter="url(#inset-shadow)" cx="32" cy="60" r="32" fill="rgba(0, 0, 0, 0.1)" />
+</svg>

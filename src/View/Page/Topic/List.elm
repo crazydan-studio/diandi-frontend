@@ -31,6 +31,7 @@ import Theme.Color
 import Theme.Color.Element
 import View.Page.RemoteData
 import Widget.Markdown
+import Style.Html
 
 
 view : Model.State -> Element Msg.Msg
@@ -54,7 +55,8 @@ getPaletteWithDefault :
 getPaletteWithDefault bgColor defaultPalette =
     case bgColor of
         Just color ->
-            Theme.Color.Element.defaultPalette color
+            -- Theme.Color.Element.defaultPalette color
+            []
 
         Nothing ->
             defaultPalette
@@ -87,7 +89,9 @@ topicView topic =
             )
             [ el
                 [ width fill
-                , padding 8
+                , paddingXY 24 18
+                , alignTop
+                , Style.Html.style "line-height" "32px"
                 ]
                 (el
                     Style.Topic.contentInTopicBody

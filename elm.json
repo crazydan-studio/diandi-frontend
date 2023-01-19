@@ -18,7 +18,8 @@
             "elm/svg": "1.0.1",
             "elm/url": "1.0.0",
             "flytreeleft/elm-ui": "2.0.0",
-            "lemol/ant-design-icons-elm": "2.0.0"
+            "lemol/ant-design-icons-elm": "2.0.0",
+            "truqu/elm-base64": "2.0.4"
         },
         "indirect": {
             "elm/bytes": "1.0.8",

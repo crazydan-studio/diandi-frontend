@@ -1,7 +1,9 @@
 module Style.Topic exposing
-    ( contentInTopicBody
+    ( contentFontSizeInTopicBody
+    , contentInTopicBody
     , topic
     , topicBody
+    , topicCornerRadius
     , topicDefaultColor
     , topicList
     , topicPadding
@@ -46,7 +48,7 @@ topicWidth =
 
 topicSpacing : Int
 topicSpacing =
-    16
+    8
 
 
 topicPadding : Int
@@ -66,41 +68,18 @@ topicList =
     , spacing topicSpacing
     , paddingXY (topicPadding * 4) topicPadding
     , centerX
-    , Background.color (rgba255 0 0 0 0.1)
     ]
 
 
 topic : List (Attribute msg)
 topic =
-    [ width fill
-    , clip
-    , Background.color (rgb255 255 255 255)
-    , Border.rounded topicCornerRadius
-    , Widget.Html.class "topic"
+    [
     ]
 
 
 topicBody : List (Attribute msg)
 topicBody =
-    [ width fill
-    , height fill
-    , Border.roundEach
-        { topLeft = 0
-        , topRight = 0
-        , bottomLeft = topicCornerRadius
-        , bottomRight = topicCornerRadius
-        }
-    , Background.color (rgba255 0 0 0 0)
-    , Widget.Html.styles
-        [ ( "background-image", "linear-gradient(#91d1d3 1px, transparent 0)" )
-        , ( "background-size"
-          , "100% "
-                ++ String.fromInt ((contentFontSizeInTopicBody + 2) * 2)
-                ++ "px"
-          )
-        , ( "background-position", "0 " ++ String.fromInt (contentFontSizeInTopicBody + 2) ++ "px" )
-        ]
-    ]
+    []
 
 
 topicDefaultColor : Theme.Color.Color

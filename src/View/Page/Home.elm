@@ -357,7 +357,7 @@ view ({ app, widgets } as state) =
                     , bottom = 0
                     , left = 1
                     }
-                    ++ [ width (px (128 * 3))
+                    ++ [ width (px (128 * 5))
                        , height fill
                        , padding 8
                        ]

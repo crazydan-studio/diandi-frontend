@@ -19,10 +19,12 @@
 
 module View.Page.Topic.List exposing (view)
 
+import Base64
 import Data.TreeStore
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
+import Element.Font as Font
 import Element.Keyed
 import Element.Lazy
 import Model
@@ -31,6 +33,8 @@ import Msg
 import Style.Topic
 import Theme.Color
 import Theme.Color.Element
+import Theme.Icon.Element exposing (toHtmlRgba)
+import Theme.Theme
 import View.Page.RemoteData
 import Widget.Html
 import Widget.Markdown
@@ -42,7 +46,7 @@ view { app } =
         { theme = app.theme
         , lang = app.lang
         }
-        topicListView
+        (topicListView app.theme)
         app.topics
 
 
@@ -60,28 +64,37 @@ toRgbColorWithDefault color defaultColor =
         |> Theme.Color.Element.toRgbColor
 
 
-topicListView : Data.TreeStore.Tree Topic -> Element Msg.Msg
-topicListView topics =
+bgColor : Color
+bgColor =
+    Theme.Color.Grey200
+        |> Theme.Color.Element.toRgbColor
+
+
+topicListView : Theme.Theme.Theme -> Data.TreeStore.Tree Topic -> Element Msg.Msg
+topicListView theme topics =
     -- 列表增删改性能提升方案，同时lazy可确保在刷新页面时，有滚动条的列表的滚动位置可被浏览器记录，刷新后能够自动恢复浏览位置
     -- https://guide.elm-lang.org/optimization/keyed.html
     -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Keyed
     -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Lazy
     Element.Keyed.column
-        Style.Topic.topicList
+        (Style.Topic.topicList
+            ++ [ Background.color bgColor
+               ]
+        )
         (topics
             |> Data.TreeStore.traverseDepth 1
                 (\_ topic _ ->
-                    ( topic.id, Element.Lazy.lazy topicView topic )
+                    ( topic.id, Element.Lazy.lazy2 topicView theme topic )
                 )
         )
 
 
-topicView : Topic -> Element Msg.Msg
-topicView topic =
+topicView : Theme.Theme.Theme -> Topic -> Element Msg.Msg
+topicView theme topic =
     let
         -- 空洞宽度
         cardHoleWidth =
-            32
+            gridLineSpacing
 
         -- 孔洞左侧留白大小
         cardHolePaddingLeft =
@@ -89,7 +102,10 @@ topicView topic =
 
         -- 打孔区域宽度
         cardHolePaneWidth =
-            48
+            cardHoleWidth
+                + cardHolePaddingLeft
+                + (gridLineMoveLeft + 1)
+                + cardHolePaneSeparatorWidth
 
         -- 打孔区域分隔线宽度
         cardHolePaneSeparatorWidth =
@@ -108,75 +124,121 @@ topicView topic =
             16 + gridLineMoveLeft + cardHolePaneSeparatorWidth
 
         contentPaddingY =
-            16
+            gridLineSpacing // 2
+
+        contentFontSize =
+            theme.primaryFontSize
+
+        gridLineColor =
+            "#91d1d3"
+
+        gridLineSize =
+            1
+
+        gridLineSpacing =
+            32
     in
+    -- TODO 提取组件样式，避免重复计算
     column
-        (Style.Topic.topic
-            ++ [ paddingEach
-                    { top = 0
-                    , right = 0
-                    , left = cardHolePaneDisplayWidth
-                    , bottom = 0
-                    }
-               ]
-        )
+        [ width fill
+        , clip
+        , Background.color (rgb255 255 255 255)
+        , Border.rounded Style.Topic.topicCornerRadius
+        , paddingEach
+            { top = 0
+            , right = 0
+            , left = cardHolePaneDisplayWidth
+            , bottom = 0
+            }
+        , Widget.Html.styles
+            [ ( "box-shadow"
+              , "rgba(0, 0, 0, 0.14) 0px 1.35pt 2.25pt"
+                    ++ ", rgba(0, 0, 0, 0.12) 0px 0.3pt 2.7pt 0.3pt"
+                    ++ ", rgba(0, 0, 0, 0.4) 0px 0.75pt 1.2pt -0.45pt"
+              )
+            , ( "flex-basis"
+              , "auto !important"
+              )
+            ]
+        ]
         [ row
-            (Style.Topic.topicBody
-                ++ [ inFront
-                        (el
-                            [ width (px cardHolePaneWidth)
-                            , height fill
-                            , moveLeft cardHolePaneDisplayWidth
-                            , paddingEach
-                                { top = contentPaddingY - 1
-                                , left = 0
-                                , right = 0
-                                , bottom = 0
-                                }
-                            , Widget.Html.noPointerEvents
-                            , Border.widthEach
-                                { top = 0
-                                , left = 0
-                                , right = cardHolePaneSeparatorWidth
-                                , bottom = 0
-                                }
-                            , Border.solid
-                            , Border.color
-                                (toRgbColorWithDefault
-                                    topic.color
-                                    Style.Topic.topicDefaultColor
-                                )
-                            ]
-                            (el
-                                [ width fill
-                                , height fill
-                                , Widget.Html.styles
-                                    [ ( "background-image"
-                                      , "url(/img/hole.svg)"
-                                      )
-                                    , ( "background-repeat"
-                                      , "repeat-y"
-                                      )
-                                    , ( "background-size"
-                                      , String.fromInt cardHoleWidth ++ "px"
-                                      )
-                                    , ( "background-position"
-                                      , String.fromInt cardHolePaddingLeft ++ "px 0"
-                                      )
-                                    ]
-                                ]
-                                none
-                            )
+            [ width fill
+            , height fill
+            , Background.color (rgba255 0 0 0 0)
+            , Widget.Html.styles
+                [ ( "background-image"
+                  , "linear-gradient("
+                        ++ gridLineColor
+                        ++ " "
+                        ++ String.fromInt gridLineSize
+                        ++ "px, transparent 0)"
+                  )
+                , ( "background-size"
+                  , "100% "
+                        ++ String.fromInt gridLineSpacing
+                        ++ "px"
+                  )
+                , ( "background-position"
+                  , "0 "
+                        ++ String.fromInt contentPaddingY
+                        ++ "px"
+                  )
+                ]
+            , inFront
+                (el
+                    [ width (px cardHolePaneWidth)
+                    , height fill
+                    , moveLeft cardHolePaneDisplayWidth
+                    , paddingEach
+                        { top = contentPaddingY
+                        , left = 0
+                        , right = 0
+                        , bottom = 0
+                        }
+                    , Border.widthEach
+                        { top = 0
+                        , left = 0
+                        , right = cardHolePaneSeparatorWidth
+                        , bottom = 0
+                        }
+                    , Border.solid
+                    , Border.color
+                        (Theme.Color.Element.toRgbColor
+                            Theme.Color.Orange900
                         )
-                   ]
-            )
+                    ]
+                    (el
+                        [ width fill
+                        , height fill
+                        , Widget.Html.styles
+                            [ ( "background-image"
+                              , "url(\"" ++ holeSvgImg ++ "\")"
+                              )
+                            , ( "background-repeat"
+                              , "repeat-y"
+                              )
+                            , ( "background-size"
+                              , String.fromInt cardHoleWidth ++ "px"
+                              )
+                            , ( "background-position"
+                              , String.fromInt cardHolePaddingLeft ++ "px 0"
+                              )
+                            ]
+                        ]
+                        none
+                    )
+                )
+            ]
             [ el
                 [ width fill
                 , paddingXY contentPaddingX contentPaddingY
                 , alignTop
                 ]
                 (el
-                    Style.Topic.contentInTopicBody
+                    [ width fill
+                    , height fill
+                    , Font.size contentFontSize
+                    ]
                     (paragraph
                         [ height shrink
                         , centerY
@@ -187,3 +249,35 @@ topicView topic =
                 )
             ]
         ]
+
+
+holeSvgImg : String
+holeSvgImg =
+    -- https://stackoverflow.com/questions/62539360/svg-how-to-drop-an-inset-shadow-on-a-path-that-has-an-rgba-fill#answer-62627106
+    -- Note: 保持尺寸和阴影设定，但背景可按需增减图片尺寸
+    """
+<svg xmlns="http://www.w3.org/2000/svg"
+xmlns:xlink="http://www.w3.org/1999/xlink" width="96px" height="96px" viewBox="0 0 96 96">
+<defs>
+    <filter id="inset-shadow">
+        <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0
+    0 0 0 0 0
+    0 0 0 0 0
+    0 0 0 100 0" result="opaque-source"/>
+        <feGaussianBlur stdDeviation="4"/>
+        <!-- 阴影偏移 -->
+        <feOffset dy="8"/>
+        <feComposite operator="xor" in2="opaque-source"/>
+        <feComposite operator="in" in2="opaque-source"/>
+        <feComposite operator="over" in2="SourceGraphic"/>
+    </filter>
+</defs>
+<circle filter="url(#inset-shadow)" cx="48" cy="50" r="32" fill="
+"""
+        ++ toHtmlRgba bgColor
+        ++ """
+" />
+</svg>
+"""
+        |> Base64.encode
+        |> (++) "data:image/svg+xml;base64,"

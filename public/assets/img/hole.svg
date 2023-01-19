@@ -7,7 +7,7 @@
         0 0 0 0 0
         0 0 0 0 0
         0 0 0 100 0" result="opaque-source"/>
-            <feGaussianBlur stdDeviation="5"/>
+            <feGaussianBlur stdDeviation="4"/>
             <!-- 阴影偏移 -->
             <feOffset dy="8"/>
             <feComposite operator="xor" in2="opaque-source"/>
@@ -16,5 +16,5 @@
         </filter>
     </defs>
     <!-- Note: 保持周边的留白区域宽度为半径的一半 -->
-    <circle filter="url(#inset-shadow)" cx="48" cy="48" r="32" fill="rgba(0, 0, 0, 0.1)" />
+    <circle filter="url(#inset-shadow)" cx="48" cy="50" r="32" fill="rgba(0, 0, 0, 0.1)" />
 </svg>

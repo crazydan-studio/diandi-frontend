@@ -28,11 +28,11 @@ import Model
 import Msg
 import Style.Default
 import Style.Home
-import Widget.Part.Icon
 import Theme.Theme
 import View.I18n.Home as I18n
 import View.Page.Topic.Category.List
 import View.Page.Topic.List
+import Widget.Icon exposing (Icon)
 import Widget.Part.Button
 
 
@@ -73,7 +73,7 @@ view ({ app, widgets } as state) =
                     [ alignRight
                     ]
                     Msg.NoOp
-                    Widget.Part.Icon.SearchOutlined
+                    Widget.Icon.SearchOutlined
                 ]
             , row
                 (Style.Default.boundaryBorderEach
@@ -89,12 +89,12 @@ view ({ app, widgets } as state) =
                 [ iconBtn
                     []
                     Msg.NoOp
-                    Widget.Part.Icon.ArrowLeftOutlined
+                    Widget.Icon.ArrowLeftOutlined
                 , iconBtn
                     [ alignRight
                     ]
                     Msg.NoOp
-                    Widget.Part.Icon.PlusOutlined
+                    Widget.Icon.PlusOutlined
                 ]
             , el
                 [ width fill
@@ -121,11 +121,11 @@ view ({ app, widgets } as state) =
                         row
                             [ spacing 8
                             ]
-                            [ Widget.Part.Icon.icon
+                            [ Widget.Icon.icon
                                 { size = 16
                                 , color = rgb255 255 255 255
                                 }
-                                Widget.Part.Icon.SettingOutlined
+                                Widget.Icon.SettingOutlined
                             , -- TODO 点击后，在左侧弹出侧边栏，该侧边栏中展示用户头像/名称、语言切换、主题切换等
                               (I18n.btnModule :: "设置" :: langEnd)
                                 |> i18nText
@@ -204,7 +204,7 @@ view ({ app, widgets } as state) =
                                     [ alignRight
                                     ]
                                     Msg.NoOp
-                                    Widget.Part.Icon.FilterOutlined
+                                    Widget.Icon.FilterOutlined
                                ]
                         )
                     ]
@@ -373,9 +373,9 @@ view ({ app, widgets } as state) =
         ]
 
 
-icon : Widget.Part.Icon.Icon -> Element msg
+icon : Icon -> Element msg
 icon =
-    Widget.Part.Icon.icon
+    Widget.Icon.icon
         { size = 16
         , color = rgb255 6 126 213
         }
@@ -384,7 +384,7 @@ icon =
 iconBtn :
     List (Attribute msg)
     -> msg
-    -> Widget.Part.Icon.Icon
+    -> Icon
     -> Element msg
 iconBtn attr onPress i =
     Input.button

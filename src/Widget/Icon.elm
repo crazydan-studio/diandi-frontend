@@ -17,7 +17,7 @@
 -}
 
 
-module Widget.Part.Icon exposing
+module Widget.Icon exposing
     ( Icon(..)
     , icon
     , toHtml

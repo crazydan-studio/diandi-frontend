@@ -31,10 +31,9 @@ import Model
 import Model.Topic exposing (Topic)
 import Msg
 import Style.Topic
-import Theme.Color
-import Theme.Color.Element
 import Theme.Theme
 import View.Page.RemoteData
+import Widget.Color
 import Widget.Html
 import Widget.Part.Markdown
 
@@ -55,8 +54,8 @@ view { app } =
 
 bgColor : Color
 bgColor =
-    Theme.Color.Grey200
-        |> Theme.Color.Element.toRgbColor
+    Widget.Color.Grey200
+        |> Widget.Color.toRgbColor
 
 
 topicListView : Theme.Theme.Theme -> Data.TreeStore.Tree Topic -> Element Msg.Msg
@@ -192,8 +191,8 @@ topicView theme topic =
                         }
                     , Border.solid
                     , Border.color
-                        (Theme.Color.Element.toRgbColor
-                            Theme.Color.Orange900
+                        (Widget.Color.toRgbColor
+                            Widget.Color.Orange900
                         )
                     ]
                     (el

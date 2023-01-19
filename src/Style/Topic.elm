@@ -31,8 +31,7 @@ import Element
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
-import Theme.Color
-import Theme.Color.Element
+import Widget.Color
 import Widget.Html
 
 
@@ -73,8 +72,7 @@ topicList =
 
 topic : List (Attribute msg)
 topic =
-    [
-    ]
+    []
 
 
 topicBody : List (Attribute msg)
@@ -82,9 +80,9 @@ topicBody =
     []
 
 
-topicDefaultColor : Theme.Color.Color
+topicDefaultColor : Widget.Color.Color
 topicDefaultColor =
-    Theme.Color.Blue600
+    Widget.Color.Blue600
 
 
 contentInTopicBody : List (Attribute msg)

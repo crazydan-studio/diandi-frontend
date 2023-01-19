@@ -1,20 +1,21 @@
 {-
-点滴(DianDi) - 聚沙成塔，集腋成裘
-Copyright (C) 2022 by Crazydan Studio (https://studio.crazydan.org/)
+   点滴(DianDi) - 聚沙成塔，集腋成裘
+   Copyright (C) 2022 by Crazydan Studio (https://studio.crazydan.org/)
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -}
+
 
 module Theme.Theme exposing
     ( Theme
@@ -28,29 +29,28 @@ module Theme.Theme exposing
 
 import Element
 import Element.Font as Font
-import Theme.Color
-import Theme.Color.Element
+import Widget.Color
 
 
 type alias Theme =
     { primaryFontSize : Int
-    , primaryFontColor : Theme.Color.Color
+    , primaryFontColor : Widget.Color.Color
     , secondaryFontSize : Int
-    , primaryBtnColor : Theme.Color.Color
-    , secondaryBtnColor : Theme.Color.Color
-    , placeholderFontColor : Theme.Color.Color
+    , primaryBtnColor : Widget.Color.Color
+    , secondaryBtnColor : Widget.Color.Color
+    , placeholderFontColor : Widget.Color.Color
     }
 
 
 primaryFontColor : Theme -> Element.Color
 primaryFontColor theme =
-    Theme.Color.Element.toRgbColor
+    Widget.Color.toRgbColor
         theme.primaryFontColor
 
 
 placeholderFontColor : Theme -> Element.Color
 placeholderFontColor theme =
-    Theme.Color.Element.toRgbColor
+    Widget.Color.toRgbColor
         theme.placeholderFontColor
 
 
@@ -68,9 +68,9 @@ placeholderFont theme =
 
 primaryBtn : Theme -> List (Element.Attribute msg)
 primaryBtn theme =
-    Theme.Color.Element.defaultPalette theme.primaryBtnColor
+    Widget.Color.defaultPalette theme.primaryBtnColor
 
 
 secondaryBtn : Theme -> List (Element.Attribute msg)
 secondaryBtn theme =
-    Theme.Color.Element.defaultPalette theme.secondaryBtnColor
+    Widget.Color.defaultPalette theme.secondaryBtnColor

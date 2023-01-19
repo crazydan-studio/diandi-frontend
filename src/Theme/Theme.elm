@@ -29,28 +29,28 @@ module Theme.Theme exposing
 
 import Element
 import Element.Font as Font
-import Widget.Color
+import Widget.Color exposing (Color, defaultPalette, toRgbColor)
 
 
 type alias Theme =
     { primaryFontSize : Int
-    , primaryFontColor : Widget.Color.Color
+    , primaryFontColor : Color
     , secondaryFontSize : Int
-    , primaryBtnColor : Widget.Color.Color
-    , secondaryBtnColor : Widget.Color.Color
-    , placeholderFontColor : Widget.Color.Color
+    , primaryBtnColor : Color
+    , secondaryBtnColor : Color
+    , placeholderFontColor : Color
     }
 
 
 primaryFontColor : Theme -> Element.Color
 primaryFontColor theme =
-    Widget.Color.toRgbColor
+    toRgbColor
         theme.primaryFontColor
 
 
 placeholderFontColor : Theme -> Element.Color
 placeholderFontColor theme =
-    Widget.Color.toRgbColor
+    toRgbColor
         theme.placeholderFontColor
 
 
@@ -68,9 +68,9 @@ placeholderFont theme =
 
 primaryBtn : Theme -> List (Element.Attribute msg)
 primaryBtn theme =
-    Widget.Color.defaultPalette theme.primaryBtnColor
+    defaultPalette theme.primaryBtnColor
 
 
 secondaryBtn : Theme -> List (Element.Attribute msg)
 secondaryBtn theme =
-    Widget.Color.defaultPalette theme.secondaryBtnColor
+    defaultPalette theme.secondaryBtnColor

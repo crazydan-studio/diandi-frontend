@@ -31,7 +31,7 @@ import Element
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
-import Widget.Color
+import Widget.Color exposing (Color)
 import Widget.Html
 
 
@@ -80,7 +80,7 @@ topicBody =
     []
 
 
-topicDefaultColor : Widget.Color.Color
+topicDefaultColor : Color
 topicDefaultColor =
     Widget.Color.Blue600
 

@@ -91,16 +91,16 @@ topicBody =
         , bottomRight = topicCornerRadius
         }
     , Background.color (rgba255 0 0 0 0)
+    , Widget.Html.styles
+        [ ( "background-image", "linear-gradient(#91d1d3 1px, transparent 0)" )
+        , ( "background-size"
+          , "100% "
+                ++ String.fromInt ((contentFontSizeInTopicBody + 2) * 2)
+                ++ "px"
+          )
+        , ( "background-position", "0 " ++ String.fromInt (contentFontSizeInTopicBody + 2) ++ "px" )
+        ]
     ]
-        ++ Widget.Html.styles
-            [ ( "background-image", "linear-gradient(#91d1d3 1px, transparent 0)" )
-            , ( "background-size"
-              , "100% "
-                    ++ String.fromInt ((contentFontSizeInTopicBody + 2) * 2)
-                    ++ "px"
-              )
-            , ( "background-position", "0 " ++ String.fromInt (contentFontSizeInTopicBody + 2) ++ "px" )
-            ]
 
 
 topicDefaultColor : Theme.Color.Color

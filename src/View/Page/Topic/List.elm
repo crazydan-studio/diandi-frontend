@@ -85,7 +85,7 @@ topicView topic =
 
         -- 孔洞左侧留白大小
         cardHolePaddingLeft =
-            8
+            4
 
         -- 打孔区域宽度
         cardHolePaneWidth =
@@ -148,19 +148,23 @@ topicView topic =
                                 )
                             ]
                             (el
-                                ([ width fill
-                                 , height fill
-                                 , Background.tiledY "/img/hole.svg"
-                                 ]
-                                    ++ Widget.Html.styles
-                                        [ ( "background-size"
-                                          , String.fromInt cardHoleWidth ++ "px"
-                                          )
-                                        , ( "background-position"
-                                          , String.fromInt cardHolePaddingLeft ++ "px 0"
-                                          )
-                                        ]
-                                )
+                                [ width fill
+                                , height fill
+                                , Widget.Html.styles
+                                    [ ( "background-image"
+                                      , "url(/img/hole.svg)"
+                                      )
+                                    , ( "background-repeat"
+                                      , "repeat-y"
+                                      )
+                                    , ( "background-size"
+                                      , String.fromInt cardHoleWidth ++ "px"
+                                      )
+                                    , ( "background-position"
+                                      , String.fromInt cardHolePaddingLeft ++ "px 0"
+                                      )
+                                    ]
+                                ]
                                 none
                             )
                         )

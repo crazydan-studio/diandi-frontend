@@ -34,6 +34,7 @@ import Element
     exposing
         ( Attribute
         , htmlAttribute
+        , htmlStyleAttribute
         )
 import Html.Attributes as HtmlAttr
 
@@ -45,16 +46,12 @@ id val =
 
 style : String -> String -> Attribute msg
 style name val =
-    HtmlAttr.style name val |> htmlAttribute
+    [ ( name, val ) ] |> htmlStyleAttribute
 
 
-styles : List ( String, String ) -> List (Attribute msg)
+styles : List ( String, String ) -> Attribute msg
 styles attrs =
-    attrs
-        |> List.map
-            (\( name, val ) ->
-                style name val
-            )
+    attrs |> htmlStyleAttribute
 
 
 class : String -> Attribute msg

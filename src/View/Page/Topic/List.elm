@@ -33,7 +33,6 @@ import Msg
 import Style.Topic
 import Theme.Color
 import Theme.Color.Element
-import Theme.Icon.Element exposing (toHtmlRgba)
 import Theme.Theme
 import View.Page.RemoteData
 import Widget.Html
@@ -52,16 +51,6 @@ view { app } =
 
 
 -- ---------------------------------------------------------------
-
-
-toRgbColorWithDefault :
-    Maybe Theme.Color.Color
-    -> Theme.Color.Color
-    -> Color
-toRgbColorWithDefault color defaultColor =
-    color
-        |> Maybe.withDefault defaultColor
-        |> Theme.Color.Element.toRgbColor
 
 
 bgColor : Color
@@ -274,7 +263,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink" width="96px" height="96px" viewBox="0
 </defs>
 <circle filter="url(#inset-shadow)" cx="48" cy="50" r="32" fill="
 """
-        ++ toHtmlRgba bgColor
+        ++ Widget.Html.toRgba bgColor
         ++ """
 " />
 </svg>

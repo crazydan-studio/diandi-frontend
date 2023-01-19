@@ -27,16 +27,40 @@ module Widget.Html exposing
     , noUserSelect
     , style
     , styles
+    , toRgba
     , zIndex
     )
 
 import Element
     exposing
         ( Attribute
+        , Color
         , htmlAttribute
         , htmlStyleAttribute
+        , toRgb
         )
 import Html.Attributes as HtmlAttr
+
+
+toRgba : Color -> String
+toRgba color =
+    let
+        { red, green, blue, alpha } =
+            toRgb color
+    in
+    "rgba("
+        ++ ([ red * 255
+            , green * 255
+            , blue * 255
+            , alpha
+            ]
+                |> List.map
+                    (\n ->
+                        String.fromFloat n
+                    )
+                |> String.join ","
+           )
+        ++ ")"
 
 
 id : String -> Attribute msg

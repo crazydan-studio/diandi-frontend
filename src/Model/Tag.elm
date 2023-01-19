@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 module Model.Tag exposing (..)
 
-import Theme.Icon exposing (Icon)
+import Widget.Part.Icon exposing (Icon)
 
 
 type alias Tag =

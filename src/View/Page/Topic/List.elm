@@ -37,7 +37,7 @@ import Theme.Icon.Element exposing (toHtmlRgba)
 import Theme.Theme
 import View.Page.RemoteData
 import Widget.Html
-import Widget.Markdown
+import Widget.Part.Markdown
 
 
 view : Model.State -> Element Msg.Msg
@@ -243,7 +243,7 @@ topicView theme topic =
                         [ height shrink
                         , centerY
                         ]
-                        [ Widget.Markdown.render topic.content
+                        [ Widget.Part.Markdown.render topic.content
                         ]
                     )
                 )

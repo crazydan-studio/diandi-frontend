@@ -17,7 +17,7 @@
 -}
 
 
-module Widget.Button exposing
+module Widget.Part.Button exposing
     ( Config
     , button
     , link

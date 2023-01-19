@@ -34,7 +34,7 @@ import Theme.Theme
 import View.I18n.Home as I18n
 import View.Page.Topic.Category.List
 import View.Page.Topic.List
-import Widget.Button
+import Widget.Part.Button
 
 
 view : Model.State -> Element Msg.Msg
@@ -115,7 +115,7 @@ view ({ app, widgets } as state) =
                        , padding 8
                        ]
                 )
-                [ Widget.Button.button widgets
+                [ Widget.Part.Button.button widgets
                     { id = "btn-personal-setting-in-home"
                     , attrs = Theme.Theme.secondaryBtn app.theme
                     , content =

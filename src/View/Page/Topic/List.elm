@@ -35,16 +35,17 @@ import Theme.Theme
 import View.Page.RemoteData
 import Widget.Color
 import Widget.Html
+import Widget.Model as Widget
 import Widget.Part.Markdown
 
 
 view : Model.State -> Element Msg.Msg
-view { app } =
+view { app, widgets } =
     View.Page.RemoteData.view
         { theme = app.theme
         , lang = app.lang
         }
-        (topicListView app.theme)
+        (topicListView widgets app.theme)
         app.topics
 
 
@@ -58,8 +59,12 @@ bgColor =
         |> Widget.Color.toRgbColor
 
 
-topicListView : Theme.Theme.Theme -> Data.TreeStore.Tree Topic -> Element Msg.Msg
-topicListView theme topics =
+topicListView :
+    Widget.State Msg.Msg
+    -> Theme.Theme.Theme
+    -> Data.TreeStore.Tree Topic
+    -> Element Msg.Msg
+topicListView widgets theme topics =
     -- 列表增删改性能提升方案，同时lazy可确保在刷新页面时，有滚动条的列表的滚动位置可被浏览器记录，刷新后能够自动恢复浏览位置
     -- https://guide.elm-lang.org/optimization/keyed.html
     -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Keyed
@@ -72,13 +77,17 @@ topicListView theme topics =
         (topics
             |> Data.TreeStore.traverseDepth 1
                 (\_ topic _ ->
-                    ( topic.id, Element.Lazy.lazy2 topicView theme topic )
+                    ( topic.id, Element.Lazy.lazy3 topicView widgets theme topic )
                 )
         )
 
 
-topicView : Theme.Theme.Theme -> Topic -> Element Msg.Msg
-topicView theme topic =
+topicView :
+    Widget.State Msg.Msg
+    -> Theme.Theme.Theme
+    -> Topic
+    -> Element Msg.Msg
+topicView widgets theme topic =
     let
         -- 空洞宽度
         cardHoleWidth =
@@ -230,8 +239,14 @@ topicView theme topic =
                     (paragraph
                         [ height shrink
                         , centerY
+
+                        -- Note: 默认会设置为5，需显式归零
+                        , spacing 0
                         ]
-                        [ Widget.Part.Markdown.render topic.content
+                        [ Widget.Part.Markdown.render widgets
+                            { lineHeight = gridLineSpacing
+                            }
+                            topic.content
                         ]
                     )
                 )

@@ -66,7 +66,7 @@ view ({ app, widgets } as state) =
                     (Style.Home.logoInTopBar
                         ++ [ alignLeft, pointer ]
                     )
-                    { src = "/logo.svg", description = "" }
+                    { src = "/logo.svg", description = "", onLoad = Nothing }
 
                 -- TODO 点击后，弹出搜索窗口，并在输入时实时查询结果，同时，展示常用搜索和收藏的搜索
                 , iconBtn
@@ -156,7 +156,7 @@ view ({ app, widgets } as state) =
                         [ image
                             [ width (px (64 - 8 * 2))
                             ]
-                            { src = "/icon.svg", description = "" }
+                            { src = "/icon.svg", description = "", onLoad = Nothing }
                         , column
                             [ spacing 8
                             ]

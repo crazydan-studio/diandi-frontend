@@ -25,6 +25,8 @@ import Markdown.Html
 import Markdown.Parser
 import Markdown.Renderer
 import Regex
+import Widget.Model exposing (State)
+import Widget.Part.FixedImage
 
 
 type alias Config =
@@ -32,9 +34,9 @@ type alias Config =
     }
 
 
-render : Config -> String -> Element msg
-render config markdown =
-    case markdownView config markdown of
+render : State msg -> Config -> String -> Element msg
+render widgets config markdown =
+    case markdownView widgets config markdown of
         Ok rendered ->
             Element.column
                 [ Element.width Element.fill
@@ -46,7 +48,9 @@ render config markdown =
                             [ Html.text
                                 -- 让checkbox始终居中显示
                                 (".md-checkbox > .focusable"
-                                    ++ " {vertical-align: middle;margin-top: -3px;}"
+                                    ++ " {vertical-align: top;margin-top: "
+                                    ++ String.fromFloat (toFloat (config.lineHeight - 14) / 2)
+                                    ++ "px;}"
                                 )
                             ]
                             |> Element.html
@@ -57,8 +61,12 @@ render config markdown =
             Element.text errors
 
 
-markdownView : Config -> String -> Result String (List (Element msg))
-markdownView config markdown =
+markdownView :
+    State msg
+    -> Config
+    -> String
+    -> Result String (List (Element msg))
+markdownView widgets config markdown =
     markdown
         |> Markdown.Parser.parse
         |> Result.mapError
@@ -67,14 +75,17 @@ markdownView config markdown =
                     |> List.map Markdown.Parser.deadEndToString
                     |> String.join "\n"
             )
-        |> Result.andThen (Markdown.Renderer.render (renderer config))
+        |> Result.andThen (Markdown.Renderer.render (renderer widgets config))
 
 
-renderer : Config -> Markdown.Renderer.Renderer (Element msg)
-renderer config =
+renderer :
+    State msg
+    -> Config
+    -> Markdown.Renderer.Renderer (Element msg)
+renderer widgets config =
     let
         r =
-            elmUiRenderer config
+            elmUiRenderer widgets config
     in
     { r
         | html =
@@ -90,7 +101,11 @@ renderer config =
     }
 
 
-imgView : String -> Maybe String -> Maybe String -> Element msg
+imgView :
+    String
+    -> Maybe String
+    -> Maybe String
+    -> Element msg
 imgView src width height =
     Element.image
         [ Element.width
@@ -110,28 +125,36 @@ imgView src width height =
                     Element.fill
             )
         ]
-        { src = src, description = "" }
+        { src = src, description = "", onLoad = Nothing }
 
 
-elmUiRenderer : Config -> Markdown.Renderer.Renderer (Element msg)
-elmUiRenderer config =
+elmUiRenderer :
+    State msg
+    -> Config
+    -> Markdown.Renderer.Renderer (Element msg)
+elmUiRenderer widgets config =
     let
-        lineHeight =
+        textStyle =
             Element.htmlStyleAttribute
                 [ ( "line-height"
                   , String.fromInt config.lineHeight ++ "px"
                   )
+                , ( "letter-spacing", "1px" )
+
+                -- Note：确保文字与图片在同一行时，文字能够居中显示
+                , ( "vertical-align", "top" )
                 ]
     in
     { heading = heading
     , paragraph =
         Element.paragraph
-            [ Element.spacing 0 ]
+            [ Element.spacing 0
+            ]
     , thematicBreak = Element.none
     , text =
         \text ->
             Element.el
-                [ lineHeight
+                [ textStyle
                 ]
                 (Element.text text)
     , strong = \content -> Element.row [ Font.bold ] content
@@ -154,7 +177,7 @@ elmUiRenderer config =
     , image =
         \image ->
             let
-                matched =
+                regexMatched =
                     image.src
                         |> Regex.find
                             (Maybe.withDefault
@@ -169,28 +192,47 @@ elmUiRenderer config =
                         |> List.map (Maybe.withDefault "")
                         |> Array.fromList
 
-                src =
-                    Array.get 0 matched |> Maybe.withDefault image.src
+                imageSrc =
+                    Array.get 0 regexMatched
+                        |> Maybe.withDefault image.src
 
-                getSizeFrom i a =
+                calcSizeByLineHeight size =
+                    ceiling (toFloat size / toFloat config.lineHeight)
+                        * config.lineHeight
+                        -- 消除无故撑大的空间
+                        - 2
+
+                matchedSizeMaybe i a =
                     Array.get i a
                         |> Maybe.withDefault ""
                         |> String.toInt
-                        |> Maybe.map Element.px
-                        |> Maybe.withDefault Element.fill
 
-                width =
-                    getSizeFrom 3 matched
+                matchedWidthMaybe =
+                    matchedSizeMaybe 3 regexMatched
 
-                height =
-                    getSizeFrom 5 matched
+                matchedHeightMaybe =
+                    matchedSizeMaybe 5 regexMatched
+
+                matchedPxSize s =
+                    s |> Maybe.map Element.px
+
+                matchedSizeWithDefault s actual =
+                    s |> Maybe.withDefault actual
+
+                newWidth =
+                    matchedSizeWithDefault matchedWidthMaybe
+
+                newHeight actual =
+                    matchedSizeWithDefault matchedHeightMaybe actual
+                        |> calcSizeByLineHeight
             in
-            Element.image
-                [ Element.width width
-                , Element.height height
-                ]
-                { src = src
-                , description = image.alt
+            Widget.Part.FixedImage.image widgets
+                { src = imageSrc
+                , attrs = []
+                , initWidth = matchedPxSize matchedWidthMaybe
+                , initHeight = matchedPxSize matchedHeightMaybe
+                , newWidth = Just newWidth
+                , newHeight = Just newHeight
                 }
     , blockQuote =
         \children ->
@@ -209,7 +251,7 @@ elmUiRenderer config =
     , unorderedList =
         \items ->
             Element.column
-                [ lineHeight
+                [ textStyle
                 ]
                 (items
                     |> List.map
@@ -244,7 +286,7 @@ elmUiRenderer config =
     , orderedList =
         \startingIndex items ->
             Element.column
-                [ lineHeight
+                [ textStyle
                 ]
                 (items
                     |> List.indexedMap

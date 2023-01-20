@@ -17,8 +17,10 @@
             "elm/regex": "1.0.0",
             "elm/svg": "1.0.1",
             "elm/url": "1.0.0",
-            "flytreeleft/elm-ui": "2.0.0",
+            "flytreeleft/elm-ui": "3.0.0",
             "lemol/ant-design-icons-elm": "2.0.0",
+            "robinheghan/murmur3": "1.0.0",
+            "rtfeldman/elm-hex": "1.0.0",
             "truqu/elm-base64": "2.0.4"
         },
         "indirect": {
@@ -26,9 +28,7 @@
             "elm/file": "1.0.5",
             "elm/parser": "1.1.0",
             "elm/time": "1.0.0",
-            "elm/virtual-dom": "1.0.2",
-            "robinheghan/murmur3": "1.0.0",
-            "rtfeldman/elm-hex": "1.0.0"
+            "elm/virtual-dom": "1.0.2"
         }
     },
     "test-dependencies": {

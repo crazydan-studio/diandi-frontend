@@ -20,12 +20,14 @@
 module Widget.Msg exposing (Msg(..), WidgetUpdateConfig)
 
 import Widget.Model.Button as Button
+import Widget.Model.FixedImage as Image
 
 
 type Msg
     = -- TODO 数据删除消息需包装一次，携带组件id和业务消息，并先移除组件状态，
-      -- 再触发业务消息，同时支持批量删除消息
+      -- 再触发业务消息，同时支持批量删除消息。或者，采用js监听节点移除消息，再通过组件id和类型做清理？
       UpdateButtonState (WidgetUpdateConfig Button.State)
+    | UpdateFixedImageState (WidgetUpdateConfig Image.State)
 
 
 type alias WidgetUpdateConfig widgetState =

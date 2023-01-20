@@ -17,15 +17,17 @@
 -}
 
 
-module Widget.Model.Button exposing (State, init)
+module Widget.Model.FixedImage exposing (State, init)
 
 
 type alias State =
-    { disabled : Bool
+    { width : Int
+    , height : Int
     }
 
 
 init : State
 init =
-    { disabled = False
+    { width = 0
+    , height = 0
     }

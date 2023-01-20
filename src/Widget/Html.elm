@@ -25,6 +25,7 @@ module Widget.Html exposing
     , id
     , noPointerEvents
     , noUserSelect
+    , on
     , style
     , styles
     , toRgba
@@ -40,6 +41,8 @@ import Element
         , toRgb
         )
 import Html.Attributes as HtmlAttr
+import Html.Events as HtmlEvent
+import Json.Decode exposing (Decoder)
 
 
 toRgba : Color -> String
@@ -61,6 +64,11 @@ toRgba color =
                 |> String.join ","
            )
         ++ ")"
+
+
+on : String -> Decoder msg -> Attribute msg
+on event decoder =
+    HtmlEvent.on event decoder |> htmlAttribute
 
 
 id : String -> Attribute msg
@@ -86,10 +94,6 @@ class name =
 draggable : String -> Attribute msg
 draggable val =
     HtmlAttr.draggable val |> htmlAttribute
-
-
-
--- TODO 参考Element UI实现css动态嵌入机制
 
 
 zIndex : Int -> Attribute msg

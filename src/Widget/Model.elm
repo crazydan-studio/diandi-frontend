@@ -19,6 +19,7 @@
 
 module Widget.Model exposing
     ( State
+    , fixedImageState
     , init
     , onMsg
     , update
@@ -26,6 +27,7 @@ module Widget.Model exposing
 
 import Dict exposing (Dict)
 import Widget.Model.Button as Button
+import Widget.Model.FixedImage as Image
 import Widget.Msg exposing (Msg(..), WidgetUpdateConfig)
 
 
@@ -40,6 +42,7 @@ type alias Config appMsg =
 
 type alias WidgetStates =
     { button : Dict String Button.State
+    , image : Dict String Image.State
     }
 
 
@@ -47,6 +50,7 @@ init : Config appMsg -> State appMsg
 init config =
     State config
         { button = Dict.empty
+        , image = Dict.empty
         }
 
 
@@ -60,6 +64,11 @@ update msg (State config widgets) =
     State config (updateHelper msg widgets)
 
 
+fixedImageState : String -> State appMsg -> Maybe Image.State
+fixedImageState id (State _ widgets) =
+    widgets.image |> Dict.get id
+
+
 
 -- --------------------------------------------------
 
@@ -71,6 +80,14 @@ updateHelper msg widgets =
             { widgets
                 | button =
                     widgets.button
+                        |> updateWidgetHelper
+                            widget
+            }
+
+        UpdateFixedImageState widget ->
+            { widgets
+                | image =
+                    widgets.image
                         |> updateWidgetHelper
                             widget
             }

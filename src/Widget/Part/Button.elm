@@ -42,7 +42,7 @@ import Element.Input as Input
 import Widget.Html exposing (class)
 import Widget.Model exposing (State)
 import Widget.Model.Button as Button
-import Widget.Msg exposing (Msg(..))
+import Widget.Msg as Msg
 
 
 type alias Config msg =
@@ -56,7 +56,7 @@ type alias Config msg =
 {-| 普通按钮
 -}
 button : State msg -> Config msg -> Element msg
-button state { id, content, onPress, attrs } =
+button widgets { id, content, onPress, attrs } =
     Input.button
         ([ width
             (shrink
@@ -75,7 +75,7 @@ button state { id, content, onPress, attrs } =
         )
         { onPress =
             Just
-                (state
+                (widgets
                     |> onMsg id
                         (\s ->
                             Just
@@ -107,7 +107,7 @@ onMsg :
 onMsg id updateState =
     Widget.Model.onMsg
         (\() ->
-            UpdateButtonState
+            Msg.UpdateButtonState
                 { id = id
                 , init = \() -> Button.init
                 , update = updateState

@@ -1,4 +1,4 @@
-module Widget.Part.Markdown exposing (render)
+module Widget.Part.Markdown exposing (Config, render)
 
 {-| Markdown渲染参考示例
 
@@ -27,22 +27,38 @@ import Markdown.Renderer
 import Regex
 
 
-render : String -> Element msg
-render markdown =
-    case markdownView markdown of
+type alias Config =
+    { lineHeight : Int
+    }
+
+
+render : Config -> String -> Element msg
+render config markdown =
+    case markdownView config markdown of
         Ok rendered ->
             Element.column
                 [ Element.width Element.fill
                 , Element.centerX
                 ]
-                rendered
+                (rendered
+                    ++ [ Html.node "style"
+                            []
+                            [ Html.text
+                                -- 让checkbox始终居中显示
+                                (".md-checkbox > .focusable"
+                                    ++ " {vertical-align: middle;margin-top: -3px;}"
+                                )
+                            ]
+                            |> Element.html
+                       ]
+                )
 
         Err errors ->
             Element.text errors
 
 
-markdownView : String -> Result String (List (Element msg))
-markdownView markdown =
+markdownView : Config -> String -> Result String (List (Element msg))
+markdownView config markdown =
     markdown
         |> Markdown.Parser.parse
         |> Result.mapError
@@ -51,12 +67,16 @@ markdownView markdown =
                     |> List.map Markdown.Parser.deadEndToString
                     |> String.join "\n"
             )
-        |> Result.andThen (Markdown.Renderer.render renderer)
+        |> Result.andThen (Markdown.Renderer.render (renderer config))
 
 
-renderer : Markdown.Renderer.Renderer (Element msg)
-renderer =
-    { elmUiRenderer
+renderer : Config -> Markdown.Renderer.Renderer (Element msg)
+renderer config =
+    let
+        r =
+            elmUiRenderer config
+    in
+    { r
         | html =
             Markdown.Html.oneOf
                 [ Markdown.Html.tag "img"
@@ -93,14 +113,27 @@ imgView src width height =
         { src = src, description = "" }
 
 
-elmUiRenderer : Markdown.Renderer.Renderer (Element msg)
-elmUiRenderer =
+elmUiRenderer : Config -> Markdown.Renderer.Renderer (Element msg)
+elmUiRenderer config =
+    let
+        lineHeight =
+            Element.htmlStyleAttribute
+                [ ( "line-height"
+                  , String.fromInt config.lineHeight ++ "px"
+                  )
+                ]
+    in
     { heading = heading
     , paragraph =
         Element.paragraph
-            [ Element.spacing 19 ]
+            [ Element.spacing 0 ]
     , thematicBreak = Element.none
-    , text = Element.text
+    , text =
+        \text ->
+            Element.el
+                [ lineHeight
+                ]
+                (Element.text text)
     , strong = \content -> Element.row [ Font.bold ] content
     , emphasis = \content -> Element.row [ Font.italic ] content
     , strikethrough = \content -> Element.row [ Font.strike ] content
@@ -176,45 +209,51 @@ elmUiRenderer =
     , unorderedList =
         \items ->
             Element.column
-                [ Element.spacing 16
-                , Element.paddingXY 0 8
+                [ lineHeight
                 ]
                 (items
                     |> List.map
                         (\(ListItem task children) ->
-                            Element.row
-                                [ Element.spacing 5
+                            Element.paragraph
+                                [ Element.alignTop
+                                , Element.spacing 0
                                 ]
-                                [ Element.paragraph
-                                    [ Element.alignTop
-                                    ]
-                                    ((case task of
-                                        IncompleteTask ->
-                                            Element.Input.defaultCheckbox False
+                                ((case task of
+                                    IncompleteTask ->
+                                        Element.row
+                                            [ Element.htmlAttribute
+                                                (Html.Attributes.class "md-checkbox")
+                                            ]
+                                            [ Element.Input.defaultCheckbox False ]
 
-                                        CompletedTask ->
-                                            Element.Input.defaultCheckbox True
+                                    CompletedTask ->
+                                        Element.row
+                                            [ Element.htmlAttribute
+                                                (Html.Attributes.class "md-checkbox")
+                                            ]
+                                            [ Element.Input.defaultCheckbox True ]
 
-                                        NoTask ->
-                                            Element.text "•"
-                                     )
-                                        :: Element.text " "
-                                        :: children
-                                    )
-                                ]
+                                    NoTask ->
+                                        Element.text "•"
+                                 )
+                                    :: Element.text " "
+                                    :: children
+                                )
                         )
                 )
     , orderedList =
         \startingIndex items ->
             Element.column
-                [ Element.spacing 12
-                , Element.paddingXY 0 8
+                [ lineHeight
                 ]
                 (items
                     |> List.indexedMap
                         (\index itemBlocks ->
-                            Element.row [ Element.spacing 5 ]
-                                [ Element.paragraph [ Element.alignTop ]
+                            Element.row []
+                                [ Element.paragraph
+                                    [ Element.alignTop
+                                    , Element.spacing 0
+                                    ]
                                     (Element.text
                                         (String.fromInt (index + startingIndex) ++ " ")
                                         :: itemBlocks

@@ -14,7 +14,8 @@ const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
 const MODE =
   process.env.npm_lifecycle_event === "prod" ? "production" : "development";
-const withDebug = !process.env["npm_config_nodebug"] && MODE === "development";
+const WEB_CONTEXT_ROOT_PATH = process.env.WEB_CONTEXT_ROOT_PATH;
+const withDebug = !process.env.npm_config_nodebug && MODE === "development";
 // this may help for Yarn users
 // const withDebug = !npmParams.includes("--nodebug");
 console.log(
@@ -46,6 +47,7 @@ const common = {
   },
   plugins: [
     new HTMLWebpackPlugin({
+      // project information
       title: packageJson.title,
       author: packageJson.author,
       url: packageJson.url,
@@ -56,7 +58,7 @@ const common = {
 
       // Use this template to get basic responsive meta tags
       template: filepath(publicDir, "index.html"),
-      publicPath: "/",
+      publicPath: WEB_CONTEXT_ROOT_PATH ? WEB_CONTEXT_ROOT_PATH : "/",
       // disable css and js inject to allow to put the resources at any location manually
       inject: false,
     }),

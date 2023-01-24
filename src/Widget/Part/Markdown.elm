@@ -379,7 +379,5 @@ heading { level, rawText, children } =
 rawTextToId rawText =
     rawText
         |> String.split " "
-        |> Debug.log "split"
         |> String.join "-"
-        |> Debug.log "joined"
         |> String.toLower

@@ -20,6 +20,7 @@
 module View.Page.Home exposing (view)
 
 import Element exposing (..)
+import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
@@ -32,6 +33,7 @@ import Theme.Theme
 import View.I18n.Home as I18n
 import View.Page.Topic.Category.List
 import View.Page.Topic.List
+import Widget.Color
 import Widget.Icon exposing (Icon)
 import Widget.Part.Button
 
@@ -211,9 +213,47 @@ view ({ app, widgets } as state) =
                 , el
                     [ width fill
                     , height fill
-                    , scrollbarY
+                    , clip
+                    , inFront
+                        (el
+                            [ centerY
+                            , alignRight
+                            ]
+                            (Widget.Part.Button.button widgets
+                                { id = "btn-add-topic-in-home"
+                                , attrs =
+                                    Theme.Theme.primaryBtn app.theme
+                                        ++ [ width (px 48)
+                                           , height (px 48)
+                                           , padding 8
+                                           , Border.rounded 24
+                                           , moveLeft (64 - 48 - 8)
+                                           ]
+                                , content =
+                                    el []
+                                        (Widget.Icon.icon
+                                            { size = 32
+                                            , color = rgb255 255 255 255
+                                            }
+                                            Widget.Icon.PlusOutlined
+                                        )
+                                , onPress = Nothing
+                                }
+                            )
+                        )
                     ]
-                    (View.Page.Topic.List.view state)
+                    (el
+                        [ width fill
+                        , height fill
+                        , scrollbarY
+                        , paddingXY 64 16
+                        , Background.color
+                            (Widget.Color.Grey200
+                                |> Widget.Color.toRgbColor
+                            )
+                        ]
+                        (View.Page.Topic.List.view state)
+                    )
 
                 -- -- TODO 输入框，待提取，以支持以弹窗方式添加子主题
                 -- , column
@@ -356,7 +396,7 @@ view ({ app, widgets } as state) =
                     , bottom = 0
                     , left = 1
                     }
-                    ++ [ width (px (128 * 5))
+                    ++ [ width (px (128 * 4))
                        , height fill
                        , padding 8
                        ]

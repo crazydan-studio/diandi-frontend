@@ -70,10 +70,7 @@ topicListView widgets theme topics =
     -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Keyed
     -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Lazy
     Element.Keyed.column
-        (Style.Topic.topicList
-            ++ [ Background.color bgColor
-               ]
-        )
+        Style.Topic.topicList
         (topics
             |> Data.TreeStore.traverseDepth 1
                 (\_ topic _ ->

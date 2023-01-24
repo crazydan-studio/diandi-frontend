@@ -65,7 +65,6 @@ topicList =
     [ width fill
     , height fill
     , spacing topicSpacing
-    , paddingXY (topicPadding * 4) topicPadding
     , centerX
     ]
 

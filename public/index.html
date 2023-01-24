@@ -32,9 +32,7 @@
         .tags
         .headTags
         .filter((tag)=> {
-          return tag.attributes.rel !== 'stylesheet'
-                  && tag.tagName !== 'script'
-                  && tag.tagName !== 'style'
+          return tag.tagName !== 'script'
         })
       .join('')
   %>
@@ -97,9 +95,7 @@
         .tags
         .headTags
         .filter((tag)=> {
-          return tag.attributes.rel === 'stylesheet'
-                  || tag.tagName === 'script'
-                  || tag.tagName === 'style'
+          return tag.tagName === 'script'
         })
         .join('')
   %>

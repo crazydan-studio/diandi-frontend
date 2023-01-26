@@ -1,7 +1,4 @@
-module Style.Default exposing
-    ( boundaryBorderAll
-    , boundaryBorderEach
-    )
+module Style.Default exposing (boundaryBorderEach)
 
 {-| -}
 
@@ -22,14 +19,4 @@ boundaryBorderEach width =
     [ Border.solid
     , Border.color (rgb255 223 225 230)
     , Border.widthEach width
-    ]
-
-
-{-| 所有边的样式
--}
-boundaryBorderAll : Int -> List (Attribute msg)
-boundaryBorderAll width =
-    [ Border.solid
-    , Border.color (rgb255 223 225 230)
-    , Border.width width
     ]

@@ -1,9 +1,4 @@
-module Style.Home exposing
-    ( bottomBar
-    , logoInTopBar
-    , topBar
-    , userAvatarInTopBar
-    )
+module Style.Home exposing (topBar)
 
 import Element
     exposing
@@ -35,38 +30,4 @@ topBar =
            , height (px 64)
            , Background.color (rgb255 255 255 255)
            , paddingXY 16 8
-           ]
-
-
-logoInTopBar : List (Attribute msg)
-logoInTopBar =
-    [ width shrink
-    , height (px 32)
-    ]
-
-
-userAvatarInTopBar : List (Attribute msg)
-userAvatarInTopBar =
-    Style.Default.boundaryBorderAll 1
-        ++ [ width shrink
-           , height fill
-           , padding 8
-           , Background.color (rgb255 255 255 255)
-           , Border.rounded 16
-           , Font.center
-           ]
-
-
-bottomBar : List (Attribute msg)
-bottomBar =
-    Style.Default.boundaryBorderEach
-        { top = 1
-        , bottom = 0
-        , left = 0
-        , right = 0
-        }
-        ++ [ width fill
-           , height (px 32)
-           , Background.color (rgb255 255 255 255)
-           , paddingXY 16 4
            ]

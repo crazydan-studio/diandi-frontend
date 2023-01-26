@@ -30,7 +30,6 @@ import Element.Lazy
 import Model
 import Model.Topic exposing (Topic)
 import Msg
-import Style.Topic
 import Theme.Theme
 import View.Page.RemoteData
 import Widget.Color
@@ -70,7 +69,11 @@ topicListView widgets theme topics =
     -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Keyed
     -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Lazy
     Element.Keyed.column
-        Style.Topic.topicList
+        [ width fill
+        , height fill
+        , spacing 8
+        , centerX
+        ]
         (topics
             |> Data.TreeStore.traverseDepth 1
                 (\_ topic _ ->
@@ -137,7 +140,7 @@ topicView widgets theme topic =
         [ width fill
         , clip
         , Background.color (rgb255 255 255 255)
-        , Border.rounded Style.Topic.topicCornerRadius
+        , Border.rounded 4
         , paddingEach
             { top = 0
             , right = 0

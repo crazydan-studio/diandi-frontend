@@ -65,9 +65,11 @@ view ({ app, widgets } as state) =
             [ row
                 Style.Home.topBar
                 [ image
-                    (Style.Home.logoInTopBar
-                        ++ [ alignLeft, pointer ]
-                    )
+                    [ width shrink
+                    , height (px 32)
+                    , alignLeft
+                    , pointer
+                    ]
                     { src = "/logo.svg", description = "", onLoad = Nothing }
 
                 -- TODO 点击后，弹出搜索窗口，并在输入时实时查询结果，同时，展示常用搜索和收藏的搜索
@@ -165,7 +167,7 @@ view ({ app, widgets } as state) =
                             [ el
                                 [ Font.size 20
                                 ]
-                                (text "点滴")
+                                (text "点滴(DianDi)")
                             , el
                                 [ Font.size 10
                                 ]
@@ -218,6 +220,9 @@ view ({ app, widgets } as state) =
                         (el
                             [ centerY
                             , alignRight
+
+                            -- 主题列表右侧间距 - 按钮宽度 - 浮动工具栏左侧间距
+                            , moveLeft (64 - 48 - 8)
                             ]
                             (Widget.Part.Button.button widgets
                                 { id = "btn-add-topic-in-home"
@@ -227,7 +232,6 @@ view ({ app, widgets } as state) =
                                            , height (px 48)
                                            , padding 8
                                            , Border.rounded 24
-                                           , moveLeft (64 - 48 - 8)
                                            ]
                                 , content =
                                     el []

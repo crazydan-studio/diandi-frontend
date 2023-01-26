@@ -18,18 +18,13 @@
 
 
 module Widget.Html exposing
-    ( allPointerEvents
-    , class
-    , cursor
-    , draggable
+    ( class
     , id
-    , noPointerEvents
-    , noUserSelect
     , on
     , style
     , styles
     , toRgba
-    , zIndex
+
     )
 
 import Element
@@ -99,23 +94,3 @@ draggable val =
 zIndex : Int -> Attribute msg
 zIndex val =
     style "z-index" (String.fromInt val)
-
-
-cursor : String -> Attribute msg
-cursor val =
-    style "cursor" val
-
-
-noUserSelect : Attribute msg
-noUserSelect =
-    style "user-select" "none"
-
-
-noPointerEvents : Attribute msg
-noPointerEvents =
-    style "pointer-events" "none"
-
-
-allPointerEvents : Attribute msg
-allPointerEvents =
-    style "pointer-events" "all"

@@ -30,15 +30,18 @@ import Element
         , focused
         , height
         , minimum
+        , mouseDown
         , mouseOver
         , paddingXY
         , px
+        , rgba255
         , shrink
         , width
         )
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
+import Element.Transition as Transition
 import Widget.Html exposing (class)
 import Widget.Model exposing (State)
 import Widget.Model.Button as Button
@@ -57,19 +60,107 @@ type alias Config msg =
 -}
 button : State msg -> Config msg -> Element msg
 button widgets { id, content, onPress, attrs } =
+    let
+        shadow =
+            -- box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
+            Border.shadows
+                [ { inset = False
+                  , offset = ( 0, 3 )
+                  , blur = 1
+                  , size = -2
+                  , color = rgba255 0 0 0 0.2
+                  }
+                , { inset = False
+                  , offset = ( 0, 2 )
+                  , blur = 2
+                  , size = 0
+                  , color = rgba255 0 0 0 0.14
+                  }
+                , { inset = False
+                  , offset = ( 0, 1 )
+                  , blur = 5
+                  , size = 0
+                  , color = rgba255 0 0 0 0.12
+                  }
+                ]
+
+        hoverShadow =
+            -- box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+            Border.shadows
+                [ { inset = False
+                  , offset = ( 0, 2 )
+                  , blur = 4
+                  , size = -1
+                  , color = rgba255 0 0 0 0.2
+                  }
+                , { inset = False
+                  , offset = ( 0, 4 )
+                  , blur = 5
+                  , size = 0
+                  , color = rgba255 0 0 0 0.14
+                  }
+                , { inset = False
+                  , offset = ( 0, 1 )
+                  , blur = 10
+                  , size = 0
+                  , color = rgba255 0 0 0 0.12
+                  }
+                ]
+
+        activeShadow =
+            -- box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+            Border.shadows
+                [ { inset = False
+                  , offset = ( 0, 5 )
+                  , blur = 5
+                  , size = -3
+                  , color = rgba255 0 0 0 0.2
+                  }
+                , { inset = False
+                  , offset = ( 0, 8 )
+                  , blur = 10
+                  , size = 1
+                  , color = rgba255 0 0 0 0.14
+                  }
+                , { inset = False
+                  , offset = ( 0, 3 )
+                  , blur = 14
+                  , size = 2
+                  , color = rgba255 0 0 0 0.12
+                  }
+                ]
+    in
     Input.button
+        -- https://aforemny.github.io/material-components-web-elm/#buttons
         ([ width
             (shrink
                 |> minimum 64
             )
          , height (px 36)
          , paddingXY 16 0
-         , class "button"
+         , class "wp-btn"
          , Font.size 14
          , Font.letterSpacing 1.25
+         , Font.weight 500
          , Border.rounded 4
-         , mouseOver []
-         , focused []
+         , shadow
+         , Transition.with
+            [ Transition.property "box-shadow"
+                [ Transition.duration 0.28
+                , Transition.delay 0
+                , Transition.cubic 0.4 0 0.2 1
+                ]
+            ]
+
+         -- https://github.com/mdgriffith/elm-ui/blob/master/CSS-LOOKUP.md
+         -- :hover
+         , mouseOver [ hoverShadow ]
+
+         -- :focus
+         , focused [ hoverShadow ]
+
+         -- :active
+         , mouseDown [ activeShadow ]
          ]
             ++ attrs
         )

@@ -147,13 +147,30 @@ topicView widgets theme topic =
             , left = cardHolePaneDisplayWidth
             , bottom = 0
             }
+
+        -- box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);
+        , Border.shadows
+            [ { inset = False
+              , offset = ( 0, 2 )
+              , blur = 1
+              , size = -1
+              , color = rgba255 0 0 0 0.2
+              }
+            , { inset = False
+              , offset = ( 0, 1 )
+              , blur = 1
+              , size = 0
+              , color = rgba255 0 0 0 0.14
+              }
+            , { inset = False
+              , offset = ( 0, 1 )
+              , blur = 3
+              , size = 0
+              , color = rgba255 0 0 0 0.12
+              }
+            ]
         , Widget.Html.styles
-            [ ( "box-shadow"
-              , "rgba(0, 0, 0, 0.14) 0px 1.35pt 2.25pt"
-                    ++ ", rgba(0, 0, 0, 0.12) 0px 0.3pt 2.7pt 0.3pt"
-                    ++ ", rgba(0, 0, 0, 0.4) 0px 0.75pt 1.2pt -0.45pt"
-              )
-            , ( "flex-basis"
+            [ ( "flex-basis"
               , "auto !important"
               )
             ]

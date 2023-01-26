@@ -28,7 +28,6 @@ import I18n.Lang exposing (langEnd)
 import Model
 import Msg
 import Style.Default
-import Style.Home
 import Theme.Theme
 import View.I18n.Home as I18n
 import View.Page.Topic.Category.List
@@ -63,7 +62,18 @@ view ({ app, widgets } as state) =
                    ]
             )
             [ row
-                Style.Home.topBar
+                (Style.Default.boundaryBorderEach
+                    { top = 0
+                    , bottom = 1
+                    , left = 0
+                    , right = 0
+                    }
+                    ++ [ width fill
+                       , height (px 64)
+                       , Background.color (rgb255 255 255 255)
+                       , paddingXY 16 8
+                       ]
+                )
                 [ image
                     [ width shrink
                     , height (px 32)
@@ -78,27 +88,6 @@ view ({ app, widgets } as state) =
                     ]
                     Msg.NoOp
                     Widget.Icon.SearchOutlined
-                ]
-            , row
-                (Style.Default.boundaryBorderEach
-                    { top = 0
-                    , right = 0
-                    , bottom = 1
-                    , left = 0
-                    }
-                    ++ [ width fill
-                       , padding 8
-                       ]
-                )
-                [ iconBtn
-                    []
-                    Msg.NoOp
-                    Widget.Icon.ArrowLeftOutlined
-                , iconBtn
-                    [ alignRight
-                    ]
-                    Msg.NoOp
-                    Widget.Icon.PlusOutlined
                 ]
             , el
                 [ width fill
@@ -145,74 +134,100 @@ view ({ app, widgets } as state) =
             [ column
                 [ width fill
                 , height fill
-                ]
-                [ row
-                    (Style.Home.topBar
-                        ++ [ width fill
-                           ]
-                    )
-                    [ row
+                , paddingEach { top = 56, left = 0, right = 0, bottom = 0 }
+                , inFront
+                    (row
                         [ width fill
-                        , height shrink
-                        , spacing 8
-                        , centerY
+                        , height (px 56)
+                        , Background.color (rgb255 255 255 255)
+                        , paddingXY 16 8
+
+                        -- box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2),0px 3px 1px 0px rgba(0,0,0,0.14),0px 1px 1px 0px rgba(0,0,0,0.12);
+                        , Border.shadows
+                            [ { inset = False
+                              , offset = ( 0, 3 )
+                              , blur = 1
+                              , size = -2
+                              , color = rgba255 0 0 0 0.2
+                              }
+                            , { inset = False
+                              , offset = ( 0, 3 )
+                              , blur = 1
+                              , size = 0
+                              , color = rgba255 0 0 0 0.14
+                              }
+                            , { inset = False
+                              , offset = ( 0, 1 )
+                              , blur = 1
+                              , size = 0
+                              , color = rgba255 0 0 0 0.12
+                              }
+                            ]
                         ]
-                        [ image
-                            [ width (px (64 - 8 * 2))
+                        [ row
+                            [ width fill
+                            , height shrink
+                            , spacing 8
+                            , centerY
                             ]
-                            { src = "/icon.svg", description = "", onLoad = Nothing }
-                        , column
-                            [ spacing 8
-                            ]
-                            [ el
-                                [ Font.size 20
+                            [ image
+                                [ width (px (56 - 8 * 2))
                                 ]
-                                (text "点滴(DianDi)")
-                            , el
-                                [ Font.size 10
+                                { src = "/icon.svg", description = "", onLoad = Nothing }
+                            , column
+                                [ spacing 8
                                 ]
-                                (("这里是类别描述信息" :: langEnd)
-                                    |> i18nText
-                                )
+                                [ el
+                                    [ Font.size 20
+                                    ]
+                                    (text "点滴(DianDi)")
+                                , el
+                                    [ Font.size 10
+                                    ]
+                                    (("这里是类别描述信息" :: langEnd)
+                                        |> i18nText
+                                    )
+                                ]
                             ]
-                        ]
-                    , row
-                        [ width fill
-                        , paddingXY 8 0
-                        , spacing 8
-                        ]
-                        (([ [ "待办", "20" ], [ "知识", "10" ], [ "疑问", "5" ] ]
-                            |> List.map
-                                (\t ->
-                                    Input.button
+                        , row
+                            [ width fill
+                            , paddingXY 8 0
+                            , spacing 8
+                            ]
+                            (([ [ "待办", "20" ], [ "知识", "10" ], [ "疑问", "5" ] ]
+                                |> List.map
+                                    (\t ->
+                                        Input.button
+                                            [ alignRight
+                                            ]
+                                            { onPress = Nothing
+                                            , label = t |> i18nText
+                                            }
+                                    )
+                             )
+                                ++ [ el
+                                        (Style.Default.boundaryBorderEach
+                                            { top = 0
+                                            , right = 1
+                                            , bottom = 0
+                                            , left = 0
+                                            }
+                                            ++ [ height fill
+                                               , alignRight
+                                               ]
+                                        )
+                                        none
+                                   , iconBtn
                                         [ alignRight
                                         ]
-                                        { onPress = Nothing
-                                        , label = t |> i18nText
-                                        }
-                                )
-                         )
-                            ++ [ el
-                                    (Style.Default.boundaryBorderEach
-                                        { top = 0
-                                        , right = 1
-                                        , bottom = 0
-                                        , left = 0
-                                        }
-                                        ++ [ height fill
-                                           , alignRight
-                                           ]
-                                    )
-                                    none
-                               , iconBtn
-                                    [ alignRight
-                                    ]
-                                    Msg.NoOp
-                                    Widget.Icon.FilterOutlined
-                               ]
-                        )
-                    ]
-                , el
+                                        Msg.NoOp
+                                        Widget.Icon.FilterOutlined
+                                   ]
+                            )
+                        ]
+                    )
+                ]
+                [ el
                     [ width fill
                     , height fill
                     , clip

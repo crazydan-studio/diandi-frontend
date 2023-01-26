@@ -21,12 +21,14 @@ module View.Page.Topic.Category.List exposing (view)
 
 import Data.TreeStore
 import Element exposing (..)
+import Element.Background as Background
+import Element.Events exposing (onClick)
 import Element.Keyed
 import Element.Lazy
+import Element.Transition as Transition
 import Model
 import Model.Topic.Category exposing (Category)
-import Msg
-import Style.Default
+import Msg exposing (Msg(..))
 import View.Page.RemoteData
 
 
@@ -36,7 +38,7 @@ view { app } =
         { theme = app.theme
         , lang = app.lang
         }
-        categoryListView
+        (categoryListView app.selectedTopicCategory)
         app.categories
 
 
@@ -44,8 +46,8 @@ view { app } =
 -- ---------------------------------------------------
 
 
-categoryListView : Data.TreeStore.Tree Category -> Element Msg.Msg
-categoryListView categories =
+categoryListView : Maybe String -> Data.TreeStore.Tree Category -> Element Msg.Msg
+categoryListView selected categories =
     Element.Keyed.column
         [ width fill
         , height fill
@@ -55,7 +57,14 @@ categoryListView categories =
             |> Data.TreeStore.traverse
                 (\{ depth } category childElements ->
                     ( category.id
-                    , Element.Lazy.lazy3 categoryView depth category childElements
+                    , Element.Lazy.lazy4 categoryView
+                        depth
+                        category
+                        (selected
+                            |> Maybe.map (\id -> id == category.id)
+                            |> Maybe.withDefault False
+                        )
+                        childElements
                     )
                 )
         )
@@ -64,29 +73,42 @@ categoryListView categories =
 categoryView :
     Int
     -> Category
+    -> Bool
     -> List ( String, Element Msg.Msg )
     -> Element Msg.Msg
-categoryView depth category childElements =
+categoryView depth category selected childElements =
     column
         [ width fill
         ]
         [ row
-            (Style.Default.boundaryBorderEach
-                { top = 0
-                , right = 0
-                , bottom = 1
-                , left = 0
+            -- https://v4.mui.com/components/lists/#simple-list
+            ([ width fill
+             , height (px (32 + 8 * 2))
+             , paddingEach
+                { top = 8
+                , left = depth * 16
+                , right = 16
+                , bottom = 8
                 }
-                ++ [ width fill
-                   , height (px 64)
-                   , paddingEach
-                        { top = 0
-                        , left = depth * 16
-                        , right = 16
-                        , bottom = 0
-                        }
-                   , pointer
-                   ]
+             , pointer
+             , Transition.with
+                [ Transition.property "background-color"
+                    [ Transition.duration 0.15
+                    , Transition.delay 0
+                    , Transition.cubic 0.4 0 0.2 1
+                    ]
+                ]
+             , mouseOver
+                [ Background.color (rgba255 0 0 0 0.04)
+                ]
+             , onClick (TopicCategorySelected category.id)
+             ]
+                ++ (if selected then
+                        [ Background.color (rgba255 0 0 0 0.08) ]
+
+                    else
+                        []
+                   )
             )
             [ el [ alignLeft ] (text category.name)
             ]

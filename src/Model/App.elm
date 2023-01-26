@@ -69,6 +69,9 @@ type alias State =
     -- 业务数据
     , topics : RemoteData.Status (Data.TreeStore.Tree Topic)
     , categories : RemoteData.Status (Data.TreeStore.Tree Category)
+
+    -- 操作数据
+    , selectedTopicCategory : Maybe String
     }
 
 
@@ -106,6 +109,9 @@ init config =
     --
     , topics = RemoteData.LoadWaiting
     , categories = RemoteData.LoadWaiting
+
+    --
+    , selectedTopicCategory = Nothing
     }
 
 
@@ -129,6 +135,7 @@ loadTopicCategories result state =
         | categories =
             result
                 |> RemoteData.from state.lang createTopicCategoryTree
+        , selectedTopicCategory = Just "1-1"
     }
 
 

@@ -40,6 +40,8 @@ type Msg
     | I18nPortMsg I18n.Port.Msg
       -- 组件消息
     | WidgetMsg Widget.Msg.Msg
+      -- 选中数据
+    | TopicCategorySelected String
 
 
 toCmd : Msg -> Cmd Msg

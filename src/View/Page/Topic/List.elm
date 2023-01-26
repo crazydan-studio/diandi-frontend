@@ -54,8 +54,7 @@ view { app, widgets } =
 
 bgColor : Color
 bgColor =
-    Widget.Color.Grey200
-        |> Widget.Color.toRgbColor
+    rgba255 0 0 0 0.08
 
 
 topicListView :
@@ -284,9 +283,9 @@ xmlns:xlink="http://www.w3.org/1999/xlink" width="96px" height="96px" viewBox="0
     0 0 0 0 0
     0 0 0 0 0
     0 0 0 100 0" result="opaque-source"/>
-        <feGaussianBlur stdDeviation="4"/>
+        <feGaussianBlur stdDeviation="2"/>
         <!-- 阴影偏移 -->
-        <feOffset dy="8"/>
+        <feOffset dy="4"/>
         <feComposite operator="xor" in2="opaque-source"/>
         <feComposite operator="in" in2="opaque-source"/>
         <feComposite operator="over" in2="SourceGraphic"/>

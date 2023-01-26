@@ -84,7 +84,7 @@ sub _ =
 
 
 update : Msg.Msg -> State -> ( State, Cmd Msg.Msg )
-update msg state =
+update msg ({ app } as state) =
     case msg of
         Msg.RemoteMsg remoteMsg ->
             remoteUpdateHelper remoteMsg state
@@ -100,6 +100,16 @@ update msg state =
                 | widgets =
                     state.widgets
                         |> Widget.Model.update widgetMsg
+              }
+            , Cmd.none
+            )
+
+        Msg.TopicCategorySelected categoryId ->
+            ( { state
+                | app =
+                    { app
+                        | selectedTopicCategory = Just categoryId
+                    }
               }
             , Cmd.none
             )

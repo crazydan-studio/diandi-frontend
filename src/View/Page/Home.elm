@@ -69,14 +69,14 @@ view ({ app, widgets } as state) =
                     , right = 0
                     }
                     ++ [ width fill
-                       , height (px 64)
+                       , height (px 62)
                        , Background.color (rgb255 255 255 255)
                        , paddingXY 16 8
                        ]
                 )
                 [ image
                     [ width shrink
-                    , height (px 32)
+                    , height (px 40)
                     , alignLeft
                     , pointer
                     ]
@@ -266,10 +266,7 @@ view ({ app, widgets } as state) =
                         , height fill
                         , scrollbarY
                         , paddingXY 64 16
-                        , Background.color
-                            (Widget.Color.Grey200
-                                |> Widget.Color.toRgbColor
-                            )
+                        , Background.color (rgba255 0 0 0 0.08)
                         ]
                         (View.Page.Topic.List.view state)
                     )

@@ -22,9 +22,11 @@ module View.Page.Home exposing (view)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
+import Element.Events as Event
 import Element.Font as Font
 import Element.Input as Input
 import I18n.Lang exposing (langEnd)
+import Json.Decode as Decode
 import Model
 import Msg
 import Theme.Theme as Theme
@@ -32,6 +34,7 @@ import View.I18n.Home as I18n
 import View.Page.Topic.Category.List
 import View.Page.Topic.List
 import View.Style.Border.Primary
+import Widget.Html exposing (id)
 import Widget.Icon exposing (Icon)
 import Widget.Part.Button
 
@@ -303,140 +306,7 @@ view ({ app, widgets } as state) =
                         )
                         (View.Page.Topic.List.view state)
                     )
-
-                -- -- TODO 输入框，待提取，以支持以弹窗方式添加子主题
-                -- , column
-                --     (Style.Default.boundaryBorderEach
-                --         { top = 1
-                --         , right = 0
-                --         , bottom = 0
-                --         , left = 0
-                --         }
-                --         ++ [ width fill
-                --            , height (px (244 - 70))
-                --            , padding 8
-                --            , spacing 8
-                --            ]
-                --     )
-                --     [ row
-                --         [ width fill
-                --         , spacing 8
-                --         ]
-                --         (([ "表情", "图片", "附件", "语音", "视频" ]
-                --             |> List.map
-                --                 (\t ->
-                --                     Input.button
-                --                         [ width (px 32)
-                --                         , alignLeft
-                --                         , Font.center
-                --                         ]
-                --                         { onPress = Nothing
-                --                         , label = text t
-                --                         }
-                --                 )
-                --          )
-                --             ++ [ Input.button
-                --                     [ alignRight
-                --                     ]
-                --                     { onPress = Nothing
-                --                     , label =
-                --                         -- TODO 改为切换开关，开启后，在上部或下部以浮窗形式展开，固定高度并显示滚动条
-                --                         (I18n.btnModule :: "实时预览" :: langEnd)
-                --                             |> i18nText
-                --                     }
-                --                ]
-                --         )
-                --     , column
-                --         (Style.Default.boundaryBorderAll 1
-                --             ++ [ width fill
-                --                , height fill
-                --                , Border.rounded 3
-                --                ]
-                --         )
-                --         [ Input.multiline
-                --             [ width fill
-                --             , height
-                --                 -- TODO 未得到焦点时，保持最小高度，在得到焦点后，自动扩展高度至最大
-                --                 (fill
-                --                     |> maximum (150 - 70)
-                --                 )
-                --             , Border.width 0
-                --             , focused []
-                --             ]
-                --             { onChange = \_ -> Msg.NoOp
-                --             , text = ""
-                --             , placeholder =
-                --                 Just
-                --                     (Input.placeholder
-                --                         (Theme.placeholderFont app.theme)
-                --                         (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langEnd)
-                --                             |> i18nText
-                --                         )
-                --                     )
-                --             , label = Input.labelHidden ""
-                --             , spellcheck = False
-                --             }
-                --         , column
-                --             [ width fill
-                --             , paddingXY 8 0
-                --             ]
-                --             [ el
-                --                 (Style.Default.boundaryBorderEach
-                --                     { top = 1
-                --                     , right = 0
-                --                     , bottom = 0
-                --                     , left = 0
-                --                     }
-                --                     ++ [ width fill
-                --                        ]
-                --                 )
-                --                 none
-                --             ]
-                --         , row
-                --             [ width fill
-                --             , spacing 8
-                --             , padding 8
-                --             ]
-                --             [ paragraph
-                --                 []
-                --                 (List.singleton
-                --                     ((I18n.labelModule :: "分类：" :: langEnd)
-                --                         |> i18nText
-                --                     )
-                --                     ++ ([ "产品开发", "点滴(DianDi)", "功能设计" ]
-                --                             |> List.map
-                --                                 (\t ->
-                --                                     text (t ++ " > ")
-                --                                 )
-                --                        )
-                --                 )
-                --             , paragraph
-                --                 []
-                --                 (List.singleton
-                --                     ((I18n.labelModule :: "标签：" :: langEnd)
-                --                         |> i18nText
-                --                     )
-                --                     ++ ([ "待办", "知识", "疑问", "+" ]
-                --                             |> List.map
-                --                                 (\t ->
-                --                                     text (t ++ " ")
-                --                                 )
-                --                        )
-                --                 )
-                --             , Widget.Button.button widgets
-                --                 { id = "btn-write-it-down-in-home"
-                --                 , attrs =
-                --                     Theme.primaryBtn app.theme
-                --                         ++ [ alignRight
-                --                            ]
-                --                 , content =
-                --                     (I18n.btnModule :: "记下来!" :: langEnd)
-                --                         |> i18nText
-                --                 , onPress = Nothing
-                --                 }
-                --             ]
-                --         ]
-                --     ]
+                , topicNewInput state
                 ]
             , column
                 [ width (px (128 * 4))
@@ -478,3 +348,159 @@ iconBtn attr onPress i =
         { onPress = Just onPress
         , label = icon i
         }
+
+
+topicNewInput : Model.State -> Element Msg.Msg
+topicNewInput ({ app } as state) =
+    let
+        inputId =
+            "topic-new-input"
+    in
+    column
+        (View.Style.Border.Primary.top 1 app.theme
+            ++ [ width fill
+               , padding 8
+               , spacing 8
+               ]
+        )
+        (topicNewInputWhenGotFocus
+            app.topicNewInputFocused
+            inputId
+            state
+        )
+
+
+topicNewInputWhenGotFocus :
+    Bool
+    -> String
+    -> Model.State
+    -> List (Element Msg.Msg)
+topicNewInputWhenGotFocus needToBeExpanded inputId { app, widgets } =
+    let
+        i18nText =
+            I18n.text app.lang
+    in
+    (if needToBeExpanded then
+        [ row
+            [ width fill
+            , spacing 8
+            ]
+            ([ "表情", "图片", "附件", "语音", "视频" ]
+                |> List.map
+                    (\t ->
+                        Input.button
+                            [ width (px 32)
+                            , alignLeft
+                            , Font.center
+                            ]
+                            { onPress = Nothing
+                            , label = text t
+                            }
+                    )
+            )
+        ]
+
+     else
+        []
+    )
+        ++ [ column
+                (View.Style.Border.Primary.all 1 app.theme
+                    ++ [ width fill
+                       , height fill
+                       , Border.rounded 3
+                       ]
+                )
+                (Input.multiline
+                    [ width fill
+                    , height
+                        (if needToBeExpanded then
+                            px (40 * 4)
+
+                         else
+                            px 40
+                        )
+                    , Border.width 0
+                    , id inputId
+                    , Event.on "blur"
+                        (Input.selectionDecoder
+                            |> Decode.map Msg.NewTopicInputFocusLost
+                        )
+                    , Event.onFocus
+                        (Msg.NewTopicInputFocusGot inputId True)
+                    ]
+                    { onChange = Msg.NewTopicInputContentChanged
+                    , text = app.topicNewInputContent
+                    , selection = app.topicNewInputSelection
+                    , placeholder =
+                        Just
+                            (Input.placeholder
+                                (Theme.placeholderFont app.theme)
+                                (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langEnd)
+                                    |> i18nText
+                                )
+                            )
+                    , label = Input.labelHidden ""
+                    , spellcheck = False
+                    }
+                    :: (if needToBeExpanded then
+                            [ column
+                                [ width fill
+                                , paddingXY 8 0
+                                ]
+                                [ el
+                                    (View.Style.Border.Primary.top 1 app.theme
+                                        ++ [ width fill
+                                           ]
+                                    )
+                                    none
+                                ]
+                            , row
+                                [ width fill
+                                , spacing 8
+                                , padding 8
+                                ]
+                                [ paragraph
+                                    []
+                                    (List.singleton
+                                        ((I18n.labelModule :: "分类：" :: langEnd)
+                                            |> i18nText
+                                        )
+                                        ++ ([ "产品开发", "点滴(DianDi)", "功能设计" ]
+                                                |> List.map
+                                                    (\t ->
+                                                        text (t ++ " > ")
+                                                    )
+                                           )
+                                    )
+                                , paragraph
+                                    []
+                                    (List.singleton
+                                        ((I18n.labelModule :: "标签：" :: langEnd)
+                                            |> i18nText
+                                        )
+                                        ++ ([ "待办", "知识", "疑问", "+" ]
+                                                |> List.map
+                                                    (\t ->
+                                                        text (t ++ " ")
+                                                    )
+                                           )
+                                    )
+                                , Widget.Part.Button.button widgets
+                                    { id = "btn-write-it-down-in-home"
+                                    , attrs =
+                                        Theme.primaryBtn app.theme
+                                            ++ [ alignRight
+                                               ]
+                                    , content =
+                                        (I18n.btnModule :: "记下来!" :: langEnd)
+                                            |> i18nText
+                                    , onPress = Just (Msg.NewTopicAdded inputId)
+                                    }
+                                ]
+                            ]
+
+                        else
+                            []
+                       )
+                )
+           ]

@@ -26,6 +26,7 @@ module Model exposing
     , update
     )
 
+import Browser.Dom as Dom
 import Browser.Navigation as Nav
 import Http
 import I18n.Port
@@ -38,6 +39,7 @@ import Model.Remote.User as RemoteUser
 import Model.Topic.Category exposing (Category)
 import Model.User as User
 import Msg
+import Task
 import Url
 import View.Page as PageType
 import View.Route
@@ -114,6 +116,55 @@ update msg ({ app } as state) =
                     }
               }
             , Cmd.none
+            )
+
+        Msg.NewTopicInputFocusGot id focused ->
+            ( { state
+                | app =
+                    { app
+                        | topicNewInputFocused = focused
+                    }
+              }
+            , if focused then
+                Task.attempt (\_ -> Msg.NoOp) (Dom.focus id)
+
+              else
+                Cmd.none
+            )
+
+        Msg.NewTopicInputFocusLost selection ->
+            ( { state
+                | app =
+                    { app
+                        | topicNewInputSelection = Just selection
+
+                        -- , topicNewInputFocused = False
+                    }
+              }
+            , Cmd.none
+            )
+
+        Msg.NewTopicInputContentChanged content ->
+            ( { state
+                | app =
+                    { app
+                        | topicNewInputContent = content
+                    }
+              }
+            , Cmd.none
+            )
+
+        Msg.NewTopicAdded id ->
+            ( { state
+                | app =
+                    { app
+                        | topicNewInputContent = ""
+                        , topicNewInputSelection = Nothing
+                    }
+                        |> Model.App.addTopic app.topicNewInputContent
+              }
+              -- TODO 主题列表滚动到新增主题上
+            , Task.attempt (\_ -> Msg.NoOp) (Dom.focus id)
             )
 
         _ ->

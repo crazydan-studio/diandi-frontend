@@ -18,7 +18,8 @@
 
 
 module View.Style.Border.Primary exposing
-    ( bottom
+    ( all
+    , bottom
     , each
     , left
     , right
@@ -45,6 +46,19 @@ each size theme =
     , Border.color (Theme.primaryBorderColor theme)
     , Border.widthEach size
     ]
+
+
+all :
+    Int
+    -> Theme
+    -> List (Attribute msg)
+all size =
+    each
+        { top = size
+        , left = size
+        , right = size
+        , bottom = size
+        }
 
 
 top :

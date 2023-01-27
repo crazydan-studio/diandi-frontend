@@ -42,7 +42,6 @@ import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import Element.Transition as Transition
-import Widget.Html exposing (class)
 import Widget.Model exposing (State)
 import Widget.Model.Button as Button
 import Widget.Msg as Msg
@@ -163,17 +162,17 @@ button widgets { id, content, onPress, attrs } =
          ]
             ++ attrs
         )
-        { onPress =
-            Just
-                (widgets
-                    |> onMsg id
-                        (\s ->
-                            Just
-                                { s
-                                    | disabled = not s.disabled
-                                }
-                        )
-                )
+        { onPress = onPress
+            -- Just
+            --     (widgets
+            --         |> onMsg id
+            --             (\s ->
+            --                 Just
+            --                     { s
+            --                         | disabled = not s.disabled
+            --                     }
+            --             )
+            --     )
         , label = content
         }
 

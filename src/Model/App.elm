@@ -20,6 +20,7 @@
 module Model.App exposing
     ( Config
     , State
+    , addTopic
     , getSelectedTopicCategory
     , init
     , loadTopicCategories
@@ -29,6 +30,8 @@ module Model.App exposing
 
 import Browser.Navigation as Nav
 import Data.TreeStore
+import Element.Input
+import Hex
 import Http
 import I18n.Lang
     exposing
@@ -40,6 +43,7 @@ import Model.Remote.Data as RemoteData
 import Model.Topic exposing (Topic)
 import Model.Topic.Category exposing (Category)
 import Model.User as User
+import Murmur3
 import Theme.Theme as Theme exposing (Theme)
 import Theme.Type.Default
 import Url
@@ -73,6 +77,9 @@ type alias State =
 
     -- 操作数据
     , selectedTopicCategory : Maybe String
+    , topicNewInputFocused : Bool
+    , topicNewInputContent : String
+    , topicNewInputSelection : Maybe Element.Input.Selection
     }
 
 
@@ -113,6 +120,9 @@ init config =
 
     --
     , selectedTopicCategory = Nothing
+    , topicNewInputFocused = False
+    , topicNewInputContent = ""
+    , topicNewInputSelection = Nothing
     }
 
 
@@ -152,6 +162,40 @@ getSelectedTopicCategory { selectedTopicCategory, categories } =
 
         _ ->
             Nothing
+
+
+addTopic : String -> State -> State
+addTopic content ({ topics } as state) =
+    let
+        newContent =
+            content |> String.trim
+    in
+    if String.length newContent == 0 then
+        state
+
+    else
+        case topics of
+            RemoteData.Loaded data ->
+                { state
+                    | topics =
+                        data
+                            |> Data.TreeStore.add
+                                { id =
+                                    content
+                                        |> Murmur3.hashString 2003012722
+                                        |> Hex.toString
+                                , superior = Nothing
+                                , content = content
+                                , category = Nothing
+                                , tags = []
+                                , color = Nothing
+                                , createdAt = ""
+                                }
+                            |> RemoteData.Loaded
+                }
+
+            _ ->
+                state
 
 
 

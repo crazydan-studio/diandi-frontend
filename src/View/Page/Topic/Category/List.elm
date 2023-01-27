@@ -29,6 +29,7 @@ import Element.Transition as Transition
 import Model
 import Model.Topic.Category exposing (Category)
 import Msg exposing (Msg(..))
+import Theme.Theme as Theme exposing (Theme)
 import View.Page.RemoteData
 
 
@@ -38,7 +39,11 @@ view { app } =
         { theme = app.theme
         , lang = app.lang
         }
-        (categoryListView app.selectedTopicCategory)
+        (categoryListView
+            { selected = app.selectedTopicCategory
+            , theme = app.theme
+            }
+        )
         app.categories
 
 
@@ -46,8 +51,13 @@ view { app } =
 -- ---------------------------------------------------
 
 
-categoryListView : Maybe String -> Data.TreeStore.Tree Category -> Element Msg.Msg
-categoryListView selected categories =
+categoryListView :
+    { selected : Maybe String
+    , theme : Theme
+    }
+    -> Data.TreeStore.Tree Category
+    -> Element Msg.Msg
+categoryListView { selected, theme } categories =
     Element.Keyed.column
         [ width fill
         , height fill
@@ -57,13 +67,15 @@ categoryListView selected categories =
             |> Data.TreeStore.traverse
                 (\{ depth } category childElements ->
                     ( category.id
-                    , Element.Lazy.lazy4 categoryView
-                        depth
-                        category
-                        (selected
-                            |> Maybe.map (\id -> id == category.id)
-                            |> Maybe.withDefault False
-                        )
+                    , Element.Lazy.lazy2 categoryView
+                        { depth = depth
+                        , category = category
+                        , selected =
+                            selected
+                                |> Maybe.map (\id -> id == category.id)
+                                |> Maybe.withDefault False
+                        , theme = theme
+                        }
                         childElements
                     )
                 )
@@ -71,12 +83,14 @@ categoryListView selected categories =
 
 
 categoryView :
-    Int
-    -> Category
-    -> Bool
+    { depth : Int
+    , category : Category
+    , selected : Bool
+    , theme : Theme
+    }
     -> List ( String, Element Msg.Msg )
     -> Element Msg.Msg
-categoryView depth category selected childElements =
+categoryView { depth, category, selected, theme } childElements =
     column
         [ width fill
         ]
@@ -104,7 +118,7 @@ categoryView depth category selected childElements =
              , onClick (TopicCategorySelected category.id)
              ]
                 ++ (if selected then
-                        [ Background.color (rgba255 0 0 0 0.08) ]
+                        Theme.primaryGreyBackground theme
 
                     else
                         []

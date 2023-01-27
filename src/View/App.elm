@@ -26,7 +26,7 @@ import Model
 import Model.App
 import Msg
 import Theme.StyleSheet
-import Theme.Theme
+import Theme.Theme as Theme
 import View.Page as PageType
 import View.Page.Blank
 import View.Page.Forbidden
@@ -50,7 +50,7 @@ view ({ app } as state) =
                 ]
             , Font.size app.theme.primaryFontSize
             , Font.color
-                (Theme.Theme.primaryFontColor app.theme)
+                (Theme.primaryFontColor app.theme)
             ]
             (page state)
         , Theme.StyleSheet.create app.theme

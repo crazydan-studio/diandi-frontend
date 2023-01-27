@@ -30,7 +30,7 @@ import Element.Lazy
 import Model
 import Model.Topic exposing (Topic)
 import Msg
-import Theme.Theme
+import Theme.Theme as Theme exposing (Theme)
 import View.Page.RemoteData
 import Widget.Color
 import Widget.Html
@@ -52,14 +52,14 @@ view { app, widgets } =
 -- ---------------------------------------------------------------
 
 
-bgColor : Color
+bgColor : Theme -> Color
 bgColor =
-    rgba255 0 0 0 0.08
+    Theme.primaryGreyBackgroundColor
 
 
 topicListView :
     Widget.State Msg.Msg
-    -> Theme.Theme.Theme
+    -> Theme
     -> Data.TreeStore.Tree Topic
     -> Element Msg.Msg
 topicListView widgets theme topics =
@@ -83,7 +83,7 @@ topicListView widgets theme topics =
 
 topicView :
     Widget.State Msg.Msg
-    -> Theme.Theme.Theme
+    -> Theme
     -> Topic
     -> Element Msg.Msg
 topicView widgets theme topic =
@@ -225,7 +225,7 @@ topicView widgets theme topic =
                         , height fill
                         , Widget.Html.styles
                             [ ( "background-image"
-                              , "url(\"" ++ holeSvgImg ++ "\")"
+                              , "url(\"" ++ holeSvgImg theme ++ "\")"
                               )
                             , ( "background-repeat"
                               , "repeat-y"
@@ -270,8 +270,8 @@ topicView widgets theme topic =
         ]
 
 
-holeSvgImg : String
-holeSvgImg =
+holeSvgImg : Theme -> String
+holeSvgImg theme =
     -- https://stackoverflow.com/questions/62539360/svg-how-to-drop-an-inset-shadow-on-a-path-that-has-an-rgba-fill#answer-62627106
     -- Note: 保持尺寸和阴影设定，但背景可按需增减图片尺寸
     """
@@ -293,7 +293,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink" width="96px" height="96px" viewBox="0
 </defs>
 <circle filter="url(#inset-shadow)" cx="48" cy="50" r="32" fill="
 """
-        ++ Widget.Html.toRgba bgColor
+        ++ Widget.Html.toRgba (bgColor theme)
         ++ """
 " />
 </svg>

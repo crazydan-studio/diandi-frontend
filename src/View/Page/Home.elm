@@ -27,7 +27,7 @@ import Element.Input as Input
 import I18n.Lang exposing (langEnd)
 import Model
 import Msg
-import Theme.Theme
+import Theme.Theme as Theme
 import View.I18n.Home as I18n
 import View.Page.Topic.Category.List
 import View.Page.Topic.List
@@ -84,7 +84,7 @@ view ({ app, widgets } as state) =
                 )
                 [ Widget.Part.Button.button widgets
                     { id = "btn-personal-setting-in-home"
-                    , attrs = Theme.Theme.secondaryBtn app.theme
+                    , attrs = Theme.secondaryBtn app.theme
                     , content =
                         row
                             [ spacing 8
@@ -192,7 +192,7 @@ view ({ app, widgets } as state) =
                                             |> Maybe.withDefault
                                                 (Widget.Icon.icon
                                                     { size = 56 - 8 * 2
-                                                    , color = Theme.Theme.primaryFontColor app.theme
+                                                    , color = Theme.primaryFontColor app.theme
                                                     }
                                                     Widget.Icon.QuestionCircleOutlined
                                                 )
@@ -213,7 +213,7 @@ view ({ app, widgets } as state) =
                                                     )
                                                 |> Maybe.withDefault
                                                     (el
-                                                        (Theme.Theme.placeholderFont app.theme
+                                                        (Theme.placeholderFont app.theme
                                                             ++ [ Font.size (18 - 8)
                                                                ]
                                                         )
@@ -263,43 +263,44 @@ view ({ app, widgets } as state) =
                     [ width fill
                     , height fill
                     , clip
-                    , inFront
-                        (el
-                            [ centerY
-                            , alignRight
 
-                            -- 主题列表右侧间距 - 按钮宽度 - 浮动工具栏左侧间距
-                            , moveLeft (64 - 48 - 8)
-                            ]
-                            (Widget.Part.Button.button widgets
-                                { id = "btn-add-topic-in-home"
-                                , attrs =
-                                    Theme.Theme.primaryBtn app.theme
-                                        ++ [ width (px 48)
-                                           , height (px 48)
-                                           , padding 8
-                                           , Border.rounded 24
-                                           ]
-                                , content =
-                                    el []
-                                        (Widget.Icon.icon
-                                            { size = 32
-                                            , color = rgb255 255 255 255
-                                            }
-                                            Widget.Icon.PlusOutlined
-                                        )
-                                , onPress = Nothing
-                                }
-                            )
-                        )
+                    -- , inFront
+                    --     (el
+                    --         [ centerY
+                    --         , alignRight
+                    --         -- 主题列表右侧间距 - 按钮宽度 - 浮动工具栏左侧间距
+                    --         , moveLeft (64 - 48 - 8)
+                    --         ]
+                    --         (Widget.Part.Button.button widgets
+                    --             { id = "btn-add-topic-in-home"
+                    --             , attrs =
+                    --                 Theme.primaryBtn app.theme
+                    --                     ++ [ width (px 48)
+                    --                        , height (px 48)
+                    --                        , padding 8
+                    --                        , Border.rounded 24
+                    --                        ]
+                    --             , content =
+                    --                 el []
+                    --                     (Widget.Icon.icon
+                    --                         { size = 32
+                    --                         , color = rgb255 255 255 255
+                    --                         }
+                    --                         Widget.Icon.PlusOutlined
+                    --                     )
+                    --             , onPress = Nothing
+                    --             }
+                    --         )
+                    --     )
                     ]
                     (el
-                        [ width fill
-                        , height fill
-                        , scrollbarY
-                        , paddingXY 64 16
-                        , Background.color (rgba255 0 0 0 0.08)
-                        ]
+                        (Theme.primaryGreyBackground app.theme
+                            ++ [ width fill
+                               , height fill
+                               , scrollbarY
+                               , paddingXY 64 16
+                               ]
+                        )
                         (View.Page.Topic.List.view state)
                     )
 
@@ -367,7 +368,7 @@ view ({ app, widgets } as state) =
                 --             , placeholder =
                 --                 Just
                 --                     (Input.placeholder
-                --                         (Theme.Theme.placeholderFont app.theme)
+                --                         (Theme.placeholderFont app.theme)
                 --                         (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langEnd)
                 --                             |> i18nText
                 --                         )
@@ -425,7 +426,7 @@ view ({ app, widgets } as state) =
                 --             , Widget.Button.button widgets
                 --                 { id = "btn-write-it-down-in-home"
                 --                 , attrs =
-                --                     Theme.Theme.primaryBtn app.theme
+                --                     Theme.primaryBtn app.theme
                 --                         ++ [ alignRight
                 --                            ]
                 --                 , content =

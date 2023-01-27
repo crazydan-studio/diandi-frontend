@@ -25,10 +25,13 @@ module Theme.Theme exposing
     , primaryBtn
     , primaryFontColor
     , primaryFontFont
+    , primaryGreyBackground
+    , primaryGreyBackgroundColor
     , secondaryBtn
     )
 
 import Element
+import Element.Background as Background
 import Element.Font as Font
 import Widget.Color exposing (Color, defaultPalette, toRgbColor)
 
@@ -40,7 +43,8 @@ type alias Theme =
     , primaryBtnColor : Color
     , secondaryBtnColor : Color
     , placeholderFontColor : Color
-    , primaryBorderColor : Color
+    , primaryBorderColor : Element.Color
+    , primaryGreyBackgroundColor : Element.Color
     }
 
 
@@ -58,8 +62,12 @@ placeholderFontColor theme =
 
 primaryBorderColor : Theme -> Element.Color
 primaryBorderColor theme =
-    toRgbColor
-        theme.primaryBorderColor
+    theme.primaryBorderColor
+
+
+primaryGreyBackgroundColor : Theme -> Element.Color
+primaryGreyBackgroundColor theme =
+    theme.primaryGreyBackgroundColor
 
 
 primaryFontFont : Theme -> List (Element.Attribute msg)
@@ -82,3 +90,9 @@ primaryBtn theme =
 secondaryBtn : Theme -> List (Element.Attribute msg)
 secondaryBtn theme =
     defaultPalette theme.secondaryBtnColor
+
+
+primaryGreyBackground : Theme -> List (Element.Attribute msg)
+primaryGreyBackground theme =
+    [ Background.color (primaryGreyBackgroundColor theme)
+    ]

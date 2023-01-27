@@ -40,7 +40,7 @@ import Model.Remote.Data as RemoteData
 import Model.Topic exposing (Topic)
 import Model.Topic.Category exposing (Category)
 import Model.User as User
-import Theme.Theme
+import Theme.Theme as Theme exposing (Theme)
 import Theme.Type.Default
 import Url
 import View.I18n.Default
@@ -54,7 +54,7 @@ type alias State =
     -- 国际化
     , lang : Lang
     , textsWithoutI18n : List TextsNeedToBeTranslated
-    , theme : Theme.Theme.Theme
+    , theme : Theme
 
     -- 路由
     , navKey : Nav.Key

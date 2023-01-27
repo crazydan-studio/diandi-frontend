@@ -19,6 +19,7 @@
 
 module Theme.Type.Default exposing (theme)
 
+import Element exposing (rgba255)
 import Theme.Theme exposing (Theme)
 import Widget.Color
 
@@ -31,5 +32,6 @@ theme =
     , primaryBtnColor = Widget.Color.Blue800
     , secondaryBtnColor = Widget.Color.Purple800
     , placeholderFontColor = Widget.Color.Grey500
-    , primaryBorderColor = Widget.Color.Grey300
+    , primaryBorderColor = rgba255 0 0 0 0.12
+    , primaryGreyBackgroundColor = rgba255 0 0 0 0.08
     }

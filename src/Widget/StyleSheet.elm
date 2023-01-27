@@ -26,13 +26,4 @@ create : Html msg
 create =
     Html.node "style"
         []
-        [ -- 解决原始的 .s.r > .s 选择的文本宽度始终为0的问题
-          Html.text
-            (([ ".s.r > .s.wp-btn"
-              , ".wp-btn > .s.r > .s"
-              ]
-                |> String.join ","
-             )
-                ++ " {flex-basis: auto;}"
-            )
-        ]
+        []

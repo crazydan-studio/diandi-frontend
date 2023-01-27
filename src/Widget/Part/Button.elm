@@ -138,7 +138,6 @@ button widgets { id, content, onPress, attrs } =
             )
          , height (px 36)
          , paddingXY 16 0
-         , class "wp-btn"
          , Font.size 14
          , Font.letterSpacing 1.25
          , Font.weight 500

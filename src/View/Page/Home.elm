@@ -34,7 +34,6 @@ import View.I18n.Home as I18n
 import View.Page.Topic.Category.List
 import View.Page.Topic.List
 import View.Style.Border.Primary
-import Widget.Html exposing (id)
 import Widget.Icon exposing (Icon)
 import Widget.Part.Button
 
@@ -411,7 +410,8 @@ topicNewInputWhenGotFocus needToBeExpanded inputId { app, widgets } =
                        ]
                 )
                 (Input.multiline
-                    [ width fill
+                    [ id inputId
+                    , width fill
                     , height
                         (if needToBeExpanded then
                             px (40 * 4)
@@ -420,7 +420,6 @@ topicNewInputWhenGotFocus needToBeExpanded inputId { app, widgets } =
                             px 40
                         )
                     , Border.width 0
-                    , id inputId
                     , Event.on "blur"
                         (Input.selectionDecoder
                             |> Decode.map Msg.NewTopicInputFocusLost

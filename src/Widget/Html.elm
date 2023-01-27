@@ -19,7 +19,6 @@
 
 module Widget.Html exposing
     ( class
-    , id
     , style
     , styles
     , toRgba
@@ -55,11 +54,6 @@ toRgba color =
                 |> String.join ","
            )
         ++ ")"
-
-
-id : String -> Attribute msg
-id val =
-    HtmlAttr.id val |> htmlAttribute
 
 
 style : String -> String -> Attribute msg

@@ -1,49 +1,42 @@
 [
   {
     "id": "1",
-    "name": "产品开发",
-    "description": ""
+    "name": "产品开发"
   },
   {
     "id": "2",
-    "name": "思维碎片",
-    "description": ""
+    "name": "思维碎片"
   },
   {
     "id": "1-1",
     "name": "点滴(DianDi)",
     "parent": "1",
-    "icon": "./icon.svg",
-    "description": ""
+    "icon": "/icon.svg",
+    "description": "集个人知识库、任务待办、白板等功能于一身，实现对零散知识的收集、归纳、发散，牢牢捕获那些一闪而过的思维碎片"
   },
   {
     "id": "1-1-1",
     "name": "开发实现",
-    "parent": "1-1",
-    "description": ""
+    "parent": "1-1"
   },
   {
     "id": "1-1-1-1",
     "name": "前端",
-    "parent": "1-1-1",
-    "description": ""
+    "parent": "1-1-1"
   },
   {
     "id": "1-1-2",
     "name": "功能设计",
-    "parent": "1-1",
-    "description": ""
+    "parent": "1-1"
   },
   {
     "id": "1-1-2-1",
     "name": "主题",
-    "parent": "1-1-2",
-    "description": ""
+    "parent": "1-1-2"
   },
   {
     "id": "1-1-2-2",
     "name": "标签",
-    "parent": "1-1-2",
-    "description": ""
+    "parent": "1-1-2"
   }
 ]

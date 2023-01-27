@@ -20,6 +20,7 @@
 module Model.App exposing
     ( Config
     , State
+    , getSelectedTopicCategory
     , init
     , loadTopicCategories
     , loadTopics
@@ -137,6 +138,20 @@ loadTopicCategories result state =
                 |> RemoteData.from state.lang createTopicCategoryTree
         , selectedTopicCategory = Just "1-1"
     }
+
+
+getSelectedTopicCategory : State -> Maybe Category
+getSelectedTopicCategory { selectedTopicCategory, categories } =
+    case categories of
+        RemoteData.Loaded data ->
+            selectedTopicCategory
+                |> Maybe.andThen
+                    (\id ->
+                        data |> Data.TreeStore.get id
+                    )
+
+        _ ->
+            Nothing
 
 
 

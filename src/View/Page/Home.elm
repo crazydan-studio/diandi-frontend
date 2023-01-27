@@ -32,7 +32,6 @@ import Theme.Theme
 import View.I18n.Home as I18n
 import View.Page.Topic.Category.List
 import View.Page.Topic.List
-import Widget.Color
 import Widget.Icon exposing (Icon)
 import Widget.Part.Button
 
@@ -69,25 +68,18 @@ view ({ app, widgets } as state) =
                     , right = 0
                     }
                     ++ [ width fill
-                       , height (px 62)
+                       , height (px 70)
                        , Background.color (rgb255 255 255 255)
                        , paddingXY 16 8
                        ]
                 )
                 [ image
                     [ width shrink
-                    , height (px 40)
-                    , alignLeft
+                    , height (px (70 - 8 * 2))
+                    , centerX
                     , pointer
                     ]
                     { src = "/logo.svg", description = "", onLoad = Nothing }
-
-                -- TODO 点击后，弹出搜索窗口，并在输入时实时查询结果，同时，展示常用搜索和收藏的搜索
-                , iconBtn
-                    [ alignRight
-                    ]
-                    Msg.NoOp
-                    Widget.Icon.SearchOutlined
                 ]
             , el
                 [ width fill
@@ -125,6 +117,13 @@ view ({ app, widgets } as state) =
                             ]
                     , onPress = Nothing
                     }
+
+                -- TODO 点击后，弹出搜索窗口，并在输入时实时查询结果，同时，展示常用搜索和收藏的搜索
+                , iconBtn
+                    [ alignRight
+                    ]
+                    Msg.NoOp
+                    Widget.Icon.SearchOutlined
                 ]
             ]
         , row
@@ -170,25 +169,58 @@ view ({ app, widgets } as state) =
                             , spacing 8
                             , centerY
                             ]
-                            [ image
-                                [ width (px (56 - 8 * 2))
-                                ]
-                                { src = "/icon.svg", description = "", onLoad = Nothing }
-                            , column
-                                [ spacing 8
-                                ]
-                                [ el
-                                    [ Font.size 20
-                                    ]
-                                    (text "点滴(DianDi)")
-                                , el
-                                    [ Font.size 10
-                                    ]
-                                    (("这里是类别描述信息" :: langEnd)
-                                        |> i18nText
+                            (state
+                                |> Model.getSelectedTopicCategory
+                                |> Maybe.map
+                                    (\category ->
+                                        [ category.icon
+                                            |> Maybe.map
+                                                (\src ->
+                                                    image
+                                                        [ width (px (56 - 8 * 2))
+                                                        ]
+                                                        { src = src
+                                                        , description = ""
+                                                        , onLoad = Nothing
+                                                        }
+                                                )
+                                            |> Maybe.withDefault
+                                                (Widget.Icon.icon
+                                                    { size = 56 - 8 * 2
+                                                    , color = Theme.Theme.primaryFontColor app.theme
+                                                    }
+                                                    Widget.Icon.QuestionCircleOutlined
+                                                )
+                                        , column
+                                            [ spacing 8
+                                            ]
+                                            [ el
+                                                [ Font.size 18
+                                                ]
+                                                (text category.name)
+                                            , category.description
+                                                |> Maybe.map
+                                                    (\desc ->
+                                                        el
+                                                            [ Font.size (18 - 8)
+                                                            ]
+                                                            (text desc)
+                                                    )
+                                                |> Maybe.withDefault
+                                                    (el
+                                                        (Theme.Theme.placeholderFont app.theme
+                                                            ++ [ Font.size (18 - 8)
+                                                               ]
+                                                        )
+                                                        (("点击这里添加描述信息" :: langEnd)
+                                                            |> i18nText
+                                                        )
+                                                    )
+                                            ]
+                                        ]
                                     )
-                                ]
-                            ]
+                                |> Maybe.withDefault []
+                            )
                         , row
                             [ width fill
                             , paddingXY 8 0

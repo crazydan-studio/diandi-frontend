@@ -20,6 +20,7 @@
 module Model exposing
     ( Config
     , State
+    , getSelectedTopicCategory
     , init
     , sub
     , update
@@ -34,6 +35,7 @@ import Model.Remote.Auth as RemoteAuth
 import Model.Remote.Msg as RemoteMsg
 import Model.Remote.Topic as RemoteTopic
 import Model.Remote.User as RemoteUser
+import Model.Topic.Category exposing (Category)
 import Model.User as User
 import Msg
 import Url
@@ -116,6 +118,11 @@ update msg ({ app } as state) =
 
         _ ->
             ( state, Cmd.none )
+
+
+getSelectedTopicCategory : State -> Maybe Category
+getSelectedTopicCategory { app } =
+    Model.App.getSelectedTopicCategory app
 
 
 

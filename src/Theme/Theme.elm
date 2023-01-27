@@ -21,6 +21,7 @@ module Theme.Theme exposing
     ( Theme
     , placeholderFont
     , placeholderFontColor
+    , primaryBorderColor
     , primaryBtn
     , primaryFontColor
     , primaryFontFont
@@ -39,6 +40,7 @@ type alias Theme =
     , primaryBtnColor : Color
     , secondaryBtnColor : Color
     , placeholderFontColor : Color
+    , primaryBorderColor : Color
     }
 
 
@@ -52,6 +54,12 @@ placeholderFontColor : Theme -> Element.Color
 placeholderFontColor theme =
     toRgbColor
         theme.placeholderFontColor
+
+
+primaryBorderColor : Theme -> Element.Color
+primaryBorderColor theme =
+    toRgbColor
+        theme.primaryBorderColor
 
 
 primaryFontFont : Theme -> List (Element.Attribute msg)

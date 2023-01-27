@@ -27,11 +27,11 @@ import Element.Input as Input
 import I18n.Lang exposing (langEnd)
 import Model
 import Msg
-import Style.Default
 import Theme.Theme
 import View.I18n.Home as I18n
 import View.Page.Topic.Category.List
 import View.Page.Topic.List
+import View.Style.Border.Primary
 import Widget.Icon exposing (Icon)
 import Widget.Part.Button
 
@@ -50,23 +50,11 @@ view ({ app, widgets } as state) =
         , clip
         ]
         [ column
-            (Style.Default.boundaryBorderEach
-                { top = 0
-                , right = 1
-                , bottom = 0
-                , left = 0
-                }
-                ++ [ width (px 256)
-                   , height fill
-                   ]
-            )
+            [ width (px 256)
+            , height fill
+            ]
             [ row
-                (Style.Default.boundaryBorderEach
-                    { top = 0
-                    , bottom = 1
-                    , left = 0
-                    , right = 0
-                    }
+                (View.Style.Border.Primary.bottom 1 app.theme
                     ++ [ width fill
                        , height (px 70)
                        , Background.color (rgb255 255 255 255)
@@ -88,12 +76,7 @@ view ({ app, widgets } as state) =
                 ]
                 (View.Page.Topic.Category.List.view state)
             , row
-                (Style.Default.boundaryBorderEach
-                    { top = 1
-                    , right = 0
-                    , bottom = 0
-                    , left = 0
-                    }
+                (View.Style.Border.Primary.top 1 app.theme
                     ++ [ width fill
                        , height shrink
                        , padding 8
@@ -134,6 +117,28 @@ view ({ app, widgets } as state) =
                 [ width fill
                 , height fill
                 , paddingEach { top = 56, left = 0, right = 0, bottom = 0 }
+
+                -- box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2),0px 4px 5px 0px rgba(0,0,0,0.14),0px 1px 10px 0px rgba(0,0,0,0.12);
+                , Border.shadows
+                    [ { inset = False
+                      , offset = ( 0, 2 )
+                      , blur = 4
+                      , size = -1
+                      , color = rgba255 0 0 0 0.2
+                      }
+                    , { inset = False
+                      , offset = ( 0, 4 )
+                      , blur = 5
+                      , size = 0
+                      , color = rgba255 0 0 0 0.14
+                      }
+                    , { inset = False
+                      , offset = ( 0, 1 )
+                      , blur = 10
+                      , size = 0
+                      , color = rgba255 0 0 0 0.12
+                      }
+                    ]
                 , inFront
                     (row
                         [ width fill
@@ -238,12 +243,7 @@ view ({ app, widgets } as state) =
                                     )
                              )
                                 ++ [ el
-                                        (Style.Default.boundaryBorderEach
-                                            { top = 0
-                                            , right = 1
-                                            , bottom = 0
-                                            , left = 0
-                                            }
+                                        (View.Style.Border.Primary.right 1 app.theme
                                             ++ [ height fill
                                                , alignRight
                                                ]
@@ -438,17 +438,10 @@ view ({ app, widgets } as state) =
                 --     ]
                 ]
             , column
-                (Style.Default.boundaryBorderEach
-                    { top = 0
-                    , right = 0
-                    , bottom = 0
-                    , left = 1
-                    }
-                    ++ [ width (px (128 * 4))
-                       , height fill
-                       , padding 8
-                       ]
-                )
+                [ width (px (128 * 4))
+                , height fill
+                , padding 8
+                ]
                 [ paragraph
                     [ centerX
                     , centerY

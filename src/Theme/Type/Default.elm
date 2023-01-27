@@ -31,4 +31,5 @@ theme =
     , primaryBtnColor = Widget.Color.Blue800
     , secondaryBtnColor = Widget.Color.Purple800
     , placeholderFontColor = Widget.Color.Grey500
+    , primaryBorderColor = Widget.Color.Grey300
     }

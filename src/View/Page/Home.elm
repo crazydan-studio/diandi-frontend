@@ -361,6 +361,14 @@ topicNewInput ({ app } as state) =
                , padding 8
                , spacing 8
                ]
+            ++ (if app.topicNewInputFocused then
+                    [ Event.on "clickOutOfMe"
+                        (Decode.succeed (Msg.NewTopicInputFocusGot inputId False))
+                    ]
+
+                else
+                    []
+               )
         )
         (topicNewInputWhenGotFocus
             app.topicNewInputFocused

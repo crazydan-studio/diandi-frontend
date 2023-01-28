@@ -137,8 +137,6 @@ update msg ({ app } as state) =
                 | app =
                     { app
                         | topicNewInputSelection = Just selection
-
-                        -- , topicNewInputFocused = False
                     }
               }
             , Cmd.none

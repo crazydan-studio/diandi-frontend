@@ -43,6 +43,7 @@ type Msg
     | WidgetMsg Widget.Msg.Msg
       -- 操作数据
     | TopicCategorySelected String
+    | NewTopicInputFocusGotTask
     | NewTopicInputFocusGot String Bool
     | NewTopicInputFocusLost Element.Input.Selection
     | NewTopicInputContentChanged String

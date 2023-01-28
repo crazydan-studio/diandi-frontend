@@ -126,7 +126,7 @@ update msg ({ app } as state) =
                     }
               }
             , if focused then
-                Task.attempt (\_ -> Msg.NoOp) (Dom.focus id)
+                Task.attempt (\_ -> Msg.NewTopicInputFocusGotTask) (Dom.focus id)
 
               else
                 Cmd.none
@@ -162,7 +162,7 @@ update msg ({ app } as state) =
                         |> Model.App.addTopic app.topicNewInputContent
               }
               -- TODO 主题列表滚动到新增主题上
-            , Task.attempt (\_ -> Msg.NoOp) (Dom.focus id)
+            , Task.attempt (\_ -> Msg.NewTopicInputFocusGotTask) (Dom.focus id)
             )
 
         _ ->

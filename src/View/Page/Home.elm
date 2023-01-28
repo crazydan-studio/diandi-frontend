@@ -418,23 +418,30 @@ topicNewInputWhenGotFocus needToBeExpanded inputId { app, widgets } =
                        ]
                 )
                 (Input.multiline
-                    [ id inputId
-                    , width fill
-                    , height
+                    ([ id inputId
+                     , width fill
+                     , height
                         (if needToBeExpanded then
                             px (40 * 4)
 
                          else
                             px 40
                         )
-                    , Border.width 0
-                    , Event.on "blur"
-                        (Input.selectionDecoder
-                            |> Decode.map Msg.NewTopicInputFocusLost
-                        )
-                    , Event.onFocus
-                        (Msg.NewTopicInputFocusGot inputId True)
-                    ]
+                     , Border.width 0
+                     ]
+                        ++ (if needToBeExpanded then
+                                [ Event.on "blur"
+                                    (Input.selectionDecoder
+                                        |> Decode.map Msg.NewTopicInputFocusLost
+                                    )
+                                ]
+
+                            else
+                                [ Event.onFocus
+                                    (Msg.NewTopicInputFocusGot inputId True)
+                                ]
+                           )
+                    )
                     { onChange = Msg.NewTopicInputContentChanged
                     , text = app.topicNewInputContent
                     , selection = app.topicNewInputSelection

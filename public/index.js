@@ -4,6 +4,7 @@ import { Elm } from "../src/Main";
 import { getFirstBrowserLanguage, findNotTranslatedTexts } from "./js/lang";
 import pkg from "../package.json";
 
+import "./js/event";
 import "./index.css";
 
 // Note: 采用 Browser.application 方式初始化，无需挂载到dom节点

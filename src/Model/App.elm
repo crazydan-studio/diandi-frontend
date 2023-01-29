@@ -20,18 +20,19 @@
 module Model.App exposing
     ( Config
     , State
-    , addTopic
+    , addNewTopic
+    , getNewTopicWithInit
     , getSelectedTopicCategory
     , init
     , loadTopicCategories
     , loadTopics
     , loading
+    , updateNewTopic
     )
 
 import Browser.Navigation as Nav
 import Data.TreeStore
-import Element.Input
-import Hex
+import Dict exposing (Dict)
 import Http
 import I18n.Lang
     exposing
@@ -39,14 +40,15 @@ import I18n.Lang
         , TextsNeedToBeTranslated
         , TranslateResult
         )
+import Model.Operation.NewTopic exposing (NewTopic)
 import Model.Remote.Data as RemoteData
 import Model.Topic exposing (Topic)
 import Model.Topic.Category exposing (Category)
 import Model.User as User
-import Murmur3
 import Theme.Theme as Theme exposing (Theme)
 import Theme.Type.Default
 import Url
+import Util exposing (hash)
 import View.I18n.Default
 import View.Page
 
@@ -72,14 +74,12 @@ type alias State =
     , currentPage : View.Page.Type
 
     -- 业务数据
-    , topics : RemoteData.Status (Data.TreeStore.Tree Topic)
-    , categories : RemoteData.Status (Data.TreeStore.Tree Category)
+    , topics : RemoteTopics
+    , categories : RemoteCategories
 
     -- 操作数据
     , selectedTopicCategory : Maybe String
-    , topicNewInputFocused : Bool
-    , topicNewInputContent : String
-    , topicNewInputSelection : Maybe Element.Input.Selection
+    , newTopics : Dict String NewTopic
     }
 
 
@@ -90,6 +90,14 @@ type alias Config =
     , navKey : Nav.Key
     , navUrl : Url.Url
     }
+
+
+type alias RemoteTopics =
+    RemoteData.Status (Data.TreeStore.Tree Topic)
+
+
+type alias RemoteCategories =
+    RemoteData.Status (Data.TreeStore.Tree Category)
 
 
 init : Config -> State
@@ -120,9 +128,7 @@ init config =
 
     --
     , selectedTopicCategory = Nothing
-    , topicNewInputFocused = False
-    , topicNewInputContent = ""
-    , topicNewInputSelection = Nothing
+    , newTopics = Dict.empty
     }
 
 
@@ -161,45 +167,82 @@ getSelectedTopicCategory { selectedTopicCategory, categories } =
             )
 
 
-addTopic : String -> State -> State
-addTopic content ({ topics } as state) =
-    let
-        newContent =
-            content |> String.trim
-    in
-    if String.length newContent == 0 then
-        state
+getNewTopicWithInit : String -> State -> NewTopic
+getNewTopicWithInit inputId { newTopics } =
+    newTopics
+        |> Dict.get inputId
+        |> Maybe.withDefault Model.Operation.NewTopic.init
 
-    else
-        { state
-            | topics =
-                topics
-                    |> RemoteData.update
-                        (Data.TreeStore.add
-                            { id =
-                                newContent
-                                    |> Murmur3.hashString 2003012722
-                                    |> Hex.toString
-                            , superior = Nothing
-                            , content = newContent
-                            , category = Nothing
-                            , tags = []
-                            , color = Nothing
-                            , createdAt = ""
-                            }
-                        )
-        }
+
+updateNewTopic :
+    String
+    -> (NewTopic -> NewTopic)
+    -> State
+    -> State
+updateNewTopic inputId updater ({ newTopics } as state) =
+    let
+        newTopic =
+            getNewTopicWithInit inputId state
+    in
+    { state
+        | newTopics =
+            newTopics
+                |> Dict.insert inputId (updater newTopic)
+    }
+
+
+addNewTopic : String -> State -> State
+addNewTopic inputId ({ newTopics } as state) =
+    newTopics
+        |> Dict.get inputId
+        |> Maybe.map
+            (\newTopic ->
+                let
+                    newContent =
+                        newTopic.content
+                            |> String.trim
+
+                    topic =
+                        Model.Topic.init
+                in
+                if String.length newContent == 0 then
+                    state
+                        |> updateNewTopic inputId
+                            (\t ->
+                                { t | error = Just "主题内容是空白的，请先输入点什么" }
+                            )
+
+                else
+                    { state
+                        | newTopics = newTopics |> Dict.remove inputId
+                    }
+                        |> updateTopics
+                            (RemoteData.update
+                                (Data.TreeStore.add
+                                    { topic
+                                        | id = hash newContent
+                                        , content = newContent
+                                    }
+                                )
+                            )
+            )
+        |> Maybe.withDefault state
 
 
 
 -- --------------------------------------------------------------------
 
 
+updateTopics : (RemoteTopics -> RemoteTopics) -> State -> State
+updateTopics updater ({ topics } as state) =
+    { state | topics = updater topics }
+
+
 createTopicTree : List Topic -> Data.TreeStore.Tree Topic
 createTopicTree topics =
     Data.TreeStore.create
         { idGetter = .id
-        , parentGetter = .superior
+        , parentGetter = \_ -> Nothing
         , sorter = Nothing
         }
         topics

@@ -28,6 +28,7 @@ import Element.Input as Input
 import I18n.Lang exposing (langEnd)
 import Json.Decode as Decode
 import Model
+import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Msg
 import Theme.Theme as Theme
 import View.I18n.Home as I18n
@@ -305,7 +306,7 @@ view ({ app, widgets } as state) =
                         )
                         (View.Page.Topic.List.view state)
                     )
-                , topicNewInput state
+                , newTopicInput state
                 ]
             , column
                 [ width (px (128 * 4))
@@ -349,11 +350,17 @@ iconBtn attr onPress i =
         }
 
 
-topicNewInput : Model.State -> Element Msg.Msg
-topicNewInput ({ app } as state) =
+newTopicInput : Model.State -> Element Msg.Msg
+newTopicInput ({ app } as state) =
     let
         inputId =
             "topic-new-input"
+
+        newTopic =
+            Model.getNewTopicWithInit inputId state
+
+        toMsg =
+            Msg.NewTopicUpdateMsg inputId
     in
     column
         (View.Style.Border.Primary.top 1 app.theme
@@ -361,33 +368,38 @@ topicNewInput ({ app } as state) =
                , padding 8
                , spacing 8
                ]
-            ++ (if app.topicNewInputFocused then
+            ++ (if newTopic.focused then
                     [ Event.on "clickOutOfMe"
-                        (Decode.succeed (Msg.NewTopicInputFocusGot inputId False))
+                        (Decode.succeed
+                            (toMsg NewTopic.InputFocusOut)
+                        )
                     ]
 
                 else
                     []
                )
         )
-        (topicNewInputWhenGotFocus
-            app.topicNewInputFocused
+        (newTopicInputWith
             inputId
+            newTopic
             state
         )
 
 
-topicNewInputWhenGotFocus :
-    Bool
-    -> String
+newTopicInputWith :
+    String
+    -> NewTopic
     -> Model.State
     -> List (Element Msg.Msg)
-topicNewInputWhenGotFocus needToBeExpanded inputId { app, widgets } =
+newTopicInputWith inputId newTopic { app, widgets } =
     let
         i18nText =
             I18n.text app.lang
+
+        toMsg =
+            Msg.NewTopicUpdateMsg inputId
     in
-    (if needToBeExpanded then
+    (if newTopic.focused then
         [ row
             [ width fill
             , spacing 8
@@ -421,7 +433,7 @@ topicNewInputWhenGotFocus needToBeExpanded inputId { app, widgets } =
                     ([ id inputId
                      , width fill
                      , height
-                        (if needToBeExpanded then
+                        (if newTopic.focused then
                             px (40 * 4)
 
                          else
@@ -429,22 +441,31 @@ topicNewInputWhenGotFocus needToBeExpanded inputId { app, widgets } =
                         )
                      , Border.width 0
                      ]
-                        ++ (if needToBeExpanded then
+                        ++ (if newTopic.focused then
                                 [ Event.on "blur"
                                     (Input.selectionDecoder
-                                        |> Decode.map Msg.NewTopicInputFocusLost
+                                        |> Decode.map
+                                            (\selection ->
+                                                toMsg
+                                                    (NewTopic.InputFocusBlur
+                                                        selection
+                                                    )
+                                            )
                                     )
                                 ]
 
                             else
                                 [ Event.onFocus
-                                    (Msg.NewTopicInputFocusGot inputId True)
+                                    (toMsg NewTopic.InputFocusIn)
                                 ]
                            )
                     )
-                    { onChange = Msg.NewTopicInputContentChanged
-                    , text = app.topicNewInputContent
-                    , selection = app.topicNewInputSelection
+                    { onChange =
+                        \text ->
+                            toMsg
+                                (NewTopic.InputContentChanged text)
+                    , text = newTopic.content
+                    , selection = newTopic.selection
                     , placeholder =
                         Just
                             (Input.placeholder
@@ -456,7 +477,7 @@ topicNewInputWhenGotFocus needToBeExpanded inputId { app, widgets } =
                     , label = Input.labelHidden ""
                     , spellcheck = False
                     }
-                    :: (if needToBeExpanded then
+                    :: (if newTopic.focused then
                             [ column
                                 [ width fill
                                 , paddingXY 8 0
@@ -508,7 +529,9 @@ topicNewInputWhenGotFocus needToBeExpanded inputId { app, widgets } =
                                     , content =
                                         (I18n.btnModule :: "记下来!" :: langEnd)
                                             |> i18nText
-                                    , onPress = Just (Msg.NewTopicAdded inputId)
+                                    , onPress =
+                                        Just
+                                            (Msg.NewTopicAdded inputId)
                                     }
                                 ]
                             ]

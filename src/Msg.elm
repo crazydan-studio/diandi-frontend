@@ -24,8 +24,8 @@ module Msg exposing
     )
 
 import Browser
-import Element.Input
 import I18n.Port
+import Model.Operation.NewTopic
 import Model.Remote.Msg as RemoteMsg
 import Url
 import Widget.Msg
@@ -43,11 +43,9 @@ type Msg
     | WidgetMsg Widget.Msg.Msg
       -- 操作数据
     | TopicCategorySelected String
-    | NewTopicInputFocusGotTask
-    | NewTopicInputFocusGot String Bool
-    | NewTopicInputFocusLost Element.Input.Selection
-    | NewTopicInputContentChanged String
     | NewTopicAdded String
+    | NewTopicUpdateMsg String Model.Operation.NewTopic.Msg
+    | NewTopicInputFocusTask String
 
 
 toCmd : Msg -> Cmd Msg

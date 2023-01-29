@@ -20,6 +20,7 @@
 module Model exposing
     ( Config
     , State
+    , getNewTopicWithInit
     , getSelectedTopicCategory
     , init
     , sub
@@ -31,6 +32,7 @@ import Browser.Navigation as Nav
 import Http
 import I18n.Port
 import Model.App
+import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Model.Remote as Remote
 import Model.Remote.Auth as RemoteAuth
 import Model.Remote.Msg as RemoteMsg
@@ -88,7 +90,7 @@ sub _ =
 
 
 update : Msg.Msg -> State -> ( State, Cmd Msg.Msg )
-update msg ({ app } as state) =
+update msg state =
     case msg of
         Msg.RemoteMsg remoteMsg ->
             remoteUpdateHelper remoteMsg state
@@ -100,69 +102,30 @@ update msg ({ app } as state) =
             i18nUpdateHelper i18nPortMsg state
 
         Msg.WidgetMsg widgetMsg ->
-            ( { state
-                | widgets =
-                    state.widgets
-                        |> Widget.Model.update widgetMsg
-              }
+            ( state |> updateWidgetsState (Widget.Model.update widgetMsg)
             , Cmd.none
             )
 
         Msg.TopicCategorySelected categoryId ->
-            ( { state
-                | app =
-                    { app
-                        | selectedTopicCategory = Just categoryId
-                    }
-              }
+            ( state
+                |> updateAppState
+                    (\a ->
+                        { a
+                            | selectedTopicCategory = Just categoryId
+                        }
+                    )
             , Cmd.none
             )
 
-        Msg.NewTopicInputFocusGot id focused ->
-            ( { state
-                | app =
-                    { app
-                        | topicNewInputFocused = focused
-                    }
-              }
-            , if focused then
-                Task.attempt (\_ -> Msg.NewTopicInputFocusGotTask) (Dom.focus id)
+        Msg.NewTopicUpdateMsg inputId newTopicMsg ->
+            newTopicUpdateHelper inputId newTopicMsg state
 
-              else
-                Cmd.none
-            )
-
-        Msg.NewTopicInputFocusLost selection ->
-            ( { state
-                | app =
-                    { app
-                        | topicNewInputSelection = Just selection
-                    }
-              }
-            , Cmd.none
-            )
-
-        Msg.NewTopicInputContentChanged content ->
-            ( { state
-                | app =
-                    { app
-                        | topicNewInputContent = content
-                    }
-              }
-            , Cmd.none
-            )
-
-        Msg.NewTopicAdded id ->
-            ( { state
-                | app =
-                    { app
-                        | topicNewInputContent = ""
-                        , topicNewInputSelection = Nothing
-                    }
-                        |> Model.App.addTopic app.topicNewInputContent
-              }
+        Msg.NewTopicAdded inputId ->
+            ( state |> updateAppState (Model.App.addNewTopic inputId)
               -- TODO 主题列表滚动到新增主题上
-            , Task.attempt (\_ -> Msg.NewTopicInputFocusGotTask) (Dom.focus id)
+            , Task.attempt
+                (\_ -> Msg.NewTopicInputFocusTask inputId)
+                (Dom.focus inputId)
             )
 
         _ ->
@@ -174,8 +137,29 @@ getSelectedTopicCategory { app } =
     Model.App.getSelectedTopicCategory app
 
 
+getNewTopicWithInit : String -> State -> NewTopic
+getNewTopicWithInit inputId { app } =
+    Model.App.getNewTopicWithInit inputId app
+
+
 
 -- -------------------------------------------------------------------
+
+
+updateAppState :
+    (Model.App.State -> Model.App.State)
+    -> State
+    -> State
+updateAppState updater ({ app } as state) =
+    { state | app = updater app }
+
+
+updateWidgetsState :
+    (Widget.Model.State Msg.Msg -> Widget.Model.State Msg.Msg)
+    -> State
+    -> State
+updateWidgetsState updater ({ widgets } as state) =
+    { state | widgets = updater widgets }
 
 
 {-| 远程请求更新
@@ -293,3 +277,25 @@ i18nUpdateHelper msg ({ app } as state) =
               }
             , m
             )
+
+
+newTopicUpdateHelper :
+    String
+    -> NewTopic.Msg
+    -> State
+    -> ( State, Cmd Msg.Msg )
+newTopicUpdateHelper inputId msg state =
+    ( state
+        |> updateAppState
+            (Model.App.updateNewTopic inputId
+                (NewTopic.update msg)
+            )
+    , case msg of
+        NewTopic.InputFocusIn ->
+            Task.attempt
+                (\_ -> Msg.NewTopicInputFocusTask inputId)
+                (Dom.focus inputId)
+
+        _ ->
+            Cmd.none
+    )

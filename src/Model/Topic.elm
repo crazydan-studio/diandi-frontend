@@ -19,6 +19,7 @@
 
 module Model.Topic exposing
     ( Topic
+    , init
     , topicDecoder
     , topicListDecoder
     )
@@ -44,9 +45,6 @@ import Widget.Color exposing (Color, maybeColorDecoder)
 type alias Topic =
     { id : String
 
-    -- 父卡片id
-    , superior : Maybe String
-
     --
     , content : String
     , category : Maybe String
@@ -60,6 +58,17 @@ type alias Topic =
     }
 
 
+init : Topic
+init =
+    { id = ""
+    , content = ""
+    , category = Nothing
+    , tags = []
+    , color = Nothing
+    , createdAt = ""
+    }
+
+
 topicListDecoder : Decoder (List Topic)
 topicListDecoder =
     list topicDecoder
@@ -69,7 +78,6 @@ topicDecoder : Decoder Topic
 topicDecoder =
     Decode.succeed Topic
         |> required "id" string
-        |> optional "superior" (nullable string) Nothing
         |> required "content" string
         |> optional "category" (nullable string) Nothing
         |> optional "tags" (list string) []

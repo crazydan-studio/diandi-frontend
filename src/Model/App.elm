@@ -72,6 +72,8 @@ type alias State =
     -- 远程请求错误信息
     , remoteError : Maybe TranslateResult
     , currentPage : View.Page.Type
+    , topicListViewId : String
+    , newTopicInputId : String
 
     -- 业务数据
     , topics : RemoteTopics
@@ -121,6 +123,8 @@ init config =
     , me = User.None
     , remoteError = Nothing
     , currentPage = View.Page.Loading
+    , topicListViewId = "topic-list-view"
+    , newTopicInputId = "new-topic-input"
 
     --
     , topics = RemoteData.LoadWaiting
@@ -213,9 +217,15 @@ addNewTopic inputId ({ newTopics } as state) =
                             )
 
                 else
-                    { state
-                        | newTopics = newTopics |> Dict.remove inputId
-                    }
+                    state
+                        |> updateNewTopic inputId
+                            (\t ->
+                                { t
+                                    | content = ""
+                                    , selection = Nothing
+                                    , error = Nothing
+                                }
+                            )
                         |> updateTopics
                             (RemoteData.update
                                 (Data.TreeStore.add

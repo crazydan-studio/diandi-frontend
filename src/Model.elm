@@ -122,10 +122,10 @@ update msg state =
 
         Msg.NewTopicAdded inputId ->
             ( state |> updateAppState (Model.App.addNewTopic inputId)
-              -- TODO 主题列表滚动到新增主题上
-            , Task.attempt
-                (\_ -> Msg.NewTopicInputFocusTask inputId)
-                (Dom.focus inputId)
+            , Cmd.batch
+                [ Msg.focusOn inputId
+                , Msg.scrollToBottom state.app.topicListViewId
+                ]
             )
 
         _ ->
@@ -292,9 +292,7 @@ newTopicUpdateHelper inputId msg state =
             )
     , case msg of
         NewTopic.InputFocusIn ->
-            Task.attempt
-                (\_ -> Msg.NewTopicInputFocusTask inputId)
-                (Dom.focus inputId)
+            Msg.focusOn inputId
 
         _ ->
             Cmd.none

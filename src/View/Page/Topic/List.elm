@@ -136,8 +136,8 @@ topicView widgets theme topic =
     in
     -- TODO 提取组件样式，避免重复计算
     column
-        [ width fill
-        , clip
+        [ id topic.id
+        , width fill
         , Background.color (rgb255 255 255 255)
         , Border.rounded 4
         , paddingEach
@@ -167,11 +167,6 @@ topicView widgets theme topic =
               , size = 0
               , color = rgba255 0 0 0 0.12
               }
-            ]
-        , Widget.Html.styles
-            [ ( "flex-basis"
-              , "auto !important"
-              )
             ]
         ]
         [ row

@@ -298,7 +298,8 @@ view ({ app, widgets } as state) =
                     ]
                     (el
                         (Theme.primaryGreyBackground app.theme
-                            ++ [ width fill
+                            ++ [ id app.topicListViewId
+                               , width fill
                                , height fill
                                , scrollbarY
                                , paddingXY 64 16
@@ -354,7 +355,7 @@ newTopicInput : Model.State -> Element Msg.Msg
 newTopicInput ({ app } as state) =
     let
         inputId =
-            "topic-new-input"
+            app.newTopicInputId
 
         newTopic =
             Model.getNewTopicWithInit inputId state

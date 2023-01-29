@@ -19,14 +19,19 @@
 
 module Msg exposing
     ( Msg(..)
+    , focusOn
+    , scrollToBottom
+    , scrollToRight
     , toCmd
     , toRemoteCmd
     )
 
 import Browser
+import Browser.Dom as Dom
 import I18n.Port
-import Model.Operation.NewTopic
+import Model.Operation.NewTopic as NewTopic
 import Model.Remote.Msg as RemoteMsg
+import Task
 import Url
 import Widget.Msg
 
@@ -35,6 +40,8 @@ type Msg
     = NoOp
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
+    | FocusOn String
+    | ScrollTo String
       -- 远端消息
     | RemoteMsg RemoteMsg.Msg
       -- 国际化Port消息
@@ -44,8 +51,7 @@ type Msg
       -- 操作数据
     | TopicCategorySelected String
     | NewTopicAdded String
-    | NewTopicUpdateMsg String Model.Operation.NewTopic.Msg
-    | NewTopicInputFocusTask String
+    | NewTopicUpdateMsg String NewTopic.Msg
 
 
 toCmd : Msg -> Cmd Msg
@@ -62,3 +68,51 @@ toCmd msg =
 toRemoteCmd : Cmd RemoteMsg.Msg -> Cmd Msg
 toRemoteCmd msg =
     Cmd.map RemoteMsg msg
+
+
+focusOn : String -> Cmd Msg
+focusOn id =
+    Task.attempt
+        (\_ -> FocusOn id)
+        (Dom.focus id)
+
+
+scrollToBottom : String -> Cmd Msg
+scrollToBottom =
+    scrollTo
+        (\{ height } ->
+            ( 0, height )
+        )
+
+
+scrollToRight : String -> Cmd Msg
+scrollToRight =
+    scrollTo
+        (\{ width } ->
+            ( width, 0 )
+        )
+
+
+
+-- -----------------------------------------------------------------
+
+
+scrollTo :
+    ({ width : Float, height : Float } -> ( Float, Float ))
+    -> String
+    -> Cmd Msg
+scrollTo locator scrollableElementId =
+    -- https://github.com/ursi/elm-scroll/blob/master/src/Scroll.elm#L288
+    Dom.getViewportOf scrollableElementId
+        |> Task.andThen
+            (\{ scene } ->
+                let
+                    ( x, y ) =
+                        locator scene
+                in
+                Dom.setViewportOf
+                    scrollableElementId
+                    x
+                    y
+            )
+        |> Task.attempt (\_ -> ScrollTo scrollableElementId)

@@ -19,7 +19,10 @@
 
 module Model.Remote.Data exposing
     ( Status(..)
+    , andThen
     , from
+    , map
+    , update
     )
 
 import Http
@@ -42,3 +45,33 @@ from lang convert result =
 
         Err error ->
             LoadingError (parseError lang error)
+
+
+update : (a -> a) -> Status a -> Status a
+update updater status =
+    case status of
+        Loaded a ->
+            Loaded (updater a)
+
+        _ ->
+            status
+
+
+map : (a -> b) -> Status a -> Maybe b
+map mapper status =
+    case status of
+        Loaded a ->
+            Just (mapper a)
+
+        _ ->
+            Nothing
+
+
+andThen : (a -> Maybe b) -> Status a -> Maybe b
+andThen callback status =
+    case status of
+        Loaded a ->
+            callback a
+
+        _ ->
+            Nothing

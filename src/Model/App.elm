@@ -152,16 +152,13 @@ loadTopicCategories result state =
 
 getSelectedTopicCategory : State -> Maybe Category
 getSelectedTopicCategory { selectedTopicCategory, categories } =
-    case categories of
-        RemoteData.Loaded data ->
-            selectedTopicCategory
-                |> Maybe.andThen
-                    (\id ->
-                        data |> Data.TreeStore.get id
-                    )
-
-        _ ->
-            Nothing
+    selectedTopicCategory
+        |> Maybe.andThen
+            (\id ->
+                categories
+                    |> RemoteData.andThen
+                        (Data.TreeStore.get id)
+            )
 
 
 addTopic : String -> State -> State
@@ -174,28 +171,24 @@ addTopic content ({ topics } as state) =
         state
 
     else
-        case topics of
-            RemoteData.Loaded data ->
-                { state
-                    | topics =
-                        data
-                            |> Data.TreeStore.add
-                                { id =
-                                    content
-                                        |> Murmur3.hashString 2003012722
-                                        |> Hex.toString
-                                , superior = Nothing
-                                , content = content
-                                , category = Nothing
-                                , tags = []
-                                , color = Nothing
-                                , createdAt = ""
-                                }
-                            |> RemoteData.Loaded
-                }
-
-            _ ->
-                state
+        { state
+            | topics =
+                topics
+                    |> RemoteData.update
+                        (Data.TreeStore.add
+                            { id =
+                                newContent
+                                    |> Murmur3.hashString 2003012722
+                                    |> Hex.toString
+                            , superior = Nothing
+                            , content = newContent
+                            , category = Nothing
+                            , tags = []
+                            , color = Nothing
+                            , createdAt = ""
+                            }
+                        )
+        }
 
 
 

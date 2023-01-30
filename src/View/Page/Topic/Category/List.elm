@@ -30,21 +30,22 @@ import Model
 import Model.Topic.Category exposing (Category)
 import Msg exposing (Msg(..))
 import Theme.Theme as Theme exposing (Theme)
-import View.Page.RemoteData
+import View.Page.RemoteData as RemoteDataPage
+import View.Style.Base as BaseStyle
 
 
 view : Model.State -> Element Msg.Msg
 view { app } =
-    View.Page.RemoteData.view
-        { theme = app.theme
-        , lang = app.lang
-        }
-        (categoryListView
-            { selected = app.selectedTopicCategory
-            , theme = app.theme
+    app.categories
+        |> RemoteDataPage.view
+            { theme = app.theme
+            , lang = app.lang
             }
-        )
-        app.categories
+            (categoryListView
+                { selected = app.selectedTopicCategory
+                , theme = app.theme
+                }
+            )
 
 
 
@@ -61,7 +62,12 @@ categoryListView { selected, theme } categories =
     Element.Keyed.column
         [ width fill
         , height fill
-        , paddingEach { top = 0, left = 0, right = 0, bottom = 16 }
+        , paddingEach
+            { top = 0
+            , left = 0
+            , right = 0
+            , bottom = BaseStyle.spacing2x
+            }
         ]
         (categories
             |> Data.TreeStore.traverse
@@ -91,18 +97,28 @@ categoryView :
     -> List ( String, Element Msg.Msg )
     -> Element Msg.Msg
 categoryView { depth, category, selected, theme } childElements =
+    let
+        categoryHeight =
+            32
+
+        cagegoryPaddingY =
+            8
+
+        cagegoryPaddingX =
+            16
+    in
     column
         [ width fill
         ]
         [ row
             -- https://v4.mui.com/components/lists/#simple-list
             ([ width fill
-             , height (px (32 + 8 * 2))
+             , height (px (categoryHeight + cagegoryPaddingY * 2))
              , paddingEach
-                { top = 8
-                , left = depth * 16
-                , right = 16
-                , bottom = 8
+                { top = cagegoryPaddingY
+                , left = depth * cagegoryPaddingX
+                , right = cagegoryPaddingX
+                , bottom = cagegoryPaddingY
                 }
              , pointer
              , Transition.with

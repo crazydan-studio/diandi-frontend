@@ -31,20 +31,21 @@ import Model
 import Model.Topic exposing (Topic)
 import Msg
 import Theme.Theme as Theme exposing (Theme)
-import View.Page.RemoteData
+import View.Page.RemoteData as RemoteDataPage
+import View.Style.Base as BaseStyle
 import Widget.Color
 import Widget.Html
-import Widget.Part.Markdown
+import Widget.Part.Markdown as Markdown
 
 
 view : Model.State -> Element Msg.Msg
 view ({ app } as state) =
-    View.Page.RemoteData.view
-        { theme = app.theme
-        , lang = app.lang
-        }
-        (topicListView state)
-        app.topics
+    app.topics
+        |> RemoteDataPage.view
+            { theme = app.theme
+            , lang = app.lang
+            }
+            (topicListView state)
 
 
 
@@ -68,7 +69,7 @@ topicListView state topics =
     Element.Keyed.column
         [ width fill
         , height fill
-        , spacing 8
+        , spacing BaseStyle.spacing
         , centerX
         ]
         (topics
@@ -251,7 +252,7 @@ topicView { app, widgets } topic =
                         -- Note: 默认会设置为5，需显式归零
                         , spacing 0
                         ]
-                        [ Widget.Part.Markdown.render widgets
+                        [ Markdown.render widgets
                             { lineHeight = gridLineSpacing
                             }
                             topic.content

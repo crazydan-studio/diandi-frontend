@@ -31,6 +31,7 @@ theme =
     , secondaryFontSize = 12
     , primaryBtnColor = Widget.Color.Blue800
     , secondaryBtnColor = Widget.Color.Purple800
+    , primaryBtnIconSize = 16
     , placeholderFontColor = Widget.Color.Grey500
     , primaryBorderColor = rgba255 0 0 0 0.12
     , primaryGreyBackgroundColor = rgba255 0 0 0 0.08

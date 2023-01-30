@@ -23,17 +23,22 @@ module Theme.Theme exposing
     , placeholderFontColor
     , primaryBorderColor
     , primaryBtn
+    , primaryBtnIcon
+    , primaryBtnIconSize
+    , primaryFont
     , primaryFontColor
-    , primaryFontFont
     , primaryGreyBackground
     , primaryGreyBackgroundColor
+    , primaryIcon
+    , primaryLinkBtnIcon
     , secondaryBtn
     )
 
-import Element
+import Element exposing (Element)
 import Element.Background as Background
 import Element.Font as Font
-import Widget.Color exposing (Color, defaultPalette, toRgbColor)
+import Widget.Color exposing (Color, defaultPalette, fgColorForBg, toRgbColor)
+import Widget.Icon as Icon exposing (Icon)
 
 
 type alias Theme =
@@ -42,6 +47,7 @@ type alias Theme =
     , secondaryFontSize : Int
     , primaryBtnColor : Color
     , secondaryBtnColor : Color
+    , primaryBtnIconSize : Int
     , placeholderFontColor : Color
     , primaryBorderColor : Element.Color
     , primaryGreyBackgroundColor : Element.Color
@@ -70,8 +76,13 @@ primaryGreyBackgroundColor theme =
     theme.primaryGreyBackgroundColor
 
 
-primaryFontFont : Theme -> List (Element.Attribute msg)
-primaryFontFont theme =
+primaryBtnIconSize : Theme -> Int
+primaryBtnIconSize theme =
+    theme.primaryBtnIconSize
+
+
+primaryFont : Theme -> List (Element.Attribute msg)
+primaryFont theme =
     [ Font.color (primaryFontColor theme)
     ]
 
@@ -82,6 +93,19 @@ placeholderFont theme =
     ]
 
 
+primaryIcon :
+    Int
+    -> Icon
+    -> Theme
+    -> Element msg
+primaryIcon size icon theme =
+    Icon.icon
+        { size = size
+        , color = primaryFontColor theme
+        }
+        icon
+
+
 primaryBtn : Theme -> List (Element.Attribute msg)
 primaryBtn theme =
     defaultPalette theme.primaryBtnColor
@@ -90,6 +114,31 @@ primaryBtn theme =
 secondaryBtn : Theme -> List (Element.Attribute msg)
 secondaryBtn theme =
     defaultPalette theme.secondaryBtnColor
+
+
+primaryBtnIcon :
+    Icon
+    -> Theme
+    -> Element msg
+primaryBtnIcon icon theme =
+    Icon.icon
+        { size = primaryBtnIconSize theme
+        , color =
+            toRgbColor
+                (fgColorForBg theme.primaryBtnColor)
+        }
+        icon
+
+
+primaryLinkBtnIcon :
+    Icon
+    -> Theme
+    -> Element msg
+primaryLinkBtnIcon icon theme =
+    primaryIcon
+        (primaryBtnIconSize theme)
+        icon
+        theme
 
 
 primaryGreyBackground : Theme -> List (Element.Attribute msg)

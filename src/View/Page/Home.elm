@@ -103,13 +103,23 @@ view ({ app, widgets } as state) =
                             ]
                     , onPress = Nothing
                     }
-
-                -- TODO 点击后，弹出搜索窗口，并在输入时实时查询结果，同时，展示常用搜索和收藏的搜索
-                , iconBtn
+                , Input.button
                     [ alignRight
+                    , moveLeft 8
                     ]
-                    Msg.NoOp
-                    Widget.Icon.SearchOutlined
+                    { onPress = Nothing
+                    , label =
+                        row
+                            [ spacing 2
+                            ]
+                            [ iconBtn 16
+                                []
+                                Msg.NoOp
+                                Widget.Icon.SearchOutlined
+                            , (I18n.btnModule :: "搜索" :: langEnd)
+                                |> i18nText
+                            ]
+                    }
                 ]
             ]
         , row
@@ -252,7 +262,7 @@ view ({ app, widgets } as state) =
                                                ]
                                         )
                                         none
-                                   , iconBtn
+                                   , iconBtn 16
                                         [ alignRight
                                         ]
                                         Msg.NoOp
@@ -326,28 +336,29 @@ view ({ app, widgets } as state) =
         ]
 
 
-icon : Icon -> Element msg
-icon =
+icon : Int -> Icon -> Element msg
+icon size =
     Widget.Icon.icon
-        { size = 16
+        { size = size
         , color = rgb255 6 126 213
         }
 
 
 iconBtn :
-    List (Attribute msg)
+    Int
+    -> List (Attribute msg)
     -> msg
     -> Icon
     -> Element msg
-iconBtn attr onPress i =
+iconBtn size attr onPress i =
     Input.button
-        (attr
-            ++ [ width (px 16)
-               , focused []
-               ]
+        ([ width (px size)
+         , focused []
+         ]
+            ++ attr
         )
         { onPress = Just onPress
-        , label = icon i
+        , label = icon size i
         }
 
 

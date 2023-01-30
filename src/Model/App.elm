@@ -45,6 +45,7 @@ import Model.Remote.Data as RemoteData
 import Model.Topic exposing (Topic)
 import Model.Topic.Category exposing (Category)
 import Model.User as User
+import Svg.Attributes exposing (result)
 import Theme.Theme as Theme exposing (Theme)
 import Theme.Type.Default
 import Url
@@ -253,7 +254,28 @@ createTopicTree topics =
     Data.TreeStore.create
         { idGetter = .id
         , parentGetter = \_ -> Nothing
-        , sorter = Nothing
+        , sorter =
+            Just
+                (\t1 t2 ->
+                    Maybe.map2
+                        (\c1 c2 ->
+                            let
+                                result =
+                                    compare
+                                        (String.length c1)
+                                        (String.length c2)
+                            in
+                            case result of
+                                EQ ->
+                                    compare c1 c2
+
+                                _ ->
+                                    result
+                        )
+                        t1.category
+                        t2.category
+                        |> Maybe.withDefault EQ
+                )
         }
         topics
 

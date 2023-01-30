@@ -19,7 +19,7 @@
 
 module View.Page.Topic.Category.List exposing (view)
 
-import Data.TreeStore
+import Data.TreeStore exposing (TreeStore)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Events exposing (onClick)
@@ -55,7 +55,7 @@ categoryListView :
     { selected : Maybe String
     , theme : Theme
     }
-    -> Data.TreeStore.Tree Category
+    -> TreeStore Category
     -> Element Msg.Msg
 categoryListView { selected, theme } categories =
     Element.Keyed.column

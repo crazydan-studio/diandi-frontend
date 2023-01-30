@@ -20,7 +20,7 @@
 module View.Page.Topic.List exposing (view)
 
 import Base64
-import Data.TreeStore
+import Data.TreeStore exposing (TreeStore)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
@@ -34,17 +34,16 @@ import Theme.Theme as Theme exposing (Theme)
 import View.Page.RemoteData
 import Widget.Color
 import Widget.Html
-import Widget.Model as Widget
 import Widget.Part.Markdown
 
 
 view : Model.State -> Element Msg.Msg
-view { app, widgets } =
+view ({ app } as state) =
     View.Page.RemoteData.view
         { theme = app.theme
         , lang = app.lang
         }
-        (topicListView widgets app.theme)
+        (topicListView state)
         app.topics
 
 
@@ -58,11 +57,10 @@ bgColor =
 
 
 topicListView :
-    Widget.State Msg.Msg
-    -> Theme
-    -> Data.TreeStore.Tree Topic
+    Model.State
+    -> TreeStore Topic
     -> Element Msg.Msg
-topicListView widgets theme topics =
+topicListView state topics =
     -- 列表增删改性能提升方案，同时lazy可确保在刷新页面时，有滚动条的列表的滚动位置可被浏览器记录，刷新后能够自动恢复浏览位置
     -- https://guide.elm-lang.org/optimization/keyed.html
     -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Keyed
@@ -76,17 +74,16 @@ topicListView widgets theme topics =
         (topics
             |> Data.TreeStore.traverseDepth 1
                 (\_ topic _ ->
-                    ( topic.id, Element.Lazy.lazy3 topicView widgets theme topic )
+                    ( topic.id, Element.Lazy.lazy2 topicView state topic )
                 )
         )
 
 
 topicView :
-    Widget.State Msg.Msg
-    -> Theme
+    Model.State
     -> Topic
     -> Element Msg.Msg
-topicView widgets theme topic =
+topicView { app, widgets } topic =
     let
         -- 空洞宽度
         cardHoleWidth =
@@ -123,7 +120,7 @@ topicView widgets theme topic =
             gridLineSpacing // 2
 
         contentFontSize =
-            theme.primaryFontSize
+            app.theme.primaryFontSize
 
         gridLineColor =
             "#91d1d3"
@@ -220,7 +217,7 @@ topicView widgets theme topic =
                         , height fill
                         , Widget.Html.styles
                             [ ( "background-image"
-                              , "url(\"" ++ holeSvgImg theme ++ "\")"
+                              , "url(\"" ++ holeSvgImg app.theme ++ "\")"
                               )
                             , ( "background-repeat"
                               , "repeat-y"

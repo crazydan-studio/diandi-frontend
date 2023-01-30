@@ -18,9 +18,9 @@
 
 
 module Data.TreeStore exposing
-    ( Tree
-    , TreeConfig
+    ( TreeConfig
     , TreeSorter
+    , TreeStore
     , TreeTraveller
     , add
     , create
@@ -37,7 +37,7 @@ module Data.TreeStore exposing
 import Dict exposing (Dict)
 
 
-type Tree dataType
+type TreeStore dataType
     = Tree (TreeConfig dataType) (TreeData dataType)
 
 
@@ -76,7 +76,7 @@ type alias TreeData dataType =
     }
 
 
-empty : TreeConfig dataType -> Tree dataType
+empty : TreeConfig dataType -> TreeStore dataType
 empty config =
     Tree config
         { data = Dict.empty
@@ -88,18 +88,18 @@ empty config =
 create :
     TreeConfig dataType
     -> List dataType
-    -> Tree dataType
+    -> TreeStore dataType
 create config =
     empty config
         |> List.foldl add
 
 
-get : String -> Tree dataType -> Maybe dataType
+get : String -> TreeStore dataType -> Maybe dataType
 get id (Tree _ treeData) =
     treeData.data |> Dict.get id
 
 
-add : dataType -> Tree dataType -> Tree dataType
+add : dataType -> TreeStore dataType -> TreeStore dataType
 add data ((Tree { idGetter, sorter } treeData) as tree) =
     let
         treeDataDictUpdater id =
@@ -122,7 +122,7 @@ add data ((Tree { idGetter, sorter } treeData) as tree) =
             (updateHelper data treeDataDictUpdater nodeIdListUpdater tree)
 
 
-remove : dataType -> Tree dataType -> Tree dataType
+remove : dataType -> TreeStore dataType -> TreeStore dataType
 remove data tree =
     let
         treeDataDictUpdater =
@@ -138,7 +138,7 @@ remove data tree =
 -}
 traverse :
     TreeTraveller dataType resultType
-    -> Tree dataType
+    -> TreeStore dataType
     -> List resultType
 traverse traverler tree =
     traverseDepth -1 traverler tree
@@ -149,7 +149,7 @@ traverse traverler tree =
 traverseDepth :
     Int
     -> TreeTraveller dataType resultType
-    -> Tree dataType
+    -> TreeStore dataType
     -> List resultType
 traverseDepth maxDepth traverler ((Tree _ { roots }) as tree) =
     traverseHelper
@@ -166,7 +166,7 @@ traverseDepth maxDepth traverler ((Tree _ { roots }) as tree) =
 -}
 traverseWithSingleRoot :
     TreeTraveller dataType resultType
-    -> Tree dataType
+    -> TreeStore dataType
     -> Maybe resultType
 traverseWithSingleRoot traverler tree =
     tree
@@ -182,8 +182,8 @@ updateHelper :
     dataType
     -> (String -> Dict String dataType -> Dict String dataType)
     -> (String -> Dict String dataType -> List String -> List String)
-    -> Tree dataType
-    -> Tree dataType
+    -> TreeStore dataType
+    -> TreeStore dataType
 updateHelper data treeDataDictUpdater nodeIdListUpdater tree =
     let
         (Tree ({ idGetter, parentGetter } as treeConfig) treeData) =
@@ -261,7 +261,7 @@ traverseHelper :
     TreeTraveller dataType resultType
     -> { depth : Int, maxDepth : Int, nodesIndex : Int }
     -> List String
-    -> Tree dataType
+    -> TreeStore dataType
     -> List resultType
 traverseHelper traverler opts nodeIds ((Tree _ { data, nodes }) as tree) =
     let

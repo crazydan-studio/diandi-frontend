@@ -31,7 +31,7 @@ module Model.App exposing
     )
 
 import Browser.Navigation as Nav
-import Data.TreeStore
+import Data.TreeStore exposing (TreeStore)
 import Dict exposing (Dict)
 import Http
 import I18n.Lang
@@ -96,11 +96,11 @@ type alias Config =
 
 
 type alias RemoteTopics =
-    RemoteData.Status (Data.TreeStore.Tree Topic)
+    RemoteData.Status (TreeStore Topic)
 
 
 type alias RemoteCategories =
-    RemoteData.Status (Data.TreeStore.Tree Category)
+    RemoteData.Status (TreeStore Category)
 
 
 init : Config -> State
@@ -249,7 +249,7 @@ updateTopics updater ({ topics } as state) =
     { state | topics = updater topics }
 
 
-createTopicTree : List Topic -> Data.TreeStore.Tree Topic
+createTopicTree : List Topic -> TreeStore Topic
 createTopicTree topics =
     Data.TreeStore.create
         { idGetter = .id
@@ -280,7 +280,7 @@ createTopicTree topics =
         topics
 
 
-createTopicCategoryTree : List Category -> Data.TreeStore.Tree Category
+createTopicCategoryTree : List Category -> TreeStore Category
 createTopicCategoryTree categories =
     Data.TreeStore.create
         { idGetter = .id

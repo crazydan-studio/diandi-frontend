@@ -57,8 +57,8 @@ type alias Config msg =
 
 {-| 普通按钮
 -}
-button : State msg -> Config msg -> Element msg
-button widgets { id, content, onPress, attrs } =
+button : Config msg -> State msg -> Element msg
+button { id, content, onPress, attrs } widgets =
     let
         shadow =
             -- box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
@@ -163,16 +163,17 @@ button widgets { id, content, onPress, attrs } =
             ++ attrs
         )
         { onPress = onPress
-            -- Just
-            --     (widgets
-            --         |> onMsg id
-            --             (\s ->
-            --                 Just
-            --                     { s
-            --                         | disabled = not s.disabled
-            --                     }
-            --             )
-            --     )
+
+        -- Just
+        --     (widgets
+        --         |> onMsg id
+        --             (\s ->
+        --                 Just
+        --                     { s
+        --                         | disabled = not s.disabled
+        --                     }
+        --             )
+        --     )
         , label = content
         }
 

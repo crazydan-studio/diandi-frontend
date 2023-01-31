@@ -34,8 +34,8 @@ type alias Config =
     }
 
 
-render : State msg -> Config -> String -> Element msg
-render widgets config markdown =
+render : Config -> String -> State msg -> Element msg
+render config markdown widgets =
     case markdownView widgets config markdown of
         Ok rendered ->
             Element.column

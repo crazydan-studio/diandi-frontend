@@ -27,11 +27,13 @@ module Theme.Theme exposing
     , primaryBtnIconSize
     , primaryFont
     , primaryFontColor
+    , primaryFontSize
     , primaryGreyBackground
     , primaryGreyBackgroundColor
     , primaryIcon
     , primaryLinkBtnIcon
     , secondaryBtn
+    , secondaryFontSize
     )
 
 import Element exposing (Element)
@@ -76,6 +78,16 @@ primaryGreyBackgroundColor theme =
     theme.primaryGreyBackgroundColor
 
 
+primaryFontSize : Theme -> Int
+primaryFontSize theme =
+    theme.primaryFontSize
+
+
+secondaryFontSize : Theme -> Int
+secondaryFontSize theme =
+    theme.secondaryFontSize
+
+
 primaryBtnIconSize : Theme -> Int
 primaryBtnIconSize theme =
     theme.primaryBtnIconSize
@@ -84,6 +96,7 @@ primaryBtnIconSize theme =
 primaryFont : Theme -> List (Element.Attribute msg)
 primaryFont theme =
     [ Font.color (primaryFontColor theme)
+    , Font.size (primaryFontSize theme)
     ]
 
 

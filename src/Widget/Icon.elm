@@ -31,11 +31,14 @@ import Html exposing (Html)
 import Svg.Attributes exposing (fill, height, width)
 import Widget.Html
 
-
-icon :
+type alias Attr =
     { size : Int
     , color : Color
     }
+
+
+icon :
+    Attr
     -> Icon
     -> Element msg
 icon attr icn =

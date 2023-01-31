@@ -29,16 +29,13 @@ module View.Style.Border.Primary exposing
 import Element exposing (Attribute)
 import Element.Border as Border
 import Theme.Theme as Theme exposing (Theme)
+import Widget.Dimension as Dimension exposing (Dimension)
 
 
 {-| 设置边的主样式
 -}
 each :
-    { top : Int
-    , left : Int
-    , right : Int
-    , bottom : Int
-    }
+    Dimension
     -> Theme
     -> List (Attribute msg)
 each size theme =
@@ -53,12 +50,7 @@ all :
     -> Theme
     -> List (Attribute msg)
 all size =
-    each
-        { top = size
-        , left = size
-        , right = size
-        , bottom = size
-        }
+    each (Dimension.all size)
 
 
 top :
@@ -66,12 +58,7 @@ top :
     -> Theme
     -> List (Attribute msg)
 top size =
-    each
-        { top = size
-        , left = 0
-        , right = 0
-        , bottom = 0
-        }
+    each (Dimension.top size)
 
 
 bottom :
@@ -79,12 +66,7 @@ bottom :
     -> Theme
     -> List (Attribute msg)
 bottom size =
-    each
-        { top = 0
-        , left = 0
-        , right = 0
-        , bottom = size
-        }
+    each (Dimension.bottom size)
 
 
 left :
@@ -92,12 +74,7 @@ left :
     -> Theme
     -> List (Attribute msg)
 left size =
-    each
-        { top = 0
-        , left = size
-        , right = 0
-        , bottom = 0
-        }
+    each (Dimension.left size)
 
 
 right :
@@ -105,9 +82,4 @@ right :
     -> Theme
     -> List (Attribute msg)
 right size =
-    each
-        { top = 0
-        , left = 0
-        , right = size
-        , bottom = 0
-        }
+    each (Dimension.right size)

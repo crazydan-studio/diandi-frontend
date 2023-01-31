@@ -15,6 +15,7 @@ import View.I18n.Home as I18n
 import View.Page.Topic.List as TopicList
 import View.Style.Base as BaseStyle
 import View.Style.Border.Primary as PrimaryBorder
+import Widget.Dimension as Dimension
 import Widget.Icon as Icon
 import Widget.Part.Button as Button
 
@@ -25,11 +26,7 @@ view state =
         [ width fill
         , height fill
         , paddingEach
-            { top = headerHeight
-            , left = 0
-            , right = 0
-            , bottom = 0
-            }
+            (Dimension.top headerHeight)
         , inFront (header state)
         ]
         [ body state

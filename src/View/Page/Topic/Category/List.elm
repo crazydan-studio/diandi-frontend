@@ -32,6 +32,7 @@ import Msg exposing (Msg(..))
 import Theme.Theme as Theme exposing (Theme)
 import View.Page.RemoteData as RemoteDataPage
 import View.Style.Base as BaseStyle
+import Widget.Dimension as Dimension
 
 
 view : Model.State -> Element Msg.Msg
@@ -63,11 +64,7 @@ categoryListView { selected, theme } categories =
         [ width fill
         , height fill
         , paddingEach
-            { top = 0
-            , left = 0
-            , right = 0
-            , bottom = BaseStyle.spacing2x
-            }
+            (Dimension.bottom BaseStyle.spacing2x)
         ]
         (categories
             |> Data.TreeStore.traverse

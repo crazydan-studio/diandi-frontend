@@ -29,6 +29,7 @@ module Msg exposing
 import Browser
 import Browser.Dom as Dom
 import I18n.Port
+import Model.Operation.EditTopic as EditTopic
 import Model.Operation.NewTopic as NewTopic
 import Model.Remote.Msg as RemoteMsg
 import Task
@@ -51,7 +52,9 @@ type Msg
       -- 操作数据
     | TopicCategorySelected String
     | NewTopicAdded String
-    | NewTopicUpdateMsg String NewTopic.Msg
+    | NewTopicMsg String NewTopic.Msg
+    | EditTopicUpdated String
+    | EditTopicMsg String EditTopic.Msg
 
 
 toCmd : Msg -> Cmd Msg

@@ -27,11 +27,13 @@ module Model.App exposing
     , loadTopicCategories
     , loadTopics
     , loading
+    , updateEditTopic
     , updateNewTopic
+    , updateTopicByEdit
     )
 
 import Browser.Navigation as Nav
-import Data.TreeStore exposing (TreeStore)
+import Data.TreeStore as TreeStore exposing (TreeStore)
 import Dict exposing (Dict)
 import Http
 import I18n.Lang
@@ -40,7 +42,8 @@ import I18n.Lang
         , TextsNeedToBeTranslated
         , TranslateResult
         )
-import Model.Operation.NewTopic exposing (NewTopic)
+import Model.Operation.EditTopic as EditTopic exposing (EditTopic)
+import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Model.Remote.Data as RemoteData
 import Model.Topic exposing (Topic)
 import Model.Topic.Category exposing (Category)
@@ -83,6 +86,7 @@ type alias State =
     -- 操作数据
     , selectedTopicCategory : Maybe String
     , newTopics : Dict String NewTopic
+    , editTopic : Maybe EditTopic
     }
 
 
@@ -134,6 +138,7 @@ init config =
     --
     , selectedTopicCategory = Nothing
     , newTopics = Dict.empty
+    , editTopic = Nothing
     }
 
 
@@ -168,7 +173,7 @@ getSelectedTopicCategory { selectedTopicCategory, categories } =
             (\id ->
                 categories
                     |> RemoteData.andThen
-                        (Data.TreeStore.get id)
+                        (TreeStore.get id)
             )
 
 
@@ -176,7 +181,7 @@ getNewTopicWithInit : String -> State -> NewTopic
 getNewTopicWithInit inputId { newTopics } =
     newTopics
         |> Dict.get inputId
-        |> Maybe.withDefault Model.Operation.NewTopic.init
+        |> Maybe.withDefault NewTopic.init
 
 
 updateNewTopic :
@@ -229,12 +234,79 @@ addNewTopic inputId ({ newTopics } as state) =
                             )
                         |> updateTopics
                             (RemoteData.update
-                                (Data.TreeStore.add
+                                (TreeStore.add
                                     { topic
                                         | id = hash newContent
                                         , content = newContent
                                     }
                                 )
+                            )
+            )
+        |> Maybe.withDefault state
+
+
+updateEditTopic :
+    String
+    -> (EditTopic -> EditTopic)
+    -> State
+    -> State
+updateEditTopic topicId updater ({ topics, editTopic } as state) =
+    let
+        initEditTopic id =
+            topics
+                |> RemoteData.andThen
+                    (\store ->
+                        store
+                            |> TreeStore.get id
+                            |> Maybe.map
+                                EditTopic.init
+                    )
+
+        newEditTopic =
+            (case editTopic of
+                Nothing ->
+                    initEditTopic topicId
+
+                Just t ->
+                    if t.id /= topicId then
+                        initEditTopic topicId
+
+                    else
+                        editTopic
+            )
+                |> Maybe.map updater
+    in
+    { state | editTopic = newEditTopic }
+
+
+updateTopicByEdit : String -> State -> State
+updateTopicByEdit topicId ({ topics, editTopic } as state) =
+    editTopic
+        |> Maybe.andThen
+            (\edit ->
+                let
+                    newContent =
+                        edit.content
+                            |> String.trim
+                in
+                if String.length newContent == 0 then
+                    Nothing
+
+                else
+                    topics
+                        |> RemoteData.andThen
+                            (TreeStore.get topicId)
+                        |> Maybe.map
+                            (\t ->
+                                { state | editTopic = Nothing }
+                                    |> updateTopics
+                                        (RemoteData.update
+                                            (TreeStore.add
+                                                { t
+                                                    | content = newContent
+                                                }
+                                            )
+                                        )
                             )
             )
         |> Maybe.withDefault state
@@ -251,7 +323,7 @@ updateTopics updater ({ topics } as state) =
 
 createTopicTree : List Topic -> TreeStore Topic
 createTopicTree topics =
-    Data.TreeStore.create
+    TreeStore.create
         { idGetter = .id
         , parentGetter = \_ -> Nothing
         , sorter =
@@ -282,7 +354,7 @@ createTopicTree topics =
 
 createTopicCategoryTree : List Category -> TreeStore Category
 createTopicCategoryTree categories =
-    Data.TreeStore.create
+    TreeStore.create
         { idGetter = .id
         , parentGetter = .parent
         , sorter = Nothing

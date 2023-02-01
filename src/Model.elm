@@ -27,11 +27,11 @@ module Model exposing
     , update
     )
 
-import Browser.Dom as Dom
 import Browser.Navigation as Nav
 import Http
 import I18n.Port
 import Model.App
+import Model.Operation.EditTopic as EditTopic exposing (EditTopic)
 import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Model.Remote as Remote
 import Model.Remote.Auth as RemoteAuth
@@ -41,7 +41,6 @@ import Model.Remote.User as RemoteUser
 import Model.Topic.Category exposing (Category)
 import Model.User as User
 import Msg
-import Task
 import Url
 import View.Page as PageType
 import View.Route
@@ -117,8 +116,11 @@ update msg state =
             , Cmd.none
             )
 
-        Msg.NewTopicUpdateMsg inputId newTopicMsg ->
+        Msg.NewTopicMsg inputId newTopicMsg ->
             newTopicUpdateHelper inputId newTopicMsg state
+
+        Msg.EditTopicMsg topicId editTopicMsg ->
+            editTopicUpdateHelper topicId editTopicMsg state
 
         Msg.NewTopicAdded inputId ->
             ( state |> updateAppState (Model.App.addNewTopic inputId)
@@ -126,6 +128,11 @@ update msg state =
                 [ Msg.focusOn inputId
                 , Msg.scrollToBottom state.app.topicListViewId
                 ]
+            )
+
+        Msg.EditTopicUpdated topicId ->
+            ( state |> updateAppState (Model.App.updateTopicByEdit topicId)
+            , Cmd.none
             )
 
         _ ->
@@ -293,6 +300,26 @@ newTopicUpdateHelper inputId msg state =
     , case msg of
         NewTopic.InputFocusIn ->
             Msg.focusOn inputId
+
+        _ ->
+            Cmd.none
+    )
+
+
+editTopicUpdateHelper :
+    String
+    -> EditTopic.Msg
+    -> State
+    -> ( State, Cmd Msg.Msg )
+editTopicUpdateHelper topicId msg state =
+    ( state
+        |> updateAppState
+            (Model.App.updateEditTopic topicId
+                (EditTopic.update msg)
+            )
+    , case msg of
+        EditTopic.InputFocusIn ->
+            Msg.focusOn topicId
 
         _ ->
             Cmd.none

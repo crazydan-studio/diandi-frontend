@@ -245,7 +245,7 @@ bottom ({ app } as state) =
             Model.getNewTopicWithInit inputId state
 
         toMsg =
-            Msg.NewTopicUpdateMsg inputId
+            Msg.NewTopicMsg inputId
     in
     column
         (PrimaryBorder.top 1 app.theme
@@ -282,7 +282,7 @@ newTopicInput inputId newTopic { app, widgets } =
             I18n.text app.lang
 
         toMsg =
-            Msg.NewTopicUpdateMsg inputId
+            Msg.NewTopicMsg inputId
 
         inputMinHeight =
             40

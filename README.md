@@ -60,6 +60,10 @@ npm run prod
     有状态的动画，需要更新模型，但可提供更加复杂和高级的动画控制
 - [arsduo/elm-ui-drag-drop](https://package.elm-lang.org/packages/arsduo/elm-ui-drag-drop/latest/):
   支持 Elm UI 的拖拽库
+- [dnd-list + Elm UI](https://annaghi.github.io/dnd-list/introduction/basic-elm-ui):
+  支持 Elm UI 的拖拽库
+- [Rich Text Editor Toolkit Markdown example](https://mweiss.github.io/elm-rte-toolkit/#/examples/markdown):
+  支持 Markdown 的富文本编辑器
 
 - [Material Design Components](https://m2.material.io/components):
   Material Design 组件样式

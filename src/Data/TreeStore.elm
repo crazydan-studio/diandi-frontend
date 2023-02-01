@@ -99,8 +99,13 @@ get id (Tree _ treeData) =
     treeData.data |> Dict.get id
 
 
+{-| 添加数据
+
+已存在的数据将更新其数据值和排序等
+
+-}
 add : dataType -> TreeStore dataType -> TreeStore dataType
-add data ((Tree { idGetter, sorter } treeData) as tree) =
+add data ((Tree { sorter } _) as tree) =
     let
         treeDataDictUpdater id =
             Dict.insert id data
@@ -108,18 +113,9 @@ add data ((Tree { idGetter, sorter } treeData) as tree) =
         nodeIdListUpdater dataId =
             addNewIdToSortedIdListHelper sorter dataId
     in
-    treeData.data
-        |> Dict.get (idGetter data)
-        |> Maybe.andThen
-            (\oldData ->
-                if oldData == data then
-                    Just tree
-
-                else
-                    Nothing
-            )
-        |> Maybe.withDefault
-            (updateHelper data treeDataDictUpdater nodeIdListUpdater tree)
+    -- Note: 对于更新，不能先删除再添加，因为在无排序函数时，删除后添加会造成相对位置发生变化
+    tree
+        |> updateHelper data treeDataDictUpdater nodeIdListUpdater
 
 
 remove : dataType -> TreeStore dataType -> TreeStore dataType
@@ -131,7 +127,8 @@ remove data tree =
         nodeIdListUpdater dataId _ =
             List.filter (\id -> id /= dataId)
     in
-    updateHelper data treeDataDictUpdater nodeIdListUpdater tree
+    tree
+        |> updateHelper data treeDataDictUpdater nodeIdListUpdater
 
 
 {-| 遍历有多个root节点的树并构造结果集
@@ -195,36 +192,100 @@ updateHelper data treeDataDictUpdater nodeIdListUpdater tree =
         dataParentMaybe =
             parentGetter data
 
+        dataOldParentMaybe =
+            treeData.data
+                |> Dict.get dataId
+                |> Maybe.andThen parentGetter
+
         newDataDict =
             treeData.data |> treeDataDictUpdater dataId
 
-        updateNodeIdList =
+        updateDataIdList =
             nodeIdListUpdater dataId newDataDict
+
+        removeDataIdFromIdList =
+            List.filter
+                (\id ->
+                    id /= dataId
+                )
+
+        removeNodeIdFor parentId td =
+            { td
+                | nodes =
+                    td.nodes
+                        |> Dict.get parentId
+                        |> Maybe.map
+                            (\childIdList ->
+                                td.nodes
+                                    |> Dict.insert parentId
+                                        (childIdList
+                                            |> removeDataIdFromIdList
+                                        )
+                            )
+                        |> Maybe.withDefault td.nodes
+            }
+
+        newTreeData =
+            case dataOldParentMaybe of
+                Nothing ->
+                    case dataParentMaybe of
+                        Nothing ->
+                            treeData
+
+                        Just _ ->
+                            -- 原来没有但现在有父节点，
+                            -- 则从root中移除该节点，
+                            -- 以等待添加到新的父节点中
+                            { treeData
+                                | roots =
+                                    treeData.roots
+                                        |> removeDataIdFromIdList
+                            }
+
+                Just dataOldParent ->
+                    case dataParentMaybe of
+                        Nothing ->
+                            -- 原来有但现在没有父节点，
+                            -- 则从原父节点中移除该节点，
+                            -- 以等待添加到root节点中
+                            treeData
+                                |> removeNodeIdFor dataOldParent
+
+                        Just dataParent ->
+                            if dataOldParent == dataParent then
+                                treeData
+
+                            else
+                                -- 原来与现在的父节点不同，
+                                -- 则从原父节点中移除该节点，
+                                -- 以等待添加到新的父节点中
+                                treeData
+                                    |> removeNodeIdFor dataOldParent
     in
     case dataParentMaybe of
         Nothing ->
             Tree treeConfig
-                { treeData
+                { newTreeData
                     | data = newDataDict
                     , roots =
-                        updateNodeIdList treeData.roots
+                        updateDataIdList newTreeData.roots
                 }
 
         Just dataParent ->
             let
                 childIdList =
-                    treeData.nodes
+                    newTreeData.nodes
                         |> Dict.get dataParent
                         |> Maybe.withDefault []
 
                 newChildIdList =
-                    updateNodeIdList childIdList
+                    updateDataIdList childIdList
             in
             Tree treeConfig
-                { treeData
+                { newTreeData
                     | data = newDataDict
                     , nodes =
-                        treeData.nodes
+                        newTreeData.nodes
                             |> Dict.insert dataParent newChildIdList
                 }
 
@@ -236,15 +297,21 @@ addNewIdToSortedIdListHelper :
     -> List String
     -> List String
 addNewIdToSortedIdListHelper sorterMaybe newId dataDict sortedIdList =
+    let
+        newSortedIdList =
+            if sortedIdList |> List.member newId then
+                sortedIdList
+
+            else
+                sortedIdList ++ [ newId ]
+    in
     case sorterMaybe of
         Nothing ->
-            sortedIdList ++ [ newId ]
+            newSortedIdList
 
         Just sorter ->
-            -- 注：由调用方确定新增数据是否已存在，以及是否发生变更，
-            -- 对已存在的未变更数据，则不调用该函数
-            sortedIdList
-                ++ [ newId ]
+            -- 排序条件可能发生变化，故而，始终做一次排序
+            newSortedIdList
                 |> List.sortWith
                     (\id1 id2 ->
                         -- 注意入参顺序与id顺序保持一致

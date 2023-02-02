@@ -40,15 +40,15 @@ import Widget.Color
 import Widget.Dimension as Dimension
 import Widget.Html
 import Widget.Icon as Icon exposing (Icon)
-import Widget.Part.Button as Button
-import Widget.Part.Markdown as Markdown
+import Widget.Widget.Button as Button
+import Widget.Widget.Markdown as Markdown
 
 
 view :
     Model.State
     -> Topic
     -> Element Msg.Msg
-view ({ app, widgets } as state) topic =
+view ({ app } as state) topic =
     let
         cornerRoundedSize =
             4
@@ -295,7 +295,7 @@ contentView :
     Model.State
     -> Topic
     -> Element Msg.Msg
-contentView { app, widgets } topic =
+contentView { app, withWidgetContext } topic =
     el
         ([ width fill
          , height fill
@@ -309,8 +309,8 @@ contentView { app, widgets } topic =
             -- Note: 默认会设置为5，需显式归零
             , spacing 0
             ]
-            [ widgets
-                |> Markdown.render
+            [ withWidgetContext <|
+                Markdown.render
                     { lineHeight = bgGridLineSpacing
                     }
                     topic.content
@@ -358,7 +358,7 @@ editTopicInput :
     -> EditTopic
     -> Model.State
     -> Element Msg.Msg
-editTopicInput topic editTopic { app, widgets } =
+editTopicInput topic editTopic { app, withWidgetContext } =
     let
         i18nText =
             I18n.text app.lang
@@ -464,8 +464,8 @@ editTopicInput topic editTopic { app, widgets } =
                                     )
                            )
                     )
-                , widgets
-                    |> Button.button
+                , withWidgetContext <|
+                    Button.button
                         { id = "btn-edit-topic-ok-in-home"
                         , attrs =
                             Theme.primaryBtn app.theme
@@ -478,8 +478,8 @@ editTopicInput topic editTopic { app, widgets } =
                             Just
                                 (Msg.EditTopicUpdated topic.id)
                         }
-                , widgets
-                    |> Button.button
+                , withWidgetContext <|
+                    Button.button
                         { id = "btn-edit-topic-cancel-in-home"
                         , attrs =
                             Theme.secondaryBtn app.theme

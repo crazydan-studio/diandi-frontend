@@ -17,7 +17,7 @@ import View.Style.Base as BaseStyle
 import View.Style.Border.Primary as PrimaryBorder
 import Widget.Dimension as Dimension
 import Widget.Icon as Icon
-import Widget.Part.Button as Button
+import Widget.Widget.Button as Button
 
 
 view : Model.State -> Element Msg.Msg
@@ -276,7 +276,7 @@ newTopicInput :
     -> NewTopic
     -> Model.State
     -> List (Element Msg.Msg)
-newTopicInput inputId newTopic { app, widgets } =
+newTopicInput inputId newTopic { app, widgets, withWidgetContext } =
     let
         i18nText =
             I18n.text app.lang
@@ -411,8 +411,8 @@ newTopicInput inputId newTopic { app, widgets } =
                                                     )
                                            )
                                     )
-                                , widgets
-                                    |> Button.button
+                                , withWidgetContext <|
+                                    Button.button
                                         { id = "btn-write-it-down-in-home"
                                         , attrs =
                                             Theme.primaryBtn app.theme

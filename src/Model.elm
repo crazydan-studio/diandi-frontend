@@ -44,7 +44,7 @@ import Msg
 import Url
 import View.Page as PageType
 import View.Route
-import Widget.Model
+import Widget.Widget as Widget
 
 
 type alias Config =
@@ -59,12 +59,19 @@ type alias State =
       app : Model.App.State
 
     -- 组件内部状态
-    , widgets : Widget.Model.State Msg.Msg
+    , widgets : Widget.State Msg.Msg
+    , withWidgetContext : Widget.WithContext Msg.Msg
     }
 
 
 init : Config -> Url.Url -> Nav.Key -> ( State, Cmd Msg.Msg )
 init config navUrl navKey =
+    let
+        ( widgets, withWidgetContext ) =
+            Widget.init
+                { toAppMsg = Msg.WidgetMsg
+                }
+    in
     { app =
         Model.App.init
             { title = config.title
@@ -73,10 +80,8 @@ init config navUrl navKey =
             , navKey = navKey
             , navUrl = navUrl
             }
-    , widgets =
-        Widget.Model.init
-            { toAppMsg = Msg.WidgetMsg
-            }
+    , widgets = widgets
+    , withWidgetContext = withWidgetContext
     }
         |> routeUpdateHelper navUrl
 
@@ -101,7 +106,7 @@ update msg state =
             i18nUpdateHelper i18nPortMsg state
 
         Msg.WidgetMsg widgetMsg ->
-            ( state |> updateWidgetsState (Widget.Model.update widgetMsg)
+            ( state |> updateWidgetsState (Widget.update widgetMsg)
             , Cmd.none
             )
 
@@ -162,11 +167,18 @@ updateAppState updater ({ app } as state) =
 
 
 updateWidgetsState :
-    (Widget.Model.State Msg.Msg -> Widget.Model.State Msg.Msg)
+    Widget.Updater Msg.Msg
     -> State
     -> State
 updateWidgetsState updater ({ widgets } as state) =
-    { state | widgets = updater widgets }
+    let
+        ( newWidgets, newWithWidgetContext ) =
+            updater widgets
+    in
+    { state
+        | widgets = newWidgets
+        , withWidgetContext = newWithWidgetContext
+    }
 
 
 {-| 远程请求更新

@@ -11,7 +11,7 @@ import View.Page.Topic.Category.List as CategoryList
 import View.Style.Base as BaseStyle
 import View.Style.Border.Primary as PrimaryBorder
 import Widget.Icon as Icon
-import Widget.Part.Button as Button
+import Widget.Widget.Button as Button
 
 
 view : Model.State -> Element Msg.Msg
@@ -68,7 +68,7 @@ header { app, widgets } =
 
 
 bottom : Model.State -> Element Msg.Msg
-bottom { app, widgets } =
+bottom { app, widgets, withWidgetContext } =
     let
         i18nText =
             I18n.text app.lang
@@ -80,8 +80,8 @@ bottom { app, widgets } =
                , padding BaseStyle.spacing
                ]
         )
-        [ widgets
-            |> Button.button
+        [ withWidgetContext <|
+            Button.button
                 { id = "btn-personal-setting-in-home"
                 , attrs = Theme.secondaryBtn app.theme
                 , content =

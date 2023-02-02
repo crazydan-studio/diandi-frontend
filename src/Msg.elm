@@ -34,7 +34,7 @@ import Model.Operation.NewTopic as NewTopic
 import Model.Remote.Msg as RemoteMsg
 import Task
 import Url
-import Widget.Msg
+import Widget.Widget as Widget
 
 
 type Msg
@@ -48,7 +48,7 @@ type Msg
       -- 国际化Port消息
     | I18nPortMsg I18n.Port.Msg
       -- 组件消息
-    | WidgetMsg Widget.Msg.Msg
+    | WidgetMsg Widget.Msg
       -- 操作数据
     | TopicCategorySelected String
     | NewTopicAdded String

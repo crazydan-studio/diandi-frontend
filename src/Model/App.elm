@@ -52,9 +52,9 @@ import Svg.Attributes exposing (result)
 import Theme.Theme as Theme exposing (Theme)
 import Theme.Type.Default
 import Url
-import Util exposing (hash)
 import View.I18n.Default
 import View.Page
+import Widget.Util.Hash exposing (hash)
 
 
 type alias State =

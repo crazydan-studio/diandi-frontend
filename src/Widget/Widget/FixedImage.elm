@@ -17,7 +17,7 @@
 -}
 
 
-module Widget.Part.FixedImage exposing (image)
+module Widget.Widget.FixedImage exposing (image)
 
 {-| 尺寸固定图片组件
 
@@ -39,9 +39,8 @@ import Hex
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)
 import Murmur3
-import Widget.Model exposing (State, fixedImageState)
-import Widget.Model.FixedImage as Image
-import Widget.Msg as Msg
+import Widget.Internal.Widget.FixedImage as Internal
+import Widget.Util.Hash exposing (hash)
 
 
 type alias Config msg =
@@ -54,6 +53,10 @@ type alias Config msg =
     }
 
 
+type alias Context a msg =
+    { a | fixedImageContext : Internal.Context msg }
+
+
 type alias Size =
     { w : Int
     , h : Int
@@ -61,26 +64,35 @@ type alias Size =
 
 
 
--- https://ellie-app.com/3FCdcDqy4gqa1
+-- 实现方案参考: https://ellie-app.com/3FCdcDqy4gqa1
 
 
-image : State msg -> Config msg -> Element msg
-image widgets { src, attrs, initWidth, initHeight, newWidth, newHeight } =
+image :
+    Config msg
+    -> Context a msg
+    -> Element msg
+image config { fixedImageContext } =
+    createHelper fixedImageContext config
+
+
+
+-- -----------------------------------------------------------
+
+
+createHelper : Internal.Context msg -> Config msg -> Element msg
+createHelper { getState, onUpdate } { src, attrs, initWidth, initHeight, newWidth, newHeight } =
     let
         id =
-            src
-                |> Murmur3.hashString 20030120
-                |> Hex.toString
+            hash src
 
         imageSize =
-            fixedImageState id widgets
-                |> Maybe.map
-                    (\s ->
-                        [ width (px (updateSize newWidth s.width))
-                        , height (px (updateSize newHeight s.height))
-                        ]
-                    )
-                |> Maybe.withDefault
+            case getState id of
+                Just s ->
+                    [ width (px (updateSize newWidth s.width))
+                    , height (px (updateSize newHeight s.height))
+                    ]
+
+                Nothing ->
                     [ width
                         (initWidth
                             |> Maybe.withDefault fill
@@ -107,22 +119,17 @@ image widgets { src, attrs, initWidth, initHeight, newWidth, newHeight } =
             Just
                 (decodeImageLoad
                     (\size ->
-                        widgets
-                            |> onMsg id
-                                (\s ->
-                                    Just
-                                        { s
-                                            | width = size.w
-                                            , height = size.h
-                                        }
-                                )
+                        onUpdate id
+                            (\s ->
+                                Just
+                                    { s
+                                        | width = size.w
+                                        , height = size.h
+                                    }
+                            )
                     )
                 )
         }
-
-
-
--- -----------------------------------------------------------
 
 
 decodeImageLoad : (Size -> msg) -> Decoder msg
@@ -132,19 +139,3 @@ decodeImageLoad toMsg =
         |> required "height" Decode.int
         |> Decode.field "target"
         |> Decode.map toMsg
-
-
-onMsg :
-    String
-    -> (Image.State -> Maybe Image.State)
-    -> State msg
-    -> msg
-onMsg id updateState =
-    Widget.Model.onMsg
-        (\() ->
-            Msg.UpdateFixedImageState
-                { id = id
-                , init = \() -> Image.init
-                , update = updateState
-                }
-        )

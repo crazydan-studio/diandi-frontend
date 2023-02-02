@@ -17,17 +17,10 @@
 -}
 
 
-module Widget.Model.FixedImage exposing (State, init)
+module Widget.Internal.Context exposing (Context)
 
 
-type alias State =
-    { width : Int
-    , height : Int
-    }
-
-
-init : State
-init =
-    { width = 0
-    , height = 0
+type alias Context state msg =
+    { getState : String -> Maybe state
+    , onUpdate : String -> (state -> Maybe state) -> msg
     }

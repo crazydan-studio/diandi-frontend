@@ -1,4 +1,4 @@
-module Widget.Part.Markdown exposing (Config, render)
+module Widget.Widget.Markdown exposing (Config, render)
 
 {-| Markdown渲染参考示例
 
@@ -25,8 +25,8 @@ import Markdown.Html
 import Markdown.Parser
 import Markdown.Renderer
 import Regex
-import Widget.Model exposing (State)
-import Widget.Part.FixedImage
+import Widget.Internal.Widget.FixedImage as InternalFixedImage
+import Widget.Widget.FixedImage as FixedImage
 
 
 type alias Config =
@@ -34,9 +34,26 @@ type alias Config =
     }
 
 
-render : Config -> String -> State msg -> Element msg
-render config markdown widgets =
-    case markdownView widgets config markdown of
+type alias Context a msg =
+    { a | fixedImageContext : InternalFixedImage.Context msg }
+
+
+render :
+    Config
+    -> String
+    -> Context a msg
+    -> Element msg
+render config markdown ctx =
+    renderHelper ctx config markdown
+
+
+renderHelper :
+    Context a msg
+    -> Config
+    -> String
+    -> Element msg
+renderHelper ctx config markdown =
+    case markdownView ctx config markdown of
         Ok rendered ->
             Element.column
                 [ Element.width Element.fill
@@ -62,11 +79,11 @@ render config markdown widgets =
 
 
 markdownView :
-    State msg
+    Context a msg
     -> Config
     -> String
     -> Result String (List (Element msg))
-markdownView widgets config markdown =
+markdownView ctx config markdown =
     markdown
         |> Markdown.Parser.parse
         |> Result.mapError
@@ -75,17 +92,17 @@ markdownView widgets config markdown =
                     |> List.map Markdown.Parser.deadEndToString
                     |> String.join "\n"
             )
-        |> Result.andThen (Markdown.Renderer.render (renderer widgets config))
+        |> Result.andThen (Markdown.Renderer.render (renderer ctx config))
 
 
 renderer :
-    State msg
+    Context a msg
     -> Config
     -> Markdown.Renderer.Renderer (Element msg)
-renderer widgets config =
+renderer ctx config =
     let
         r =
-            elmUiRenderer widgets config
+            elmUiRenderer ctx config
     in
     { r
         | html =
@@ -129,10 +146,10 @@ imgView src width height =
 
 
 elmUiRenderer :
-    State msg
+    Context a msg
     -> Config
     -> Markdown.Renderer.Renderer (Element msg)
-elmUiRenderer widgets config =
+elmUiRenderer ctx config =
     let
         textStyle =
             Element.htmlStyleAttribute
@@ -226,14 +243,15 @@ elmUiRenderer widgets config =
                     matchedSizeWithDefault matchedHeightMaybe actual
                         |> calcSizeByLineHeight
             in
-            Widget.Part.FixedImage.image widgets
-                { src = imageSrc
-                , attrs = []
-                , initWidth = matchedPxSize matchedWidthMaybe
-                , initHeight = matchedPxSize matchedHeightMaybe
-                , newWidth = Just newWidth
-                , newHeight = Just newHeight
-                }
+            ctx
+                |> FixedImage.image
+                    { src = imageSrc
+                    , attrs = []
+                    , initWidth = matchedPxSize matchedWidthMaybe
+                    , initHeight = matchedPxSize matchedHeightMaybe
+                    , newWidth = Just newWidth
+                    , newHeight = Just newHeight
+                    }
     , blockQuote =
         \children ->
             Element.column

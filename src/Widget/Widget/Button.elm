@@ -17,7 +17,7 @@
 -}
 
 
-module Widget.Part.Button exposing
+module Widget.Widget.Button exposing
     ( Config
     , button
     , link
@@ -42,9 +42,7 @@ import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import Element.Transition as Transition
-import Widget.Model exposing (State)
-import Widget.Model.Button as Button
-import Widget.Msg as Msg
+import Widget.Internal.Widget.Button as Internal
 
 
 type alias Config msg =
@@ -55,10 +53,22 @@ type alias Config msg =
     }
 
 
+type alias Context a msg =
+    { a | buttonContext : Internal.Context msg }
+
+
 {-| 普通按钮
 -}
-button : Config msg -> State msg -> Element msg
-button { id, content, onPress, attrs } widgets =
+button :
+    Config msg
+    -> Context a msg
+    -> Element msg
+button config { buttonContext } =
+    createHelper buttonContext config
+
+
+createHelper : Internal.Context msg -> Config msg -> Element msg
+createHelper _ { content, onPress, attrs } =
     let
         shadow =
             -- box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
@@ -163,17 +173,6 @@ button { id, content, onPress, attrs } widgets =
             ++ attrs
         )
         { onPress = onPress
-
-        -- Just
-        --     (widgets
-        --         |> onMsg id
-        --             (\s ->
-        --                 Just
-        --                     { s
-        --                         | disabled = not s.disabled
-        --                     }
-        --             )
-        --     )
         , label = content
         }
 
@@ -183,23 +182,3 @@ button { id, content, onPress, attrs } widgets =
 link : Element msg
 link =
     Element.none
-
-
-
--- ---------------------------------------------------------------
-
-
-onMsg :
-    String
-    -> (Button.State -> Maybe Button.State)
-    -> State msg
-    -> msg
-onMsg id updateState =
-    Widget.Model.onMsg
-        (\() ->
-            Msg.UpdateButtonState
-                { id = id
-                , init = \() -> Button.init
-                , update = updateState
-                }
-        )

@@ -17,15 +17,27 @@
 -}
 
 
-module Widget.Model.Button exposing (State, init)
+module Widget.Internal.Widget.FixedImage exposing
+    ( Context
+    , State
+    , init
+    )
+
+import Widget.Internal.Context as Internal
 
 
 type alias State =
-    { disabled : Bool
+    { width : Int
+    , height : Int
     }
+
+
+type alias Context msg =
+    Internal.Context State msg
 
 
 init : State
 init =
-    { disabled = False
+    { width = 0
+    , height = 0
     }

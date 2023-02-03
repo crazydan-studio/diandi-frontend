@@ -72,3 +72,4 @@ npm run prod
   - [图标列表](https://ant.design/components/icon): 方便查看
 - [Deep dive CSS: font metrics, line-height and vertical-align](https://iamvdo.me/en/blog/css-font-metrics-line-height-and-vertical-align):
   文本行距与垂直对齐原理
+- [箭头导航的实现](https://stackoverflow.com/a/27636505)

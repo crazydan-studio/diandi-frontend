@@ -31,7 +31,7 @@ import Browser.Navigation as Nav
 import Http
 import I18n.Port
 import Model.App
-import Model.Operation.EditTopic as EditTopic exposing (EditTopic)
+import Model.Operation.EditTopic as EditTopic
 import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Model.Remote as Remote
 import Model.Remote.Auth as RemoteAuth

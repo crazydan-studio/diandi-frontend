@@ -40,42 +40,13 @@ headerHeight =
 
 
 body : Model.State -> Element Msg.Msg
-body ({ app, widgets } as state) =
+body ({ app } as state) =
     el
         [ width fill
         , height fill
 
         -- for child scrollbar: https://github.com/mdgriffith/elm-ui/issues/149#issuecomment-582229271
         , clip
-
-        -- , inFront
-        --     (el
-        --         [ centerY
-        --         , alignRight
-        --         -- 主题列表右侧间距 - 按钮宽度 - 浮动工具栏左侧间距
-        --         , moveLeft (64 - 48 - 8)
-        --         ]
-        --         (Button.button widgets
-        --             { id = "btn-add-topic-in-home"
-        --             , attrs =
-        --                 Theme.primaryBtn app.theme
-        --                     ++ [ width (px 48)
-        --                        , height (px 48)
-        --                        , padding 8
-        --                        , Border.rounded 24
-        --                        ]
-        --             , content =
-        --                 el []
-        --                     (Widget.Icon.icon
-        --                         { size = 32
-        --                         , color = rgb255 255 255 255
-        --                         }
-        --                         Widget.Icon.PlusOutlined
-        --                     )
-        --             , onPress = Nothing
-        --             }
-        --         )
-        --     )
         ]
         (el
             (Theme.primaryGreyBackground app.theme
@@ -93,7 +64,7 @@ body ({ app, widgets } as state) =
 
 
 header : Model.State -> Element Msg.Msg
-header ({ app, widgets } as state) =
+header ({ app } as state) =
     let
         i18nText =
             I18n.text app.lang
@@ -276,7 +247,7 @@ newTopicInput :
     -> NewTopic
     -> Model.State
     -> List (Element Msg.Msg)
-newTopicInput inputId newTopic { app, widgets, withWidgetContext } =
+newTopicInput inputId newTopic { app, withWidgetContext } =
     let
         i18nText =
             I18n.text app.lang

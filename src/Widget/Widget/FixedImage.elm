@@ -35,10 +35,8 @@ import Element
         , px
         , width
         )
-import Hex
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)
-import Murmur3
 import Widget.Internal.Widget.FixedImage as Internal
 import Widget.Util.Hash exposing (hash)
 

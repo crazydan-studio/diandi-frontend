@@ -40,7 +40,7 @@ headerHeight =
 
 
 header : Model.State -> Element Msg.Msg
-header { app, widgets } =
+header { app } =
     let
         headerPaddingY =
             BaseStyle.spacing
@@ -68,7 +68,7 @@ header { app, widgets } =
 
 
 bottom : Model.State -> Element Msg.Msg
-bottom { app, widgets, withWidgetContext } =
+bottom { app, withWidgetContext } =
     let
         i18nText =
             I18n.text app.lang

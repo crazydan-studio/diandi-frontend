@@ -9,7 +9,7 @@ import View.Style.Base as BaseStyle
 
 
 view : Model.State -> Element Msg.Msg
-view ({ app, widgets } as state) =
+view ({ app } as state) =
     let
         i18nText =
             I18n.text app.lang

@@ -256,7 +256,7 @@ toolbarView :
     Model.State
     -> Topic
     -> Element Msg.Msg
-toolbarView ({ app, widgets } as state) topic =
+toolbarView ({ app } as state) topic =
     let
         fontSize =
             Theme.secondaryFontSize app.theme

@@ -2,11 +2,10 @@ module View.Page.Home.Center exposing (view)
 
 import Element exposing (..)
 import Element.Border as Border
-import Element.Events as Event
+import Element.Events exposing (onFocus)
 import Element.Font as Font
 import Element.Input as Input
 import I18n.Lang exposing (langEnd)
-import Json.Decode as Decode
 import Model
 import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Msg
@@ -16,6 +15,7 @@ import View.Page.Topic.List as TopicList
 import View.Style.Base as BaseStyle
 import View.Style.Border.Primary as PrimaryBorder
 import Widget.Dimension as Dimension
+import Widget.Html exposing (onClickOutOfMe, onInputBlur)
 import Widget.Icon as Icon
 import Widget.Widget.Button as Button
 
@@ -225,10 +225,7 @@ bottom ({ app } as state) =
                , spacing BaseStyle.spacing
                ]
             ++ (if newTopic.focused then
-                    [ Event.on "clickOutOfMe"
-                        (Decode.succeed
-                            (toMsg NewTopic.InputFocusOut)
-                        )
+                    [ onClickOutOfMe (toMsg NewTopic.InputFocusOut)
                     ]
 
                 else
@@ -304,20 +301,11 @@ newTopicInput inputId newTopic { app, withWidgetContext } =
                      , Border.width 0
                      ]
                         ++ (if newTopic.focused then
-                                [ Event.on "blur"
-                                    (Input.selectionDecoder
-                                        |> Decode.map
-                                            (\selection ->
-                                                toMsg
-                                                    (NewTopic.InputFocusBlur
-                                                        selection
-                                                    )
-                                            )
-                                    )
+                                [ onInputBlur (\s -> toMsg (NewTopic.InputFocusBlur s))
                                 ]
 
                             else
-                                [ Event.onFocus
+                                [ onFocus
                                     (toMsg NewTopic.InputFocusIn)
                                 ]
                            )

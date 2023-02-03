@@ -23,11 +23,9 @@ import Base64
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
-import Element.Events as Event
 import Element.Font as Font
 import Element.Input as Input
 import I18n.Lang exposing (langEnd)
-import Json.Decode as Decode
 import Model
 import Model.Operation.EditTopic as EditTopic exposing (EditTopic)
 import Model.Topic exposing (Topic)
@@ -38,7 +36,7 @@ import View.Style.Base as BaseStyle
 import View.Style.Border.Primary as PrimaryBorder
 import Widget.Color
 import Widget.Dimension as Dimension
-import Widget.Html
+import Widget.Html exposing (onInputBlur)
 import Widget.Icon as Icon exposing (Icon)
 import Widget.Widget.Button as Button
 import Widget.Widget.Markdown as Markdown
@@ -401,16 +399,7 @@ editTopicInput topic editTopic { app, withWidgetContext } =
             [ Input.multiline
                 [ width fill
                 , Border.width 0
-                , Event.on "blur"
-                    (Input.selectionDecoder
-                        |> Decode.map
-                            (\selection ->
-                                toMsg
-                                    (EditTopic.InputFocusBlur
-                                        selection
-                                    )
-                            )
-                    )
+                , onInputBlur (\s -> toMsg (EditTopic.InputFocusBlur s))
                 ]
                 { onChange =
                     \text ->

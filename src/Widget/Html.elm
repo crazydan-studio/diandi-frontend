@@ -19,6 +19,8 @@
 
 module Widget.Html exposing
     ( class
+    , onClickOutOfMe
+    , onInputBlur
     , style
     , styles
     , toRgba
@@ -32,7 +34,10 @@ import Element
         , htmlStyleAttribute
         , toRgb
         )
+import Element.Events as Event
+import Element.Input as Input
 import Html.Attributes as HtmlAttr
+import Json.Decode as Decode
 
 
 toRgba : Color -> String
@@ -69,6 +74,20 @@ styles attrs =
 class : String -> Attribute msg
 class name =
     HtmlAttr.class name |> htmlAttribute
+
+
+onClickOutOfMe : msg -> Attribute msg
+onClickOutOfMe msg =
+    Event.on "clickOutOfMe"
+        (Decode.succeed msg)
+
+
+onInputBlur : (Input.Selection -> msg) -> Attribute msg
+onInputBlur toMsg =
+    Event.on "blur"
+        (Input.selectionDecoder
+            |> Decode.map toMsg
+        )
 
 
 draggable : String -> Attribute msg

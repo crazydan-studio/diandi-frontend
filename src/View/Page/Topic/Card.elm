@@ -276,16 +276,32 @@ toolbarView ({ app } as state) topic =
             Msg.EditTopicMsg topic.id
     in
     row
-        [ width shrink
+        [ width fill
         , height fill
-        , alignRight
-        , spacing BaseStyle.spacing
         , Font.size fontSize
         , Font.color fontColor
         ]
-        [ iconBtn Icon.FormOutlined
-            "编辑"
-            (Just (toMsg EditTopic.InputFocusIn))
+        [ row
+            [ width shrink
+            , height fill
+            , alignLeft
+            , spacing BaseStyle.spacing
+            ]
+            [ topic.category
+                |> Maybe.withDefault "无"
+                |> (++) "分类: "
+                |> text
+            ]
+        , row
+            [ width shrink
+            , height fill
+            , alignRight
+            , spacing BaseStyle.spacing
+            ]
+            [ iconBtn Icon.FormOutlined
+                "编辑"
+                (Just (toMsg EditTopic.InputFocusIn))
+            ]
         ]
 
 

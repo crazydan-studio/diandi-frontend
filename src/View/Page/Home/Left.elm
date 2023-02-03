@@ -5,7 +5,6 @@ import Element.Input as Input
 import I18n.Lang exposing (langEnd)
 import Model
 import Msg
-import Theme.Theme as Theme
 import View.I18n.Home as I18n
 import View.Page.Topic.Category.List as CategoryList
 import View.Style.Base as BaseStyle
@@ -40,7 +39,7 @@ headerHeight =
 
 
 header : Model.State -> Element Msg.Msg
-header { app } =
+header { app, theme } =
     let
         headerPaddingY =
             BaseStyle.spacing
@@ -49,7 +48,7 @@ header { app } =
             headerHeight - headerPaddingY * 2
     in
     row
-        (PrimaryBorder.bottom 1 app.theme
+        (PrimaryBorder.bottom 1 theme
             ++ [ width fill
                , height (px headerHeight)
                , paddingXY
@@ -68,13 +67,13 @@ header { app } =
 
 
 bottom : Model.State -> Element Msg.Msg
-bottom { app, withWidgetContext } =
+bottom { app, theme, withWidgetContext } =
     let
         i18nText =
             I18n.text app.lang
     in
     row
-        (PrimaryBorder.top 1 app.theme
+        (PrimaryBorder.top 1 theme
             ++ [ width fill
                , height shrink
                , padding BaseStyle.spacing
@@ -83,14 +82,13 @@ bottom { app, withWidgetContext } =
         [ withWidgetContext <|
             Button.button
                 { id = "btn-personal-setting-in-home"
-                , attrs = Theme.secondaryBtn app.theme
+                , attrs = theme.secondaryBtn
                 , content =
                     row
                         [ spacing BaseStyle.spacing
                         ]
-                        [ app.theme
-                            |> Theme.primaryBtnIcon
-                                Icon.SettingOutlined
+                        [ theme.primaryBtnIcon
+                            Icon.SettingOutlined
                         , -- TODO 点击后，在左侧弹出侧边栏，该侧边栏中展示用户头像/名称、语言切换、主题切换等
                           (I18n.btnModule :: "设置" :: langEnd)
                             |> i18nText
@@ -106,9 +104,8 @@ bottom { app, withWidgetContext } =
                 row
                     [ spacing 2
                     ]
-                    [ app.theme
-                        |> Theme.primaryLinkBtnIcon
-                            Icon.SearchOutlined
+                    [ theme.primaryLinkBtnIcon
+                        Icon.SearchOutlined
                     , (I18n.btnModule :: "搜索" :: langEnd)
                         |> i18nText
                     ]

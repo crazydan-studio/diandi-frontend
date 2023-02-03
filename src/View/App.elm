@@ -23,10 +23,9 @@ import Browser
 import Element exposing (Element, fill, height, width)
 import Element.Font as Font
 import Model
-import Model.App
+import Model.App as App
 import Msg
 import Theme.StyleSheet
-import Theme.Theme as Theme
 import View.Page as PageType
 import View.Page.Blank
 import View.Page.Forbidden
@@ -38,7 +37,7 @@ import Widget.StyleSheet
 
 
 view : Model.State -> Browser.Document Msg.Msg
-view ({ app } as state) =
+view ({ app, theme } as state) =
     { title = title app
     , body =
         [ Element.layout
@@ -48,18 +47,17 @@ view ({ app } as state) =
                 [ Font.typeface "Roboto"
                 , Font.sansSerif
                 ]
-            , Font.size app.theme.primaryFontSize
-            , Font.color
-                (Theme.primaryFontColor app.theme)
+            , Font.size theme.primaryFontSize
+            , Font.color theme.primaryFontColor
             ]
             (page state)
-        , Theme.StyleSheet.create app.theme
+        , Theme.StyleSheet.create
         , Widget.StyleSheet.create
         ]
     }
 
 
-title : Model.App.State -> String
+title : App.State -> String
 title model =
     case model.currentPage of
         PageType.Login ->

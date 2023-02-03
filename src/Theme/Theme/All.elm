@@ -17,22 +17,13 @@
 -}
 
 
-module Theme.Type.Default exposing (theme)
+module Theme.Theme.All exposing (all)
 
-import Element exposing (rgba255)
-import Theme.Theme exposing (Theme)
-import Widget.Color
+import Theme.Internal.Theme as Internal
+import Theme.Theme.Default as Default
 
 
-theme : Theme
-theme =
-    { primaryFontSize = 14
-    , primaryFontColor = Widget.Color.Blue600
-    , secondaryFontSize = 12
-    , primaryBtnColor = Widget.Color.Blue800
-    , secondaryBtnColor = Widget.Color.Purple800
-    , primaryBtnIconSize = 16
-    , placeholderFontColor = Widget.Color.Grey500
-    , primaryBorderColor = rgba255 0 0 0 0.12
-    , primaryGreyBackgroundColor = rgba255 0 0 0 0.08
-    }
+all : List ( String, Internal.Theme )
+all =
+    [ ( "默认主题", Default.init )
+    ]

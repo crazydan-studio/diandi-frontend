@@ -1,20 +1,21 @@
 {-
-点滴(DianDi) - 聚沙成塔，集腋成裘
-Copyright (C) 2022 by Crazydan Studio (https://studio.crazydan.org/)
+   点滴(DianDi) - 聚沙成塔，集腋成裘
+   Copyright (C) 2022 by Crazydan Studio (https://studio.crazydan.org/)
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -}
+
 
 module View.Route exposing
     ( Route(..)
@@ -27,7 +28,7 @@ module View.Route exposing
     )
 
 import Browser.Navigation as Nav
-import Model.App
+import Model.App as App
 import Url
 import Url.Parser exposing ((</>), Parser, map, oneOf, parse, s, top)
 
@@ -47,27 +48,27 @@ route url =
     Maybe.withDefault NotFound (parse routeHelper url)
 
 
-gotoLogin : Model.App.State -> Cmd msg
+gotoLogin : App.State -> Cmd msg
 gotoLogin =
     goto "/login"
 
 
-gotoLogout : Model.App.State -> Cmd msg
+gotoLogout : App.State -> Cmd msg
 gotoLogout =
     goto "/logout"
 
 
-gotoHome : Model.App.State -> Cmd msg
+gotoHome : App.State -> Cmd msg
 gotoHome =
     goto "/"
 
 
-goto403 : Model.App.State -> Cmd msg
+goto403 : App.State -> Cmd msg
 goto403 =
     goto "/error/403"
 
 
-goto404 : Model.App.State -> Cmd msg
+goto404 : App.State -> Cmd msg
 goto404 =
     goto "/error/404"
 
@@ -87,6 +88,6 @@ routeHelper =
         ]
 
 
-goto : String -> Model.App.State -> Cmd msg
+goto : String -> App.State -> Cmd msg
 goto url app =
     Nav.pushUrl app.navKey url

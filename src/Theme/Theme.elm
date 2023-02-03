@@ -17,101 +17,101 @@
 -}
 
 
-module Theme.Theme exposing
-    ( Theme
-    , placeholderFont
-    , placeholderFontColor
-    , primaryBorderColor
-    , primaryBtn
-    , primaryBtnIcon
-    , primaryBtnIconSize
-    , primaryFont
-    , primaryFontColor
-    , primaryFontSize
-    , primaryGreyBackground
-    , primaryGreyBackgroundColor
-    , primaryIcon
-    , primaryLinkBtnIcon
-    , secondaryBtn
-    , secondaryFontSize
-    )
+module Theme.Theme exposing (Theme, create)
 
 import Element exposing (Element)
 import Element.Background as Background
 import Element.Font as Font
-import Widget.Color exposing (Color, defaultPalette, fgColorForBg, toRgbColor)
+import Theme.Internal.Theme as Internal
+import Widget.Color exposing (defaultPalette, fgColorForBg, toRgbColor)
 import Widget.Icon as Icon exposing (Icon)
 
 
-type alias Theme =
-    { primaryFontSize : Int
-    , primaryFontColor : Color
-    , secondaryFontSize : Int
-    , primaryBtnColor : Color
-    , secondaryBtnColor : Color
+type alias Theme msg =
+    { --
+      primaryFontSize : Int
+    , primaryFontColor : Element.Color
+    , primaryFont : List (Element.Attribute msg)
+
+    --
+    , primaryBtnColor : Element.Color
     , primaryBtnIconSize : Int
-    , placeholderFontColor : Color
+    , primaryBtn : List (Element.Attribute msg)
+
+    --
+    , primaryIcon : Int -> Icon -> Element msg
+    , primaryBtnIcon : Icon -> Element msg
+    , primaryLinkBtnIcon : Icon -> Element msg
+
+    --
     , primaryBorderColor : Element.Color
     , primaryGreyBackgroundColor : Element.Color
+    , primaryGreyBackground : List (Element.Attribute msg)
+
+    --
+    , secondaryFontSize : Int
+    , secondaryBtnColor : Element.Color
+    , secondaryBtn : List (Element.Attribute msg)
+
+    --
+    , placeholderFontColor : Element.Color
+    , placeholderFont : List (Element.Attribute msg)
     }
 
 
-primaryFontColor : Theme -> Element.Color
+create : Internal.Theme -> Theme msg
+create theme =
+    { primaryFontSize = theme.primaryFontSize
+    , primaryFontColor = primaryFontColor theme
+    , primaryFont = primaryFont theme
+    , primaryBtnColor = toRgbColor theme.primaryBtnColor
+    , primaryBtnIconSize = theme.primaryBtnIconSize
+    , primaryBtn = primaryBtn theme
+    , primaryIcon = primaryIcon theme
+    , primaryBtnIcon = primaryBtnIcon theme
+    , primaryLinkBtnIcon = primaryLinkBtnIcon theme
+    , primaryBorderColor = theme.primaryBorderColor
+    , primaryGreyBackgroundColor = theme.primaryGreyBackgroundColor
+    , primaryGreyBackground = primaryGreyBackground theme
+    , secondaryFontSize = theme.secondaryFontSize
+    , secondaryBtnColor = toRgbColor theme.secondaryBtnColor
+    , secondaryBtn = secondaryBtn theme
+    , placeholderFontColor = placeholderFontColor theme
+    , placeholderFont = placeholderFont theme
+    }
+
+
+primaryFontColor : Internal.Theme -> Element.Color
 primaryFontColor theme =
     toRgbColor
         theme.primaryFontColor
 
 
-placeholderFontColor : Theme -> Element.Color
+placeholderFontColor : Internal.Theme -> Element.Color
 placeholderFontColor theme =
     toRgbColor
         theme.placeholderFontColor
 
 
-primaryBorderColor : Theme -> Element.Color
-primaryBorderColor theme =
-    theme.primaryBorderColor
-
-
-primaryGreyBackgroundColor : Theme -> Element.Color
-primaryGreyBackgroundColor theme =
-    theme.primaryGreyBackgroundColor
-
-
-primaryFontSize : Theme -> Int
-primaryFontSize theme =
-    theme.primaryFontSize
-
-
-secondaryFontSize : Theme -> Int
-secondaryFontSize theme =
-    theme.secondaryFontSize
-
-
-primaryBtnIconSize : Theme -> Int
-primaryBtnIconSize theme =
-    theme.primaryBtnIconSize
-
-
-primaryFont : Theme -> List (Element.Attribute msg)
+primaryFont : Internal.Theme -> List (Element.Attribute msg)
 primaryFont theme =
     [ Font.color (primaryFontColor theme)
-    , Font.size (primaryFontSize theme)
+    , Font.size theme.primaryFontSize
     ]
 
 
-placeholderFont : Theme -> List (Element.Attribute msg)
+placeholderFont : Internal.Theme -> List (Element.Attribute msg)
 placeholderFont theme =
     [ Font.color (placeholderFontColor theme)
     ]
 
 
 primaryIcon :
-    Int
+    Internal.Theme
+    -> Int
     -> Icon
-    -> Theme
     -> Element msg
-primaryIcon size icon theme =
+primaryIcon theme size icon =
     Icon.icon
         { size = size
         , color = primaryFontColor theme
@@ -119,23 +119,23 @@ primaryIcon size icon theme =
         icon
 
 
-primaryBtn : Theme -> List (Element.Attribute msg)
+primaryBtn : Internal.Theme -> List (Element.Attribute msg)
 primaryBtn theme =
     defaultPalette theme.primaryBtnColor
 
 
-secondaryBtn : Theme -> List (Element.Attribute msg)
+secondaryBtn : Internal.Theme -> List (Element.Attribute msg)
 secondaryBtn theme =
     defaultPalette theme.secondaryBtnColor
 
 
 primaryBtnIcon :
-    Icon
-    -> Theme
+    Internal.Theme
+    -> Icon
     -> Element msg
-primaryBtnIcon icon theme =
+primaryBtnIcon theme icon =
     Icon.icon
-        { size = primaryBtnIconSize theme
+        { size = theme.primaryBtnIconSize
         , color =
             toRgbColor
                 (fgColorForBg theme.primaryBtnColor)
@@ -144,17 +144,16 @@ primaryBtnIcon icon theme =
 
 
 primaryLinkBtnIcon :
-    Icon
-    -> Theme
+    Internal.Theme
+    -> Icon
     -> Element msg
-primaryLinkBtnIcon icon theme =
-    primaryIcon
-        (primaryBtnIconSize theme)
+primaryLinkBtnIcon theme icon =
+    primaryIcon theme
+        theme.primaryBtnIconSize
         icon
-        theme
 
 
-primaryGreyBackground : Theme -> List (Element.Attribute msg)
+primaryGreyBackground : Internal.Theme -> List (Element.Attribute msg)
 primaryGreyBackground theme =
-    [ Background.color (primaryGreyBackgroundColor theme)
+    [ Background.color theme.primaryGreyBackgroundColor
     ]

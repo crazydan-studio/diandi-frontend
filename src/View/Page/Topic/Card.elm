@@ -30,7 +30,7 @@ import Model
 import Model.Operation.EditTopic as EditTopic exposing (EditTopic)
 import Model.Topic exposing (Topic)
 import Msg
-import Theme.Theme as Theme exposing (Theme)
+import Theme.Theme exposing (Theme)
 import View.I18n.Home as I18n
 import View.Style.Base as BaseStyle
 import View.Style.Border.Primary as PrimaryBorder
@@ -46,7 +46,7 @@ view :
     Model.State
     -> Topic
     -> Element Msg.Msg
-view ({ app } as state) topic =
+view ({ app, theme } as state) topic =
     let
         cornerRoundedSize =
             4
@@ -172,7 +172,7 @@ view ({ app } as state) topic =
                         , height fill
                         , Widget.Html.styles
                             [ ( "background-image"
-                              , "url(\"" ++ holeSvgImg app.theme ++ "\")"
+                              , "url(\"" ++ holeSvgImg theme ++ "\")"
                               )
                             , ( "background-repeat"
                               , "repeat-y"
@@ -254,10 +254,10 @@ toolbarView :
     Model.State
     -> Topic
     -> Element Msg.Msg
-toolbarView ({ app } as state) topic =
+toolbarView ({ app, theme } as state) topic =
     let
         fontSize =
-            Theme.secondaryFontSize app.theme
+            theme.secondaryFontSize
 
         fontColor =
             Widget.Color.toRgbColor Widget.Color.Grey400
@@ -309,12 +309,12 @@ contentView :
     Model.State
     -> Topic
     -> Element Msg.Msg
-contentView { app, withWidgetContext } topic =
+contentView { app, theme, withWidgetContext } topic =
     el
         ([ width fill
          , height fill
          ]
-            ++ contentFont app.theme
+            ++ contentFont theme
         )
         (paragraph
             [ height shrink
@@ -341,14 +341,14 @@ toolbarIconBtn :
     }
     -> Model.State
     -> Element msg
-toolbarIconBtn config { app } =
+toolbarIconBtn config { app, theme } =
     let
         i18nText =
             I18n.text app.lang
     in
     Input.button
         [ mouseOver
-            [ Font.color (Theme.primaryFontColor app.theme)
+            [ Font.color theme.primaryFontColor
             ]
         ]
         { onPress = config.onPress
@@ -372,7 +372,7 @@ editTopicInput :
     -> EditTopic
     -> Model.State
     -> Element Msg.Msg
-editTopicInput topic editTopic { app, withWidgetContext } =
+editTopicInput topic editTopic { app, theme, withWidgetContext } =
     let
         i18nText =
             I18n.text app.lang
@@ -406,7 +406,7 @@ editTopicInput topic editTopic { app, withWidgetContext } =
                     )
             )
         , column
-            (PrimaryBorder.all 1 app.theme
+            (PrimaryBorder.all 1 theme
                 ++ [ width fill
                    , height fill
                    , Border.rounded 3
@@ -432,7 +432,7 @@ editTopicInput topic editTopic { app, withWidgetContext } =
                 , paddingXY BaseStyle.spacing 0
                 ]
                 [ el
-                    (PrimaryBorder.top 1 app.theme
+                    (PrimaryBorder.top 1 theme
                         ++ [ width fill
                            ]
                     )
@@ -473,7 +473,7 @@ editTopicInput topic editTopic { app, withWidgetContext } =
                     Button.button
                         { id = "btn-edit-topic-ok-in-home"
                         , attrs =
-                            Theme.primaryBtn app.theme
+                            theme.primaryBtn
                                 ++ [ alignRight
                                    ]
                         , content =
@@ -487,7 +487,7 @@ editTopicInput topic editTopic { app, withWidgetContext } =
                     Button.button
                         { id = "btn-edit-topic-cancel-in-home"
                         , attrs =
-                            Theme.secondaryBtn app.theme
+                            theme.secondaryBtn
                                 ++ [ alignRight
                                    ]
                         , content =
@@ -502,15 +502,15 @@ editTopicInput topic editTopic { app, withWidgetContext } =
         ]
 
 
-contentFont : Theme -> List (Attribute msg)
+contentFont : Theme msg -> List (Attribute msg)
 contentFont theme =
-    [ Font.size (Theme.primaryFontSize theme)
+    [ Font.size theme.primaryFontSize
     ]
 
 
-holeBgColor : Theme -> Color
+holeBgColor : Theme msg -> Color
 holeBgColor =
-    Theme.primaryGreyBackgroundColor
+    .primaryGreyBackgroundColor
 
 
 {-| 打孔区域分隔线颜色
@@ -543,7 +543,7 @@ bgGridLineSize =
     1
 
 
-holeSvgImg : Theme -> String
+holeSvgImg : Theme msg -> String
 holeSvgImg theme =
     -- https://stackoverflow.com/questions/62539360/svg-how-to-drop-an-inset-shadow-on-a-path-that-has-an-rgba-fill#answer-62627106
     -- Note: 保持尺寸和阴影设定，但背景可按需增减图片尺寸

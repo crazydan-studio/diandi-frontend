@@ -17,15 +17,20 @@
 -}
 
 
-module Theme.StyleSheet exposing (create)
+module Theme.Internal.Theme exposing (Theme)
 
-import Html exposing (Html)
+import Element
+import Widget.Color exposing (Color)
 
 
-create : Html msg
-create =
-    Html.node "style"
-        []
-        [ -- 隐藏加载动画，显示body下的元素
-          Html.text "body::after {opacity: 0;} body > * {opacity: 1;}"
-        ]
+type alias Theme =
+    { primaryFontSize : Int
+    , primaryFontColor : Color
+    , secondaryFontSize : Int
+    , primaryBtnColor : Color
+    , secondaryBtnColor : Color
+    , primaryBtnIconSize : Int
+    , placeholderFontColor : Color
+    , primaryBorderColor : Element.Color
+    , primaryGreyBackgroundColor : Element.Color
+    }

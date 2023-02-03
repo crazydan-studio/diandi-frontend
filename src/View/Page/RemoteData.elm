@@ -23,12 +23,12 @@ import Element exposing (..)
 import Element.Font as Font
 import I18n.Lang exposing (Lang, langEnd)
 import Model.Remote.Data as RemoteData
-import Theme.Theme as Theme exposing (Theme)
+import Theme.Theme exposing (Theme)
 import View.I18n.RemoteData as I18n
 
 
 view :
-    { theme : Theme
+    { theme : Theme msg
     , lang : Lang
     }
     -> (a -> Element msg)
@@ -56,7 +56,7 @@ view { theme, lang } dataView dataStatus =
 
 
 errorView :
-    Theme
+    Theme msg
     -> Element msg
     -> Element msg
 errorView theme errorText =
@@ -69,7 +69,7 @@ errorView theme errorText =
             ([ centerX
              , Font.center
              ]
-                ++ Theme.placeholderFont theme
+                ++ theme.placeholderFont
             )
             [ errorText ]
         ]

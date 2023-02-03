@@ -28,7 +28,7 @@ module View.Style.Border.Primary exposing
 
 import Element exposing (Attribute)
 import Element.Border as Border
-import Theme.Theme as Theme exposing (Theme)
+import Theme.Theme exposing (Theme)
 import Widget.Dimension as Dimension exposing (Dimension)
 
 
@@ -36,18 +36,18 @@ import Widget.Dimension as Dimension exposing (Dimension)
 -}
 each :
     Dimension
-    -> Theme
+    -> Theme msg
     -> List (Attribute msg)
 each size theme =
     [ Border.solid
-    , Border.color (Theme.primaryBorderColor theme)
+    , Border.color theme.primaryBorderColor
     , Border.widthEach size
     ]
 
 
 all :
     Int
-    -> Theme
+    -> Theme msg
     -> List (Attribute msg)
 all size =
     each (Dimension.all size)
@@ -55,7 +55,7 @@ all size =
 
 top :
     Int
-    -> Theme
+    -> Theme msg
     -> List (Attribute msg)
 top size =
     each (Dimension.top size)
@@ -63,7 +63,7 @@ top size =
 
 bottom :
     Int
-    -> Theme
+    -> Theme msg
     -> List (Attribute msg)
 bottom size =
     each (Dimension.bottom size)
@@ -71,7 +71,7 @@ bottom size =
 
 left :
     Int
-    -> Theme
+    -> Theme msg
     -> List (Attribute msg)
 left size =
     each (Dimension.left size)
@@ -79,7 +79,7 @@ left size =
 
 right :
     Int
-    -> Theme
+    -> Theme msg
     -> List (Attribute msg)
 right size =
     each (Dimension.right size)

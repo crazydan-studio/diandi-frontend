@@ -9,7 +9,6 @@ import I18n.Lang exposing (langEnd)
 import Model
 import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Msg
-import Theme.Theme as Theme
 import View.I18n.Home as I18n
 import View.Page.Topic.List as TopicList
 import View.Style.Base as BaseStyle
@@ -40,7 +39,7 @@ headerHeight =
 
 
 body : Model.State -> Element Msg.Msg
-body ({ app } as state) =
+body ({ app, theme } as state) =
     el
         [ width fill
         , height fill
@@ -49,7 +48,7 @@ body ({ app } as state) =
         , clip
         ]
         (el
-            (Theme.primaryGreyBackground app.theme
+            (theme.primaryGreyBackground
                 ++ [ id app.topicListViewId
                    , width fill
                    , height fill
@@ -64,7 +63,7 @@ body ({ app } as state) =
 
 
 header : Model.State -> Element Msg.Msg
-header ({ app } as state) =
+header ({ app, theme } as state) =
     let
         i18nText =
             I18n.text app.lang
@@ -130,10 +129,9 @@ header ({ app } as state) =
                                         }
                                 )
                             |> Maybe.withDefault
-                                (app.theme
-                                    |> Theme.primaryIcon
-                                        categoryIconSize
-                                        Icon.QuestionCircleOutlined
+                                (theme.primaryIcon
+                                    categoryIconSize
+                                    Icon.QuestionCircleOutlined
                                 )
                         , column
                             [ spacing BaseStyle.spacing
@@ -152,7 +150,7 @@ header ({ app } as state) =
                                     )
                                 |> Maybe.withDefault
                                     (el
-                                        (Theme.placeholderFont app.theme
+                                        (theme.placeholderFont
                                             ++ [ Font.size categoryDescFontSize
                                                ]
                                         )
@@ -182,7 +180,7 @@ header ({ app } as state) =
                     )
              )
                 ++ [ el
-                        (PrimaryBorder.right 1 app.theme
+                        (PrimaryBorder.right 1 theme
                             ++ [ height fill
                                , alignRight
                                ]
@@ -196,9 +194,8 @@ header ({ app } as state) =
                             row
                                 [ spacing 2
                                 ]
-                                [ app.theme
-                                    |> Theme.primaryLinkBtnIcon
-                                        Icon.FilterOutlined
+                                [ theme.primaryLinkBtnIcon
+                                    Icon.FilterOutlined
                                 ]
                         }
                    ]
@@ -207,7 +204,7 @@ header ({ app } as state) =
 
 
 bottom : Model.State -> Element Msg.Msg
-bottom ({ app } as state) =
+bottom ({ app, theme } as state) =
     let
         inputId =
             app.newTopicInputId
@@ -219,7 +216,7 @@ bottom ({ app } as state) =
             Msg.NewTopicMsg inputId
     in
     column
-        (PrimaryBorder.top 1 app.theme
+        (PrimaryBorder.top 1 theme
             ++ [ width fill
                , padding BaseStyle.spacing
                , spacing BaseStyle.spacing
@@ -244,7 +241,7 @@ newTopicInput :
     -> NewTopic
     -> Model.State
     -> List (Element Msg.Msg)
-newTopicInput inputId newTopic { app, withWidgetContext } =
+newTopicInput inputId newTopic { app, theme, withWidgetContext } =
     let
         i18nText =
             I18n.text app.lang
@@ -282,7 +279,7 @@ newTopicInput inputId newTopic { app, withWidgetContext } =
         []
     )
         ++ [ column
-                (PrimaryBorder.all 1 app.theme
+                (PrimaryBorder.all 1 theme
                     ++ [ width fill
                        , height fill
                        , Border.rounded 3
@@ -319,7 +316,7 @@ newTopicInput inputId newTopic { app, withWidgetContext } =
                     , placeholder =
                         Just
                             (Input.placeholder
-                                (Theme.placeholderFont app.theme)
+                                theme.placeholderFont
                                 (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langEnd)
                                     |> i18nText
                                 )
@@ -333,7 +330,7 @@ newTopicInput inputId newTopic { app, withWidgetContext } =
                                 , paddingXY BaseStyle.spacing 0
                                 ]
                                 [ el
-                                    (PrimaryBorder.top 1 app.theme
+                                    (PrimaryBorder.top 1 theme
                                         ++ [ width fill
                                            ]
                                     )
@@ -374,7 +371,7 @@ newTopicInput inputId newTopic { app, withWidgetContext } =
                                     Button.button
                                         { id = "btn-write-it-down-in-home"
                                         , attrs =
-                                            Theme.primaryBtn app.theme
+                                            theme.primaryBtn
                                                 ++ [ alignRight
                                                    ]
                                         , content =

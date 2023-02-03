@@ -49,8 +49,6 @@ import Model.Topic exposing (Topic)
 import Model.Topic.Category exposing (Category)
 import Model.User as User
 import Svg.Attributes exposing (result)
-import Theme.Theme as Theme exposing (Theme)
-import Theme.Type.Default
 import Url
 import View.I18n.Default
 import View.Page
@@ -64,7 +62,6 @@ type alias State =
     -- 国际化
     , lang : Lang
     , textsWithoutI18n : List TextsNeedToBeTranslated
-    , theme : Theme
 
     -- 路由
     , navKey : Nav.Key
@@ -118,7 +115,6 @@ init config =
             View.I18n.Default.lang
             config.lang
     , textsWithoutI18n = []
-    , theme = Theme.Type.Default.theme
 
     --
     , navKey = config.navKey
@@ -147,7 +143,10 @@ loading =
     RemoteData.Loading
 
 
-loadTopics : Result Http.Error (List Topic) -> State -> State
+loadTopics :
+    Result Http.Error (List Topic)
+    -> State
+    -> State
 loadTopics result state =
     { state
         | topics =
@@ -156,7 +155,10 @@ loadTopics result state =
     }
 
 
-loadTopicCategories : Result Http.Error (List Category) -> State -> State
+loadTopicCategories :
+    Result Http.Error (List Category)
+    -> State
+    -> State
 loadTopicCategories result state =
     { state
         | categories =
@@ -316,7 +318,10 @@ updateTopicByEdit topicId ({ topics, editTopic } as state) =
 -- --------------------------------------------------------------------
 
 
-updateTopics : (RemoteTopics -> RemoteTopics) -> State -> State
+updateTopics :
+    (RemoteTopics -> RemoteTopics)
+    -> State
+    -> State
 updateTopics updater ({ topics } as state) =
     { state | topics = updater topics }
 

@@ -32,10 +32,10 @@ import View.Style.Base as BaseStyle
 
 
 view : Model.State -> Element Msg.Msg
-view ({ app } as state) =
+view ({ app, theme } as state) =
     app.topics
         |> RemoteDataPage.view
-            { theme = app.theme
+            { theme = theme
             , lang = app.lang
             }
             (topicListView state)

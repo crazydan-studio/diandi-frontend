@@ -17,15 +17,22 @@
 -}
 
 
-module Theme.StyleSheet exposing (create)
+module Theme.Theme.Default exposing (init)
 
-import Html exposing (Html)
+import Element exposing (rgba255)
+import Theme.Internal.Theme as Internal
+import Widget.Color
 
 
-create : Html msg
-create =
-    Html.node "style"
-        []
-        [ -- 隐藏加载动画，显示body下的元素
-          Html.text "body::after {opacity: 0;} body > * {opacity: 1;}"
-        ]
+init : Internal.Theme
+init =
+    { primaryFontSize = 14
+    , primaryFontColor = Widget.Color.Blue600
+    , secondaryFontSize = 12
+    , primaryBtnColor = Widget.Color.Blue800
+    , secondaryBtnColor = Widget.Color.Purple800
+    , primaryBtnIconSize = 16
+    , placeholderFontColor = Widget.Color.Grey500
+    , primaryBorderColor = rgba255 0 0 0 0.12
+    , primaryGreyBackgroundColor = rgba255 0 0 0 0.08
+    }

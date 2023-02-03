@@ -30,7 +30,7 @@ module Model exposing
 import Browser.Navigation as Nav
 import Http
 import I18n.Port
-import Model.App
+import Model.App as App
 import Model.Operation.EditTopic as EditTopic
 import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Model.Remote as Remote
@@ -41,6 +41,8 @@ import Model.Remote.User as RemoteUser
 import Model.Topic.Category exposing (Category)
 import Model.User as User
 import Msg
+import Theme.Theme as Theme
+import Theme.Theme.Default as ThemeDefault
 import Url
 import View.Page as PageType
 import View.Route
@@ -56,7 +58,8 @@ type alias Config =
 
 type alias State =
     { -- 应用状态
-      app : Model.App.State
+      app : App.State
+    , theme : Theme.Theme Msg.Msg
 
     -- 组件内部状态
     , widgets : Widget.State Msg.Msg
@@ -73,13 +76,14 @@ init config navUrl navKey =
                 }
     in
     { app =
-        Model.App.init
+        App.init
             { title = config.title
             , description = config.description
             , lang = config.lang
             , navKey = navKey
             , navUrl = navUrl
             }
+    , theme = Theme.create ThemeDefault.init
     , widgets = widgets
     , withWidgetContext = withWidgetContext
     }
@@ -128,7 +132,7 @@ update msg state =
             editTopicUpdateHelper topicId editTopicMsg state
 
         Msg.NewTopicAdded inputId ->
-            ( state |> updateAppState (Model.App.addNewTopic inputId)
+            ( state |> updateAppState (App.addNewTopic inputId)
             , Cmd.batch
                 [ Msg.focusOn inputId
                 , Msg.scrollToBottom state.app.topicListViewId
@@ -136,7 +140,7 @@ update msg state =
             )
 
         Msg.EditTopicUpdated topicId ->
-            ( state |> updateAppState (Model.App.updateTopicByEdit topicId)
+            ( state |> updateAppState (App.updateTopicByEdit topicId)
             , Cmd.none
             )
 
@@ -146,12 +150,12 @@ update msg state =
 
 getSelectedTopicCategory : State -> Maybe Category
 getSelectedTopicCategory { app } =
-    Model.App.getSelectedTopicCategory app
+    App.getSelectedTopicCategory app
 
 
 getNewTopicWithInit : String -> State -> NewTopic
 getNewTopicWithInit inputId { app } =
-    Model.App.getNewTopicWithInit inputId app
+    App.getNewTopicWithInit inputId app
 
 
 
@@ -159,7 +163,7 @@ getNewTopicWithInit inputId { app } =
 
 
 updateAppState :
-    (Model.App.State -> Model.App.State)
+    (App.State -> App.State)
     -> State
     -> State
 updateAppState updater ({ app } as state) =
@@ -196,8 +200,8 @@ remoteUpdateHelper msg ({ app } as state) =
                         | app =
                             { app
                                 | me = User.User user
-                                , topics = Model.App.loading
-                                , categories = Model.App.loading
+                                , topics = App.loading
+                                , categories = App.loading
                             }
                       }
                     , Cmd.batch
@@ -214,14 +218,14 @@ remoteUpdateHelper msg ({ app } as state) =
 
         RemoteMsg.QueryMyTopics result ->
             ( { state
-                | app = app |> Model.App.loadTopics result
+                | app = app |> App.loadTopics result
               }
             , Cmd.none
             )
 
         RemoteMsg.QueryMyTopicCategories result ->
             ( { state
-                | app = app |> Model.App.loadTopicCategories result
+                | app = app |> App.loadTopicCategories result
               }
             , Cmd.none
             )
@@ -306,7 +310,7 @@ newTopicUpdateHelper :
 newTopicUpdateHelper inputId msg state =
     ( state
         |> updateAppState
-            (Model.App.updateNewTopic inputId
+            (App.updateNewTopic inputId
                 (NewTopic.update msg)
             )
     , case msg of
@@ -326,7 +330,7 @@ editTopicUpdateHelper :
 editTopicUpdateHelper topicId msg state =
     ( state
         |> updateAppState
-            (Model.App.updateEditTopic topicId
+            (App.updateEditTopic topicId
                 (EditTopic.update msg)
             )
     , case msg of

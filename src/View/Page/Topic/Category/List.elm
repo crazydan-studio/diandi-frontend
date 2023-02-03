@@ -29,22 +29,22 @@ import Element.Transition as Transition
 import Model
 import Model.Topic.Category exposing (Category)
 import Msg exposing (Msg(..))
-import Theme.Theme as Theme exposing (Theme)
+import Theme.Theme exposing (Theme)
 import View.Page.RemoteData as RemoteDataPage
 import View.Style.Base as BaseStyle
 import Widget.Dimension as Dimension
 
 
 view : Model.State -> Element Msg.Msg
-view { app } =
+view { app, theme } =
     app.categories
         |> RemoteDataPage.view
-            { theme = app.theme
+            { theme = theme
             , lang = app.lang
             }
             (categoryListView
                 { selected = app.selectedTopicCategory
-                , theme = app.theme
+                , theme = theme
                 }
             )
 
@@ -55,7 +55,7 @@ view { app } =
 
 categoryListView :
     { selected : Maybe String
-    , theme : Theme
+    , theme : Theme Msg.Msg
     }
     -> TreeStore Category
     -> Element Msg.Msg
@@ -89,7 +89,7 @@ categoryView :
     { depth : Int
     , category : Category
     , selected : Bool
-    , theme : Theme
+    , theme : Theme Msg.Msg
     }
     -> List ( String, Element Msg.Msg )
     -> Element Msg.Msg
@@ -131,7 +131,7 @@ categoryView { depth, category, selected, theme } childElements =
              , onClick (TopicCategorySelected category.id)
              ]
                 ++ (if selected then
-                        Theme.primaryGreyBackground theme
+                        theme.primaryGreyBackground
 
                     else
                         []

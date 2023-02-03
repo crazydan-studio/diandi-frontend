@@ -24,6 +24,7 @@ module Widget.Html exposing
     , style
     , styles
     , toRgba
+    , zIndex
     )
 
 import Element

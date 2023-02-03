@@ -289,7 +289,7 @@ toolbarView ({ app, theme } as state) topic =
             ]
             [ topic.category
                 |> Maybe.withDefault "无"
-                |> (++) "分类: "
+                |> String.replace "/" " • "
                 |> text
             ]
         , row

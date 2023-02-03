@@ -13,8 +13,7 @@ import View.I18n.Home as I18n
 import View.Page.Topic.List as TopicList
 import View.Style.Base as BaseStyle
 import View.Style.Border.Primary as PrimaryBorder
-import Widget.Dimension as Dimension
-import Widget.Html exposing (onClickOutOfMe, onInputBlur)
+import Widget.Html exposing (onClickOutOfMe, onInputBlur, zIndex)
 import Widget.Icon as Icon
 import Widget.Widget.Button as Button
 
@@ -24,18 +23,11 @@ view state =
     column
         [ width fill
         , height fill
-        , paddingEach
-            (Dimension.top headerHeight)
-        , inFront (header state)
         ]
-        [ body state
+        [ header state
+        , body state
         , bottom state
         ]
-
-
-headerHeight : Int
-headerHeight =
-    56
 
 
 body : Model.State -> Element Msg.Msg
@@ -72,7 +64,7 @@ header ({ app, theme } as state) =
             BaseStyle.spacing
 
         categoryIconSize =
-            headerHeight - headerPaddingY * 2
+            40
 
         categoryNameFontSize =
             18
@@ -82,7 +74,11 @@ header ({ app, theme } as state) =
     in
     row
         [ width fill
-        , height (px headerHeight)
+        , height
+            (shrink
+                |> minimum (categoryIconSize + headerPaddingY * 2)
+            )
+        , zIndex 1
         , paddingXY BaseStyle.spacing2x headerPaddingY
 
         -- box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2),0px 3px 1px 0px rgba(0,0,0,0.14),0px 1px 1px 0px rgba(0,0,0,0.12);
@@ -195,7 +191,8 @@ header ({ app, theme } as state) =
                                 [ spacing 2
                                 ]
                                 [ theme.primaryLinkBtnIcon
-                                    Icon.FilterOutlined
+                                    Icon.ReadOutlined
+                                , text "阅读模式"
                                 ]
                         }
                    ]

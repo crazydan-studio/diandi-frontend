@@ -308,20 +308,14 @@ topicCategoryView :
     -> Element Msg.Msg
 topicCategoryView { app, theme } topic =
     let
-        getCategoriesBy categoryId =
-            app
-                |> App.mapCategories
-                    (\cats ->
-                        Just
-                            (TreeStore.getAllByParentPath
-                                categoryId
-                                cats
-                            )
-                    )
-
         categories =
             topic.category
-                |> Maybe.andThen getCategoriesBy
+                |> Maybe.andThen
+                    (\categoryId ->
+                        App.getTopicCategoriesByParentPath
+                            categoryId
+                            app
+                    )
                 |> Maybe.withDefault []
     in
     row
@@ -373,7 +367,7 @@ editTopicInput :
     -> EditTopic
     -> Model.State
     -> Element Msg.Msg
-editTopicInput topic editTopic { app, theme, withWidgetContext } =
+editTopicInput topic editTopic ({ app, theme, withWidgetContext } as state) =
     let
         i18nText =
             I18n.text app.lang
@@ -446,17 +440,10 @@ editTopicInput topic editTopic { app, theme, withWidgetContext } =
                 ]
                 [ paragraph
                     []
-                    (List.singleton
-                        ((I18n.labelModule :: "分类：" :: langEnd)
-                            |> i18nText
-                        )
-                        ++ ([ "产品开发", "点滴(DianDi)", "功能设计" ]
-                                |> List.map
-                                    (\t ->
-                                        text (t ++ " > ")
-                                    )
-                           )
-                    )
+                    [ (I18n.labelModule :: "分类：" :: langEnd)
+                        |> i18nText
+                    , topicCategoryView state topic
+                    ]
                 , paragraph
                     []
                     (List.singleton

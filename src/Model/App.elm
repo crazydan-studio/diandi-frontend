@@ -23,11 +23,12 @@ module Model.App exposing
     , addNewTopic
     , getNewTopicWithInit
     , getSelectedTopicCategory
+    , getTopicCategoriesByParentPath
     , init
     , loadTopicCategories
     , loadTopics
     , loading
-    , mapCategories
+    , mapTopicCategories
     , updateEditTopic
     , updateNewTopic
     , updateTopicByEdit
@@ -315,13 +316,29 @@ updateTopicByEdit topicId ({ topics, editTopic } as state) =
         |> Maybe.withDefault state
 
 
-mapCategories :
+mapTopicCategories :
     (TreeStore Category -> Maybe a)
     -> State
     -> Maybe a
-mapCategories mapper state =
+mapTopicCategories mapper state =
     state.categories
         |> RemoteData.andThen mapper
+
+
+getTopicCategoriesByParentPath :
+    String
+    -> State
+    -> Maybe (List Category)
+getTopicCategoriesByParentPath categoryId state =
+    state
+        |> mapTopicCategories
+            (\categories ->
+                Just
+                    (TreeStore.getAllByParentPath
+                        categoryId
+                        categories
+                    )
+            )
 
 
 

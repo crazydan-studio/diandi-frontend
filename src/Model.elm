@@ -35,8 +35,8 @@ import Model.Operation.EditTopic as EditTopic
 import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Model.Remote as Remote
 import Model.Remote.Auth as RemoteAuth
+import Model.Remote.Demo.Topic as RemoteTopic
 import Model.Remote.Msg as RemoteMsg
-import Model.Remote.Topic as RemoteTopic
 import Model.Remote.User as RemoteUser
 import Model.Topic.Category exposing (Category)
 import Model.User as User

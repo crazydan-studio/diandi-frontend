@@ -36,7 +36,7 @@ import View.Style.Base as BaseStyle
 import View.Style.Border.Primary as PrimaryBorder
 import Widget.Color
 import Widget.Dimension as Dimension
-import Widget.Html exposing (onInputBlur)
+import Widget.Html exposing (onInputBlur, styles)
 import Widget.Icon as Icon exposing (Icon)
 import Widget.Widget.Button as Button
 import Widget.Widget.Markdown as Markdown
@@ -52,39 +52,25 @@ view ({ app, theme } as state) topic =
             4
 
         -- 孔洞宽度
-        cardHoleWidth =
-            bgGridLineSpacing
+        holeWidth =
+            textLineHeight
 
         -- 孔洞左侧留白大小
-        cardHolePaddingLeft =
+        holePaddingLeft =
             4
 
         -- 打孔区域宽度
-        cardHolePaneWidth =
-            cardHoleWidth
-                + cardHolePaddingLeft
-                + (gridLineMoveLeft + 1)
-                + holeSeparatorSize
+        holePaneWidth =
+            holeWidth
+                + holePaddingLeft
+                -- 格线左移位置
+                + 8
 
-        -- 打孔区域可见区域宽度
-        cardHolePaneDisplayWidth =
-            cardHolePaneWidth - gridLineMoveLeft - holeSeparatorSize
+        -- 孔洞分隔线尺寸
+        holeSeparatorSize =
+            3
 
-        -- 格线左移位置
-        gridLineMoveLeft =
-            8
-
-        -- 主题内容的横向留白大小
-        contentPaddingX =
-            BaseStyle.spacing2x
-
-        contentPaddingLeft =
-            contentPaddingX + gridLineMoveLeft + holeSeparatorSize
-
-        contentPaddingRight =
-            contentPaddingX - 2
-
-        contentPaddingY =
+        toolbarHeight =
             20
     in
     column
@@ -93,7 +79,7 @@ view ({ app, theme } as state) topic =
         , Background.color (rgb255 255 255 255)
         , Border.rounded cornerRoundedSize
         , paddingEach
-            (Dimension.left cardHolePaneDisplayWidth)
+            (Dimension.left holePaneWidth)
 
         -- box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);
         , Border.shadows
@@ -116,120 +102,105 @@ view ({ app, theme } as state) topic =
               , color = rgba255 0 0 0 0.12
               }
             ]
+        , behindContent
+            -- 打孔卡片背景
+            (row
+                [ width fill
+                , height fill
+                , paddingEach
+                    { top = toolbarHeight
+                    , left = holePaddingLeft
+                    , right = 0
 
-        -- , inFront
-        --     (app.editTopic
-        --         |> withFocusedEditTopic topic
-        --             (\editTopic ->
-        --                 el
-        --                     [ width fill
-        --                     , height fill
-        --                     , padding BaseStyle.spacing2x
-        --                     , Background.color (rgba255 0 0 0 0.4)
-        --                     ]
-        --                     (editTopicInput topic editTopic state)
-        --             )
-        --         |> Maybe.withDefault none
-        --     )
-        ]
-        [ row
-            [ width fill
-            , height fill
-            , Background.color (rgba255 0 0 0 0)
-            , Widget.Html.styles
-                [ ( "background-image"
-                  , "linear-gradient("
-                        ++ bgGridLineRgbColor
-                        ++ " "
-                        ++ String.fromInt bgGridLineSize
-                        ++ "px, transparent 0)"
-                  )
-                , ( "background-size"
-                  , "100% "
-                        ++ String.fromInt bgGridLineSpacing
-                        ++ "px"
-                  )
-                , ( "background-position"
-                  , "0 "
-                        ++ String.fromInt contentPaddingY
-                        ++ "px"
-                  )
-                ]
-            , inFront
-                (el
-                    [ width (px cardHolePaneWidth)
-                    , height fill
-                    , moveLeft (toFloat cardHolePaneDisplayWidth)
-                    , paddingEach
-                        (Dimension.vertical contentPaddingY)
-                    , Border.widthEach
-                        (Dimension.right holeSeparatorSize)
-                    , Border.solid
-                    , Border.color holeSeparatorColor
-                    ]
+                    -- Note: 减少一点底部空白以显示最后一条格线
+                    , bottom = toolbarHeight - 2
+                    }
+                , inFront
+                    -- 孔洞隔断线
                     (el
-                        [ width fill
-                        , height fill
-                        , Widget.Html.styles
-                            [ ( "background-image"
-                              , "url(\"" ++ holeSvgImg theme ++ "\")"
-                              )
-                            , ( "background-repeat"
-                              , "repeat-y"
-                              )
-                            , ( "background-size"
-                              , String.fromInt cardHoleWidth ++ "px"
-                              )
-                            , ( "background-position"
-                              , String.fromInt cardHolePaddingLeft ++ "px 0"
-                              )
-                            ]
+                        [ height fill
+                        , moveRight (toFloat (holePaneWidth - holeSeparatorSize))
+                        , Border.widthEach
+                            (Dimension.right holeSeparatorSize)
+                        , Border.solid
+                        , Border.color holeSeparatorColor
                         ]
                         none
                     )
-                )
-            ]
-            [ app.editTopic
-                |> withFocusedEditTopic topic
-                    (\editTopic ->
-                        el
-                            [ width fill
-                            , paddingEach
-                                (Dimension.left (contentPaddingLeft - contentPaddingX))
-                            ]
-                            (el
-                                [ width fill
-                                , padding BaseStyle.spacing2x
-                                , Border.roundEach
-                                    { topLeft = 0
-                                    , topRight = cornerRoundedSize
-                                    , bottomLeft = 0
-                                    , bottomRight = cornerRoundedSize
-                                    }
-                                , Background.color (rgba255 0 0 0 0.4)
-                                ]
-                                (editTopicInput topic editTopic state)
-                            )
-                    )
-                |> Maybe.withDefault
-                    (column
+                ]
+                [ el
+                    -- 孔洞
+                    [ width (px holeWidth)
+                    , height fill
+                    , styles
+                        [ ( "background-image"
+                          , "url(\"" ++ holeSvgImg theme ++ "\")"
+                          )
+                        , ( "background-repeat", "repeat-y" )
+                        , ( "background-size"
+                          , String.fromInt holeWidth ++ "px"
+                          )
+                        ]
+                    ]
+                    none
+                , el
+                    -- 格线
+                    [ width fill
+                    , height fill
+                    , styles
+                        [ ( "background-image"
+                          , "linear-gradient("
+                                ++ bgGridLineRgbColor
+                                ++ " "
+                                ++ String.fromInt textGridLineSize
+                                ++ "px, transparent 0)"
+                          )
+                        , ( "background-size"
+                          , "100% "
+                                ++ String.fromInt textLineHeight
+                                ++ "px"
+                          )
+                        ]
+                    ]
+                    none
+                ]
+            )
+        ]
+        [ app.editTopic
+            |> withFocusedEditTopic topic
+                (\editTopic ->
+                    el
                         [ width fill
-                        , paddingEach
-                            { top = 0
-                            , left = contentPaddingLeft
-                            , right = contentPaddingRight
-                            , bottom = contentPaddingY
+                        , padding BaseStyle.spacing2x
+                        , Border.roundEach
+                            { topLeft = 0
+                            , topRight = cornerRoundedSize
+                            , bottomLeft = 0
+                            , bottomRight = cornerRoundedSize
                             }
+                        , Background.color (rgba255 0 0 0 0.4)
                         ]
-                        [ el
-                            [ width fill
-                            , height (px contentPaddingY)
-                            ]
-                            (toolbarView state topic)
-                        , contentView state topic
+                        (editTopicInput topic editTopic state)
+                )
+            |> Maybe.withDefault
+                (column
+                    [ width fill
+                    , paddingEach
+                        (Dimension.horizontal BaseStyle.spacing2x)
+                    ]
+                    [ el
+                        [ width fill
+                        , height (px toolbarHeight)
                         ]
-                    )
-            ]
+                        (toolbarView state topic)
+                    , contentView state topic
+                    , el
+                        [ width fill
+                        , height (px toolbarHeight)
+                        ]
+                        none
+                    ]
+                )
         ]
 
 
@@ -325,7 +296,7 @@ contentView { app, theme, withWidgetContext } topic =
             ]
             [ withWidgetContext <|
                 Markdown.render
-                    { lineHeight = bgGridLineSpacing
+                    { lineHeight = textLineHeight
                     }
                     topic.content
             ]
@@ -521,32 +492,25 @@ holeSeparatorColor =
         Widget.Color.Orange900
 
 
-{-| 打孔区域分隔线尺寸
--}
-holeSeparatorSize : Int
-holeSeparatorSize =
-    3
-
-
 bgGridLineRgbColor : String
 bgGridLineRgbColor =
     Widget.Html.toRgba (rgb255 145 209 211)
 
 
-bgGridLineSpacing : Int
-bgGridLineSpacing =
+textLineHeight : Int
+textLineHeight =
     32
 
 
-bgGridLineSize : Int
-bgGridLineSize =
+textGridLineSize : Int
+textGridLineSize =
     1
 
 
 holeSvgImg : Theme msg -> String
 holeSvgImg theme =
     -- https://stackoverflow.com/questions/62539360/svg-how-to-drop-an-inset-shadow-on-a-path-that-has-an-rgba-fill#answer-62627106
-    -- Note: 保持尺寸和阴影设定，但背景可按需增减图片尺寸
+    -- Note: 保持尺寸和阴影设定，确保圆形与画布边缘有合适的空白
     """
 <svg xmlns="http://www.w3.org/2000/svg"
 xmlns:xlink="http://www.w3.org/1999/xlink" width="96px" height="96px" viewBox="0 0 96 96">

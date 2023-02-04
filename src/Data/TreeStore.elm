@@ -26,6 +26,7 @@ module Data.TreeStore exposing
     , create
     , empty
     , get
+    , getAllByParentPath
     , remove
     , traverse
     , traverseDepth
@@ -169,6 +170,16 @@ traverseWithSingleRoot traverler tree =
     tree
         |> traverse traverler
         |> List.head
+
+
+{-| 沿父节点路径，从指定位置开始，向上获取全部节点
+-}
+getAllByParentPath :
+    String
+    -> TreeStore dataType
+    -> List dataType
+getAllByParentPath dataId =
+    getAllByParentPathHelper dataId []
 
 
 
@@ -382,3 +393,27 @@ traverseHelper traverler opts nodeIds ((Tree _ { data, nodes }) as tree) =
                     |> Maybe.withDefault results
             )
             []
+
+
+getAllByParentPathHelper :
+    String
+    -> List dataType
+    -> TreeStore dataType
+    -> List dataType
+getAllByParentPathHelper dataId results ((Tree { parentGetter } _) as tree) =
+    case get dataId tree of
+        Nothing ->
+            results
+
+        Just data ->
+            let
+                newResults =
+                    data :: results
+            in
+            data
+                |> parentGetter
+                |> Maybe.map
+                    (\parentId ->
+                        getAllByParentPathHelper parentId newResults tree
+                    )
+                |> Maybe.withDefault newResults

@@ -2,178 +2,157 @@
   {
     "id": "0-0-0",
     "content": "整体的UI设计如下图所示\n\n![](./demo/topic/diandi-design-graph.jpg)",
-    "category": "产品开发/点滴(DianDi)/功能设计",
-    "color": "Red400",
+    "category": "product/diandi/feature",
     "created_at": "2023-01-08 12:31:45"
   },
   {
     "id": "0-0-1",
     "content": "图标使用![](/icon.svg|16x16)，Logo使用![](/logo.svg|64x16)",
-    "category": "产品开发/点滴(DianDi)/功能设计",
-    "color": "Red400",
+    "category": "product/diandi/feature",
     "created_at": "2023-01-08 12:31:45"
   },
   {
     "id": "0",
     "content": "添加的所有内容均称为【主题】，主题通过【分类】进行组织，并通过【标签】指定主题类型",
-    "category": "产品开发/点滴(DianDi)/功能设计/主题",
-    "color": "Red400",
+    "category": "product/diandi/feature/topics",
     "created_at": "2023-01-03 12:31:45"
   },
   {
     "id": "0-1",
     "content": "【分类】为层级结构的，各个分类均包含描述、图标等信息。在添加主题时，可自由选择或新增分类，新增的分类在创建主题时自动创建",
-    "category": "产品开发/点滴(DianDi)/功能设计/主题/分类",
-    "color": "Red400",
+    "category": "product/diandi/feature/category",
     "created_at": "2023-01-03 12:31:45"
   },
   {
     "id": "1",
     "content": "【标签】为待办、知识、疑问、思维碎片等类别性质的词语。每个主题可有多个标签，以表示其所具备的性质。不同的标签有不同的图标，在主题卡片左侧显示第一个标签的图标（按标签过滤时，显示选中的标签）",
-    "category": "产品开发/点滴(DianDi)/功能设计/主题/标签",
-    "color": "Red600",
+    "category": "product/diandi/feature/tags",
     "created_at": "2023-01-03 12:31:45"
   },
   {
     "id": "1-0",
     "content": "弹窗机制：\n- [ ] 在Root层前置弹窗层，弹窗都有遮罩\n- [ ] 弹窗可有多层，各层弹窗依次压栈，关闭时依次出栈\n- [ ] 弹窗提供关闭按钮，支持点击遮罩区域时关闭窗口",
-    "category": "产品开发/点滴(DianDi)/前端开发/通用组件",
-    "color": "Red800",
+    "category": "product/diandi/frontend/common/widgets",
     "created_at": "2023-01-03 12:31:45"
   },
   {
     "id": "1-1",
     "content": "- [ ] Link形式的按钮",
-    "category": "产品开发/点滴(DianDi)/前端开发/通用组件",
-    "color": "Red800",
+    "category": "product/diandi/frontend/common/widgets",
     "created_at": "2023-01-03 12:31:45"
   },
   {
     "id": "1-1-1",
     "content": "树形列表组件：\n- [ ] 可编辑节点\n- [ ] 可调整节点排序\n- [ ] 可调整节点父子关系\n- [ ] 可删除节点\n- [ ] 可展开/收起子节点",
-    "category": "产品开发/点滴(DianDi)/前端开发/通用组件",
-    "color": "Red800",
+    "category": "product/diandi/frontend/common/widgets",
     "created_at": "2023-01-03 12:31:45"
   },
   {
     "id": "1-2",
     "content": "- [x] 主题卡片不限定高度，高度自适应内容，一般不放置太多内容",
-    "category": "产品开发/点滴(DianDi)/前端开发/主题",
-    "color": "Red800",
+    "category": "product/diandi/frontend/topic",
     "created_at": "2023-01-03 12:31:45"
   },
   {
     "id": "1-2-1",
     "content": "- [x] 实现通用的层级结构数据「TreeStore」，支持根据线性数据（一维数组），自动组装和维护树形结构和节点顺序，同时提供对树的遍历等接口",
-    "category": "产品开发/点滴(DianDi)/前端开发/TreeStore",
+    "category": "product/diandi/frontend/treestore",
     "created_at": "2023-01-04 14:30:52"
   },
   {
     "id": "1-2-2",
     "content": "- [x] 在TreeStore中根据数据的id组织和维护树形结构以及节点顺序，数据自身的id、父级id等通过函数获取，并在TreeStore初始化时设置",
-    "category": "产品开发/点滴(DianDi)/前端开发/TreeStore",
+    "category": "product/diandi/frontend/treestore",
     "created_at": "2023-01-04 14:30:52"
   },
   {
     "id": "1-2-3",
     "content": "- [x] 实现**有状态**的组件机制，实现对公共组件内部状态的自管理，对应用侧无侵入",
-    "category": "产品开发/点滴(DianDi)/前端开发/通用组件",
-    "color": "Purple500",
+    "category": "product/diandi/frontend/common/widgets",
     "created_at": "2023-01-03 12:31:45"
   },
   {
     "id": "2-0",
     "content": "- [x] 主题卡片采用打孔纸片样式",
-    "category": "产品开发/点滴(DianDi)/功能设计/主题",
-    "color": "Purple500",
+    "category": "product/diandi/feature/topics",
     "created_at": "2023-01-03 12:31:45"
   },
   {
     "id": "2-0-1",
     "content": "- [x] 在主题列表底部固定显示主题输入框，未聚焦时仅做单行显示，获取焦点后显示完整的输入框",
-    "category": "产品开发/点滴(DianDi)/功能设计/主题",
-    "color": "Purple500",
+    "category": "product/diandi/feature/topics",
     "created_at": "2023-01-03 12:31:45"
   },
   {
     "id": "2-1",
-    "content": "- [ ] 主题卡片的工具栏浮动在卡片上方，选中时显示。提供编辑按钮，点击后在卡片中直接编辑主题内容",
-    "category": "产品开发/点滴(DianDi)/功能设计/主题",
-    "color": "Purple500",
+    "content": "- [x] 主题卡片的工具栏固定在卡片上方。提供编辑按钮，点击后在卡片中直接编辑主题内容\n- [ ] 底部显示主题标签、关联的主题、历史版本数量等信息",
+    "category": "product/diandi/feature/topics",
     "created_at": "2023-01-03 12:31:45"
   },
   {
     "id": "2-1-2",
     "content": "- [ ] 在右侧显示主题内容，并提供评论或备注列表，可以评论方式，对主题进行备注，并可引用备注并添加新的备注",
-    "category": "产品开发/点滴(DianDi)/功能设计/主题",
-    "color": "Purple500",
+    "category": "product/diandi/feature/topics",
     "created_at": "2023-01-03 12:31:45"
   },
   {
     "id": "3",
     "content": "图片、音频、链接等富媒体资源，都可以作为主题，或者嵌入到主题中",
-    "category": "产品开发/点滴(DianDi)/功能设计/主题",
-    "color": "Pink400",
+    "category": "product/diandi/feature/topics",
     "created_at": "2023-01-03 12:31:45"
   },
   {
     "id": "6",
     "content": "待办主题有启动、暂停、结束等按钮以便于直接处理任务",
-    "category": "产品开发/点滴(DianDi)/功能设计/主题",
-    "color": "DeepPurple500",
+    "category": "product/diandi/feature/topics",
     "created_at": "2023-01-03 12:31:45"
   },
   {
     "id": "7",
     "content": "任意【标签】均可补充描述信息，以提供项目管理支持",
-    "category": "产品开发/点滴(DianDi)/功能设计/标签",
-    "color": "Blue500",
+    "category": "product/diandi/feature/tags",
     "created_at": "2023-01-03 12:31:45"
   },
   {
     "id": "8",
     "content": "可根据主题完成先后及其重要性，调整主题的相对位置",
-    "category": "产品开发/点滴(DianDi)/功能设计/主题",
-    "color": "Green400",
+    "category": "product/diandi/feature/topics",
     "created_at": "2023-01-03 12:31:45"
   },
   {
     "id": "9",
     "content": "在独立的标签管理页中，调整标签层级关系、添加描述信息（含logo等）",
-    "category": "产品开发/点滴(DianDi)/功能设计/标签",
+    "category": "product/diandi/feature/tags",
     "created_at": "2023-01-03 23:29:12"
   },
   {
     "id": "16",
     "content": "对主题内容的更新均做版本控制，可查看完整的变更情况",
-    "category": "产品开发/点滴(DianDi)/功能设计/主题",
-    "color": "Grey600",
+    "category": "product/diandi/feature/topics",
     "created_at": "2023-01-04 14:30:52"
   },
   {
     "id": "18",
     "content": "- [ ] 编写Markdown时，对标记块做即时的可视转换，即在标记完整时即刻将其转换为可视效果\n- [ ] 图片直接添加并即时显示\n- [ ] 图片可缩放和调整位置\n- [ ] 可在线绘制图形，以全局弹窗方式展示绘图窗口\n  - [ ] 在绘图窗口提供手机辅助绘图按钮，点击后弹出手机浏览器接入的二维码连接信息，手机扫描后显示当前的绘制内容，并准备继续作图\n  - [ ] 二维码所含信息为含有唯一标识的在线绘制服务连接地址，通过WebSocket等技术做两端的双向实时协作\n  - [ ] 采用svg绘图，所有线条均为svg节点，所有图形均可进行选中、拖动、删除等操作\n  - [ ] 以在线绘制方式插入的图形可进行多次编辑",
-    "category": "产品开发/点滴(DianDi)/功能设计/主题/编辑器",
-    "color": "Grey600",
+    "category": "product/diandi/feature/topics",
     "created_at": "2023-01-04 14:30:52"
   },
   {
     "id": "17",
     "content": "在左侧分类列表下方的工具栏中放置搜索按钮：\n- [ ] 点击后弹出搜索窗口且输入框自动获取输入焦点\n- [ ] 在输入过程中在下方实时显示全局搜索结果\n- [ ] 点击搜索结果后，跳转到主题详情展示页",
-    "category": "产品开发/点滴(DianDi)/功能设计/主题",
-    "color": "Grey600",
+    "category": "product/diandi/feature/topics",
     "created_at": "2023-01-04 14:30:52"
   },
   {
     "id": "19",
     "content": "后端针对不同的数据结构，提供统一的增删改查接口，类似GraphQL。支持任意复杂度的过滤查询、数据部分更新等。数据权限控制在后端完成，前端不做检查",
-    "category": "产品开发/点滴(DianDi)/后端开发/数据存储",
+    "category": "product/diandi/backend/datastore",
     "created_at": "2023-01-04 14:30:52"
   },
   {
     "id": "20",
     "content": "提供阅读模式，在该模式下分类作为标题居中显示，主题为段落，子分类为章节。段落左侧放置拖拽按钮，用于主题排序和位置调整。各段落也可进行直接编辑",
-    "category": "产品开发/点滴(DianDi)/功能设计",
+    "category": "product/diandi/feature",
     "created_at": "2023-01-04 14:30:52"
   }
 ]

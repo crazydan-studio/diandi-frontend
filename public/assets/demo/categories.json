@@ -1,47 +1,67 @@
 [
   {
-    "id": "1",
+    "id": "product",
     "name": "产品开发"
   },
   {
-    "id": "2",
+    "id": "thought",
     "name": "思维碎片"
   },
   {
-    "id": "1-1",
+    "id": "product/diandi",
     "name": "点滴(DianDi)",
-    "parent": "1",
+    "parent": "product",
     "icon": "/icon.svg",
     "description": "集个人知识库、任务待办、白板等功能于一身，实现对零散知识的收集、归纳、发散，牢牢捕获那些一闪而过的奇妙想法"
   },
   {
-    "id": "1-1-2",
+    "id": "product/diandi/feature",
     "name": "功能设计",
-    "parent": "1-1"
+    "parent": "product/diandi"
   },
   {
-    "id": "1-1-2-1",
+    "id": "product/diandi/feature/topics",
     "name": "主题",
-    "parent": "1-1-2"
+    "parent": "product/diandi/feature"
   },
   {
-    "id": "1-1-2-2",
+    "id": "product/diandi/feature/category",
+    "name": "分类",
+    "parent": "product/diandi/feature"
+  },
+  {
+    "id": "product/diandi/feature/tags",
     "name": "标签",
-    "parent": "1-1-2"
+    "parent": "product/diandi/feature"
   },
   {
-    "id": "1-1-1",
+    "id": "product/diandi/frontend",
     "name": "前端开发",
-    "parent": "1-1"
+    "parent": "product/diandi"
   },
   {
-    "id": "1-1-1-1",
+    "id": "product/diandi/frontend/topic",
+    "name": "主题",
+    "parent": "product/diandi/frontend"
+  },
+  {
+    "id": "product/diandi/frontend/treestore",
+    "name": "TreeStore",
+    "parent": "product/diandi/frontend"
+  },
+  {
+    "id": "product/diandi/frontend/common/widgets",
     "name": "通用组件",
-    "parent": "1-1-1"
+    "parent": "product/diandi/frontend"
   },
   {
-    "id": "1-1-3",
+    "id": "product/diandi/backend",
     "name": "后端开发",
-    "parent": "1-1"
+    "parent": "product/diandi"
+  },
+  {
+    "id": "product/diandi/backend/datastore",
+    "name": "数据存储",
+    "parent": "product/diandi/backend"
   }
 ]

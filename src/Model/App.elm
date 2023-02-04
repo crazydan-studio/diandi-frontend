@@ -27,6 +27,7 @@ module Model.App exposing
     , loadTopicCategories
     , loadTopics
     , loading
+    , mapCategories
     , updateEditTopic
     , updateNewTopic
     , updateTopicByEdit
@@ -164,7 +165,7 @@ loadTopicCategories result state =
         | categories =
             result
                 |> RemoteData.from state.lang createTopicCategoryTree
-        , selectedTopicCategory = Just "1-1"
+        , selectedTopicCategory = Just "product/diandi"
     }
 
 
@@ -312,6 +313,15 @@ updateTopicByEdit topicId ({ topics, editTopic } as state) =
                             )
             )
         |> Maybe.withDefault state
+
+
+mapCategories :
+    (TreeStore Category -> Maybe a)
+    -> State
+    -> Maybe a
+mapCategories mapper state =
+    state.categories
+        |> RemoteData.andThen mapper
 
 
 

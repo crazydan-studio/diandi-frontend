@@ -20,6 +20,7 @@
 module View.Page.Topic.Card exposing (view)
 
 import Base64
+import Data.TreeStore as TreeStore
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
@@ -27,6 +28,7 @@ import Element.Font as Font
 import Element.Input as Input
 import I18n.Lang exposing (langEnd)
 import Model
+import Model.App as App
 import Model.Operation.EditTopic as EditTopic exposing (EditTopic)
 import Model.Topic exposing (Topic)
 import Msg
@@ -193,7 +195,7 @@ view ({ app, theme } as state) topic =
                         , height (px toolbarHeight)
                         ]
                         (toolbarView state topic)
-                    , contentView state topic
+                    , topicView state topic
                     , el
                         [ width fill
                         , height (px toolbarHeight)
@@ -258,10 +260,7 @@ toolbarView ({ app, theme } as state) topic =
             , alignLeft
             , spacing BaseStyle.spacing
             ]
-            [ topic.category
-                |> Maybe.withDefault "无"
-                |> String.replace "/" " • "
-                |> text
+            [ topicCategoryView state topic
             ]
         , row
             [ width shrink
@@ -276,11 +275,11 @@ toolbarView ({ app, theme } as state) topic =
         ]
 
 
-contentView :
+topicView :
     Model.State
     -> Topic
     -> Element Msg.Msg
-contentView { app, theme, withWidgetContext } topic =
+topicView { app, theme, withWidgetContext } topic =
     el
         ([ width fill
          , height fill
@@ -300,6 +299,37 @@ contentView { app, theme, withWidgetContext } topic =
                     }
                     topic.content
             ]
+        )
+
+
+topicCategoryView :
+    Model.State
+    -> Topic
+    -> Element Msg.Msg
+topicCategoryView { app, theme } topic =
+    let
+        getCategoriesBy categoryId =
+            app
+                |> App.mapCategories
+                    (\cats ->
+                        Just
+                            (TreeStore.getAllByParentPath
+                                categoryId
+                                cats
+                            )
+                    )
+
+        categories =
+            topic.category
+                |> Maybe.andThen getCategoriesBy
+                |> Maybe.withDefault []
+    in
+    row
+        [ spacing 4
+        ]
+        (categories
+            |> List.map (.name >> text)
+            |> List.intersperse (text "•")
         )
 
 

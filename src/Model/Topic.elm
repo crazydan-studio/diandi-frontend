@@ -34,7 +34,6 @@ import Json.Decode as Decode
         , string
         )
 import Json.Decode.Pipeline exposing (optional, required)
-import Widget.Color exposing (Color, maybeColorDecoder)
 
 
 {-| 点滴卡
@@ -50,9 +49,6 @@ type alias Topic =
     , category : Maybe String
     , tags : List String
 
-    -- 配色
-    , color : Maybe Color
-
     -- 创建信息
     , createdAt : String
     }
@@ -64,7 +60,6 @@ init =
     , content = ""
     , category = Nothing
     , tags = []
-    , color = Nothing
     , createdAt = ""
     }
 
@@ -81,5 +76,4 @@ topicDecoder =
         |> required "content" string
         |> optional "category" (nullable string) Nothing
         |> optional "tags" (list string) []
-        |> optional "color" maybeColorDecoder Nothing
         |> required "created_at" string

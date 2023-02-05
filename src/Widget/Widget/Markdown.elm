@@ -63,11 +63,14 @@ renderHelper ctx config markdown =
                     ++ [ Html.node "style"
                             []
                             [ Html.text
-                                -- 让checkbox始终居中显示
-                                (".md-checkbox > .focusable"
+                                (""
+                                    -- 让checkbox始终居中显示
+                                    ++ ".md-checkbox > .focusable"
                                     ++ " {vertical-align: top;margin-top: "
                                     ++ String.fromFloat (toFloat (config.lineHeight - 14) / 2)
                                     ++ "px;}"
+                                    -- 多级列表缩进
+                                    ++ ".md-list-item > .md-list {padding-left: 20px;}"
                                 )
                             ]
                             |> Element.html
@@ -270,6 +273,8 @@ elmUiRenderer ctx config =
         \items ->
             Element.column
                 [ textStyle
+                , Element.htmlAttribute
+                    (Html.Attributes.class "md-list")
                 ]
                 (items
                     |> List.map
@@ -277,6 +282,8 @@ elmUiRenderer ctx config =
                             Element.paragraph
                                 [ Element.alignTop
                                 , Element.spacing 0
+                                , Element.htmlAttribute
+                                    (Html.Attributes.class "md-list-item")
                                 ]
                                 ((case task of
                                     IncompleteTask ->

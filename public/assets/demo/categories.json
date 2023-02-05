@@ -8,60 +8,60 @@
     "name": "思维碎片"
   },
   {
-    "id": "product/diandi",
+    "id": "product_diandi",
     "name": "点滴(DianDi)",
     "parent": "product",
     "icon": "/icon.svg",
     "description": "集个人知识库、任务待办、白板等功能于一身，实现对零散知识的收集、归纳、发散，牢牢捕获那些一闪而过的奇妙想法"
   },
   {
-    "id": "product/diandi/feature",
+    "id": "product_diandi_feature",
     "name": "功能设计",
-    "parent": "product/diandi"
+    "parent": "product_diandi"
   },
   {
-    "id": "product/diandi/feature/topics",
+    "id": "product_diandi_feature_topics",
     "name": "主题",
-    "parent": "product/diandi/feature"
+    "parent": "product_diandi_feature"
   },
   {
-    "id": "product/diandi/feature/category",
+    "id": "product_diandi_feature_category",
     "name": "分类",
-    "parent": "product/diandi/feature"
+    "parent": "product_diandi_feature"
   },
   {
-    "id": "product/diandi/feature/tags",
+    "id": "product_diandi_feature_tags",
     "name": "标签",
-    "parent": "product/diandi/feature"
+    "parent": "product_diandi_feature"
   },
   {
-    "id": "product/diandi/frontend",
+    "id": "product_diandi_frontend",
     "name": "前端开发",
-    "parent": "product/diandi"
+    "parent": "product_diandi"
   },
   {
-    "id": "product/diandi/frontend/topic",
+    "id": "product_diandi_frontend_topic",
     "name": "主题",
-    "parent": "product/diandi/frontend"
+    "parent": "product_diandi_frontend"
   },
   {
-    "id": "product/diandi/frontend/treestore",
+    "id": "product_diandi_frontend_treestore",
     "name": "TreeStore",
-    "parent": "product/diandi/frontend"
+    "parent": "product_diandi_frontend"
   },
   {
-    "id": "product/diandi/frontend/common/widgets",
+    "id": "product_diandi_frontend_common_widgets",
     "name": "通用组件",
-    "parent": "product/diandi/frontend"
+    "parent": "product_diandi_frontend"
   },
   {
-    "id": "product/diandi/backend",
+    "id": "product_diandi_backend",
     "name": "后端开发",
-    "parent": "product/diandi"
+    "parent": "product_diandi"
   },
   {
-    "id": "product/diandi/backend/datastore",
+    "id": "product_diandi_backend_datastore",
     "name": "数据存储",
-    "parent": "product/diandi/backend"
+    "parent": "product_diandi_backend"
   }
 ]

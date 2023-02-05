@@ -49,8 +49,8 @@ type Msg
     | I18nPortMsg I18n.Port.Msg
       -- 组件消息
     | WidgetMsg Widget.Msg
-      -- 操作数据
-    | TopicCategorySelected String
+      -- 数据操作
+    | ShowTopicsList String
     | NewTopicAdded String
     | NewTopicMsg String NewTopic.Msg
     | EditTopicUpdated String

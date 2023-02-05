@@ -21,6 +21,7 @@ module Model.Remote.Data exposing
     ( Status(..)
     , andThen
     , from
+    , ifNotLoaded
     , map
     , update
     )
@@ -45,6 +46,16 @@ from lang convert result =
 
         Err error ->
             LoadingError (parseError lang error)
+
+
+ifNotLoaded : Status a -> Status a -> Status a
+ifNotLoaded otherStatus status =
+    case status of
+        Loaded _ ->
+            status
+
+        _ ->
+            otherStatus
 
 
 update : (a -> a) -> Status a -> Status a

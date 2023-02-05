@@ -128,7 +128,7 @@ categoryView { depth, category, selected, theme } childElements =
              , mouseOver
                 [ Background.color (rgba255 0 0 0 0.04)
                 ]
-             , onClick (TopicCategorySelected category.id)
+             , onClick (ShowTopicsList category.id)
              ]
                 ++ (if selected then
                         theme.primaryGreyBackground

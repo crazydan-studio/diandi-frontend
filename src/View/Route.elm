@@ -25,12 +25,23 @@ module View.Route exposing
     , gotoLogin
     , gotoLogout
     , route
+    , showTopics
     )
 
 import Browser.Navigation as Nav
 import Model.App as App
 import Url
-import Url.Parser exposing ((</>), Parser, map, oneOf, parse, s, top)
+import Url.Parser
+    exposing
+        ( (</>)
+        , Parser
+        , map
+        , oneOf
+        , parse
+        , s
+        , string
+        , top
+        )
 
 
 type Route
@@ -39,6 +50,7 @@ type Route
     | Home
     | Forbidden
     | NotFound
+    | TopicsList String
 
 
 {-| 解析URL得到路由信息
@@ -73,6 +85,11 @@ goto404 =
     goto "/error/404"
 
 
+showTopics : String -> App.State -> Cmd msg
+showTopics categoryId =
+    goto ("/topics/" ++ categoryId)
+
+
 
 -- --------------------------------------------------------------
 
@@ -82,6 +99,7 @@ routeHelper =
     -- https://package.elm-lang.org/packages/elm/url/latest/Url-Parser
     oneOf
         [ map Home top
+        , map TopicsList (s "topics" </> string)
         , map Login (s "login")
         , map Logout (s "logout")
         , map Forbidden (s "error" </> s "403")

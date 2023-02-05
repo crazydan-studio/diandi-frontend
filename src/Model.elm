@@ -35,16 +35,17 @@ import Model.Operation.EditTopic as EditTopic
 import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Model.Remote as Remote
 import Model.Remote.Auth as RemoteAuth
+import Model.Remote.Data as RemoteData
 import Model.Remote.Demo.Topic as RemoteTopic
+import Model.Remote.Demo.User as RemoteUser
 import Model.Remote.Msg as RemoteMsg
-import Model.Remote.User as RemoteUser
 import Model.Topic.Category exposing (Category)
 import Model.User as User
 import Msg
 import Theme.Theme as Theme
 import Theme.Theme.Default as ThemeDefault
 import Url
-import View.Page as PageType
+import View.Page as Page
 import View.Route
 import Widget.Widget as Widget
 
@@ -114,16 +115,8 @@ update msg state =
             , Cmd.none
             )
 
-        Msg.TopicCategorySelected categoryId ->
-            ( state
-                |> updateAppState
-                    (\a ->
-                        { a
-                            | selectedTopicCategory = Just categoryId
-                        }
-                    )
-            , Cmd.none
-            )
+        Msg.ShowTopicsList categoryId ->
+            ( state, View.Route.showTopics categoryId state.app )
 
         Msg.NewTopicMsg inputId newTopicMsg ->
             newTopicUpdateHelper inputId newTopicMsg state
@@ -191,42 +184,35 @@ remoteUpdateHelper :
     RemoteMsg.Msg
     -> State
     -> ( State, Cmd Msg.Msg )
-remoteUpdateHelper msg ({ app } as state) =
+remoteUpdateHelper msg state =
     case msg of
         RemoteMsg.GotMyUserInfo result ->
             case result of
                 Ok user ->
-                    ( { state
-                        | app =
-                            { app
-                                | me = User.User user
-                                , topics = App.loading
-                                , categories = App.loading
-                            }
-                      }
-                    , Cmd.batch
-                        [ Msg.toRemoteCmd RemoteTopic.getMyAllTopics
-                        , Msg.toRemoteCmd RemoteTopic.getMyAllCategories
-                        ]
-                    )
+                    state
+                        |> updateAppState
+                            (\app ->
+                                { app | me = User.User user }
+                            )
+                        |> doRemoteQueryMyTopics
 
                 Err _ ->
-                    ( state, View.Route.gotoLogin app )
+                    ( state, View.Route.gotoLogin state.app )
 
         RemoteMsg.UserLogout _ ->
-            ( state, View.Route.gotoLogin app )
+            ( state, View.Route.gotoLogin state.app )
 
         RemoteMsg.QueryMyTopics result ->
-            ( { state
-                | app = app |> App.loadTopics result
-              }
+            ( state
+                |> updateAppState
+                    (App.loadTopics result)
             , Cmd.none
             )
 
         RemoteMsg.QueryMyTopicCategories result ->
-            ( { state
-                | app = app |> App.loadTopicCategories result
-              }
+            ( state
+                |> updateAppState
+                    (App.loadTopicCategories result)
             , Cmd.none
             )
 
@@ -265,28 +251,49 @@ remoteErrorUpdateHelper error ({ app } as state) =
 
 
 routeUpdateHelper : Url.Url -> State -> ( State, Cmd Msg.Msg )
-routeUpdateHelper navUrl ({ app } as state) =
+routeUpdateHelper navUrl state =
     let
-        ( page, cmd ) =
+        ( page, newState, cmd ) =
             case View.Route.route navUrl of
                 View.Route.Login ->
-                    ( PageType.Login, Cmd.none )
+                    ( Page.Login, state, Cmd.none )
 
                 View.Route.Logout ->
-                    ( PageType.Login, Msg.toRemoteCmd RemoteAuth.logout )
+                    ( Page.Login, state, Msg.toRemoteCmd RemoteAuth.logout )
 
                 View.Route.Home ->
-                    ( PageType.Home, Msg.toRemoteCmd RemoteUser.getMyUserInfo )
+                    let
+                        ( s, c ) =
+                            doRemoteWithAuthUser doRemoteQueryMyTopics state
+                    in
+                    ( Page.Home, s, c )
+
+                View.Route.TopicsList categoryId ->
+                    let
+                        ( s, c ) =
+                            state
+                                |> updateAppState
+                                    (\app ->
+                                        { app | selectedTopicCategory = Just categoryId }
+                                    )
+                                |> doRemoteWithAuthUser doRemoteQueryMyTopics
+                    in
+                    ( Page.Home, s, c )
 
                 View.Route.Forbidden ->
-                    ( PageType.Forbidden, Cmd.none )
+                    ( Page.Forbidden, state, Cmd.none )
 
                 View.Route.NotFound ->
-                    ( PageType.NotFound, Cmd.none )
+                    ( Page.NotFound, state, Cmd.none )
     in
-    ( { state
-        | app = { app | currentPage = page, navUrl = navUrl }
-      }
+    ( newState
+        |> updateAppState
+            (\app ->
+                { app
+                    | currentPage = page
+                    , navUrl = navUrl
+                }
+            )
     , cmd
     )
 
@@ -339,4 +346,48 @@ editTopicUpdateHelper topicId msg state =
 
         _ ->
             Cmd.none
+    )
+
+
+doRemoteWithAuthUser :
+    (State -> ( State, Cmd Msg.Msg ))
+    -> State
+    -> ( State, Cmd Msg.Msg )
+doRemoteWithAuthUser doRemote ({ app } as state) =
+    if User.isNone app.me then
+        ( state, Msg.toRemoteCmd RemoteUser.getMyUserInfo )
+
+    else
+        doRemote state
+
+
+doRemoteQueryMyTopics : State -> ( State, Cmd Msg.Msg )
+doRemoteQueryMyTopics state =
+    ( state
+        |> updateAppState
+            (\app ->
+                { app
+                    | categories =
+                        app.categories
+                            |> RemoteData.ifNotLoaded
+                                App.loading
+                    , topics = App.loading
+                }
+            )
+    , Cmd.batch
+        [ state.app.categories
+            |> RemoteData.map
+                (\_ ->
+                    Cmd.none
+                )
+            |> Maybe.withDefault
+                (Msg.toRemoteCmd
+                    RemoteTopic.getMyAllCategories
+                )
+        , Msg.toRemoteCmd
+            (RemoteTopic.queryMyTopics
+                { category = state.app.selectedTopicCategory
+                }
+            )
+        ]
     )

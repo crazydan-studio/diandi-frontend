@@ -166,7 +166,6 @@ loadTopicCategories result state =
         | categories =
             result
                 |> RemoteData.from state.lang createTopicCategoryTree
-        , selectedTopicCategory = Just "product/diandi"
     }
 
 

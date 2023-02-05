@@ -17,7 +17,11 @@
 -}
 
 
-module View.Page.RemoteData exposing (view)
+module View.Page.RemoteData exposing
+    ( noDataView
+    , noDataViewWith
+    , view
+    )
 
 import Element exposing (..)
 import Element.Font as Font
@@ -49,6 +53,24 @@ view { theme, lang } dataView dataStatus =
 
         RemoteData.LoadingError error ->
             errorView theme (error |> I18n.textWithResult)
+
+
+noDataView :
+    { theme : Theme msg
+    , lang : Lang
+    }
+    -> Element msg
+noDataView { theme, lang } =
+    errorView theme
+        ("数据已加载，但结果为空" :: langEnd |> I18n.text lang)
+
+
+noDataViewWith :
+    Theme msg
+    -> String
+    -> Element msg
+noDataViewWith theme error =
+    errorView theme (text error)
 
 
 

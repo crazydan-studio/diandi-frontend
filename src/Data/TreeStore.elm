@@ -27,6 +27,7 @@ module Data.TreeStore exposing
     , empty
     , get
     , getAllByParentPath
+    , isEmpty
     , remove
     , traverse
     , traverseDepth
@@ -93,6 +94,11 @@ create :
 create config =
     empty config
         |> List.foldl add
+
+
+isEmpty : TreeStore dataType -> Bool
+isEmpty (Tree _ treeData) =
+    treeData.data |> Dict.isEmpty
 
 
 get : String -> TreeStore dataType -> Maybe dataType

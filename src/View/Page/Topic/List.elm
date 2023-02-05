@@ -19,7 +19,7 @@
 
 module View.Page.Topic.List exposing (view)
 
-import Data.TreeStore exposing (TreeStore)
+import Data.TreeStore as TreeStore exposing (TreeStore)
 import Element exposing (..)
 import Element.Keyed
 import Element.Lazy
@@ -50,24 +50,31 @@ topicListView :
     -> TreeStore Topic
     -> Element Msg.Msg
 topicListView state topics =
-    -- 列表增删改性能提升方案，同时lazy可确保在刷新页面时，有滚动条的列表的滚动位置可被浏览器记录，刷新后能够自动恢复浏览位置
-    -- https://guide.elm-lang.org/optimization/keyed.html
-    -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Keyed
-    -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Lazy
-    Element.Keyed.column
-        [ width fill
-        , height fill
-        , spacing BaseStyle.spacing
-        , centerX
-        ]
-        (topics
-            |> Data.TreeStore.traverseDepth 1
-                (\_ topic _ ->
-                    ( topic.id
-                    , Element.Lazy.lazy2
-                        TopicCard.view
-                        state
-                        topic
+    if TreeStore.isEmpty topics then
+        RemoteDataPage.noDataView
+            { theme = state.theme
+            , lang = state.app.lang
+            }
+
+    else
+        -- 列表增删改性能提升方案，同时lazy可确保在刷新页面时，有滚动条的列表的滚动位置可被浏览器记录，刷新后能够自动恢复浏览位置
+        -- https://guide.elm-lang.org/optimization/keyed.html
+        -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Keyed
+        -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Lazy
+        Element.Keyed.column
+            [ width fill
+            , height fill
+            , spacing BaseStyle.spacing
+            , centerX
+            ]
+            (topics
+                |> TreeStore.traverseDepth 1
+                    (\_ topic _ ->
+                        ( topic.id
+                        , Element.Lazy.lazy2
+                            TopicCard.view
+                            state
+                            topic
+                        )
                     )
-                )
-        )
+            )

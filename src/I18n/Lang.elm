@@ -19,12 +19,9 @@
 
 module I18n.Lang exposing
     ( Lang(..)
-    , TextsNeedToBeTranslated
-    , TranslateResult(..)
     , all
     , fromString
     , fromStringWithDefault
-    , langEnd
     , toString
     )
 
@@ -32,26 +29,11 @@ module I18n.Lang exposing
 type Lang
     = Zh_CN
     | En_US
-    | Unknown
-
-
-type TranslateResult
-    = Translated String
-    | NoNeedsToTranslate (List String)
-    | WaitingToTranslate TextsNeedToBeTranslated
-
-
-type alias TextsNeedToBeTranslated =
-    { modules : List String, texts : List String }
+    | Default
 
 
 
 -- TODO 支持用户修改、添加国际化
-
-
-langEnd : List String
-langEnd =
-    []
 
 
 all : List ( Lang, String )
@@ -75,21 +57,7 @@ fromString str =
             En_US
 
         _ ->
-            Unknown
-
-
-fromStringWithDefault : Lang -> String -> Lang
-fromStringWithDefault defaultLang str =
-    let
-        lng =
-            fromString str
-    in
-    case lng of
-        Unknown ->
-            defaultLang
-
-        _ ->
-            lng
+            Default
 
 
 toString : Lang -> String
@@ -103,3 +71,17 @@ toString l =
 
         _ ->
             ""
+
+
+fromStringWithDefault : Lang -> String -> Lang
+fromStringWithDefault defaultLang str =
+    let
+        lng =
+            fromString str
+    in
+    case lng of
+        Default ->
+            defaultLang
+
+        _ ->
+            lng

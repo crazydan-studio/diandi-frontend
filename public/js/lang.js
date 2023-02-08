@@ -41,10 +41,11 @@ export function findNotTranslatedTexts() {
   document
     .querySelectorAll('[i18n-not-translated="true"]')
     .forEach(function (node) {
+      const lang = node.getAttribute("i18n-not-translated-lang");
       const modules = node.getAttribute("i18n-not-translated-modules");
       const text = node.innerText;
 
-      results.push({ modules: modules, text: text });
+      results.push({ lang: lang, modules: modules, text: text });
     });
 
   return results;

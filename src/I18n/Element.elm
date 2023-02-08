@@ -29,11 +29,12 @@ module I18n.Element exposing (text, textWithResult)
 
 import Element exposing (Attribute, Element)
 import Html.Attributes as HtmlAttr
-import I18n.Helper exposing (joinI18nModules, joinI18nTexts)
-import I18n.Lang
+import I18n.Lang as Lang exposing (Lang)
+import I18n.Translator
     exposing
-        ( Lang
-        , TranslateResult(..)
+        ( TranslateResult(..)
+        , modulesToString
+        , textsToString
         )
 
 
@@ -42,33 +43,34 @@ text :
     -> Lang
     -> List String
     -> Element msg
-text translator langType texts =
-    translator langType texts
+text translate lang texts =
+    translate lang texts
         |> textWithResult
 
 
 textWithResult : TranslateResult -> Element msg
-textWithResult translateResult =
-    case translateResult of
-        Translated result ->
-            Element.text result
+textWithResult result =
+    case result of
+        Translated r ->
+            Element.text r
 
-        NoNeedsToTranslate result ->
-            Element.text (joinI18nTexts result)
-
-        WaitingToTranslate result ->
+        WaitingToTranslate r ->
             -- 记录未做国际化的内容信息，便于通过js做统一展示处理
             Element.el
-                (noTransAttrs result.modules)
-                (Element.text (joinI18nTexts result.texts))
+                (noTransAttrs r.lang r.modules)
+                (Element.text (textsToString r.texts))
 
 
-noTransAttrs : List String -> List (Attribute msg)
-noTransAttrs modules =
+noTransAttrs : Lang -> List String -> List (Attribute msg)
+noTransAttrs lang modules =
     [ HtmlAttr.attribute "i18n-not-translated" "true"
         |> Element.htmlAttribute
     , HtmlAttr.attribute
+        "i18n-not-translated-lang"
+        (Lang.toString lang)
+        |> Element.htmlAttribute
+    , HtmlAttr.attribute
         "i18n-not-translated-modules"
-        (joinI18nModules modules)
+        (modulesToString modules)
         |> Element.htmlAttribute
     ]

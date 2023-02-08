@@ -1,7 +1,7 @@
 module View.Page.Home.Right exposing (view)
 
 import Element exposing (..)
-import I18n.Lang exposing (langEnd)
+import I18n.I18n exposing (textEnd)
 import Model
 import Msg
 import View.I18n.Home as I18n
@@ -23,7 +23,7 @@ view ({ app } as state) =
             [ centerX
             , centerY
             ]
-            [ ("这里是主题详情展示页，默认显示当前分类的信息" :: langEnd)
+            [ ("这里是主题详情展示页，默认显示当前分类的信息" :: textEnd)
                 |> i18nText
             ]
         ]

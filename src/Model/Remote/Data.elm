@@ -27,7 +27,8 @@ module Model.Remote.Data exposing
     )
 
 import Http
-import I18n.Lang exposing (Lang, TranslateResult)
+import I18n.Lang exposing (Lang)
+import I18n.Translator exposing (TranslateResult)
 import Model.Remote exposing (parseError)
 
 

@@ -18,218 +18,140 @@
 
 
 module View.I18n.Home exposing
-    ( btnModule
-    , labelModule
+    ( buttonText
+    , labelText
     , text
+    , translate
     )
 
 import Element exposing (Element)
 import I18n.Element
-import I18n.Helper exposing (translateWaiting)
-import I18n.Lang
+import I18n.Lang exposing (Lang(..))
+import I18n.Translator as Translator
     exposing
-        ( Lang(..)
-        , TranslateResult(..)
+        ( TranslateResult
+        , default
+        , defaultWith
+        , ok
         )
-import View.I18n.Default
+import View.I18n.Default as Default
+
+
+buttonText : String
+buttonText =
+    "Button"
+
+
+labelText : String
+labelText =
+    "Label"
 
 
 text : Lang -> List String -> Element msg
 text =
-    I18n.Element.text translator
+    I18n.Element.text translate
 
 
-rootModule : String
-rootModule =
-    "Home"
+translate : Lang -> List String -> TranslateResult
+translate lang texts =
+    Translator.translate Default.lang lang texts <|
+        [ ( [ buttonText ], buttonTranslator )
+        , ( [ labelText ], labelTranslator )
+        , ( [], rootTranslator )
+        ]
 
 
-btnModule : String
-btnModule =
-    "Btn"
-
-
-labelModule : String
-labelModule =
-    "Label"
-
-
-getTranslatorBySubModule :
-    String
-    -> List ( String, t )
-    -> Maybe t
-getTranslatorBySubModule subModule translators =
-    translators
-        |> List.foldl
-            (\( m, t ) r ->
-                if r == Nothing && m == subModule then
-                    Just t
-
-                else
-                    r
-            )
-            Nothing
-
-
-translator : Lang -> List String -> TranslateResult
-translator langType texts =
-    let
-        translateDefault subModules =
-            View.I18n.Default.translator
-                langType
-                (rootModule :: subModules)
-    in
+rootTranslator : List String -> List ( Lang, TranslateResult )
+rootTranslator texts =
     case texts of
         [ "又有什么奇妙的想法呢？赶紧记下来吧 :)" ] ->
-            case langType of
-                En_US ->
-                    Translated
-                        "Have any amazing ideas? Git it down right now :)"
-
-                _ ->
-                    translateDefault [] texts
+            ok En_US "Have any amazing ideas? Git it down right now :)"
+                :: default
 
         [ "这里是类别描述信息" ] ->
-            case langType of
-                En_US ->
-                    Translated
-                        "Here is the description for the category"
-
-                _ ->
-                    translateDefault [] texts
+            ok En_US "Here is the description for the category"
+                :: default
 
         [ "这里是主题详情展示页，默认显示当前分类的信息" ] ->
-            case langType of
-                En_US ->
-                    Translated
-                        "Here is the details page for the topic, it will default show the information of the category"
+            ok En_US
+                ("Here is the details page for the topic"
+                    ++ ", it will default show the information of the category"
+                )
+                :: default
 
-                _ ->
-                    translateDefault [] texts
+        [ "点击这里添加描述信息" ] ->
+            ok En_US "Click here to add description for the category"
+                :: default
 
         [ "待办" as t, n ] ->
-            case langType of
-                En_US ->
-                    Translated
-                        ("TODO (" ++ n ++ ")")
-
-                _ ->
-                    translateDefault [] [ t, " (", n, ")" ]
+            ok En_US ("TODO (" ++ n ++ ")")
+                :: defaultWith [ t, " (", n, ")" ]
 
         [ "知识" as t, n ] ->
-            case langType of
-                En_US ->
-                    Translated
-                        ("Knowledge (" ++ n ++ ")")
-
-                _ ->
-                    translateDefault [] [ t, " (", n, ")" ]
+            ok En_US ("Knowledge (" ++ n ++ ")")
+                :: defaultWith [ t, " (", n, ")" ]
 
         [ "疑问" as t, n ] ->
-            case langType of
-                En_US ->
-                    Translated
-                        ("Question (" ++ n ++ ")")
-
-                _ ->
-                    translateDefault [] [ t, " (", n, ")" ]
-
-        -- 处理子模块的国际化
-        i18nSubModule :: actualTexts ->
-            let
-                translatorMaybe =
-                    [ ( btnModule, btnTranslator )
-                    , ( labelModule, labelTranslator )
-                    ]
-                        |> getTranslatorBySubModule i18nSubModule
-            in
-            case translatorMaybe of
-                Just t ->
-                    t langType
-                        translateDefault
-                        [ rootModule, i18nSubModule ]
-                        actualTexts
-
-                Nothing ->
-                    translateWaiting [ rootModule ] texts
+            ok En_US ("Question (" ++ n ++ ")")
+                :: defaultWith [ t, " (", n, ")" ]
 
         _ ->
-            translateWaiting [ rootModule ] texts
+            default
 
 
-btnTranslator :
-    Lang
-    -> (List String -> List String -> TranslateResult)
-    -> List String
-    -> List String
-    -> TranslateResult
-btnTranslator langType i18nDefault modules texts =
+buttonTranslator : List String -> List ( Lang, TranslateResult )
+buttonTranslator texts =
     case texts of
         [ "实时预览" ] ->
-            case langType of
-                En_US ->
-                    Translated
-                        "Live Preview"
-
-                _ ->
-                    i18nDefault [] texts
+            ok En_US "Live Preview"
+                :: default
 
         [ "语言" ] ->
-            case langType of
-                En_US ->
-                    Translated
-                        "Language"
-
-                _ ->
-                    i18nDefault [] texts
+            ok En_US "Language"
+                :: default
 
         [ "记下来!" ] ->
-            case langType of
-                En_US ->
-                    Translated
-                        "Got it!"
-
-                _ ->
-                    i18nDefault [] texts
+            ok En_US "Got it!"
+                :: default
 
         [ "设置" ] ->
-            case langType of
-                En_US ->
-                    Translated
-                        "Settings"
+            ok En_US "Settings"
+                :: default
 
-                _ ->
-                    i18nDefault [] texts
+        [ "阅读模式" ] ->
+            ok En_US "Reading Mode"
+                :: default
+
+        [ "搜索" ] ->
+            ok En_US "Search"
+                :: default
+
+        [ "编辑" ] ->
+            ok En_US "Edit"
+                :: default
+
+        [ "确定" ] ->
+            ok En_US "OK"
+                :: default
+
+        [ "取消" ] ->
+            ok En_US "Cancel"
+                :: default
 
         _ ->
-            translateWaiting modules texts
+            default
 
 
-labelTranslator :
-    Lang
-    -> (List String -> List String -> TranslateResult)
-    -> List String
-    -> List String
-    -> TranslateResult
-labelTranslator langType i18nDefault modules texts =
+labelTranslator : List String -> List ( Lang, TranslateResult )
+labelTranslator texts =
     case texts of
         [ "分类：" ] ->
-            case langType of
-                En_US ->
-                    Translated
-                        "Category: "
-
-                _ ->
-                    i18nDefault [] texts
+            ok En_US "Category: "
+                :: default
 
         [ "标签：" ] ->
-            case langType of
-                En_US ->
-                    Translated
-                        "Tags: "
-
-                _ ->
-                    i18nDefault [] texts
+            ok En_US "Tags: "
+                :: default
 
         _ ->
-            translateWaiting modules texts
+            default

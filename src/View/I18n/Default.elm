@@ -17,32 +17,13 @@
 -}
 
 
-module View.I18n.Default exposing
-    ( translator
-    , lang
-    )
+module View.I18n.Default exposing (lang)
 
-import I18n.Helper exposing (translateWaitingByLang)
-import I18n.Lang exposing (Lang, TranslateResult)
+import I18n.Lang exposing (Lang(..))
 
 
 {-| 待翻译文本自身的语言类型
 -}
 lang : Lang
 lang =
-    I18n.Lang.Zh_CN
-
-
-{-| 根据代码中的默认语言确定返回结果是否为无需翻译或待翻译
--}
-translator :
-    Lang
-    -> List String
-    -> List String
-    -> TranslateResult
-translator langType modules =
-    translateWaitingByLang
-        { default = lang
-        , current = langType
-        }
-        modules
+    Zh_CN

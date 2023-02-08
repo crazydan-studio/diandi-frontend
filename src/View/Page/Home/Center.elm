@@ -5,7 +5,7 @@ import Element.Border as Border
 import Element.Events exposing (onFocus)
 import Element.Font as Font
 import Element.Input as Input
-import I18n.Lang exposing (langEnd)
+import I18n.I18n exposing (textEnd)
 import Model
 import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Msg
@@ -150,7 +150,7 @@ header ({ app, theme } as state) =
                                             ++ [ Font.size categoryDescFontSize
                                                ]
                                         )
-                                        (("点击这里添加描述信息" :: langEnd)
+                                        (("点击这里添加描述信息" :: textEnd)
                                             |> i18nText
                                         )
                                     )
@@ -192,7 +192,8 @@ header ({ app, theme } as state) =
                                 ]
                                 [ theme.primaryLinkBtnIcon
                                     Icon.ReadOutlined
-                                , text "阅读模式"
+                                , (I18n.buttonText :: "阅读模式" :: textEnd)
+                                    |> i18nText
                                 ]
                         }
                    ]
@@ -314,7 +315,7 @@ newTopicInput inputId newTopic { app, theme, withWidgetContext } =
                         Just
                             (Input.placeholder
                                 theme.placeholderFont
-                                (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langEnd)
+                                (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: textEnd)
                                     |> i18nText
                                 )
                             )
@@ -341,7 +342,7 @@ newTopicInput inputId newTopic { app, theme, withWidgetContext } =
                                 [ paragraph
                                     []
                                     (List.singleton
-                                        ((I18n.labelModule :: "分类：" :: langEnd)
+                                        ((I18n.labelText :: "分类：" :: textEnd)
                                             |> i18nText
                                         )
                                         ++ ([ "产品开发", "点滴(DianDi)", "功能设计" ]
@@ -354,7 +355,7 @@ newTopicInput inputId newTopic { app, theme, withWidgetContext } =
                                 , paragraph
                                     []
                                     (List.singleton
-                                        ((I18n.labelModule :: "标签：" :: langEnd)
+                                        ((I18n.labelText :: "标签：" :: textEnd)
                                             |> i18nText
                                         )
                                         ++ ([ "待办", "知识", "疑问", "+" ]
@@ -372,7 +373,7 @@ newTopicInput inputId newTopic { app, theme, withWidgetContext } =
                                                 ++ [ alignRight
                                                    ]
                                         , content =
-                                            (I18n.btnModule :: "记下来!" :: langEnd)
+                                            (I18n.buttonText :: "记下来!" :: textEnd)
                                                 |> i18nText
                                         , onPress =
                                             Just

@@ -20,13 +20,12 @@
 module View.Page.Topic.Card exposing (view)
 
 import Base64
-import Data.TreeStore as TreeStore
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
-import I18n.Lang exposing (langEnd)
+import I18n.I18n exposing (textEnd)
 import Model
 import Model.App as App
 import Model.Operation.EditTopic as EditTopic exposing (EditTopic)
@@ -229,6 +228,9 @@ toolbarView :
     -> Element Msg.Msg
 toolbarView ({ app, theme } as state) topic =
     let
+        i18nText =
+            I18n.text app.lang
+
         fontSize =
             theme.secondaryFontSize
 
@@ -356,7 +358,7 @@ toolbarIconBtn config { app, theme } =
                     , color = config.color
                     }
                     config.icon
-                , (I18n.btnModule :: config.text :: langEnd)
+                , (I18n.buttonText :: config.text :: textEnd)
                     |> i18nText
                 ]
         }
@@ -440,14 +442,14 @@ editTopicInput topic editTopic ({ app, theme, withWidgetContext } as state) =
                 ]
                 [ paragraph
                     []
-                    [ (I18n.labelModule :: "分类：" :: langEnd)
+                    [ (I18n.labelText :: "分类：" :: textEnd)
                         |> i18nText
                     , topicCategoryView state topic
                     ]
                 , paragraph
                     []
                     (List.singleton
-                        ((I18n.labelModule :: "标签：" :: langEnd)
+                        ((I18n.labelText :: "标签：" :: textEnd)
                             |> i18nText
                         )
                         ++ ([ "待办", "知识", "疑问", "+" ]
@@ -465,7 +467,7 @@ editTopicInput topic editTopic ({ app, theme, withWidgetContext } as state) =
                                 ++ [ alignRight
                                    ]
                         , content =
-                            (I18n.btnModule :: "确定" :: langEnd)
+                            (I18n.buttonText :: "确定" :: textEnd)
                                 |> i18nText
                         , onPress =
                             Just
@@ -479,7 +481,7 @@ editTopicInput topic editTopic ({ app, theme, withWidgetContext } as state) =
                                 ++ [ alignRight
                                    ]
                         , content =
-                            (I18n.btnModule :: "取消" :: langEnd)
+                            (I18n.buttonText :: "取消" :: textEnd)
                                 |> i18nText
                         , onPress =
                             Just

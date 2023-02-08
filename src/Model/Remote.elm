@@ -20,7 +20,9 @@
 module Model.Remote exposing (parseError)
 
 import Http
-import I18n.Lang exposing (Lang, TranslateResult, langEnd)
+import I18n.I18n exposing (textEnd)
+import I18n.Lang exposing (Lang)
+import I18n.Translator exposing (TranslateResult)
 import Model.I18n.Remote as I18n
 
 
@@ -29,23 +31,23 @@ parseError lang error =
     case error of
         Http.BadStatus status ->
             if status == 401 then
-                "用户未登录" :: langEnd |> I18n.translator lang
+                "用户未登录" :: textEnd |> I18n.translate lang
 
             else if status == 403 then
-                "请求未授权" :: langEnd |> I18n.translator lang
+                "请求未授权" :: textEnd |> I18n.translate lang
 
             else if status == 404 then
-                "请求URL不存在" :: langEnd |> I18n.translator lang
+                "请求URL不存在" :: textEnd |> I18n.translate lang
 
             else
-                ("异常请求状态码：" :: String.fromInt status :: langEnd)
-                    |> I18n.translator lang
+                ("异常请求状态码：" :: String.fromInt status :: textEnd)
+                    |> I18n.translate lang
 
         Http.Timeout ->
-            "网络请求超时，请稍后再试" :: langEnd |> I18n.translator lang
+            "网络请求超时，请稍后再试" :: textEnd |> I18n.translate lang
 
         Http.NetworkError ->
-            "网络连接异常，请稍后再试" :: langEnd |> I18n.translator lang
+            "网络连接异常，请稍后再试" :: textEnd |> I18n.translate lang
 
         _ ->
-            "未知异常" :: langEnd |> I18n.translator lang
+            "未知异常" :: textEnd |> I18n.translate lang

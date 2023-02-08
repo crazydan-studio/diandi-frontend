@@ -17,78 +17,54 @@
 -}
 
 
-module Model.I18n.Remote exposing (translator)
+module Model.I18n.Remote exposing (translate)
 
-import I18n.Helper exposing (translateWaiting, translateWaitingByLang)
-import I18n.Lang exposing (Lang(..), TranslateResult(..))
+import I18n.Lang exposing (Lang(..))
+import I18n.Translator as Translator
+    exposing
+        ( TranslateResult
+        , default
+        , ok
+        )
 
 
-translator : Lang -> List String -> TranslateResult
-translator langType texts =
-    let
-        i18nDefault =
-            translateWaitingByLang
-                { default = Zh_CN
-                , current = langType
-                }
-                []
-    in
+translate : Lang -> List String -> TranslateResult
+translate lang texts =
+    Translator.translate Default lang texts <|
+        [ ( [], translator )
+        ]
+
+
+translator : List String -> List ( Lang, TranslateResult )
+translator texts =
     case texts of
         [ "用户未登录" ] ->
-            case langType of
-                En_US ->
-                    Translated "The user is not authorized"
-
-                _ ->
-                    i18nDefault texts
+            ok En_US "The user is not authorized"
+                :: default
 
         [ "请求未授权" ] ->
-            case langType of
-                En_US ->
-                    Translated "The request is not permitted"
-
-                _ ->
-                    i18nDefault texts
+            ok En_US "The request is not permitted"
+                :: default
 
         [ "请求URL不存在" ] ->
-            case langType of
-                En_US ->
-                    Translated "The URL doesn't exist"
-
-                _ ->
-                    i18nDefault texts
+            ok En_US "The URL doesn't exist"
+                :: default
 
         [ "异常请求状态码：", code ] ->
-            case langType of
-                En_US ->
-                    Translated ("Error request code: " ++ code)
-
-                _ ->
-                    i18nDefault texts
+            ok En_US ("Error request code: " ++ code)
+                :: default
 
         [ "网络请求超时，请稍后再试" ] ->
-            case langType of
-                En_US ->
-                    Translated "Request timeout, please try it later"
-
-                _ ->
-                    i18nDefault texts
+            ok En_US "Request timeout, please try it later"
+                :: default
 
         [ "网络连接异常，请稍后再试" ] ->
-            case langType of
-                En_US ->
-                    Translated "Network connection failed, please try it later"
-
-                _ ->
-                    i18nDefault texts
+            ok En_US "Network connection failed, please try it later"
+                :: default
 
         [ "未知异常" ] ->
-            case langType of
-                En_US ->
-                    Translated "Unknown error"
-
-                _ ->
-                    i18nDefault texts
+            ok En_US "Unknown error"
+                :: default
 
         _ ->
-            translateWaiting [] texts
+            default

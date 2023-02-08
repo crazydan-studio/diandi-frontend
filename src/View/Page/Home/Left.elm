@@ -2,7 +2,7 @@ module View.Page.Home.Left exposing (view)
 
 import Element exposing (..)
 import Element.Input as Input
-import I18n.Lang exposing (langEnd)
+import I18n.I18n exposing (textEnd)
 import Model
 import Msg
 import View.I18n.Home as I18n
@@ -90,7 +90,7 @@ bottom { app, theme, withWidgetContext } =
                         [ theme.primaryBtnIcon
                             Icon.SettingOutlined
                         , -- TODO 点击后，在左侧弹出侧边栏，该侧边栏中展示用户头像/名称、语言切换、主题切换等
-                          (I18n.btnModule :: "设置" :: langEnd)
+                          (I18n.buttonText :: "设置" :: textEnd)
                             |> i18nText
                         ]
                 , onPress = Nothing
@@ -106,7 +106,7 @@ bottom { app, theme, withWidgetContext } =
                     ]
                     [ theme.primaryLinkBtnIcon
                         Icon.SearchOutlined
-                    , (I18n.btnModule :: "搜索" :: langEnd)
+                    , (I18n.buttonText :: "搜索" :: textEnd)
                         |> i18nText
                     ]
             }

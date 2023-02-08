@@ -38,12 +38,8 @@ import Browser.Navigation as Nav
 import Data.TreeStore as TreeStore exposing (TreeStore)
 import Dict exposing (Dict)
 import Http
-import I18n.Lang
-    exposing
-        ( Lang
-        , TextsNeedToBeTranslated
-        , TranslateResult
-        )
+import I18n.Lang exposing (Lang)
+import I18n.Translator exposing (TextsNeedToBeTranslated, TranslateResult)
 import Model.Operation.EditTopic as EditTopic exposing (EditTopic)
 import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Model.Remote.Data as RemoteData

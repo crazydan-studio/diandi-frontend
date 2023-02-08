@@ -150,6 +150,7 @@ createHelper _ { content, onPress, attrs } =
          , Font.size 14
          , Font.letterSpacing 1.25
          , Font.weight 500
+         , Font.center
          , Border.rounded 4
          , shadow
          , Transition.with

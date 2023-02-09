@@ -22,13 +22,30 @@ module Widget.Widget.TextEditor exposing (editor)
 import Element
     exposing
         ( Element
+        , alignTop
+        , cursor
+        , el
+        , fill
+        , height
         , none
+        , padding
+        , px
+        , rgb255
+        , row
+        , text
+        , width
         )
+import Element.Background as Background
+import Element.Border as Border
+import Element.Events exposing (onClick, onLoseFocus)
+import Element.Input as Input
+import Widget.Html exposing (onClickOutOfMe)
 import Widget.Internal.Widget.TextEditor as Internal
 
 
 type alias Config =
-    {}
+    { id : String
+    }
 
 
 type alias Context a msg =
@@ -40,4 +57,83 @@ editor :
     -> Context a msg
     -> Element msg
 editor config { textEditorContext } =
-    none
+    createHelper textEditorContext config
+
+
+
+-- -----------------------------------------------------------
+
+
+createHelper : Internal.Context msg -> Config -> Element msg
+createHelper ({ getState, onUpdate } as context) ({ id } as config) =
+    let
+        state =
+            getState id
+                |> Maybe.withDefault Internal.init
+    in
+    el
+        [ width fill
+        , height fill
+        , padding 8
+        , onClick
+            (onUpdate id
+                (\s ->
+                    Just
+                        { s | focused = True }
+                )
+            )
+        , onClickOutOfMe
+            (onUpdate id
+                (\s ->
+                    Just
+                        { s | focused = False }
+                )
+            )
+        ]
+        (row
+            [ width fill
+            , height fill
+            , cursor "text"
+            ]
+            [ text state.text
+            , createCursor context config state
+            ]
+        )
+
+
+createCursor :
+    Internal.Context msg
+    -> Config
+    -> Internal.State
+    -> Element msg
+createCursor { onUpdate } { id } state =
+    if state.cursor.show then
+        el
+            [ -- 光标高度为行高
+              height (px 20)
+            , alignTop
+            ]
+            (Input.text
+                [ Element.id (id ++ "-input")
+                , width (px 2)
+                , height fill
+                , padding 0
+                , Border.width 0
+                , Background.color (rgb255 255 0 0)
+                ]
+                { onChange =
+                    \t ->
+                        onUpdate id
+                            (\s ->
+                                Just
+                                    { s | text = t }
+                            )
+                , text = ""
+                , placeholder = Nothing
+                , label = Input.labelHidden ""
+                , selection = Nothing
+                }
+            )
+
+    else
+        none

@@ -97,9 +97,10 @@ init config navUrl navKey =
 
 
 sub : State -> Sub Msg.Msg
-sub _ =
+sub state =
     Sub.batch
         [ I18n.Port.sub Msg.I18nPortMsg
+        , Widget.sub state.widgets
         ]
 
 

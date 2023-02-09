@@ -15,7 +15,7 @@ import View.Style.Base as BaseStyle
 import View.Style.Border.Primary as PrimaryBorder
 import Widget.Html exposing (onClickOutOfMe, onInputBlur, zIndex)
 import Widget.Icon as Icon
-import Widget.Widget.Button as Button
+import Widget.Widget.TextEditor as TextEditor
 
 
 view : Model.State -> Element Msg.Msg
@@ -253,137 +253,16 @@ newTopicInput inputId newTopic { app, theme, withI18nElement, withWidgetContext 
         inputMaxHeight =
             inputMinHeight * 4
     in
-    (if newTopic.focused then
-        [ row
-            [ width fill
-            , spacing BaseStyle.spacing
-            ]
-            ([ "表情", "图片", "附件", "语音", "视频" ]
-                |> List.map
-                    (\t ->
-                        Input.button
-                            [ width (px 32)
-                            , alignLeft
-                            , Font.center
-                            ]
-                            { onPress = Nothing
-                            , label = text t
-                            }
-                    )
-            )
+    [ column
+        (PrimaryBorder.all 1 theme
+            ++ [ width fill
+               , height (px 100)
+               , Border.rounded 3
+               ]
+        )
+        [ withWidgetContext <|
+            TextEditor.editor
+                { id = "new-topic-editor"
+                }
         ]
-
-     else
-        []
-    )
-        ++ [ column
-                (PrimaryBorder.all 1 theme
-                    ++ [ width fill
-                       , height fill
-                       , Border.rounded 3
-                       ]
-                )
-                (Input.multiline
-                    ([ id inputId
-                     , width fill
-                     , height
-                        (if newTopic.focused then
-                            px inputMaxHeight
-
-                         else
-                            px inputMinHeight
-                        )
-                     , Border.width 0
-                     ]
-                        ++ (if newTopic.focused then
-                                [ onInputBlur (\s -> toMsg (NewTopic.InputFocusBlur s))
-                                ]
-
-                            else
-                                [ onFocus
-                                    (toMsg NewTopic.InputFocusIn)
-                                ]
-                           )
-                    )
-                    { onChange =
-                        \text ->
-                            toMsg
-                                (NewTopic.InputContentChanged text)
-                    , text = newTopic.content
-                    , selection = newTopic.selection
-                    , placeholder =
-                        Just
-                            (Input.placeholder
-                                theme.placeholderFont
-                                (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langTextEnd)
-                                    |> i18nText
-                                )
-                            )
-                    , label = Input.labelHidden ""
-                    , spellcheck = False
-                    }
-                    :: (if newTopic.focused then
-                            [ column
-                                [ width fill
-                                , paddingXY BaseStyle.spacing 0
-                                ]
-                                [ el
-                                    (PrimaryBorder.top 1 theme
-                                        ++ [ width fill
-                                           ]
-                                    )
-                                    none
-                                ]
-                            , row
-                                [ width fill
-                                , spacing BaseStyle.spacing
-                                , padding BaseStyle.spacing
-                                ]
-                                [ paragraph
-                                    []
-                                    (List.singleton
-                                        ((I18n.labelText :: "分类：" :: langTextEnd)
-                                            |> i18nText
-                                        )
-                                        ++ ([ "产品开发", "点滴(DianDi)", "功能设计" ]
-                                                |> List.map
-                                                    (\t ->
-                                                        text (t ++ " > ")
-                                                    )
-                                           )
-                                    )
-                                , paragraph
-                                    []
-                                    (List.singleton
-                                        ((I18n.labelText :: "标签：" :: langTextEnd)
-                                            |> i18nText
-                                        )
-                                        ++ ([ "待办", "知识", "疑问", "+" ]
-                                                |> List.map
-                                                    (\t ->
-                                                        text (t ++ " ")
-                                                    )
-                                           )
-                                    )
-                                , withWidgetContext <|
-                                    Button.button
-                                        { id = "btn-write-it-down-in-home"
-                                        , attrs =
-                                            theme.primaryBtn
-                                                ++ [ alignRight
-                                                   ]
-                                        , content =
-                                            (I18n.buttonText :: "记下来!" :: langTextEnd)
-                                                |> i18nText
-                                        , onPress =
-                                            Just
-                                                (Msg.NewTopicAdded inputId)
-                                        }
-                                ]
-                            ]
-
-                        else
-                            []
-                       )
-                )
-           ]
+    ]

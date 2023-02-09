@@ -27,7 +27,12 @@ import Widget.Internal.Context as Internal
 
 
 type alias State =
-    {}
+    { focused : Bool
+    , cursor :
+        { show : Bool
+        }
+    , text : String
+    }
 
 
 type alias Context msg =
@@ -36,4 +41,9 @@ type alias Context msg =
 
 init : State
 init =
-    {}
+    { focused = False
+    , cursor =
+        { show = False
+        }
+    , text = ""
+    }

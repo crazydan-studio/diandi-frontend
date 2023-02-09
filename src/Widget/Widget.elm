@@ -31,6 +31,7 @@ import Dict exposing (Dict)
 import Element exposing (Element)
 import Widget.Internal.Widget.Button as Button
 import Widget.Internal.Widget.FixedImage as FixedImage
+import Widget.Internal.Widget.TextEditor as TextEditor
 
 
 type State msg
@@ -62,12 +63,14 @@ type alias WidgetStateStore state =
 type alias WidgetStates =
     { button : WidgetStateStore Button.State
     , fixedImage : WidgetStateStore FixedImage.State
+    , textEditor : WidgetStateStore TextEditor.State
     }
 
 
 type alias Context msg =
     { buttonContext : Button.Context msg
     , fixedImageContext : FixedImage.Context msg
+    , textEditorContext : TextEditor.Context msg
     }
 
 
@@ -76,6 +79,7 @@ type Msg
       -- 再触发业务消息，同时支持批量删除消息。或者，采用js监听节点移除消息，再通过组件id和类型做清理？
       UpdateButtonMsg String (Maybe Button.State)
     | UpdateFixedImageMsg String (Maybe FixedImage.State)
+    | UpdateTextEditorMsg String (Maybe TextEditor.State)
 
 
 update : Msg -> State appMsg -> ( State appMsg, WithContext appMsg )
@@ -90,6 +94,7 @@ init config =
         State config
             { button = Dict.empty
             , fixedImage = Dict.empty
+            , textEditor = Dict.empty
             }
 
 
@@ -115,6 +120,8 @@ createContext { toAppMsg } widgets =
         contextWith .button Button.init UpdateButtonMsg
     , fixedImageContext =
         contextWith .fixedImage FixedImage.init UpdateFixedImageMsg
+    , textEditorContext =
+        contextWith .textEditor TextEditor.init UpdateTextEditorMsg
     }
 
 
@@ -136,6 +143,9 @@ updateByMsg msg widgets =
 
         UpdateFixedImageMsg id state ->
             { widgets | fixedImage = update_ .fixedImage id state }
+
+        UpdateTextEditorMsg id state ->
+            { widgets | textEditor = update_ .textEditor id state }
 
 
 

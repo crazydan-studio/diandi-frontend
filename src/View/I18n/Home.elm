@@ -65,7 +65,7 @@ rootTranslator : List String -> List ( Lang, TranslateResult )
 rootTranslator texts =
     case texts of
         [ "又有什么奇妙的想法呢？赶紧记下来吧 :)" ] ->
-            ok En_US "Have any amazing ideas? Git it down right now :)"
+            ok En_US "Have any amazing ideas? Get it down right now :)"
                 :: default
 
         [ "这里是主题详情展示页，默认显示当前分类的信息" ] ->

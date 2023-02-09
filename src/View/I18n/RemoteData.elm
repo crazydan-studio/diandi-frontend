@@ -1,6 +1,6 @@
 module View.I18n.RemoteData exposing
     ( text
-    , textWithResult
+    , textWith
     , translate
     )
 
@@ -21,9 +21,9 @@ text =
     I18n.Element.text translate
 
 
-textWithResult : TranslateResult -> Element msg
-textWithResult =
-    I18n.Element.textWithResult
+textWith : TranslateResult -> Element msg
+textWith =
+    I18n.Element.textWith
 
 
 translate : Lang -> List String -> TranslateResult

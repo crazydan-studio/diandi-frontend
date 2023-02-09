@@ -1,6 +1,6 @@
-module I18n.I18n exposing (textEnd)
+module I18n.I18n exposing (langTextEnd)
 
 
-textEnd : List String
-textEnd =
+langTextEnd : List String
+langTextEnd =
     []

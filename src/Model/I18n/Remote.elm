@@ -30,7 +30,7 @@ import I18n.Translator as Translator
 
 translate : Lang -> List String -> TranslateResult
 translate lang texts =
-    Translator.translate Default lang texts <|
+    Translator.translate Zh_CN lang texts <|
         [ ( [], translator )
         ]
 

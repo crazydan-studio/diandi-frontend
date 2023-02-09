@@ -17,7 +17,7 @@
 -}
 
 
-module I18n.Element exposing (text, textWithResult)
+module I18n.Element exposing (text, textWith)
 
 {-| Elm UI国际化支持
 
@@ -45,11 +45,11 @@ text :
     -> Element msg
 text translate lang texts =
     translate lang texts
-        |> textWithResult
+        |> textWith
 
 
-textWithResult : TranslateResult -> Element msg
-textWithResult result =
+textWith : TranslateResult -> Element msg
+textWith result =
     case result of
         Translated r ->
             Element.text r

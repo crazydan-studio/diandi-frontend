@@ -39,12 +39,12 @@ import View.I18n.Default as Default
 
 buttonText : String
 buttonText =
-    "Button"
+    "Home/Button"
 
 
 labelText : String
 labelText =
-    "Label"
+    "Home/Label"
 
 
 text : Lang -> List String -> Element msg
@@ -66,10 +66,6 @@ rootTranslator texts =
     case texts of
         [ "又有什么奇妙的想法呢？赶紧记下来吧 :)" ] ->
             ok En_US "Have any amazing ideas? Git it down right now :)"
-                :: default
-
-        [ "这里是类别描述信息" ] ->
-            ok En_US "Here is the description for the category"
                 :: default
 
         [ "这里是主题详情展示页，默认显示当前分类的信息" ] ->
@@ -102,10 +98,6 @@ rootTranslator texts =
 buttonTranslator : List String -> List ( Lang, TranslateResult )
 buttonTranslator texts =
     case texts of
-        [ "实时预览" ] ->
-            ok En_US "Live Preview"
-                :: default
-
         [ "语言" ] ->
             ok En_US "Language"
                 :: default

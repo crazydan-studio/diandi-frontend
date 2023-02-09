@@ -25,7 +25,7 @@ import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
-import I18n.I18n exposing (textEnd)
+import I18n.I18n exposing (langTextEnd)
 import Model
 import Model.App as App
 import Model.Operation.EditTopic as EditTopic exposing (EditTopic)
@@ -358,7 +358,7 @@ toolbarIconBtn config { app, theme } =
                     , color = config.color
                     }
                     config.icon
-                , (I18n.buttonText :: config.text :: textEnd)
+                , (I18n.buttonText :: config.text :: langTextEnd)
                     |> i18nText
                 ]
         }
@@ -442,14 +442,14 @@ editTopicInput topic editTopic ({ app, theme, withWidgetContext } as state) =
                 ]
                 [ paragraph
                     []
-                    [ (I18n.labelText :: "分类：" :: textEnd)
+                    [ (I18n.labelText :: "分类：" :: langTextEnd)
                         |> i18nText
                     , topicCategoryView state topic
                     ]
                 , paragraph
                     []
                     (List.singleton
-                        ((I18n.labelText :: "标签：" :: textEnd)
+                        ((I18n.labelText :: "标签：" :: langTextEnd)
                             |> i18nText
                         )
                         ++ ([ "待办", "知识", "疑问", "+" ]
@@ -467,7 +467,7 @@ editTopicInput topic editTopic ({ app, theme, withWidgetContext } as state) =
                                 ++ [ alignRight
                                    ]
                         , content =
-                            (I18n.buttonText :: "确定" :: textEnd)
+                            (I18n.buttonText :: "确定" :: langTextEnd)
                                 |> i18nText
                         , onPress =
                             Just
@@ -481,7 +481,7 @@ editTopicInput topic editTopic ({ app, theme, withWidgetContext } as state) =
                                 ++ [ alignRight
                                    ]
                         , content =
-                            (I18n.buttonText :: "取消" :: textEnd)
+                            (I18n.buttonText :: "取消" :: langTextEnd)
                                 |> i18nText
                         , onPress =
                             Just

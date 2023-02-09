@@ -88,8 +88,11 @@ textsToString =
 
 
 translate :
+    -- 待翻译文本的源语言
     Lang
+    -- 待翻译文本的目标语言
     -> Lang
+    -- 待翻译文本。变量作为list元素，最终直接将元素拼接在一起
     -> List String
     -- List (modules, translator)
     -> List ( List String, Translator )
@@ -100,7 +103,7 @@ translate defaultLang lang texts translators =
             Translated r
 
         WaitingToTranslate r ->
-            if defaultLang == r.lang && defaultLang /= Default then
+            if defaultLang == r.lang then
                 Translated (textsToString r.texts)
 
             else

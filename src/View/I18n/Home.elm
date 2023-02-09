@@ -48,8 +48,8 @@ labelText =
 
 
 text : Lang -> List String -> Element msg
-text =
-    I18n.Element.text translate
+text lang =
+    I18n.Element.text lang translate
 
 
 translate : Lang -> List String -> TranslateResult

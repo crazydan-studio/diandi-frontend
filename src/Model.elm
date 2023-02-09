@@ -29,6 +29,7 @@ module Model exposing
 
 import Browser.Navigation as Nav
 import Http
+import I18n.I18n exposing (I18nElement, withI18nElement)
 import I18n.Port
 import Model.App as App
 import Model.Operation.EditTopic as EditTopic
@@ -61,6 +62,7 @@ type alias State =
     { -- 应用状态
       app : App.State
     , theme : Theme.Theme Msg.Msg
+    , withI18nElement : I18nElement Msg.Msg
 
     -- 组件内部状态
     , widgets : Widget.State Msg.Msg
@@ -75,16 +77,19 @@ init config navUrl navKey =
             Widget.init
                 { toAppMsg = Msg.WidgetMsg
                 }
+
+        app =
+            App.init
+                { title = config.title
+                , description = config.description
+                , lang = config.lang
+                , navKey = navKey
+                , navUrl = navUrl
+                }
     in
-    { app =
-        App.init
-            { title = config.title
-            , description = config.description
-            , lang = config.lang
-            , navKey = navKey
-            , navUrl = navUrl
-            }
+    { app = app
     , theme = Theme.create ThemeDefault.init
+    , withI18nElement = withI18nElement app.lang
     , widgets = widgets
     , withWidgetContext = withWidgetContext
     }
@@ -160,7 +165,14 @@ updateAppState :
     -> State
     -> State
 updateAppState updater ({ app } as state) =
-    { state | app = updater app }
+    let
+        newApp =
+            updater app
+    in
+    { state
+        | app = newApp
+        , withI18nElement = withI18nElement newApp.lang
+    }
 
 
 updateWidgetsState :

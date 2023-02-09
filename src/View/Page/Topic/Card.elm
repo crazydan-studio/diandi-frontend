@@ -228,9 +228,6 @@ toolbarView :
     -> Element Msg.Msg
 toolbarView ({ app, theme } as state) topic =
     let
-        i18nText =
-            I18n.text app.lang
-
         fontSize =
             theme.secondaryFontSize
 
@@ -334,14 +331,14 @@ toolbarIconBtn :
     , icon : Icon
     , color : Color
     , text : String
-    , onPress : Maybe msg
+    , onPress : Maybe Msg.Msg
     }
     -> Model.State
-    -> Element msg
-toolbarIconBtn config { app, theme } =
+    -> Element Msg.Msg
+toolbarIconBtn config { app, theme, withI18nElement } =
     let
         i18nText =
-            I18n.text app.lang
+            withI18nElement I18n.text
     in
     Input.button
         [ mouseOver
@@ -369,10 +366,10 @@ editTopicInput :
     -> EditTopic
     -> Model.State
     -> Element Msg.Msg
-editTopicInput topic editTopic ({ app, theme, withWidgetContext } as state) =
+editTopicInput topic editTopic ({ app, theme, withI18nElement, withWidgetContext } as state) =
     let
         i18nText =
-            I18n.text app.lang
+            withI18nElement I18n.text
 
         toMsg =
             Msg.EditTopicMsg topic.id

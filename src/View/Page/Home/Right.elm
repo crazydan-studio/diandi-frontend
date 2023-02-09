@@ -9,10 +9,10 @@ import View.Style.Base as BaseStyle
 
 
 view : Model.State -> Element Msg.Msg
-view ({ app } as state) =
+view ({ app, withI18nElement } as state) =
     let
         i18nText =
-            I18n.text app.lang
+            withI18nElement I18n.text
     in
     column
         [ width fill

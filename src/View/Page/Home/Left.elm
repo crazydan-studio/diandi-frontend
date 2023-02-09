@@ -67,10 +67,10 @@ header { app, theme } =
 
 
 bottom : Model.State -> Element Msg.Msg
-bottom { app, theme, withWidgetContext } =
+bottom { app, theme, withI18nElement, withWidgetContext } =
     let
         i18nText =
-            I18n.text app.lang
+            withI18nElement I18n.text
     in
     row
         (PrimaryBorder.top 1 theme

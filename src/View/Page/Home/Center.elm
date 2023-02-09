@@ -55,10 +55,10 @@ body ({ app, theme } as state) =
 
 
 header : Model.State -> Element Msg.Msg
-header ({ app, theme } as state) =
+header ({ app, theme, withI18nElement } as state) =
     let
         i18nText =
-            I18n.text app.lang
+            withI18nElement I18n.text
 
         headerPaddingY =
             BaseStyle.spacing
@@ -239,10 +239,10 @@ newTopicInput :
     -> NewTopic
     -> Model.State
     -> List (Element Msg.Msg)
-newTopicInput inputId newTopic { app, theme, withWidgetContext } =
+newTopicInput inputId newTopic { app, theme, withI18nElement, withWidgetContext } =
     let
         i18nText =
-            I18n.text app.lang
+            withI18nElement I18n.text
 
         toMsg =
             Msg.NewTopicMsg inputId

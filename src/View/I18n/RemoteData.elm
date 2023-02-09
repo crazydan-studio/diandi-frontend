@@ -17,8 +17,8 @@ import View.I18n.Default as Default
 
 
 text : Lang -> List String -> Element msg
-text =
-    I18n.Element.text translate
+text lang =
+    I18n.Element.text lang translate
 
 
 textWith : TranslateResult -> Element msg

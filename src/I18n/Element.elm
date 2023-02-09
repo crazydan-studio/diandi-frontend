@@ -39,11 +39,11 @@ import I18n.Translator
 
 
 text :
-    (Lang -> List String -> TranslateResult)
-    -> Lang
+    Lang
+    -> (Lang -> List String -> TranslateResult)
     -> List String
     -> Element msg
-text translate lang texts =
+text lang translate texts =
     translate lang texts
         |> textWith
 

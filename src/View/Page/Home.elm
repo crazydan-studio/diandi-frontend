@@ -23,10 +23,9 @@ import Element exposing (..)
 import Element.Border as Border
 import Model
 import Msg
-import View.Page
-import View.Page.Home.Center
-import View.Page.Home.Left
-import View.Page.Home.Right
+import View.Page.Home.Center as Center
+import View.Page.Home.Left as Left
+import View.Page.Home.Right as Right
 
 
 view : Model.State -> Element Msg.Msg
@@ -39,7 +38,7 @@ view state =
             [ width (px 256)
             , height fill
             ]
-            (View.Page.Home.Left.view state)
+            (Left.view state)
         , el
             [ width fill
             , height fill
@@ -66,10 +65,10 @@ view state =
                   }
                 ]
             ]
-            (View.Page.Home.Center.view state)
+            (Center.view state)
         , el
             [ width (px (128 * 4))
             , height fill
             ]
-            (View.Page.Home.Right.view state)
+            (Right.view state)
         ]

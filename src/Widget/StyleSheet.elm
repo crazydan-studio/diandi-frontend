@@ -26,4 +26,18 @@ create : Html msg
 create =
     Html.node "style"
         []
-        []
+        [ -- 文本编辑器的光标闪动动画
+          Html.text """
+@keyframes ani-blink-cursor {
+    0% {opacity: 1;}
+    49% {opacity: 1;}
+    50% {opacity: 0;}
+    100% {opacity: 0;}
+}
+.blink-cursor {
+    animation-name: ani-blink-cursor;
+    animation-duration: 1000ms;
+    animation-iteration-count: infinite;
+}
+          """
+        ]

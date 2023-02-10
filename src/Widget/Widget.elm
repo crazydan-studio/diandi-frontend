@@ -30,7 +30,6 @@ module Widget.Widget exposing
 
 import Dict exposing (Dict)
 import Element exposing (Element)
-import Time
 import Widget.Internal.Widget.Button as Button
 import Widget.Internal.Widget.FixedImage as FixedImage
 import Widget.Internal.Widget.TextEditor as TextEditor
@@ -82,7 +81,6 @@ type Msg
       UpdateButtonMsg String (Maybe Button.State)
     | UpdateFixedImageMsg String (Maybe FixedImage.State)
     | UpdateTextEditorMsg String (Maybe TextEditor.State)
-    | BlinkTextEditorCursor
 
 
 update : Msg -> State appMsg -> ( State appMsg, WithContext appMsg )
@@ -94,8 +92,7 @@ update msg (State config widgets) =
 sub : State appMsg -> Sub appMsg
 sub (State { toAppMsg } _) =
     Sub.batch
-        [ Time.every 500 (\_ -> toAppMsg BlinkTextEditorCursor)
-        ]
+        []
 
 
 init : Config appMsg -> ( State appMsg, WithContext appMsg )
@@ -156,26 +153,6 @@ updateByMsg msg widgets =
 
         UpdateTextEditorMsg id state ->
             { widgets | textEditor = update_ .textEditor id state }
-
-        BlinkTextEditorCursor ->
-            { widgets
-                | textEditor =
-                    widgets.textEditor
-                        |> Dict.map
-                            (\_ ({ cursor, focused } as state) ->
-                                let
-                                    newCursor =
-                                        if focused then
-                                            { cursor
-                                                | show = not cursor.show
-                                            }
-
-                                        else
-                                            { cursor | show = False }
-                                in
-                                { state | cursor = newCursor }
-                            )
-            }
 
 
 

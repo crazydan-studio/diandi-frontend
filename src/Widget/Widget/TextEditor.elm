@@ -39,7 +39,7 @@ import Element.Background as Background
 import Element.Border as Border
 import Element.Events exposing (onClick, onLoseFocus)
 import Element.Input as Input
-import Widget.Html exposing (onClickOutOfMe)
+import Widget.Html exposing (class, onClickOutOfMe)
 import Widget.Internal.Widget.TextEditor as Internal
 
 
@@ -107,11 +107,13 @@ createCursor :
     -> Internal.State
     -> Element msg
 createCursor { onUpdate } { id } state =
-    if state.cursor.show then
+    if state.focused then
         el
-            [ -- 光标高度为行高
+            [ -- TODO 光标高度设置为左侧元素的高度，
+              -- 左侧无元素时，设置为右侧元素高度，否则，设置为行高
               height (px 20)
             , alignTop
+            , class "blink-cursor"
             ]
             (Input.text
                 [ Element.id (id ++ "-input")

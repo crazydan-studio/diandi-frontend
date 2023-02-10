@@ -19,28 +19,14 @@
 
 module Widget.Widget.TextEditor exposing (editor)
 
-import Element
-    exposing
-        ( Element
-        , alignTop
-        , cursor
-        , el
-        , fill
-        , height
-        , none
-        , padding
-        , px
-        , rgb255
-        , row
-        , text
-        , width
-        )
-import Element.Background as Background
+import Element exposing (..)
 import Element.Border as Border
-import Element.Events exposing (onClick, onLoseFocus)
-import Element.Input as Input
+import Element.Events exposing (onClick)
+import Html
+import Html.Attributes as HtmlAttr
+import Html.Events as HtmlEvent
 import Widget.Html exposing (class, onClickOutOfMe)
-import Widget.Internal.Widget.TextEditor as Internal
+import Widget.Internal.Widget.TextEditor as Internal exposing (inputId)
 
 
 type alias Config =
@@ -70,6 +56,20 @@ createHelper ({ getState, onUpdate } as context) ({ id } as config) =
         state =
             getState id
                 |> Maybe.withDefault Internal.init
+
+        lineHeight =
+            20
+
+        textStyle =
+            htmlStyleAttribute
+                [ ( "line-height"
+                  , String.fromInt lineHeight ++ "px"
+                  )
+                , ( "letter-spacing", "1px" )
+
+                -- Note：确保文字与图片在同一行时，文字能够居中显示
+                , ( "vertical-align", "top" )
+                ]
     in
     el
         [ width fill
@@ -95,8 +95,24 @@ createHelper ({ getState, onUpdate } as context) ({ id } as config) =
             , height fill
             , cursor "text"
             ]
-            [ text state.text
-            , createCursor context config state
+            [ paragraph
+                [ alignTop
+                , textStyle
+                ]
+                [ el
+                    [ height (px lineHeight)
+
+                    -- 光标放在到文档元素的右侧，且光标与字符在相同容器内，
+                    -- 故，光标高度与该元素等高。若光标前后无文档元素，则其高度为行高
+                    , inFront (createCursor context config state)
+                    ]
+                    (if String.isEmpty state.text then
+                        el [ width (px 2), height fill ] none
+
+                     else
+                        text state.text
+                    )
+                ]
             ]
         )
 
@@ -109,33 +125,35 @@ createCursor :
 createCursor { onUpdate } { id } state =
     if state.focused then
         el
-            [ -- TODO 光标高度设置为左侧元素的高度，
-              -- 左侧无元素时，设置为右侧元素高度，否则，设置为行高
-              height (px 20)
-            , alignTop
+            [ height fill
             , class "blink-cursor"
-            ]
-            (Input.text
-                [ Element.id (id ++ "-input")
-                , width (px 2)
-                , height fill
-                , padding 0
-                , Border.width 0
-                , Background.color (rgb255 255 0 0)
-                ]
-                { onChange =
-                    \t ->
-                        onUpdate id
-                            (\s ->
-                                Just
-                                    { s | text = t }
+            , alignRight
+            , Border.widthXY 1 0
+            , Border.color (rgb255 255 0 0)
+            , inFront
+                (el
+                    [ width (px 0)
+                    , clip
+                    ]
+                    (Html.textarea
+                        [ HtmlAttr.id (inputId id)
+                        , HtmlAttr.width 1
+                        , HtmlAttr.height 1
+                        , HtmlAttr.value state.text
+                        , HtmlEvent.onInput
+                            (\text ->
+                                onUpdate id
+                                    (\s ->
+                                        Just { s | text = text }
+                                    )
                             )
-                , text = ""
-                , placeholder = Nothing
-                , label = Input.labelHidden ""
-                , selection = Nothing
-                }
-            )
+                        ]
+                        []
+                        |> html
+                    )
+                )
+            ]
+            none
 
     else
         none

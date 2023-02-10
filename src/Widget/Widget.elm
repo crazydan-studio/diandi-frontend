@@ -33,6 +33,7 @@ import Element exposing (Element)
 import Widget.Internal.Widget.Button as Button
 import Widget.Internal.Widget.FixedImage as FixedImage
 import Widget.Internal.Widget.TextEditor as TextEditor
+import Widget.Widget.TextEditor
 
 
 type State msg
@@ -44,7 +45,7 @@ type alias Builder msg =
 
 
 type alias Updater msg =
-    State msg -> ( State msg, WithContext msg )
+    State msg -> ( State msg, Cmd msg, WithContext msg )
 
 
 type alias WithContext msg =
@@ -81,12 +82,20 @@ type Msg
       UpdateButtonMsg String (Maybe Button.State)
     | UpdateFixedImageMsg String (Maybe FixedImage.State)
     | UpdateTextEditorMsg String (Maybe TextEditor.State)
+    | TextEditorFocusOnMsg String
 
 
-update : Msg -> State appMsg -> ( State appMsg, WithContext appMsg )
-update msg (State config widgets) =
+update :
+    Msg
+    -> State appMsg
+    -> ( State appMsg, Cmd appMsg, WithContext appMsg )
+update msg ((State config _) as state) =
+    let
+        ( widgets, cmd ) =
+            updateByMsg msg state
+    in
     toResult <|
-        State config (updateByMsg msg widgets)
+        ( State config widgets, cmd )
 
 
 sub : State appMsg -> Sub appMsg
@@ -95,14 +104,18 @@ sub (State { toAppMsg } _) =
         []
 
 
-init : Config appMsg -> ( State appMsg, WithContext appMsg )
+init :
+    Config appMsg
+    -> ( State appMsg, Cmd appMsg, WithContext appMsg )
 init config =
     toResult <|
-        State config
+        ( State config
             { button = Dict.empty
             , fixedImage = Dict.empty
             , textEditor = Dict.empty
             }
+        , Cmd.none
+        )
 
 
 createContext : Config appMsg -> WidgetStates -> Context appMsg
@@ -132,8 +145,8 @@ createContext { toAppMsg } widgets =
     }
 
 
-updateByMsg : Msg -> WidgetStates -> WidgetStates
-updateByMsg msg widgets =
+updateByMsg : Msg -> State appMsg -> ( WidgetStates, Cmd appMsg )
+updateByMsg msg (State { toAppMsg } widgets) =
     let
         update_ getter id state =
             getter widgets
@@ -146,13 +159,26 @@ updateByMsg msg widgets =
     in
     case msg of
         UpdateButtonMsg id state ->
-            { widgets | button = update_ .button id state }
+            ( { widgets | button = update_ .button id state }
+            , Cmd.none
+            )
 
         UpdateFixedImageMsg id state ->
-            { widgets | fixedImage = update_ .fixedImage id state }
+            ( { widgets | fixedImage = update_ .fixedImage id state }
+            , Cmd.none
+            )
 
         UpdateTextEditorMsg id state ->
-            { widgets | textEditor = update_ .textEditor id state }
+            ( { widgets | textEditor = update_ .textEditor id state }
+            , TextEditor.focuseOn id
+                (\input ->
+                    toAppMsg (TextEditorFocusOnMsg input)
+                )
+                state
+            )
+
+        TextEditorFocusOnMsg _ ->
+            ( widgets, Cmd.none )
 
 
 
@@ -164,6 +190,6 @@ withContext (State config widgets) widgetor =
     widgets |> createContext config |> widgetor
 
 
-toResult : State appMsg -> ( State appMsg, WithContext appMsg )
-toResult state =
-    ( state, withContext state )
+toResult : ( State appMsg, Cmd appMsg ) -> ( State appMsg, Cmd appMsg, WithContext appMsg )
+toResult ( state, cmd ) =
+    ( state, cmd, withContext state )

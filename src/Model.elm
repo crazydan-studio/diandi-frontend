@@ -73,7 +73,7 @@ type alias State =
 init : Config -> Url.Url -> Nav.Key -> ( State, Cmd Msg.Msg )
 init config navUrl navKey =
     let
-        ( widgets, withWidgetContext ) =
+        ( widgets, widgetsCmd, withWidgetContext ) =
             Widget.init
                 { toAppMsg = Msg.WidgetMsg
                 }
@@ -86,14 +86,17 @@ init config navUrl navKey =
                 , navKey = navKey
                 , navUrl = navUrl
                 }
+
+        ( state, cmd ) =
+            { app = app
+            , theme = Theme.create ThemeDefault.init
+            , withI18nElement = withI18nElement app.lang
+            , widgets = widgets
+            , withWidgetContext = withWidgetContext
+            }
+                |> routeUpdateHelper navUrl
     in
-    { app = app
-    , theme = Theme.create ThemeDefault.init
-    , withI18nElement = withI18nElement app.lang
-    , widgets = widgets
-    , withWidgetContext = withWidgetContext
-    }
-        |> routeUpdateHelper navUrl
+    ( state, Cmd.batch [ widgetsCmd, cmd ] )
 
 
 sub : State -> Sub Msg.Msg
@@ -117,9 +120,7 @@ update msg state =
             i18nUpdateHelper i18nPortMsg state
 
         Msg.WidgetMsg widgetMsg ->
-            ( state |> updateWidgetsState (Widget.update widgetMsg)
-            , Cmd.none
-            )
+            state |> updateWidgetsState (Widget.update widgetMsg)
 
         Msg.ShowTopicsList categoryId ->
             ( state, View.Route.showTopics categoryId state.app )
@@ -179,16 +180,18 @@ updateAppState updater ({ app } as state) =
 updateWidgetsState :
     Widget.Updater Msg.Msg
     -> State
-    -> State
+    -> ( State, Cmd Msg.Msg )
 updateWidgetsState updater ({ widgets } as state) =
     let
-        ( newWidgets, newWithWidgetContext ) =
+        ( newWidgets, newWidgetsCmd, newWithWidgetContext ) =
             updater widgets
     in
-    { state
+    ( { state
         | widgets = newWidgets
         , withWidgetContext = newWithWidgetContext
-    }
+      }
+    , newWidgetsCmd
+    )
 
 
 {-| 远程请求更新

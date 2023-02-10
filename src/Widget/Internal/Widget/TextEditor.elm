@@ -20,9 +20,13 @@
 module Widget.Internal.Widget.TextEditor exposing
     ( Context
     , State
+    , focuseOn
     , init
+    , inputId
     )
 
+import Browser.Dom as Dom
+import Task
 import Widget.Internal.Context as Internal
 
 
@@ -45,3 +49,28 @@ init =
         {}
     , text = ""
     }
+
+
+focuseOn : String -> (String -> msg) -> Maybe State -> Cmd msg
+focuseOn id toMsg stateMaybe =
+    stateMaybe
+        |> Maybe.map
+            (\state ->
+                if state.focused then
+                    let
+                        target =
+                            inputId id
+                    in
+                    Task.attempt
+                        (\_ -> toMsg target)
+                        (Dom.focus target)
+
+                else
+                    Cmd.none
+            )
+        |> Maybe.withDefault Cmd.none
+
+
+inputId : String -> String
+inputId id =
+    id ++ "-input"

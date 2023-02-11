@@ -125,32 +125,30 @@ createCursor :
 createCursor { onUpdate } { id } state =
     if state.focused then
         el
-            [ height fill
+            [ width (px 0)
+            , height fill
+            , clip
             , class "blink-cursor"
             , alignRight
             , Border.widthXY 1 0
             , Border.color (rgb255 255 0 0)
             , inFront
-                (el
-                    [ width (px 0)
-                    , clip
+                (Html.textarea
+                    [ HtmlAttr.id (inputId id)
+                    , HtmlAttr.style "width" "1px"
+                    , HtmlAttr.style "height" "1px"
+                    , HtmlAttr.style "border" "0px none"
+                    , HtmlAttr.value state.text
+                    , HtmlEvent.onInput
+                        (\text ->
+                            onUpdate id
+                                (\s ->
+                                    Just { s | text = text }
+                                )
+                        )
                     ]
-                    (Html.textarea
-                        [ HtmlAttr.id (inputId id)
-                        , HtmlAttr.width 1
-                        , HtmlAttr.height 1
-                        , HtmlAttr.value state.text
-                        , HtmlEvent.onInput
-                            (\text ->
-                                onUpdate id
-                                    (\s ->
-                                        Just { s | text = text }
-                                    )
-                            )
-                        ]
-                        []
-                        |> html
-                    )
+                    []
+                    |> html
                 )
             ]
             none

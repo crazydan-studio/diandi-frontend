@@ -63,7 +63,9 @@ npm run prod
 - [dnd-list + Elm UI](https://annaghi.github.io/dnd-list/introduction/basic-elm-ui):
   支持 Elm UI 的拖拽库
 - [Rich Text Editor Toolkit Markdown example](https://mweiss.github.io/elm-rte-toolkit/#/examples/markdown):
-  支持 Markdown 的富文本编辑器
+  支持 Markdown 的富文本编辑器，基于`contenteditable`实现，可学习其数据结构的划分
+- [Mini-Rte](https://package.elm-lang.org/packages/dkodaj/rte/latest/):
+  简单的文本编辑器，采取自绘方案，代码较少，有利于从底层学起
 
 - [Material Design Components](https://m2.material.io/components):
   Material Design 组件样式
@@ -73,3 +75,5 @@ npm run prod
 - [Deep dive CSS: font metrics, line-height and vertical-align](https://iamvdo.me/en/blog/css-font-metrics-line-height-and-vertical-align):
   文本行距与垂直对齐原理
 - [箭头导航的实现](https://stackoverflow.com/a/27636505)
+- [What is JavaScript's CompositionEvent?](https://stackoverflow.com/questions/51226598/what-is-javascripts-compositionevent-please-give-examples):
+  对`CompositionEvent`的解释，其为 IME 输入时的事件，可用于正确处理输入法输入的字符

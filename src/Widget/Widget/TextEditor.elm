@@ -30,6 +30,7 @@ import Widget.Internal.Widget.TextEditor as Internal
     exposing
         ( inputId
         , onKeyDown
+        , updateByKeyboard
         )
 
 
@@ -152,17 +153,18 @@ createCursor { onUpdate } { id } state =
                             (\event ->
                                 onUpdate id
                                     (\s ->
-                                        Just { s | keyboard = Just event }
+                                        Just
+                                            (updateByKeyboard event s)
                                     )
                             )
                         )
-                    -- , HtmlEvent.onInput
-                    --     (\text ->
-                    --         onUpdate id
-                    --             (\s ->
-                    --                 Just { s | text = text }
-                    --             )
-                    --     )
+                    , HtmlEvent.onInput
+                        (\text ->
+                            onUpdate id
+                                (\s ->
+                                    Just { s | text = text }
+                                )
+                        )
                     ]
                     []
                     |> html

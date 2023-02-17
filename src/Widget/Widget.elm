@@ -168,20 +168,12 @@ updateByMsg msg (State { toAppMsg } widgets) =
             )
 
         UpdateTextEditorMsg id state ->
-            let
-                newState =
-                    state
-                        |> Maybe.map
-                            (\s ->
-                                { s | keyboard = Nothing }
-                            )
-            in
-            ( { widgets | textEditor = update_ .textEditor id newState }
+            ( { widgets | textEditor = update_ .textEditor id state }
             , TextEditor.focuseOn id
                 (\input ->
                     toAppMsg (TextEditorFocusOnMsg input)
                 )
-                newState
+                state
             )
 
         TextEditorFocusOnMsg _ ->

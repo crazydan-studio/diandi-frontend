@@ -24,6 +24,7 @@ module Widget.Internal.Widget.TextEditor exposing
     , init
     , inputId
     , onKeyDown
+    , updateByKeyboard
     )
 
 import Browser.Dom as Dom
@@ -35,7 +36,6 @@ import Widget.Internal.Context as Internal
 
 type alias State =
     { focused : Bool
-    , keyboard : Maybe KeyboardEvent
     , cursor :
         {}
     , text : String
@@ -49,7 +49,6 @@ type alias Context msg =
 init : State
 init =
     { focused = False
-    , keyboard = Nothing
     , cursor =
         {}
     , text = ""
@@ -84,3 +83,9 @@ inputId id =
 onKeyDown : (KeyboardEvent -> msg) -> Decoder msg
 onKeyDown toMsg =
     Decode.map toMsg decodeKeyboardEvent
+
+
+updateByKeyboard : KeyboardEvent -> State -> State
+updateByKeyboard keyboard state =
+    -- TODO 仅处理控制字符
+    state

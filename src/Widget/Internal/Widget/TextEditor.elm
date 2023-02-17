@@ -23,15 +23,19 @@ module Widget.Internal.Widget.TextEditor exposing
     , focuseOn
     , init
     , inputId
+    , onKeyDown
     )
 
 import Browser.Dom as Dom
+import Json.Decode as Decode exposing (Decoder)
+import Keyboard.Event exposing (KeyboardEvent, decodeKeyboardEvent)
 import Task
 import Widget.Internal.Context as Internal
 
 
 type alias State =
     { focused : Bool
+    , keyboard : Maybe KeyboardEvent
     , cursor :
         {}
     , text : String
@@ -45,6 +49,7 @@ type alias Context msg =
 init : State
 init =
     { focused = False
+    , keyboard = Nothing
     , cursor =
         {}
     , text = ""
@@ -74,3 +79,8 @@ focuseOn id toMsg stateMaybe =
 inputId : String -> String
 inputId id =
     id ++ "-input"
+
+
+onKeyDown : (KeyboardEvent -> msg) -> Decoder msg
+onKeyDown toMsg =
+    Decode.map toMsg decodeKeyboardEvent

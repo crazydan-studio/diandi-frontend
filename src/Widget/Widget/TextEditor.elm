@@ -26,7 +26,11 @@ import Html
 import Html.Attributes as HtmlAttr
 import Html.Events as HtmlEvent
 import Widget.Html exposing (class, onClickOutOfMe)
-import Widget.Internal.Widget.TextEditor as Internal exposing (inputId)
+import Widget.Internal.Widget.TextEditor as Internal
+    exposing
+        ( inputId
+        , onKeyDown
+        )
 
 
 type alias Config =
@@ -124,6 +128,10 @@ createCursor :
     -> Element msg
 createCursor { onUpdate } { id } state =
     if state.focused then
+        let
+            editorInputId =
+                inputId id
+        in
         el
             [ width (px 0)
             , height fill
@@ -134,18 +142,27 @@ createCursor { onUpdate } { id } state =
             , Border.color (rgb255 255 0 0)
             , inFront
                 (Html.textarea
-                    [ HtmlAttr.id (inputId id)
+                    [ HtmlAttr.id editorInputId
                     , HtmlAttr.style "width" "1px"
                     , HtmlAttr.style "height" "1px"
                     , HtmlAttr.style "border" "0px none"
                     , HtmlAttr.value state.text
-                    , HtmlEvent.onInput
-                        (\text ->
-                            onUpdate id
-                                (\s ->
-                                    Just { s | text = text }
-                                )
+                    , HtmlEvent.on "keydown"
+                        (onKeyDown
+                            (\event ->
+                                onUpdate id
+                                    (\s ->
+                                        Just { s | keyboard = Just event }
+                                    )
+                            )
                         )
+                    -- , HtmlEvent.onInput
+                    --     (\text ->
+                    --         onUpdate id
+                    --             (\s ->
+                    --                 Just { s | text = text }
+                    --             )
+                    --     )
                     ]
                     []
                     |> html

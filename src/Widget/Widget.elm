@@ -33,7 +33,6 @@ import Element exposing (Element)
 import Widget.Internal.Widget.Button as Button
 import Widget.Internal.Widget.FixedImage as FixedImage
 import Widget.Internal.Widget.TextEditor as TextEditor
-import Widget.Widget.TextEditor
 
 
 type State msg
@@ -169,12 +168,20 @@ updateByMsg msg (State { toAppMsg } widgets) =
             )
 
         UpdateTextEditorMsg id state ->
-            ( { widgets | textEditor = update_ .textEditor id state }
+            let
+                newState =
+                    state
+                        |> Maybe.map
+                            (\s ->
+                                { s | keyboard = Nothing }
+                            )
+            in
+            ( { widgets | textEditor = update_ .textEditor id newState }
             , TextEditor.focuseOn id
                 (\input ->
                     toAppMsg (TextEditorFocusOnMsg input)
                 )
-                state
+                newState
             )
 
         TextEditorFocusOnMsg _ ->

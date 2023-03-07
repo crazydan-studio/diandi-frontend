@@ -20,55 +20,157 @@
 module View.Page.Home exposing (view)
 
 import Element exposing (..)
-import Element.Border as Border
+import Element.Input as Input
+import I18n.I18n exposing (langTextEnd)
 import Model
 import Msg
-import View.Page.Home.Center as Center
-import View.Page.Home.Left as Left
-import View.Page.Home.Right as Right
+import Random
+import View.I18n.Home as I18n
+import View.Style.Base as BaseStyle
+import View.Style.Border.Primary as PrimaryBorder
+import Widget.Html exposing (class)
+import Widget.Icon as Icon
+import Widget.Widget.Button as Button
 
 
 view : Model.State -> Element Msg.Msg
-view state =
-    row
-        [ width fill
-        , height fill
-        ]
-        [ el
-            [ width (px 256)
-            , height fill
+view ({ app, theme, withWidgetContext, withI18nElement } as state) =
+    let
+        i18nText =
+            withI18nElement I18n.text
+
+        headerPaddingY =
+            BaseStyle.spacing
+
+        headerHeight =
+            40 + headerPaddingY * 2
+
+        logoHeight =
+            headerHeight - headerPaddingY * 2
+    in
+    column
+        (theme.primaryGreyBackground
+            ++ [ width fill
+               , height fill
+
+               -- for child scrollbar: https://github.com/mdgriffith/elm-ui/issues/149#issuecomment-582229271
+               , clip
+               ]
+        )
+        [ row
+            (PrimaryBorder.bottom 1 theme
+                ++ [ width fill
+                   , height (px headerHeight)
+                   , paddingXY
+                        BaseStyle.spacing2x
+                        headerPaddingY
+                   ]
+            )
+            [ image
+                [ width shrink
+                , height (px logoHeight)
+                , alignLeft
+                ]
+                { src = "/logo.svg", description = "", onLoad = Nothing }
+            , el
+                [ width (px 256)
+                , height (px headerHeight)
+                , centerX
+                , centerY
+                ]
+                (Input.text
+                    [ width fill
+                    ]
+                    { onChange = \t -> Msg.NoOp
+                    , text = ""
+                    , placeholder = Just (Input.placeholder [] (text "Search ..."))
+                    , label = Input.labelHidden ""
+                    , selection = Nothing
+                    }
+                )
+            , withWidgetContext <|
+                Button.button
+                    { id = "btn-personal-setting-in-home"
+                    , attrs = theme.secondaryBtn
+                    , content =
+                        row
+                            [ spacing BaseStyle.spacing
+                            ]
+                            [ theme.primaryBtnIcon
+                                Icon.SettingOutlined
+                            , -- TODO 点击后，在左侧弹出侧边栏，该侧边栏中展示用户头像/名称、语言切换、主题切换等
+                              (I18n.buttonText :: "设置" :: langTextEnd)
+                                |> i18nText
+                            ]
+                    , onPress = Nothing
+                    }
             ]
-            (Left.view state)
         , el
             [ width fill
             , height fill
+            , scrollbarY
+            , paddingXY 256 64
+            ]
+            (wrappedRow
+                [ spaceEvenly
+                ]
+                (List.range 1 20
+                    |> List.map
+                        (\idx ->
+                            let
+                                ( cardRotateDeg, _ ) =
+                                    Random.step (Random.float 0 1) (Random.initialSeed idx)
 
-            -- box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2),0px 4px 5px 0px rgba(0,0,0,0.14),0px 1px 10px 0px rgba(0,0,0,0.12);
-            , Border.shadows
-                [ { inset = False
-                  , offset = ( 0, 2 )
-                  , blur = 4
-                  , size = -1
-                  , color = rgba255 0 0 0 0.2
-                  }
-                , { inset = False
-                  , offset = ( 0, 4 )
-                  , blur = 5
-                  , size = 0
-                  , color = rgba255 0 0 0 0.14
-                  }
-                , { inset = False
-                  , offset = ( 0, 1 )
-                  , blur = 10
-                  , size = 0
-                  , color = rgba255 0 0 0 0.12
-                  }
+                                ( pushpinPosition, _ ) =
+                                    Random.step (Random.float 0 120) (Random.initialSeed idx)
+                            in
+                            card (cardRotateDeg * 10 + -5) pushpinPosition
+                        )
+                )
+            )
+        ]
+
+
+card : Float -> Float -> Element Msg.Msg
+card cardRotateDeg pushpinPosition =
+    el
+        [ inFront
+            (image
+                [ width shrink
+                , height (px 32)
+                , alignTop
+                , moveRight (60.0 + pushpinPosition)
+                ]
+                { src = "/img/pushpin.svg", description = "", onLoad = Nothing }
+            )
+        ]
+        (column
+            [ width (px 240)
+            , height (px 172)
+            , padding 24
+            , class "card"
+            , clip
+            , htmlStyleAttribute
+                [ ( "transform"
+                  , "rotate(" ++ String.fromFloat cardRotateDeg ++ "deg)"
+                  )
                 ]
             ]
-            (Center.view state)
-        , el
-            [ width (px (128 * 4))
-            , height fill
+            [ el
+                [ width fill
+                , height fill
+                , scrollbarY
+                ]
+                (paragraph []
+                    [ text "编写完后，以顺滑的方式选择主题分类，从而完成对主题的保存和组织"
+                    , text "编写完后，以顺滑的方式选择主题分类，从而完成对主题的保存和组织"
+                    , text "编写完后，以顺滑的方式选择主题分类，从而完成对主题的保存和组织"
+                    , text "编写完后，以顺滑的方式选择主题分类，从而完成对主题的保存和组织"
+                    , text "编写完后，以顺滑的方式选择主题分类，从而完成对主题的保存和组织"
+                    , text "编写完后，以顺滑的方式选择主题分类，从而完成对主题的保存和组织"
+                    , text "编写完后，以顺滑的方式选择主题分类，从而完成对主题的保存和组织"
+                    , text "编写完后，以顺滑的方式选择主题分类，从而完成对主题的保存和组织"
+                    ]
+                )
             ]
-            (Right.view state)
-        ]
+        )

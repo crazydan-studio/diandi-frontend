@@ -19,7 +19,7 @@
 
 module Theme.Theme exposing (Theme, create)
 
-import Element exposing (Element)
+import Element exposing (Element, rgba255)
 import Element.Background as Background
 import Element.Font as Font
 import Theme.Internal.Theme as Internal
@@ -45,8 +45,11 @@ type alias Theme msg =
 
     --
     , primaryBorderColor : Element.Color
+    , primaryWhiteBackgroundColor : Element.Color
+    , primaryWhiteBackground : List (Element.Attribute msg)
     , primaryGreyBackgroundColor : Element.Color
     , primaryGreyBackground : List (Element.Attribute msg)
+    , transparentBackground : Element.Attribute msg
 
     --
     , secondaryFontSize : Int
@@ -71,8 +74,11 @@ create theme =
     , primaryBtnIcon = primaryBtnIcon theme
     , primaryLinkBtnIcon = primaryLinkBtnIcon theme
     , primaryBorderColor = theme.primaryBorderColor
+    , primaryWhiteBackgroundColor = theme.primaryWhiteBackgroundColor
+    , primaryWhiteBackground = primaryWhiteBackground theme
     , primaryGreyBackgroundColor = theme.primaryGreyBackgroundColor
     , primaryGreyBackground = primaryGreyBackground theme
+    , transparentBackground = Background.color (rgba255 0 0 0 0)
     , secondaryFontSize = theme.secondaryFontSize
     , secondaryBtnColor = toRgbColor theme.secondaryBtnColor
     , secondaryBtn = secondaryBtn theme
@@ -114,8 +120,8 @@ primaryIcon theme { size, icon } =
     Icon.icon
         { size = size
         , color = primaryFontColor theme
+        , icon = icon
         }
-        icon
 
 
 primaryBtn : Internal.Theme -> List (Element.Attribute msg)
@@ -140,8 +146,8 @@ primaryBtnIcon theme { size, icon } =
         , color =
             toRgbColor
                 (fgColorForBg theme.primaryBtnColor)
+        , icon = icon
         }
-        icon
 
 
 primaryLinkBtnIcon :
@@ -160,4 +166,10 @@ primaryLinkBtnIcon theme { size, icon } =
 primaryGreyBackground : Internal.Theme -> List (Element.Attribute msg)
 primaryGreyBackground theme =
     [ Background.color theme.primaryGreyBackgroundColor
+    ]
+
+
+primaryWhiteBackground : Internal.Theme -> List (Element.Attribute msg)
+primaryWhiteBackground theme =
+    [ Background.color theme.primaryWhiteBackgroundColor
     ]

@@ -19,7 +19,7 @@
 
 module Theme.Theme.Default exposing (init)
 
-import Element exposing (rgba255)
+import Element exposing (rgb255, rgba255)
 import Theme.Internal.Theme as Internal
 import Widget.Color
 
@@ -34,5 +34,6 @@ init =
     , primaryBtnIconSize = 16
     , placeholderFontColor = Widget.Color.Grey500
     , primaryBorderColor = rgba255 0 0 0 0.12
+    , primaryWhiteBackgroundColor = rgb255 255 255 255
     , primaryGreyBackgroundColor = rgba255 0 0 0 0.08
     }

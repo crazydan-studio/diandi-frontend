@@ -122,6 +122,12 @@ update msg state =
         Msg.WidgetMsg widgetMsg ->
             state |> updateWidgetsState (Widget.update widgetMsg)
 
+        Msg.SearchTopicMsg text ->
+            state
+                |> updateAppState
+                    (App.updateTopicSearchingText text)
+                |> doRemoteQueryMyTopics
+
         Msg.ShowTopicsList categoryId ->
             ( state, View.Route.showTopics categoryId state.app )
 
@@ -383,26 +389,13 @@ doRemoteQueryMyTopics state =
         |> updateAppState
             (\app ->
                 { app
-                    | categories =
-                        app.categories
-                            |> RemoteData.ifNotLoaded
-                                App.loading
-                    , topics = App.loading
+                    | topics = App.loading
                 }
             )
     , Cmd.batch
-        [ state.app.categories
-            |> RemoteData.map
-                (\_ ->
-                    Cmd.none
-                )
-            |> Maybe.withDefault
-                (Msg.toRemoteCmd
-                    RemoteTopic.getMyAllCategories
-                )
-        , Msg.toRemoteCmd
+        [ Msg.toRemoteCmd
             (RemoteTopic.queryMyTopics
-                { category = state.app.selectedTopicCategory
+                { keywords = state.app.topicSearchingText
                 }
             )
         ]

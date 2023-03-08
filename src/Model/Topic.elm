@@ -72,4 +72,4 @@ topicDecoder =
         |> required "id" string
         |> required "content" string
         |> optional "tags" (list string) []
-        |> required "created_at" string
+        |> required "createdAt" string

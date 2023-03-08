@@ -62,15 +62,10 @@ topicListView state topics =
         -- https://guide.elm-lang.org/optimization/keyed.html
         -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Keyed
         -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Lazy
-        Element.Keyed.row
+        Element.Keyed.wrappedRow
             [ width fill
             , height fill
             , spaceEvenly
-            , htmlStyleAttribute
-                [ ( "align-items", "flex-start !important" )
-                , ( "align-content", "flex-start !important" )
-                , ( "flex-wrap", "wrap" )
-                ]
             ]
             (topics
                 |> TreeStore.traverseDepth 1

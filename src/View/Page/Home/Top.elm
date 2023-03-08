@@ -9,7 +9,6 @@ import Msg
 import View.I18n.Home as I18n
 import View.Style.Base as BaseStyle
 import View.Style.Border.Primary as PrimaryBorder
-import Widget.Html exposing (zIndex)
 import Widget.Icon as Icon
 import Widget.Widget.Button as Button
 
@@ -31,6 +30,7 @@ view ({ app, theme, withWidgetContext, withI18nElement } as state) =
     in
     row
         (PrimaryBorder.bottom 1 theme
+            ++ theme.primaryWhiteBackground
             ++ [ width fill
                , height (px headerHeight)
                , paddingXY
@@ -67,22 +67,42 @@ view ({ app, theme, withWidgetContext, withI18nElement } as state) =
             , alignLeft
             ]
             { src = "/logo.svg", description = "", onLoad = Nothing }
-        , el
-            [ width (px 256)
-            , height (px headerHeight)
+        , row
+            [ width
+                (percent 30
+                    |> minimum 215
+                )
             , centerX
-            , centerY
+            , Border.width 1
+            , Border.color theme.primaryBorderColor
+            , Border.rounded 32
+            , paddingXY BaseStyle.spacing2x 0
             ]
-            (Input.text
+            [ Icon.icon
+                { size = 20
+                , color = theme.primaryFontColor
+                , icon = Icon.SearchOutlined
+                }
+            , Input.text
                 [ width fill
+                , Border.width 0
+                , theme.transparentBackground
                 ]
-                { onChange = \t -> Msg.NoOp
-                , text = ""
-                , placeholder = Just (Input.placeholder [] (text "Search ..."))
+                { onChange = Msg.SearchTopicMsg
+                , text =
+                    app.topicSearchingText
+                        |> Maybe.withDefault ""
+                , placeholder =
+                    Just
+                        (Input.placeholder []
+                            ((I18n.buttonText :: "请输入关键字查询 ..." :: langTextEnd)
+                                |> i18nText
+                            )
+                        )
                 , label = Input.labelHidden ""
                 , selection = Nothing
                 }
-            )
+            ]
         , withWidgetContext <|
             Button.button
                 { id = "btn-personal-setting-in-home"

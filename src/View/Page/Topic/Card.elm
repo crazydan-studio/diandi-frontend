@@ -38,7 +38,8 @@ view ({ app, theme } as state) topic randomSeed =
             Random.step (Random.pair (Random.float 0 1) (Random.float 0 1)) randomSeed
     in
     el
-        [ inFront
+        [ alignTop
+        , inFront
             (image
                 [ width shrink
                 , height (px 32)

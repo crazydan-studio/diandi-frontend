@@ -50,6 +50,7 @@ type Msg
       -- 组件消息
     | WidgetMsg Widget.Msg
       -- 数据操作
+    | SearchTopicMsg String
     | ShowTopicsList String
     | NewTopicAdded String
     | NewTopicMsg String NewTopic.Msg

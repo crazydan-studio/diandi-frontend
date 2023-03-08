@@ -32,5 +32,6 @@ type alias Theme =
     , primaryBtnIconSize : Int
     , placeholderFontColor : Color
     , primaryBorderColor : Element.Color
+    , primaryWhiteBackgroundColor : Element.Color
     , primaryGreyBackgroundColor : Element.Color
     }

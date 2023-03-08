@@ -27,30 +27,33 @@ module Widget.Icon exposing
 
 import Ant.Icons.Svg as Icons
 import Element exposing (Color, Element, el, html)
+import Element.Font as Font
 import Html exposing (Html)
 import Svg.Attributes exposing (fill, height, width)
-import Widget.Html
 
-type alias Attr =
+
+type alias Attrs =
     { size : Int
     , color : Color
+    , icon : Icon
     }
 
 
 icon :
-    Attr
-    -> Icon
+    Attrs
     -> Element msg
-icon attr icn =
+icon attrs =
     let
         size =
-            String.fromInt attr.size
+            String.fromInt attrs.size
     in
-    el []
-        (toHtml icn
+    el
+        [ Font.color attrs.color
+        ]
+        (toHtml attrs.icon
             [ width size
             , height size
-            , fill (Widget.Html.toRgba attr.color)
+            , fill "currentColor"
             ]
             |> html
         )

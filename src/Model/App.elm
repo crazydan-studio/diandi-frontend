@@ -32,6 +32,7 @@ module Model.App exposing
     , updateEditTopic
     , updateNewTopic
     , updateTopicByEdit
+    , updateTopicSearchingText
     )
 
 import Browser.Navigation as Nav
@@ -79,6 +80,7 @@ type alias State =
     , categories : RemoteCategories
 
     -- 操作数据
+    , topicSearchingText : Maybe String
     , selectedTopicCategory : Maybe String
     , newTopics : Dict String NewTopic
     , editTopic : Maybe EditTopic
@@ -130,6 +132,7 @@ init config =
     , categories = RemoteData.LoadWaiting
 
     --
+    , topicSearchingText = Nothing
     , selectedTopicCategory = Nothing
     , newTopics = Dict.empty
     , editTopic = Nothing
@@ -181,6 +184,11 @@ getNewTopicWithInit inputId { newTopics } =
     newTopics
         |> Dict.get inputId
         |> Maybe.withDefault NewTopic.init
+
+
+updateTopicSearchingText : String -> State -> State
+updateTopicSearchingText text state =
+    { state | topicSearchingText = Just text }
 
 
 updateNewTopic :

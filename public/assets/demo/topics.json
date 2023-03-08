@@ -2,19 +2,19 @@
   {
     "id": "topic-writing",
     "content": "自由添加模式：\n- [ ] 首页为主题云，在中心位置放置添加按钮\n- [ ] 点击添加按钮，弹出主题快速编写框\n- [ ] 保存后更新主题云，存在关联的主题之间有连接线\n- [ ] 添加按钮侧边放置可展开的二级菜单",
-    "category": "product_diandi_feature",
+    "tags": ["产品开发/点滴"],
     "created_at": "2023-01-08 12:31:45"
   },
   {
     "id": "topic-saving",
     "content": "编写完后，以顺滑的方式选择主题分类，从而完成对主题的保存和组织",
-    "category": "product_diandi_feature",
+    "tags": ["产品开发/点滴"],
     "created_at": "2023-01-08 12:31:45"
   },
   {
     "id": "some-concepts",
     "content": "- [ ] 信息卡片：包含一段信息的内容，并附加多个、多类属性\n",
-    "category": "product_diandi_feature",
+    "tags": ["产品开发/点滴"],
     "created_at": "2023-01-08 12:31:45"
   }
 ]

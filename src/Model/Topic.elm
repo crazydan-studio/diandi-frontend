@@ -30,7 +30,6 @@ import Json.Decode as Decode
     exposing
         ( Decoder
         , list
-        , nullable
         , string
         )
 import Json.Decode.Pipeline exposing (optional, required)
@@ -46,7 +45,6 @@ type alias Topic =
 
     --
     , content : String
-    , category : Maybe String
     , tags : List String
 
     -- 创建信息
@@ -58,7 +56,6 @@ init : Topic
 init =
     { id = ""
     , content = ""
-    , category = Nothing
     , tags = []
     , createdAt = ""
     }
@@ -74,6 +71,5 @@ topicDecoder =
     Decode.succeed Topic
         |> required "id" string
         |> required "content" string
-        |> optional "category" (nullable string) Nothing
         |> optional "tags" (list string) []
         |> required "created_at" string

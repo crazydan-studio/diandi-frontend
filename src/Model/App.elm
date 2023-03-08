@@ -353,28 +353,7 @@ createTopicTree topics =
     TreeStore.create
         { idGetter = .id
         , parentGetter = \_ -> Nothing
-        , sorter =
-            Just
-                (\t1 t2 ->
-                    Maybe.map2
-                        (\c1 c2 ->
-                            let
-                                result =
-                                    compare
-                                        (String.length c1)
-                                        (String.length c2)
-                            in
-                            case result of
-                                EQ ->
-                                    compare c1 c2
-
-                                _ ->
-                                    result
-                        )
-                        t1.category
-                        t2.category
-                        |> Maybe.withDefault EQ
-                )
+        , sorter = Nothing
         }
         topics
 

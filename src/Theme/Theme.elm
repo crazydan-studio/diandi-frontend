@@ -39,9 +39,9 @@ type alias Theme msg =
     , primaryBtn : List (Element.Attribute msg)
 
     --
-    , primaryIcon : Int -> Icon -> Element msg
-    , primaryBtnIcon : Icon -> Element msg
-    , primaryLinkBtnIcon : Icon -> Element msg
+    , primaryIcon : { size : Int, icon : Icon } -> Element msg
+    , primaryBtnIcon : { size : Maybe Int, icon : Icon } -> Element msg
+    , primaryLinkBtnIcon : { size : Maybe Int, icon : Icon } -> Element msg
 
     --
     , primaryBorderColor : Element.Color
@@ -108,10 +108,9 @@ placeholderFont theme =
 
 primaryIcon :
     Internal.Theme
-    -> Int
-    -> Icon
+    -> { size : Int, icon : Icon }
     -> Element msg
-primaryIcon theme size icon =
+primaryIcon theme { size, icon } =
     Icon.icon
         { size = size
         , color = primaryFontColor theme
@@ -131,11 +130,13 @@ secondaryBtn theme =
 
 primaryBtnIcon :
     Internal.Theme
-    -> Icon
+    -> { size : Maybe Int, icon : Icon }
     -> Element msg
-primaryBtnIcon theme icon =
+primaryBtnIcon theme { size, icon } =
     Icon.icon
-        { size = theme.primaryBtnIconSize
+        { size =
+            size
+                |> Maybe.withDefault theme.primaryBtnIconSize
         , color =
             toRgbColor
                 (fgColorForBg theme.primaryBtnColor)
@@ -145,12 +146,15 @@ primaryBtnIcon theme icon =
 
 primaryLinkBtnIcon :
     Internal.Theme
-    -> Icon
+    -> { size : Maybe Int, icon : Icon }
     -> Element msg
-primaryLinkBtnIcon theme icon =
+primaryLinkBtnIcon theme { size, icon } =
     primaryIcon theme
-        theme.primaryBtnIconSize
-        icon
+        { size =
+            size
+                |> Maybe.withDefault theme.primaryBtnIconSize
+        , icon = icon
+        }
 
 
 primaryGreyBackground : Internal.Theme -> List (Element.Attribute msg)

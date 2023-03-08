@@ -19,6 +19,7 @@
             "elm/svg": "1.0.1",
             "elm/time": "1.0.0",
             "elm/url": "1.0.0",
+            "elm-community/list-extra": "8.5.2",
             "flytreeleft/elm-ui": "4.1.0",
             "lemol/ant-design-icons-elm": "2.0.0",
             "robinheghan/murmur3": "1.0.0",
@@ -40,7 +41,6 @@
             "danfishgold/base64-bytes": "1.1.0",
             "elm-community/basics-extra": "4.1.0",
             "elm-community/json-extra": "4.3.0",
-            "elm-community/list-extra": "8.5.2",
             "elm-community/maybe-extra": "5.3.0",
             "miniBill/elm-unicode": "1.0.2",
             "rtfeldman/elm-iso8601-date-strings": "1.1.4"

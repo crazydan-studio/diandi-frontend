@@ -25,9 +25,8 @@ module Model.Remote.Demo.Topic exposing
     )
 
 import Http
-import Json.Decode as Decode
 import Model.Remote.Msg exposing (Msg(..))
-import Model.Topic exposing (Topic, topicListDecoder)
+import Model.Topic exposing (topicListDecoder)
 import Model.Topic.Category exposing (categoryListDecoder)
 
 
@@ -47,7 +46,7 @@ queryMyTopics params =
         { url = "/demo/topics.json"
         , expect =
             Http.expectJson QueryMyTopics
-                (decoderWithFilterTopicsByCategory params.category)
+                topicListDecoder
         }
 
 
@@ -62,30 +61,3 @@ queryMyCategories _ =
         { url = "/demo/categories.json"
         , expect = Http.expectJson QueryMyTopicCategories categoryListDecoder
         }
-
-
-
--- ----------------------------------------------
-
-
-decoderWithFilterTopicsByCategory :
-    Maybe String
-    -> Decode.Decoder (List Topic)
-decoderWithFilterTopicsByCategory categoryMaybe =
-    let
-        listFilter category =
-            List.filter
-                (\topic ->
-                    topic.category
-                        |> Maybe.map
-                            (String.startsWith category)
-                        |> Maybe.withDefault False
-                )
-    in
-    categoryMaybe
-        |> Maybe.map
-            (\category ->
-                topicListDecoder
-                    |> Decode.map (listFilter category)
-            )
-        |> Maybe.withDefault topicListDecoder

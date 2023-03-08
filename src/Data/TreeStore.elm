@@ -62,7 +62,9 @@ type alias TreeSorter dataType =
 type alias TreeTraveller dataType resultType =
     { depth : Int, index : Int }
     -> dataType
+    -- 子节点的遍历结果集合
     -> List resultType
+    -- 当前节点的遍历结果
     -> resultType
 
 

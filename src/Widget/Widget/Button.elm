@@ -20,6 +20,7 @@
 module Widget.Widget.Button exposing
     ( Config
     , button
+    , circle
     , link
     )
 
@@ -29,9 +30,11 @@ import Element
         , Element
         , focused
         , height
+        , htmlStyleAttribute
         , minimum
         , mouseDown
         , mouseOver
+        , padding
         , paddingXY
         , px
         , rgba255
@@ -63,8 +66,38 @@ button :
     Config msg
     -> Context a msg
     -> Element msg
-button config { buttonContext } =
-    createHelper buttonContext config
+button ({ attrs } as config) { buttonContext } =
+    createHelper buttonContext
+        { config
+            | attrs =
+                [ width
+                    (shrink
+                        |> minimum 64
+                    )
+                , paddingXY 16 10
+                , Border.rounded 4
+                ]
+                    ++ attrs
+        }
+
+
+{-| 圆形按钮
+-}
+circle :
+    Config msg
+    -> Context a msg
+    -> Element msg
+circle ({ attrs } as config) { buttonContext } =
+    createHelper buttonContext
+        { config
+            | attrs =
+                [ padding 16
+                , htmlStyleAttribute
+                    [ ( "border-radius", "50%" )
+                    ]
+                ]
+                    ++ attrs
+        }
 
 
 createHelper : Internal.Context msg -> Config msg -> Element msg
@@ -141,17 +174,10 @@ createHelper _ { content, onPress, attrs } =
     in
     Input.button
         -- https://aforemny.github.io/material-components-web-elm/#buttons
-        ([ width
-            (shrink
-                |> minimum 64
-            )
-         , height (px 36)
-         , paddingXY 16 0
-         , Font.size 14
+        ([ Font.size 14
          , Font.letterSpacing 1.25
          , Font.weight 500
          , Font.center
-         , Border.rounded 4
          , shadow
          , Transition.with
             [ Transition.property "box-shadow"

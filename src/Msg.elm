@@ -51,6 +51,7 @@ type Msg
     | WidgetMsg Widget.Msg
       -- 数据操作
     | SearchTopicMsg String
+    | DropTopicMsg String
     | ShowTopicsList String
     | NewTopicAdded String
     | NewTopicMsg String NewTopic.Msg

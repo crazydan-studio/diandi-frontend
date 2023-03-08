@@ -36,7 +36,6 @@ import Model.Operation.EditTopic as EditTopic
 import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Model.Remote as Remote
 import Model.Remote.Auth as RemoteAuth
-import Model.Remote.Data as RemoteData
 import Model.Remote.Demo.Topic as RemoteTopic
 import Model.Remote.Demo.User as RemoteUser
 import Model.Remote.Msg as RemoteMsg
@@ -127,6 +126,13 @@ update msg state =
                 |> updateAppState
                     (App.updateTopicSearchingText text)
                 |> doRemoteQueryMyTopics
+
+        Msg.DropTopicMsg topicId ->
+            ( state
+                |> updateAppState
+                    (App.removeTopic topicId)
+            , Cmd.none
+            )
 
         Msg.ShowTopicsList categoryId ->
             ( state, View.Route.showTopics categoryId state.app )

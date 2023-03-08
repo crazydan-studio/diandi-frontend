@@ -29,6 +29,7 @@ module Model.App exposing
     , loadTopics
     , loading
     , mapTopicCategories
+    , removeTopic
     , updateEditTopic
     , updateNewTopic
     , updateTopicByEdit
@@ -189,6 +190,16 @@ getNewTopicWithInit inputId { newTopics } =
 updateTopicSearchingText : String -> State -> State
 updateTopicSearchingText text state =
     { state | topicSearchingText = Just text }
+
+
+removeTopic : String -> State -> State
+removeTopic topicId ({ topics } as state) =
+    { state
+        | topics =
+            topics
+                |> RemoteData.update
+                    (TreeStore.removeById topicId)
+    }
 
 
 updateNewTopic :

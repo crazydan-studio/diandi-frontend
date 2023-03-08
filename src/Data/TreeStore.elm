@@ -29,6 +29,7 @@ module Data.TreeStore exposing
     , getAllByParentPath
     , isEmpty
     , remove
+    , removeById
     , traverse
     , traverseDepth
     , traverseWithSingleRoot
@@ -138,6 +139,17 @@ remove data tree =
     in
     tree
         |> updateHelper data treeDataDictUpdater nodeIdListUpdater
+
+
+removeById : String -> TreeStore dataType -> TreeStore dataType
+removeById dataId tree =
+    tree
+        |> get dataId
+        |> Maybe.map
+            (\data ->
+                remove data tree
+            )
+        |> Maybe.withDefault tree
 
 
 {-| 遍历有多个root节点的树并构造结果集

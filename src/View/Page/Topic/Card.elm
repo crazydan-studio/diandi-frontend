@@ -20,11 +20,15 @@
 module View.Page.Topic.Card exposing (view)
 
 import Element exposing (..)
+import Element.Background as Background
+import Element.Border as Border
+import Element.Events exposing (..)
+import Element.Transition as Transition
 import Model
 import Model.Topic exposing (Topic)
 import Msg
 import Random
-import Widget.Html exposing (class)
+import Element exposing (zIndex)
 
 
 view :
@@ -36,9 +40,44 @@ view ({ app, theme } as state) topic randomSeed =
     let
         ( ( cardRotateDeg, pushpinPosition ), _ ) =
             Random.step (Random.pair (Random.float 0 1) (Random.float 0 1)) randomSeed
+
+        shadow =
+            -- box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 10px 0px, rgba(0, 0, 0, 0.2) 0px 0px 10px 0px;
+            Border.shadows
+                [ { inset = False
+                  , offset = ( 0, 0 )
+                  , blur = 10
+                  , size = 0
+                  , color = rgba255 0 0 0 0.2
+                  }
+                , { inset = False
+                  , offset = ( 0, 0 )
+                  , blur = 10
+                  , size = 0
+                  , color = rgba255 0 0 0 0.2
+                  }
+                ]
+
+        hoverShadow =
+            -- box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 20px 0px, rgba(0, 0, 0, 0.2) 0px 0px 20px 0px;
+            Border.shadows
+                [ { inset = False
+                  , offset = ( 0, 0 )
+                  , blur = 20
+                  , size = 0
+                  , color = rgba255 0 0 0 0.2
+                  }
+                , { inset = False
+                  , offset = ( 0, 0 )
+                  , blur = 20
+                  , size = 0
+                  , color = rgba255 0 0 0 0.2
+                  }
+                ]
     in
     el
         [ alignTop
+        , mouseOver [ zIndex 1 ]
         , inFront
             (image
                 [ width shrink
@@ -46,6 +85,7 @@ view ({ app, theme } as state) topic randomSeed =
                 , alignTop
                 , moveRight (pushpinPosition * 100 + 20)
                 , pointer
+                , onClick (Msg.DropTopicMsg topic.id)
                 ]
                 { src = "/img/pushpin.svg", description = "", onLoad = Nothing }
             )
@@ -53,9 +93,19 @@ view ({ app, theme } as state) topic randomSeed =
         (column
             [ width (px 240)
             , height (px 172)
-            , padding 24
-            , class "card"
             , clip
+            , padding 24
+            , Border.rounded 3
+            , Background.color (rgb255 248 243 232)
+            , shadow
+            , mouseOver [ hoverShadow ]
+            , Transition.with
+                [ Transition.property "box-shadow"
+                    [ Transition.duration 0.28
+                    , Transition.delay 0
+                    , Transition.cubic 0.4 0 0.2 1
+                    ]
+                ]
             , htmlStyleAttribute
                 [ ( "transform"
                   , "rotate(" ++ String.fromFloat (cardRotateDeg * 10 - 5) ++ "deg)"

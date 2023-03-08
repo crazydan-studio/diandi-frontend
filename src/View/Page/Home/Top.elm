@@ -36,7 +36,7 @@ view ({ app, theme, withWidgetContext, withI18nElement } as state) =
                , paddingXY
                     BaseStyle.spacing2x
                     headerPaddingY
-               , zIndex 1
+               , zIndex 2
 
                -- box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2),0px 3px 1px 0px rgba(0,0,0,0.14),0px 1px 1px 0px rgba(0,0,0,0.12);
                , Border.shadows

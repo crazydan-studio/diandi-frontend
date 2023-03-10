@@ -28,7 +28,7 @@ import Model
 import Model.Topic exposing (Topic)
 import Msg
 import Random
-import Element exposing (zIndex)
+import Widget.Widget.Markdown as Markdown
 
 
 view :
@@ -36,7 +36,7 @@ view :
     -> Topic
     -> Random.Seed
     -> Element Msg.Msg
-view ({ app, theme } as state) topic randomSeed =
+view ({ app, theme, withWidgetContext } as state) topic randomSeed =
     let
         ( ( cardRotateDeg, pushpinPosition ), _ ) =
             Random.step (Random.pair (Random.float 0 1) (Random.float 0 1)) randomSeed
@@ -119,7 +119,11 @@ view ({ app, theme } as state) topic randomSeed =
                 , pointer
                 ]
                 (paragraph []
-                    [ text topic.content
+                    [ withWidgetContext <|
+                        Markdown.render
+                            { lineHeight = 24
+                            }
+                            topic.content
                     ]
                 )
             ]

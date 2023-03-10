@@ -4,12 +4,12 @@
 <svg
    fill="none"
    height="128"
-   viewBox="0 0 448 128"
-   width="448"
+   viewBox="0 0 454 128"
+   width="454"
    version="1.1"
    id="svg1604"
-   sodipodi:docname="logo.svg"
-   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14, custom)"
+   sodipodi:docname="diandi.logo.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -24,15 +24,15 @@
      inkscape:pagecheckerboard="true"
      inkscape:deskcolor="#d1d1d1"
      showgrid="false"
-     inkscape:zoom="3.1931818"
-     inkscape:cx="170.98932"
-     inkscape:cy="31.47331"
+     inkscape:zoom="1.2445932"
+     inkscape:cx="265.54862"
+     inkscape:cy="-71.107574"
      inkscape:window-width="1920"
      inkscape:window-height="1052"
      inkscape:window-x="0"
      inkscape:window-y="28"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg1604"
+     inkscape:current-layer="g11120"
      shape-rendering="auto" />
   <defs
      id="defs1602">
@@ -294,7 +294,7 @@
          id="tspan1608"
          x="101.25763"
          y="70.276428"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:54px;font-family:'DejaVu Serif';-inkscape-font-specification:'DejaVu Serif Bold';fill:#067ed5;fill-opacity:1">点滴(DianDi)</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:54px;font-family:'DejaVu Serif';-inkscape-font-specification:'DejaVu Serif Bold';fill:#067ed5;fill-opacity:1">点滴 (DianDi)</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:20px;line-height:1.25;font-family:sans-serif;fill:#067ed5;fill-opacity:1"

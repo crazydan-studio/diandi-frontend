@@ -16,5 +16,11 @@
     "content": "- [ ] 信息卡片：包含一段信息的内容，并附加多个、多类属性\n",
     "tags": ["产品开发/点滴"],
     "createdAt": "2023-01-08 12:31:45"
+  },
+  {
+    "id": "1",
+    "content": "相关资源：\n- [An introduction to elm-animator, and using it with elm-ui](https://korban.net/posts/elm/2020-04-07-using-elm-animator-with-elm-ui/)\n- [The Style Animation library for Elm!](https://package.elm-lang.org/packages/mdgriffith/elm-style-animation/4.0.0/): 支持在动画结束后发送消息以做清理等操作，[参考案例](https://ellie-app.com/jXRM74zpNja1)\n- [Elm Animator](https://package.elm-lang.org/packages/mdgriffith/elm-animator/1.1.1/): 支持生成css动画，[参考案例](http://mdgriffith.github.io/about)\n",
+    "tags": ["产品开发/点滴"],
+    "createdAt": "2023-01-08 12:31:45"
   }
 ]

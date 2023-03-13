@@ -301,7 +301,10 @@ elmUiRenderer ctx config =
                                             [ Element.Input.defaultCheckbox True ]
 
                                     NoTask ->
-                                        Element.text "•"
+                                        Element.el
+                                            [ textStyle
+                                            ]
+                                            (Element.text "•")
                                  )
                                     :: Element.text " "
                                     :: children
@@ -321,8 +324,12 @@ elmUiRenderer ctx config =
                                     [ Element.alignTop
                                     , Element.spacing 0
                                     ]
-                                    (Element.text
-                                        (String.fromInt (index + startingIndex) ++ " ")
+                                    (Element.el
+                                        [ textStyle
+                                        ]
+                                        (Element.text
+                                            (String.fromInt (index + startingIndex) ++ ". ")
+                                        )
                                         :: itemBlocks
                                     )
                                 ]

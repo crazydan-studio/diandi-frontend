@@ -1,0 +1,8 @@
+[
+  {
+    "id": "1",
+    "content": "数据操作仅有一个远端接口，通过回传参数确定实际操作：\n- Add: `{dataType: 'User', action: 'Add', data: [{...}, ...]}`\n- Delete: `{dataType: 'User', action: 'Delete', data: [{id: 'xxxx'}, ...]}`\n- Update: `{dataType: 'User', action: 'Update', data: [{id: 'xxx', ...}, ...]}`\n- Query: `{dataType: 'User', action: 'Query', data: [{name: 'xxx', ...}, ...]}`",
+    "tags": ["产品开发/精卫"],
+    "createdAt": "2023-01-08 12:31:45"
+  }
+]

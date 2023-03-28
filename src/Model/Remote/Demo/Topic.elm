@@ -76,8 +76,20 @@ decoderWithFilterTopics keywordsMaybe =
         listFilter keywords =
             List.filter
                 (\topic ->
-                    topic.content
+                    (topic.content
                         |> String.contains keywords
+                    )
+                        || (topic.title
+                                |> Maybe.withDefault ""
+                                |> String.contains keywords
+                           )
+                        || (topic.tags
+                                |> List.foldl
+                                    (\tag r ->
+                                        r || (tag |> String.contains keywords)
+                                    )
+                                    False
+                           )
                 )
     in
     keywordsMaybe

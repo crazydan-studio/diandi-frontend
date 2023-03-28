@@ -39,5 +39,9 @@ create =
     animation-duration: 1000ms;
     animation-iteration-count: infinite;
 }
+
+.wgt-button .t {
+    line-height: 1.75;
+}
           """
         ]

@@ -23,6 +23,7 @@ module Widget.Html exposing
     , onInputBlur
     , style
     , styles
+    , tabindex
     , toRgba
     , zIndex
     )
@@ -89,6 +90,11 @@ onInputBlur toMsg =
         (Input.selectionDecoder
             |> Decode.map toMsg
         )
+
+
+tabindex : Int -> Attribute msg
+tabindex idx =
+    HtmlAttr.tabindex idx |> htmlAttribute
 
 
 draggable : String -> Attribute msg

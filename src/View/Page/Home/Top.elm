@@ -105,8 +105,7 @@ view ({ app, theme, withWidgetContext, withI18nElement } as state) =
             ]
         , withWidgetContext <|
             Button.button
-                { id = "btn-personal-setting-in-home"
-                , attrs = theme.secondaryBtn
+                { attrs = theme.secondaryBtn
                 , content =
                     row
                         [ spacing BaseStyle.spacing

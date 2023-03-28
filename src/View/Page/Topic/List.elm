@@ -30,6 +30,7 @@ import Msg
 import Random
 import View.Page.RemoteData as RemoteDataPage
 import View.Page.Topic.Card as TopicCard
+import View.Style.Base as BaseStyle
 
 
 view : Model.State -> Element Msg.Msg
@@ -65,34 +66,16 @@ topicListView state topics =
         Element.Keyed.wrappedRow
             [ width fill
             , height fill
-            , spaceEvenly
+            , spacing BaseStyle.spacing2x
             ]
             (topics
                 |> TreeStore.traverseDepth 1
                     (\_ topic _ ->
-                        topic
-                    )
-                |> List.foldl
-                    (\topic list ->
-                        let
-                            ( randomSeed, _ ) =
-                                List.Extra.last list |> Maybe.withDefault ( Random.initialSeed 1024, topic )
-                        in
-                        list
-                            ++ [ ( Random.step (Random.float 0 1) randomSeed |> Tuple.second
-                                 , topic
-                                 )
-                               ]
-                    )
-                    []
-                |> List.map
-                    (\( randomSeed, topic ) ->
                         ( topic.id
-                        , Element.Lazy.lazy3
+                        , Element.Lazy.lazy2
                             TopicCard.view
                             state
                             topic
-                            randomSeed
                         )
                     )
             )

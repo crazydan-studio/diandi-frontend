@@ -20,111 +20,156 @@
 module View.Page.Topic.Card exposing (view)
 
 import Element exposing (..)
-import Element.Background as Background
 import Element.Border as Border
 import Element.Events exposing (..)
+import Element.Font as Font
 import Element.Transition as Transition
 import Model
 import Model.Topic exposing (Topic)
 import Msg
-import Random
+import View.Style.Base as BaseStyle
+import Widget.Html exposing (class, tabindex)
+import Widget.Widget.Button as Button
 import Widget.Widget.Markdown as Markdown
 
 
 view :
     Model.State
     -> Topic
-    -> Random.Seed
     -> Element Msg.Msg
-view ({ app, theme, withWidgetContext } as state) topic randomSeed =
+view ({ app, theme, withWidgetContext } as state) topic =
     let
-        ( ( cardRotateDeg, pushpinPosition ), _ ) =
-            Random.step (Random.pair (Random.float 0 1) (Random.float 0 1)) randomSeed
-
         shadow =
-            -- box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 10px 0px, rgba(0, 0, 0, 0.2) 0px 0px 10px 0px;
+            --   box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 1px -1px, rgba(0, 0, 0, 0.14) 0px 1px 1px 0px, rgba(0, 0, 0, 0.12)0px 1px 3px 0px;
             Border.shadows
                 [ { inset = False
-                  , offset = ( 0, 0 )
-                  , blur = 10
-                  , size = 0
+                  , offset = ( 0, 2 )
+                  , blur = 1
+                  , size = -1
                   , color = rgba255 0 0 0 0.2
                   }
                 , { inset = False
-                  , offset = ( 0, 0 )
-                  , blur = 10
+                  , offset = ( 0, 1 )
+                  , blur = 1
                   , size = 0
-                  , color = rgba255 0 0 0 0.2
+                  , color = rgba255 0 0 0 0.14
+                  }
+                , { inset = False
+                  , offset = ( 0, 1 )
+                  , blur = 3
+                  , size = 0
+                  , color = rgba255 0 0 0 0.12
                   }
                 ]
 
         hoverShadow =
-            -- box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 20px 0px, rgba(0, 0, 0, 0.2) 0px 0px 20px 0px;
+            -- box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
             Border.shadows
                 [ { inset = False
-                  , offset = ( 0, 0 )
-                  , blur = 20
-                  , size = 0
+                  , offset = ( 0, 2 )
+                  , blur = 4
+                  , size = -1
                   , color = rgba255 0 0 0 0.2
                   }
                 , { inset = False
-                  , offset = ( 0, 0 )
-                  , blur = 20
+                  , offset = ( 0, 4 )
+                  , blur = 5
                   , size = 0
-                  , color = rgba255 0 0 0 0.2
+                  , color = rgba255 0 0 0 0.14
+                  }
+                , { inset = False
+                  , offset = ( 0, 1 )
+                  , blur = 10
+                  , size = 0
+                  , color = rgba255 0 0 0 0.12
                   }
                 ]
     in
-    el
-        [ alignTop
-        , mouseOver [ zIndex 1 ]
-        , inFront
-            (image
-                [ width shrink
-                , height (px 32)
-                , alignTop
-                , moveRight (pushpinPosition * 100 + 20)
-                , pointer
-                , onClick (Msg.DropTopicMsg topic.id)
-                ]
-                { src = "/img/pushpin.svg", description = "", onLoad = Nothing }
-            )
-        ]
-        (column
-            [ width (px 240)
-            , height (px 172)
-            , clip
-            , padding 24
-            , Border.rounded 3
-            , Background.color (rgb255 248 243 232)
-            , shadow
-            , mouseOver [ hoverShadow ]
-            , Transition.with
-                [ Transition.property "box-shadow"
-                    [ Transition.duration 0.28
-                    , Transition.delay 0
-                    , Transition.cubic 0.4 0 0.2 1
+    column
+        (theme.primaryWhiteBackground
+            ++ [ width (px 320)
+               , padding BaseStyle.spacing
+               , alignTop
+               , class "topic-card"
+               , tabindex 1
+               , Border.rounded 4
+               , shadow
+               , mouseOver [ hoverShadow ]
+               , focused [ hoverShadow ]
+               , Transition.with
+                    [ Transition.property "box-shadow"
+                        [ Transition.duration 0.3
+                        , Transition.delay 0
+                        , Transition.cubic 0.4 0 0.2 1
+                        ]
                     ]
-                ]
-            , htmlStyleAttribute
-                [ ( "transform"
-                  , "rotate(" ++ String.fromFloat (cardRotateDeg * 10 - 5) ++ "deg)"
-                  )
-                ]
+               ]
+        )
+        [ column
+            [ width fill
+            , padding BaseStyle.spacing
+            , spacing BaseStyle.spacing
             ]
             [ el
                 [ width fill
-                , height fill
-                , scrollbarY
-                , pointer
+                , class "head"
+                , Font.size 20
+                , Font.weight 400
+                , Font.color
+                    (topic.title
+                        |> Maybe.map
+                            (\_ ->
+                                theme.primaryFontColor
+                            )
+                        |> Maybe.withDefault theme.placeholderFontColor
+                    )
+                , Font.center
                 ]
-                (paragraph []
-                    [ withWidgetContext <|
-                        Markdown.render
-                            { lineHeight = 24
-                            }
-                            topic.content
+                (text (topic.title |> Maybe.withDefault "无标题"))
+            , row
+                [ width fill
+                , height (shrink |> maximum 144)
+                , class "body"
+                , Font.size theme.primaryFontSize
+                , Font.color (rgba255 0 0 0 0.54)
+                ]
+                [ el
+                    [ width fill
+                    , height fill
+                    , clip
                     ]
-                )
+                    (el
+                        [ width fill
+                        , scrollbarY
+                        ]
+                        (paragraph []
+                            [ withWidgetContext <|
+                                Markdown.render
+                                    { lineHeight = 20
+                                    }
+                                    topic.content
+                            ]
+                        )
+                    )
+                ]
             ]
-        )
+        , wrappedRow
+            [ width fill
+            , class "bottom"
+            , spacing (BaseStyle.spacing // 2)
+            ]
+            (topic.tags
+                |> List.map
+                    (\tag ->
+                        withWidgetContext <|
+                            Button.link
+                                { attrs =
+                                    [ Font.size 13
+                                    , paddingXY 8 0
+                                    ]
+                                , content = text ("#" ++ tag)
+                                , onPress = Nothing
+                                }
+                    )
+            )
+        ]

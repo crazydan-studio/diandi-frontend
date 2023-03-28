@@ -29,28 +29,26 @@ import Element
         ( Attribute
         , Element
         , focused
-        , height
         , htmlStyleAttribute
         , minimum
-        , mouseDown
         , mouseOver
         , padding
         , paddingXY
-        , px
         , rgba255
         , shrink
         , width
         )
+import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import Element.Transition as Transition
+import Widget.Html exposing (class)
 import Widget.Internal.Widget.Button as Internal
 
 
 type alias Config msg =
-    { id : String
-    , content : Element msg
+    { content : Element msg
     , onPress : Maybe msg
     , attrs : List (Attribute msg)
     }
@@ -74,7 +72,7 @@ button ({ attrs } as config) { buttonContext } =
                     (shrink
                         |> minimum 64
                     )
-                , paddingXY 16 10
+                , paddingXY 16 6
                 , Border.rounded 4
                 ]
                     ++ attrs
@@ -104,7 +102,7 @@ createHelper : Internal.Context msg -> Config msg -> Element msg
 createHelper _ { content, onPress, attrs } =
     let
         shadow =
-            -- box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
+            -- box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12);
             Border.shadows
                 [ { inset = False
                   , offset = ( 0, 3 )
@@ -127,7 +125,7 @@ createHelper _ { content, onPress, attrs } =
                 ]
 
         hoverShadow =
-            -- box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+            -- box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2),0px 4px 5px 0px rgba(0,0,0,0.14),0px 1px 10px 0px rgba(0,0,0,0.12);
             Border.shadows
                 [ { inset = False
                   , offset = ( 0, 2 )
@@ -148,44 +146,10 @@ createHelper _ { content, onPress, attrs } =
                   , color = rgba255 0 0 0 0.12
                   }
                 ]
-
-        activeShadow =
-            -- box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
-            Border.shadows
-                [ { inset = False
-                  , offset = ( 0, 5 )
-                  , blur = 5
-                  , size = -3
-                  , color = rgba255 0 0 0 0.2
-                  }
-                , { inset = False
-                  , offset = ( 0, 8 )
-                  , blur = 10
-                  , size = 1
-                  , color = rgba255 0 0 0 0.14
-                  }
-                , { inset = False
-                  , offset = ( 0, 3 )
-                  , blur = 14
-                  , size = 2
-                  , color = rgba255 0 0 0 0.12
-                  }
-                ]
     in
     Input.button
         -- https://aforemny.github.io/material-components-web-elm/#buttons
-        ([ Font.size 14
-         , Font.letterSpacing 1.25
-         , Font.weight 500
-         , Font.center
-         , shadow
-         , Transition.with
-            [ Transition.property "box-shadow"
-                [ Transition.duration 0.28
-                , Transition.delay 0
-                , Transition.cubic 0.4 0 0.2 1
-                ]
-            ]
+        ([ shadow
 
          -- https://github.com/mdgriffith/elm-ui/blob/master/CSS-LOOKUP.md
          -- :hover
@@ -193,10 +157,8 @@ createHelper _ { content, onPress, attrs } =
 
          -- :focus
          , focused [ hoverShadow ]
-
-         -- :active
-         , mouseDown [ activeShadow ]
          ]
+            ++ commonStyles
             ++ attrs
         )
         { onPress = onPress
@@ -206,6 +168,53 @@ createHelper _ { content, onPress, attrs } =
 
 {-| 链接按钮
 -}
-link : Element msg
-link =
-    Element.none
+link :
+    Config msg
+    -> Context a msg
+    -> Element msg
+link { content, onPress, attrs } _ =
+    Input.button
+        -- https://v4.mui.com/components/buttons/#text-buttons
+        ([ width
+            (shrink
+                |> minimum 64
+            )
+         , paddingXY 8 6
+         , Border.rounded 4
+         , mouseOver
+            [ Background.color (rgba255 25 118 210 0.04)
+            ]
+         ]
+            ++ commonStyles
+            ++ attrs
+        )
+        { onPress = onPress
+        , label = content
+        }
+
+
+commonStyles : List (Attribute msg)
+commonStyles =
+    [ Font.size 14
+    , Font.letterSpacing 0.39998
+    , Font.weight 500
+    , Font.center
+    , class "wgt-button"
+    , Transition.with
+        [ Transition.property "background-color"
+            [ Transition.duration 0.25
+            , Transition.delay 0
+            , Transition.cubic 0.4 0 0.2 1
+            ]
+        , Transition.property "box-shadow"
+            [ Transition.duration 0.25
+            , Transition.delay 0
+            , Transition.cubic 0.4 0 0.2 1
+            ]
+        , Transition.property "border"
+            [ Transition.duration 0.25
+            , Transition.delay 0
+            , Transition.cubic 0.4 0 0.2 1
+            ]
+        ]
+    ]

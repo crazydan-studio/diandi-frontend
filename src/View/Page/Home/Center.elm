@@ -33,7 +33,7 @@ view state =
             [ width fill
             , height fill
             , scrollbarY
-            , paddingXY 256 64
+            , padding BaseStyle.spacing8x
             ]
             (TopicList.view state)
         )
@@ -50,8 +50,7 @@ tools { app, theme, withWidgetContext, withI18nElement } =
         ]
         [ withWidgetContext <|
             Button.circle
-                { id = "btn-new-topic"
-                , attrs = theme.primaryBtn ++ [ centerX ]
+                { attrs = theme.primaryBtn ++ [ centerX ]
                 , content =
                     column
                         [ width (px 40)

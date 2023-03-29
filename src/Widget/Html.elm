@@ -18,28 +18,20 @@
 
 
 module Widget.Html exposing
-    ( class
-    , onClickOutOfMe
+    ( onClickOutOfMe
     , onInputBlur
-    , style
-    , styles
-    , tabindex
     , template
     , toRgba
-    , zIndex
     )
 
 import Element
     exposing
         ( Attribute
         , Color
-        , htmlAttribute
-        , htmlStyleAttribute
         , toRgb
         )
 import Element.Events as Event
 import Element.Input as Input
-import Html.Attributes as HtmlAttr
 import Json.Decode as Decode
 
 
@@ -64,21 +56,6 @@ toRgba color =
         ++ ")"
 
 
-style : String -> String -> Attribute msg
-style name val =
-    [ ( name, val ) ] |> htmlStyleAttribute
-
-
-styles : List ( String, String ) -> Attribute msg
-styles attrs =
-    attrs |> htmlStyleAttribute
-
-
-class : String -> Attribute msg
-class name =
-    HtmlAttr.class name |> htmlAttribute
-
-
 onClickOutOfMe : msg -> Attribute msg
 onClickOutOfMe msg =
     Event.on "clickOutOfMe"
@@ -91,21 +68,6 @@ onInputBlur toMsg =
         (Input.selectionDecoder
             |> Decode.map toMsg
         )
-
-
-tabindex : Int -> Attribute msg
-tabindex idx =
-    HtmlAttr.tabindex idx |> htmlAttribute
-
-
-draggable : String -> Attribute msg
-draggable val =
-    HtmlAttr.draggable val |> htmlAttribute
-
-
-zIndex : Int -> Attribute msg
-zIndex val =
-    style "z-index" (String.fromInt val)
 
 
 template : List ( String, String ) -> String -> String

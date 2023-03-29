@@ -25,7 +25,7 @@ import Element.Events exposing (onClick)
 import Html
 import Html.Attributes as HtmlAttr
 import Html.Events as HtmlEvent
-import Widget.Html exposing (class, onClickOutOfMe)
+import Widget.Html exposing (onClickOutOfMe)
 import Widget.Internal.Widget.TextEditor as Internal
     exposing
         ( inputId

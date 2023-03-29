@@ -28,6 +28,7 @@ import Element
     exposing
         ( Attribute
         , Element
+        , class
         , focused
         , htmlStyleAttribute
         , minimum
@@ -43,7 +44,6 @@ import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import Widget.Animation.Transition as Transition
-import Widget.Html exposing (class)
 import Widget.Internal.Widget.Button as Internal
 import Widget.Shadow as Shadow
 

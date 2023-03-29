@@ -28,7 +28,6 @@ import Model.Topic exposing (Topic)
 import Msg
 import View.Style.Base as BaseStyle
 import Widget.Animation.Transition as Transition
-import Widget.Html exposing (class, tabindex)
 import Widget.Shadow as Shadow
 import Widget.Widget.Button as Button
 import Widget.Widget.Markdown as Markdown
@@ -43,6 +42,8 @@ view ({ app, theme, withWidgetContext } as state) topic =
         (theme.primaryWhiteBackground
             ++ [ class "topic-card"
                , class "size-fit"
+
+               -- 启用获取焦点，以支持设置鼠标选中样式
                , tabindex 1
                , alignTop
                , padding BaseStyle.spacing

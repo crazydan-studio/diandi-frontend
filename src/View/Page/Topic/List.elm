@@ -29,7 +29,6 @@ import Msg
 import View.Page.RemoteData as RemoteDataPage
 import View.Page.Topic.Card as TopicCard
 import View.Style.Base as BaseStyle
-import Widget.Html exposing (class)
 
 
 view : Model.State -> Element Msg.Msg

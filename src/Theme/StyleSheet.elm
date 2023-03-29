@@ -21,6 +21,7 @@ module Theme.StyleSheet exposing (create)
 
 import Html exposing (Html)
 import Model
+import View.Style.Base as BaseStyle
 import Widget.Html exposing (template)
 
 
@@ -38,11 +39,12 @@ body > * { opacity: 1; }
         , Html.text
             ("""
 .topic-card.size-fit {
-  min-width: calc((100% - 16px * {{topic_card_count}}) / {{topic_card_count}}) !important;
+  min-width: calc((100% - {{topic_card_spacing}}px * {{topic_card_count}}) / {{topic_card_count}}) !important;
 }
 """
                 |> template
-                    [ ( "topic_card_count", "5" )
+                    [ ( "topic_card_spacing", String.fromInt BaseStyle.spacing2x )
+                    , ( "topic_card_count", "5" )
                     ]
             )
         ]

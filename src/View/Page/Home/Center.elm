@@ -14,6 +14,10 @@ import Widget.Widget.Button as Button
 
 view : Model.State -> Element Msg.Msg
 view state =
+    let
+        paddingX =
+            BaseStyle.spacing8x * 2
+    in
     el
         [ width fill
         , height fill
@@ -21,7 +25,7 @@ view state =
             (el
                 [ alignRight
                 , centerY
-                , moveLeft (256 / 2 - 40)
+                , moveLeft (toFloat paddingX / 2 - 40)
                 ]
                 (tools state)
             )
@@ -33,7 +37,7 @@ view state =
             [ width fill
             , height fill
             , scrollbarY
-            , padding BaseStyle.spacing8x
+            , paddingXY paddingX BaseStyle.spacing3x
             ]
             (TopicList.view state)
         )

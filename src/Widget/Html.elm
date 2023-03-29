@@ -24,6 +24,7 @@ module Widget.Html exposing
     , style
     , styles
     , tabindex
+    , template
     , toRgba
     , zIndex
     )
@@ -105,3 +106,16 @@ draggable val =
 zIndex : Int -> Attribute msg
 zIndex val =
     style "z-index" (String.fromInt val)
+
+
+template : List ( String, String ) -> String -> String
+template data tpl =
+    data
+        |> List.foldl
+            (\( name, value ) t ->
+                t
+                    |> String.replace
+                        ("{{" ++ name ++ "}}")
+                        value
+            )
+            tpl

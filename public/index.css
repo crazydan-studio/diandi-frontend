@@ -4,15 +4,10 @@
   aspect-ratio: 600/300;
 }
 
+.topic-card-list>.r {
+  align-content: flex-start;
+}
+
 .topic-card .head .t {
   line-height: 1.334;
-}
-
-.topic-card .body {
-  transition: max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1) 0s;
-}
-
-.topic-card:hover .body,
-.topic-card:focus .body {
-  max-height: 256px;
 }

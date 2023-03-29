@@ -51,7 +51,7 @@ view ({ app, theme } as state) =
             , Font.color theme.primaryFontColor
             ]
             (page state)
-        , Theme.StyleSheet.create
+        , Theme.StyleSheet.create state
         , Widget.StyleSheet.create
         ]
     }

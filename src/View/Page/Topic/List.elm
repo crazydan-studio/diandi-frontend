@@ -23,14 +23,13 @@ import Data.TreeStore as TreeStore exposing (TreeStore)
 import Element exposing (..)
 import Element.Keyed
 import Element.Lazy
-import List.Extra
 import Model
 import Model.Topic exposing (Topic)
 import Msg
-import Random
 import View.Page.RemoteData as RemoteDataPage
 import View.Page.Topic.Card as TopicCard
 import View.Style.Base as BaseStyle
+import Widget.Html exposing (class)
 
 
 view : Model.State -> Element Msg.Msg
@@ -66,6 +65,7 @@ topicListView state topics =
         Element.Keyed.wrappedRow
             [ width fill
             , height fill
+            , class "topic-card-list"
             , spacing BaseStyle.spacing2x
             ]
             (topics

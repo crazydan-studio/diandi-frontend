@@ -87,11 +87,11 @@ view ({ app, theme, withWidgetContext } as state) topic =
     in
     column
         (theme.primaryWhiteBackground
-            ++ [ width (px 320)
-               , padding BaseStyle.spacing
-               , alignTop
-               , class "topic-card"
+            ++ [ class "topic-card"
+               , class "size-fit"
                , tabindex 1
+               , alignTop
+               , padding BaseStyle.spacing
                , Border.rounded 4
                , shadow
                , mouseOver [ hoverShadow ]

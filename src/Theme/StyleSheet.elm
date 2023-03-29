@@ -20,12 +20,29 @@
 module Theme.StyleSheet exposing (create)
 
 import Html exposing (Html)
+import Model
+import Widget.Html exposing (template)
 
 
-create : Html msg
-create =
+create : Model.State -> Html msg
+create ({ app, theme } as state) =
     Html.node "style"
         []
-        [ -- 隐藏加载动画，显示body下的元素
-          Html.text "body::after {opacity: 0;} body > * {opacity: 1;}"
+        [ -- 隐藏加载动画，显示 body 下的元素
+          Html.text """
+body::after { opacity: 0; }
+body > * { opacity: 1; }
+"""
+
+        -- 主题卡片宽度自适应设置：根据每行显示的卡片数量确定其最小宽度
+        , Html.text
+            ("""
+.topic-card.size-fit {
+  min-width: calc((100% - 16px * {{topic_card_count}}) / {{topic_card_count}}) !important;
+}
+"""
+                |> template
+                    [ ( "topic_card_count", "5" )
+                    ]
+            )
         ]

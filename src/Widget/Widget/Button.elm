@@ -42,9 +42,10 @@ import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
-import Element.Transition as Transition
+import Widget.Animation.Transition as Transition
 import Widget.Html exposing (class)
 import Widget.Internal.Widget.Button as Internal
+import Widget.Shadow as Shadow
 
 
 type alias Config msg =
@@ -100,63 +101,16 @@ circle ({ attrs } as config) { buttonContext } =
 
 createHelper : Internal.Context msg -> Config msg -> Element msg
 createHelper _ { content, onPress, attrs } =
-    let
-        shadow =
-            -- box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12);
-            Border.shadows
-                [ { inset = False
-                  , offset = ( 0, 3 )
-                  , blur = 1
-                  , size = -2
-                  , color = rgba255 0 0 0 0.2
-                  }
-                , { inset = False
-                  , offset = ( 0, 2 )
-                  , blur = 2
-                  , size = 0
-                  , color = rgba255 0 0 0 0.14
-                  }
-                , { inset = False
-                  , offset = ( 0, 1 )
-                  , blur = 5
-                  , size = 0
-                  , color = rgba255 0 0 0 0.12
-                  }
-                ]
-
-        hoverShadow =
-            -- box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2),0px 4px 5px 0px rgba(0,0,0,0.14),0px 1px 10px 0px rgba(0,0,0,0.12);
-            Border.shadows
-                [ { inset = False
-                  , offset = ( 0, 2 )
-                  , blur = 4
-                  , size = -1
-                  , color = rgba255 0 0 0 0.2
-                  }
-                , { inset = False
-                  , offset = ( 0, 4 )
-                  , blur = 5
-                  , size = 0
-                  , color = rgba255 0 0 0 0.14
-                  }
-                , { inset = False
-                  , offset = ( 0, 1 )
-                  , blur = 10
-                  , size = 0
-                  , color = rgba255 0 0 0 0.12
-                  }
-                ]
-    in
+    -- https://v4.mui.com/components/buttons/
     Input.button
-        -- https://aforemny.github.io/material-components-web-elm/#buttons
-        ([ shadow
+        ([ Shadow.normal
 
          -- https://github.com/mdgriffith/elm-ui/blob/master/CSS-LOOKUP.md
          -- :hover
-         , mouseOver [ hoverShadow ]
+         , mouseOver [ Shadow.hover ]
 
          -- :focus
-         , focused [ hoverShadow ]
+         , focused [ Shadow.hover ]
          ]
             ++ commonStyles
             ++ attrs
@@ -200,21 +154,9 @@ commonStyles =
     , Font.weight 500
     , Font.center
     , class "wgt-button"
-    , Transition.with
-        [ Transition.property "background-color"
-            [ Transition.duration 0.25
-            , Transition.delay 0
-            , Transition.cubic 0.4 0 0.2 1
-            ]
-        , Transition.property "box-shadow"
-            [ Transition.duration 0.25
-            , Transition.delay 0
-            , Transition.cubic 0.4 0 0.2 1
-            ]
-        , Transition.property "border"
-            [ Transition.duration 0.25
-            , Transition.delay 0
-            , Transition.cubic 0.4 0 0.2 1
-            ]
+    , Transition.defaultWith
+        [ "background-color"
+        , "box-shadow"
+        , "border"
         ]
     ]

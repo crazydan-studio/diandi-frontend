@@ -23,12 +23,13 @@ import Element exposing (..)
 import Element.Border as Border
 import Element.Events exposing (..)
 import Element.Font as Font
-import Element.Transition as Transition
 import Model
 import Model.Topic exposing (Topic)
 import Msg
 import View.Style.Base as BaseStyle
+import Widget.Animation.Transition as Transition
 import Widget.Html exposing (class, tabindex)
+import Widget.Shadow as Shadow
 import Widget.Widget.Button as Button
 import Widget.Widget.Markdown as Markdown
 
@@ -38,53 +39,6 @@ view :
     -> Topic
     -> Element Msg.Msg
 view ({ app, theme, withWidgetContext } as state) topic =
-    let
-        shadow =
-            --   box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 1px -1px, rgba(0, 0, 0, 0.14) 0px 1px 1px 0px, rgba(0, 0, 0, 0.12)0px 1px 3px 0px;
-            Border.shadows
-                [ { inset = False
-                  , offset = ( 0, 2 )
-                  , blur = 1
-                  , size = -1
-                  , color = rgba255 0 0 0 0.2
-                  }
-                , { inset = False
-                  , offset = ( 0, 1 )
-                  , blur = 1
-                  , size = 0
-                  , color = rgba255 0 0 0 0.14
-                  }
-                , { inset = False
-                  , offset = ( 0, 1 )
-                  , blur = 3
-                  , size = 0
-                  , color = rgba255 0 0 0 0.12
-                  }
-                ]
-
-        hoverShadow =
-            -- box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
-            Border.shadows
-                [ { inset = False
-                  , offset = ( 0, 2 )
-                  , blur = 4
-                  , size = -1
-                  , color = rgba255 0 0 0 0.2
-                  }
-                , { inset = False
-                  , offset = ( 0, 4 )
-                  , blur = 5
-                  , size = 0
-                  , color = rgba255 0 0 0 0.14
-                  }
-                , { inset = False
-                  , offset = ( 0, 1 )
-                  , blur = 10
-                  , size = 0
-                  , color = rgba255 0 0 0 0.12
-                  }
-                ]
-    in
     column
         (theme.primaryWhiteBackground
             ++ [ class "topic-card"
@@ -93,15 +47,11 @@ view ({ app, theme, withWidgetContext } as state) topic =
                , alignTop
                , padding BaseStyle.spacing
                , Border.rounded 4
-               , shadow
-               , mouseOver [ hoverShadow ]
-               , focused [ hoverShadow ]
-               , Transition.with
-                    [ Transition.property "box-shadow"
-                        [ Transition.duration 0.3
-                        , Transition.delay 0
-                        , Transition.cubic 0.4 0 0.2 1
-                        ]
+               , Shadow.normal
+               , mouseOver [ Shadow.hover ]
+               , focused [ Shadow.hover ]
+               , Transition.defaultWith
+                    [ "box-shadow"
                     ]
                ]
         )

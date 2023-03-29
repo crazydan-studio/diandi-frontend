@@ -28,6 +28,7 @@ import Model.Topic exposing (Topic)
 import Msg
 import View.Style.Base as BaseStyle
 import Widget.Animation.Transition as Transition
+import Widget.Icon as Icon
 import Widget.Shadow as Shadow
 import Widget.Widget.Button as Button
 import Widget.Widget.Markdown as Markdown
@@ -104,23 +105,39 @@ view ({ app, theme, withWidgetContext } as state) topic =
                     )
                 ]
             ]
-        , wrappedRow
+        , row
             [ width fill
             , class "bottom"
-            , spacing (BaseStyle.spacing // 2)
             ]
-            (topic.tags
-                |> List.map
-                    (\tag ->
-                        withWidgetContext <|
-                            Button.link
-                                { attrs =
-                                    [ Font.size 13
-                                    , paddingXY 8 0
-                                    ]
-                                , content = text ("#" ++ tag)
-                                , onPress = Nothing
-                                }
-                    )
-            )
+            [ wrappedRow
+                [ width fill
+                , spacing (BaseStyle.spacing // 2)
+                ]
+                (topic.tags
+                    |> List.map
+                        (\tag ->
+                            withWidgetContext <|
+                                Button.link
+                                    { attrs =
+                                        [ Font.size 13
+                                        , paddingXY 8 0
+                                        ]
+                                    , content = text ("#" ++ tag)
+                                    , onPress = Nothing
+                                    }
+                        )
+                )
+            , el
+                [ alignRight
+                ]
+                (withWidgetContext <|
+                    Button.link
+                        { attrs = [ width shrink ]
+                        , content =
+                            theme.primaryLinkBtnIcon
+                                { icon = Icon.MoreOutlined, size = Nothing }
+                        , onPress = Nothing
+                        }
+                )
+            ]
         ]

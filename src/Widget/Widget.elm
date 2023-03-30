@@ -18,11 +18,9 @@
 
 
 module Widget.Widget exposing
-    ( Builder
-    , Msg
-    , State
+    ( Msg
     , Updater
-    , WithContext
+    , Widgets
     , init
     , sub
     , update
@@ -32,28 +30,79 @@ import Dict exposing (Dict)
 import Element exposing (Element)
 import Widget.Internal.Widget.Button as Button
 import Widget.Internal.Widget.FixedImage as FixedImage
+import Widget.Internal.Widget.PageLayer as PageLayer
 import Widget.Internal.Widget.TextEditor as TextEditor
 
 
-type State msg
-    = State (Config msg) WidgetStates
+type alias Widgets msg =
+    { -- 组件库配置及组件集状态
+      state : State msg
 
+    -- 向组件构造器传递 Context
+    , with : WithWidget msg
 
-type alias Builder msg =
-    Context msg -> Element msg
+    -- 发送组件消息
+    , on : WithMsg msg
+    }
 
 
 type alias Updater msg =
-    State msg -> ( State msg, Cmd msg, WithContext msg )
+    Widgets msg -> UpdateResult msg
 
 
-type alias WithContext msg =
-    Builder msg -> Element msg
+type Msg msg
+    = -- TODO 数据删除消息需包装一次，携带组件id和业务消息，并先移除组件状态，
+      -- 再触发业务消息，同时支持批量删除消息。或者，采用js监听节点移除消息，再通过组件id和类型做清理？
+      UpdateButtonMsg String (Maybe Button.State)
+    | UpdateFixedImageMsg String (Maybe FixedImage.State)
+    | UpdateTextEditorMsg String (Maybe TextEditor.State)
+    | TextEditorFocusOnMsg String
+    | UpdatePageLayerMsg String (Maybe (PageLayer.State msg))
+
+
+type alias WidgetStates msg =
+    { button : WidgetStateStore Button.State
+    , fixedImage : WidgetStateStore FixedImage.State
+    , textEditor : WidgetStateStore TextEditor.State
+    , pageLayer : WidgetStateStore (PageLayer.State msg)
+    }
+
+
+type alias WidgetContext msg =
+    { buttonContext : Button.Context msg
+    , fixedImageContext : FixedImage.Context msg
+    , textEditorContext : TextEditor.Context msg
+    , pageLayerContext : PageLayer.Context msg
+    }
+
+
+type State msg
+    = State (Config msg) (WidgetStates msg)
 
 
 type alias Config msg =
-    { toAppMsg : Msg -> msg
+    { toAppMsg : Msg msg -> msg
     }
+
+
+type alias WidgetBuilder msg =
+    WidgetContext msg -> Element msg
+
+
+type alias MsgBuilder msg =
+    WidgetContext msg -> msg
+
+
+type alias UpdateResult msg =
+    ( Widgets msg, Cmd msg )
+
+
+type alias WithWidget msg =
+    WidgetBuilder msg -> Element msg
+
+
+type alias WithMsg msg =
+    MsgBuilder msg -> msg
 
 
 type alias WidgetStateStore state =
@@ -61,67 +110,55 @@ type alias WidgetStateStore state =
     Dict String state
 
 
-type alias WidgetStates =
-    { button : WidgetStateStore Button.State
-    , fixedImage : WidgetStateStore FixedImage.State
-    , textEditor : WidgetStateStore TextEditor.State
-    }
-
-
-type alias Context msg =
-    { buttonContext : Button.Context msg
-    , fixedImageContext : FixedImage.Context msg
-    , textEditorContext : TextEditor.Context msg
-    }
-
-
-type Msg
-    = -- TODO 数据删除消息需包装一次，携带组件id和业务消息，并先移除组件状态，
-      -- 再触发业务消息，同时支持批量删除消息。或者，采用js监听节点移除消息，再通过组件id和类型做清理？
-      UpdateButtonMsg String (Maybe Button.State)
-    | UpdateFixedImageMsg String (Maybe FixedImage.State)
-    | UpdateTextEditorMsg String (Maybe TextEditor.State)
-    | TextEditorFocusOnMsg String
-
-
 update :
-    Msg
-    -> State appMsg
-    -> ( State appMsg, Cmd appMsg, WithContext appMsg )
-update msg ((State config _) as state) =
+    Msg appMsg
+    -> Widgets appMsg
+    -> UpdateResult appMsg
+update msg { state } =
     let
-        ( widgets, cmd ) =
+        (State config _) =
+            state
+
+        ( widgetStates, cmd ) =
             updateByMsg msg state
     in
     toResult <|
-        ( State config widgets, cmd )
+        ( State config widgetStates, cmd )
 
 
-sub : State appMsg -> Sub appMsg
-sub (State { toAppMsg } _) =
+sub : Widgets appMsg -> Sub appMsg
+sub { state } =
     Sub.batch
         []
 
 
 init :
     Config appMsg
-    -> ( State appMsg, Cmd appMsg, WithContext appMsg )
+    -> UpdateResult appMsg
 init config =
     toResult <|
         ( State config
             { button = Dict.empty
             , fixedImage = Dict.empty
             , textEditor = Dict.empty
+            , pageLayer = Dict.empty
             }
         , Cmd.none
         )
 
 
-createContext : Config appMsg -> WidgetStates -> Context appMsg
-createContext { toAppMsg } widgets =
+
+-- -----------------------------------------------------
+
+
+createContext :
+    Config appMsg
+    -> WidgetStates appMsg
+    -> WidgetContext appMsg
+createContext { toAppMsg } widgetStates =
     let
         getState getter id =
-            widgets |> getter |> Dict.get id
+            widgetStates |> getter |> Dict.get id
 
         onUpdate getter initer toMsg id updater =
             getState getter id
@@ -141,15 +178,20 @@ createContext { toAppMsg } widgets =
         contextWith .fixedImage FixedImage.init UpdateFixedImageMsg
     , textEditorContext =
         contextWith .textEditor TextEditor.init UpdateTextEditorMsg
+    , pageLayerContext =
+        contextWith .pageLayer PageLayer.init UpdatePageLayerMsg
     }
 
 
-updateByMsg : Msg -> State appMsg -> ( WidgetStates, Cmd appMsg )
-updateByMsg msg (State { toAppMsg } widgets) =
+updateByMsg :
+    Msg appMsg
+    -> State appMsg
+    -> ( WidgetStates appMsg, Cmd appMsg )
+updateByMsg msg (State { toAppMsg } widgetStates) =
     let
-        update_ getter id state =
-            getter widgets
-                |> (state
+        update_ getter id widgetState =
+            getter widgetStates
+                |> (widgetState
                         -- 更新状态
                         |> Maybe.map (Dict.insert id)
                         -- 删除状态
@@ -158,17 +200,17 @@ updateByMsg msg (State { toAppMsg } widgets) =
     in
     case msg of
         UpdateButtonMsg id state ->
-            ( { widgets | button = update_ .button id state }
+            ( { widgetStates | button = update_ .button id state }
             , Cmd.none
             )
 
         UpdateFixedImageMsg id state ->
-            ( { widgets | fixedImage = update_ .fixedImage id state }
+            ( { widgetStates | fixedImage = update_ .fixedImage id state }
             , Cmd.none
             )
 
         UpdateTextEditorMsg id state ->
-            ( { widgets | textEditor = update_ .textEditor id state }
+            ( { widgetStates | textEditor = update_ .textEditor id state }
             , TextEditor.focuseOn id
                 (\input ->
                     toAppMsg (TextEditorFocusOnMsg input)
@@ -177,18 +219,50 @@ updateByMsg msg (State { toAppMsg } widgets) =
             )
 
         TextEditorFocusOnMsg _ ->
-            ( widgets, Cmd.none )
+            ( widgetStates, Cmd.none )
+
+        UpdatePageLayerMsg id state ->
+            ( { widgetStates | pageLayer = update_ .pageLayer id state }
+            , Cmd.none
+            )
 
 
 
 -- -------------------------------------------------------------
 
 
-withContext : State appMsg -> Builder appMsg -> Element appMsg
-withContext (State config widgets) widgetor =
-    widgets |> createContext config |> widgetor
+withWidget :
+    WidgetContext appMsg
+    -> WidgetBuilder appMsg
+    -> Element appMsg
+withWidget ctx widgetor =
+    ctx |> widgetor
 
 
-toResult : ( State appMsg, Cmd appMsg ) -> ( State appMsg, Cmd appMsg, WithContext appMsg )
+withMsg :
+    WidgetContext appMsg
+    -> MsgBuilder appMsg
+    -> appMsg
+withMsg ctx toAppMsg =
+    ctx |> toAppMsg
+
+
+toContext : State appMsg -> WidgetContext appMsg
+toContext (State config widgetStates) =
+    widgetStates |> createContext config
+
+
+toResult :
+    ( State appMsg, Cmd appMsg )
+    -> UpdateResult appMsg
 toResult ( state, cmd ) =
-    ( state, cmd, withContext state )
+    let
+        ctx =
+            toContext state
+    in
+    ( { state = state
+      , with = withWidget ctx
+      , on = withMsg ctx
+      }
+    , cmd
+    )

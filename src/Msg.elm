@@ -48,7 +48,7 @@ type Msg
       -- 国际化Port消息
     | I18nPortMsg I18n.Port.Msg
       -- 组件消息
-    | WidgetMsg Widget.Msg
+    | WidgetMsg (Widget.Msg Msg)
       -- 数据操作
     | SearchTopicMsg String
     | DropTopicMsg String

@@ -64,15 +64,14 @@ type alias State =
     , withI18nElement : I18nElement Msg.Msg
 
     -- 组件内部状态
-    , widgets : Widget.State Msg.Msg
-    , withWidgetContext : Widget.WithContext Msg.Msg
+    , widgets : Widget.Widgets Msg.Msg
     }
 
 
 init : Config -> Url.Url -> Nav.Key -> ( State, Cmd Msg.Msg )
 init config navUrl navKey =
     let
-        ( widgets, widgetsCmd, withWidgetContext ) =
+        ( widgets, widgetsCmd ) =
             Widget.init
                 { toAppMsg = Msg.WidgetMsg
                 }
@@ -91,7 +90,6 @@ init config navUrl navKey =
             , theme = Theme.create ThemeDefault.init
             , withI18nElement = withI18nElement app.lang
             , widgets = widgets
-            , withWidgetContext = withWidgetContext
             }
                 |> routeUpdateHelper navUrl
     in
@@ -195,12 +193,11 @@ updateWidgetsState :
     -> ( State, Cmd Msg.Msg )
 updateWidgetsState updater ({ widgets } as state) =
     let
-        ( newWidgets, newWidgetsCmd, newWithWidgetContext ) =
+        ( newWidgets, newWidgetsCmd ) =
             updater widgets
     in
     ( { state
         | widgets = newWidgets
-        , withWidgetContext = newWithWidgetContext
       }
     , newWidgetsCmd
     )

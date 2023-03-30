@@ -65,31 +65,19 @@ rootTranslator : List String -> List ( Lang, TranslateResult )
 rootTranslator texts =
     case texts of
         [ "又有什么奇妙的想法呢？赶紧记下来吧 :)" ] ->
-            ok En_US "Have any amazing ideas? Get it down right now :)"
-                :: default
-
-        [ "这里是主题详情展示页，默认显示当前分类的信息" ] ->
             ok En_US
-                ("Here is the details page for the topic"
-                    ++ ", it will default show the information of the category"
-                )
+                "Have any amazing ideas? Get it down right now :)"
                 :: default
 
-        [ "点击这里添加描述信息" ] ->
-            ok En_US "Click here to add description for the category"
+        [ "请输入关键字查询 ..." ] ->
+            ok En_US
+                "Please input the keyword for searching ..."
                 :: default
 
-        [ "待办" as t, n ] ->
-            ok En_US ("TODO (" ++ n ++ ")")
-                :: defaultWith [ t, " (", n, ")" ]
-
-        [ "知识" as t, n ] ->
-            ok En_US ("Knowledge (" ++ n ++ ")")
-                :: defaultWith [ t, " (", n, ")" ]
-
-        [ "疑问" as t, n ] ->
-            ok En_US ("Question (" ++ n ++ ")")
-                :: defaultWith [ t, " (", n, ")" ]
+        [ "可以在这里添加一个醒目的标题哦 ..." ] ->
+            ok En_US
+                "You can add a conspicuous title here ..."
+                :: default
 
         _ ->
             default
@@ -102,7 +90,7 @@ buttonTranslator texts =
             ok En_US "Language"
                 :: default
 
-        [ "记下来!" ] ->
+        [ "记下来！" ] ->
             ok En_US "Got it!"
                 :: default
 
@@ -110,16 +98,8 @@ buttonTranslator texts =
             ok En_US "Settings"
                 :: default
 
-        [ "阅读模式" ] ->
-            ok En_US "Reading Mode"
-                :: default
-
-        [ "搜索" ] ->
-            ok En_US "Search"
-                :: default
-
-        [ "编辑" ] ->
-            ok En_US "Edit"
+        [ "新增" ] ->
+            ok En_US "New"
                 :: default
 
         [ "确定" ] ->
@@ -137,10 +117,6 @@ buttonTranslator texts =
 labelTranslator : List String -> List ( Lang, TranslateResult )
 labelTranslator texts =
     case texts of
-        [ "分类：" ] ->
-            ok En_US "Category: "
-                :: default
-
         [ "标签：" ] ->
             ok En_US "Tags: "
                 :: default

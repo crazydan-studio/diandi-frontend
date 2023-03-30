@@ -19,11 +19,23 @@
 
 module Theme.Theme exposing (Theme, create)
 
-import Element exposing (Element, rgba255)
+import Element
+    exposing
+        ( Element
+        , focused
+        , rgb255
+        , rgba255
+        )
 import Element.Background as Background
+import Element.Border as Border
 import Element.Font as Font
 import Theme.Internal.Theme as Internal
-import Widget.Color exposing (defaultPalette, fgColorForBg, toRgbColor)
+import Widget.Color
+    exposing
+        ( defaultPalette
+        , fgColorForBg
+        , toRgbColor
+        )
 import Widget.Icon as Icon exposing (Icon)
 
 
@@ -59,6 +71,9 @@ type alias Theme msg =
     --
     , placeholderFontColor : Element.Color
     , placeholderFont : List (Element.Attribute msg)
+
+    --
+    , defaultInput : List (Element.Attribute msg)
     }
 
 
@@ -84,6 +99,7 @@ create theme =
     , secondaryBtn = secondaryBtn theme
     , placeholderFontColor = placeholderFontColor theme
     , placeholderFont = placeholderFont theme
+    , defaultInput = defaultInput theme
     }
 
 
@@ -172,4 +188,13 @@ primaryGreyBackground theme =
 primaryWhiteBackground : Internal.Theme -> List (Element.Attribute msg)
 primaryWhiteBackground theme =
     [ Background.color theme.primaryWhiteBackgroundColor
+    ]
+
+
+defaultInput : Internal.Theme -> List (Element.Attribute msg)
+defaultInput theme =
+    [ focused
+        [ Border.color (rgb255 25 118 210)
+        , Border.width 2
+        ]
     ]

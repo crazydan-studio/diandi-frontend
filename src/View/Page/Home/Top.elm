@@ -95,7 +95,7 @@ view ({ app, theme, widgets, withI18nElement } as state) =
                 , placeholder =
                     Just
                         (Input.placeholder []
-                            ((I18n.buttonText :: "请输入关键字查询 ..." :: langTextEnd)
+                            (("请输入关键字查询 ..." :: langTextEnd)
                                 |> i18nText
                             )
                         )

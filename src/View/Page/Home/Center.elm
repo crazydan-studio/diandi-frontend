@@ -1,6 +1,7 @@
 module View.Page.Home.Center exposing (view)
 
 import Element exposing (..)
+import Element.Border as Border
 import Element.Font as Font
 import I18n.I18n exposing (langTextEnd)
 import Model
@@ -10,6 +11,7 @@ import View.Page.Topic.List as TopicList
 import View.Style.Base as BaseStyle
 import Widget.Icon as Icon
 import Widget.Widget.Button as Button
+import Widget.Widget.PageLayer as PageLayer
 
 
 view : Model.State -> Element Msg.Msg
@@ -44,7 +46,7 @@ view state =
 
 
 tools : Model.State -> Element Msg.Msg
-tools { app, theme, withWidgetContext, withI18nElement } =
+tools ({ theme, widgets, withI18nElement } as state) =
     let
         i18nText =
             withI18nElement I18n.text
@@ -52,7 +54,7 @@ tools { app, theme, withWidgetContext, withI18nElement } =
     column
         [ spacing BaseStyle.spacing
         ]
-        [ withWidgetContext <|
+        [ widgets.with <|
             Button.circle
                 { attrs = theme.primaryBtn ++ [ centerX ]
                 , content =
@@ -73,6 +75,29 @@ tools { app, theme, withWidgetContext, withI18nElement } =
                                 |> i18nText
                             )
                         ]
-                , onPress = Nothing
+                , onPress =
+                    Just
+                        (widgets.on <|
+                            PageLayer.show (newTopicWindow state)
+                        )
                 }
         ]
+
+
+newTopicWindow : Model.State -> Element Msg.Msg
+newTopicWindow { theme } =
+    column
+        (theme.primaryWhiteBackground
+            ++ [ height fill
+               , centerX
+               , Border.rounded 4
+               , styles
+                    [ ( "width", "70% !important" )
+                    , ( "margin"
+                      , String.fromInt BaseStyle.spacing2x
+                            ++ "px 0"
+                      )
+                    ]
+               ]
+        )
+        []

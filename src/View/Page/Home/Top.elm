@@ -14,7 +14,7 @@ import Widget.Widget.Button as Button
 
 
 view : Model.State -> Element Msg.Msg
-view ({ app, theme, withWidgetContext, withI18nElement } as state) =
+view ({ app, theme, widgets, withI18nElement } as state) =
     let
         i18nText =
             withI18nElement I18n.text
@@ -103,7 +103,7 @@ view ({ app, theme, withWidgetContext, withI18nElement } as state) =
                 , selection = Nothing
                 }
             ]
-        , withWidgetContext <|
+        , widgets.with <|
             Button.button
                 { attrs = theme.secondaryBtn
                 , content =

@@ -38,7 +38,7 @@ view :
     Model.State
     -> Topic
     -> Element Msg.Msg
-view ({ app, theme, withWidgetContext } as state) topic =
+view ({ app, theme, widgets } as state) topic =
     column
         (theme.primaryWhiteBackground
             ++ [ class "topic-card"
@@ -95,7 +95,7 @@ view ({ app, theme, withWidgetContext } as state) topic =
                         , scrollbarY
                         ]
                         (paragraph []
-                            [ withWidgetContext <|
+                            [ widgets.with <|
                                 Markdown.render
                                     { lineHeight = 20
                                     }
@@ -116,7 +116,7 @@ view ({ app, theme, withWidgetContext } as state) topic =
                 (topic.tags
                     |> List.map
                         (\tag ->
-                            withWidgetContext <|
+                            widgets.with <|
                                 Button.link
                                     { attrs =
                                         [ Font.size 13
@@ -130,7 +130,7 @@ view ({ app, theme, withWidgetContext } as state) topic =
             , el
                 [ alignRight
                 ]
-                (withWidgetContext <|
+                (widgets.with <|
                     Button.link
                         { attrs = [ width shrink ]
                         , content =

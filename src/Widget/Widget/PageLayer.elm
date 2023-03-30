@@ -17,7 +17,7 @@
 -}
 
 
-module Widget.Widget.PageLayer exposing (create, show)
+module Widget.Widget.PageLayer exposing (close, create, show)
 
 import Element
     exposing
@@ -59,6 +59,11 @@ show el { pageLayerContext } =
     showHelper el layouerId pageLayerContext
 
 
+close : Context a msg -> msg
+close { pageLayerContext } =
+    closeHelper layouerId pageLayerContext
+
+
 
 -- ---------------------------------------------------
 
@@ -95,4 +100,20 @@ showHelper el id { onUpdate } =
     onUpdate id
         (\s ->
             Just ({ content = el } :: s)
+        )
+
+
+closeHelper :
+    String
+    -> Internal.Context msg
+    -> msg
+closeHelper id { onUpdate } =
+    onUpdate id
+        (\s ->
+            case s of
+                [] ->
+                    Just []
+
+                _ :: ls ->
+                    Just ls
         )

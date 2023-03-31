@@ -17,26 +17,30 @@
 -}
 
 
-module Widget.Internal.Widget.PageLayer exposing
-    ( Context
-    , State
-    , init
+module Widget.Util.Basic exposing
+    ( fromMaybe
+    , trim
     )
 
-import Element exposing (Element)
-import Widget.Internal.Context as Internal
+
+trim : String -> Maybe String
+trim str =
+    let
+        trimmedStr =
+            String.trim str
+    in
+    if String.isEmpty trimmedStr then
+        Nothing
+
+    else
+        Just trimmedStr
 
 
-type alias State msg =
-    List
-        { content : Element msg
-        }
+fromMaybe : a -> (b -> a) -> Maybe b -> a
+fromMaybe default_ getter maybe =
+    case maybe of
+        Nothing ->
+            default_
 
-
-type alias Context msg =
-    Internal.Context (State msg) msg
-
-
-init : State msg
-init =
-    []
+        Just m ->
+            getter m

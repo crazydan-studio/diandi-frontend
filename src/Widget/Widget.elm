@@ -30,7 +30,6 @@ import Dict exposing (Dict)
 import Element exposing (Element)
 import Widget.Internal.Widget.Button as Button
 import Widget.Internal.Widget.FixedImage as FixedImage
-import Widget.Internal.Widget.PageLayer as PageLayer
 import Widget.Internal.Widget.TextEditor as TextEditor
 
 
@@ -57,14 +56,12 @@ type Msg msg
     | UpdateFixedImageMsg String (Maybe FixedImage.State)
     | UpdateTextEditorMsg String (Maybe TextEditor.State)
     | TextEditorFocusOnMsg String
-    | UpdatePageLayerMsg String (Maybe (PageLayer.State msg))
 
 
-type alias WidgetStates msg =
+type alias WidgetStates =
     { button : WidgetStateStore Button.State
     , fixedImage : WidgetStateStore FixedImage.State
     , textEditor : WidgetStateStore TextEditor.State
-    , pageLayer : WidgetStateStore (PageLayer.State msg)
     }
 
 
@@ -72,12 +69,11 @@ type alias WidgetContext msg =
     { buttonContext : Button.Context msg
     , fixedImageContext : FixedImage.Context msg
     , textEditorContext : TextEditor.Context msg
-    , pageLayerContext : PageLayer.Context msg
     }
 
 
 type State msg
-    = State (Config msg) (WidgetStates msg)
+    = State (Config msg) WidgetStates
 
 
 type alias Config msg =
@@ -141,7 +137,6 @@ init config =
             { button = Dict.empty
             , fixedImage = Dict.empty
             , textEditor = Dict.empty
-            , pageLayer = Dict.empty
             }
         , Cmd.none
         )
@@ -153,7 +148,7 @@ init config =
 
 createContext :
     Config appMsg
-    -> WidgetStates appMsg
+    -> WidgetStates
     -> WidgetContext appMsg
 createContext { toAppMsg } widgetStates =
     let
@@ -178,15 +173,13 @@ createContext { toAppMsg } widgetStates =
         contextWith .fixedImage FixedImage.init UpdateFixedImageMsg
     , textEditorContext =
         contextWith .textEditor TextEditor.init UpdateTextEditorMsg
-    , pageLayerContext =
-        contextWith .pageLayer PageLayer.init UpdatePageLayerMsg
     }
 
 
 updateByMsg :
     Msg appMsg
     -> State appMsg
-    -> ( WidgetStates appMsg, Cmd appMsg )
+    -> ( WidgetStates, Cmd appMsg )
 updateByMsg msg (State { toAppMsg } widgetStates) =
     let
         update_ getter id widgetState =
@@ -220,11 +213,6 @@ updateByMsg msg (State { toAppMsg } widgetStates) =
 
         TextEditorFocusOnMsg _ ->
             ( widgetStates, Cmd.none )
-
-        UpdatePageLayerMsg id state ->
-            ( { widgetStates | pageLayer = update_ .pageLayer id state }
-            , Cmd.none
-            )
 
 
 

@@ -21,7 +21,6 @@ module Model exposing
     ( Config
     , State
     , getNewTopicWithInit
-    , getSelectedTopicCategory
     , init
     , sub
     , update
@@ -35,12 +34,8 @@ import Model.App as App
 import Model.Operation.EditTopic as EditTopic
 import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Model.Remote as Remote
-import Model.Remote.Auth as RemoteAuth
 import Model.Remote.Demo.Topic as RemoteTopic
-import Model.Remote.Demo.User as RemoteUser
 import Model.Remote.Msg as RemoteMsg
-import Model.Topic.Category exposing (Category)
-import Model.User as User
 import Msg
 import Theme.Theme as Theme
 import Theme.Theme.Default as ThemeDefault
@@ -132,8 +127,8 @@ update msg state =
             , Cmd.none
             )
 
-        Msg.ShowTopicsList categoryId ->
-            ( state, View.Route.showTopics categoryId state.app )
+        Msg.ShowTopicsList keywords ->
+            ( state, View.Route.showTopics keywords state.app )
 
         Msg.NewTopicMsg inputId newTopicMsg ->
             newTopicUpdateHelper inputId newTopicMsg state
@@ -156,11 +151,6 @@ update msg state =
 
         _ ->
             ( state, Cmd.none )
-
-
-getSelectedTopicCategory : State -> Maybe Category
-getSelectedTopicCategory { app } =
-    App.getSelectedTopicCategory app
 
 
 getNewTopicWithInit : String -> State -> NewTopic
@@ -211,33 +201,10 @@ remoteUpdateHelper :
     -> ( State, Cmd Msg.Msg )
 remoteUpdateHelper msg state =
     case msg of
-        RemoteMsg.GotMyUserInfo result ->
-            case result of
-                Ok user ->
-                    state
-                        |> updateAppState
-                            (\app ->
-                                { app | me = User.User user }
-                            )
-                        |> doRemoteQueryMyTopics
-
-                Err _ ->
-                    ( state, View.Route.gotoLogin state.app )
-
-        RemoteMsg.UserLogout _ ->
-            ( state, View.Route.gotoLogin state.app )
-
         RemoteMsg.QueryMyTopics result ->
             ( state
                 |> updateAppState
                     (App.loadTopics result)
-            , Cmd.none
-            )
-
-        RemoteMsg.QueryMyTopicCategories result ->
-            ( state
-                |> updateAppState
-                    (App.loadTopicCategories result)
             , Cmd.none
             )
 
@@ -251,10 +218,7 @@ remoteErrorUpdateHelper : Http.Error -> State -> ( State, Cmd Msg.Msg )
 remoteErrorUpdateHelper error ({ app } as state) =
     case error of
         Http.BadStatus status ->
-            if status == 401 then
-                ( state, View.Route.gotoLogin app )
-
-            else if status == 403 then
+            if status == 403 then
                 ( state, View.Route.goto403 app )
 
             else if status == 404 then
@@ -280,28 +244,18 @@ routeUpdateHelper navUrl state =
     let
         ( page, newState, cmd ) =
             case View.Route.route navUrl of
-                View.Route.Login ->
-                    ( Page.Login, state, Cmd.none )
-
-                View.Route.Logout ->
-                    ( Page.Login, state, Msg.toRemoteCmd RemoteAuth.logout )
-
                 View.Route.Home ->
                     let
                         ( s, c ) =
-                            doRemoteWithAuthUser doRemoteQueryMyTopics state
+                            doRemoteQueryMyTopics state
                     in
                     ( Page.Home, s, c )
 
-                View.Route.TopicsList categoryId ->
+                View.Route.TopicsList keywords ->
                     let
                         ( s, c ) =
                             state
-                                |> updateAppState
-                                    (\app ->
-                                        { app | selectedTopicCategory = Just categoryId }
-                                    )
-                                |> doRemoteWithAuthUser doRemoteQueryMyTopics
+                                |> doRemoteQueryMyTopics
                     in
                     ( Page.Home, s, c )
 
@@ -372,18 +326,6 @@ editTopicUpdateHelper topicId msg state =
         _ ->
             Cmd.none
     )
-
-
-doRemoteWithAuthUser :
-    (State -> ( State, Cmd Msg.Msg ))
-    -> State
-    -> ( State, Cmd Msg.Msg )
-doRemoteWithAuthUser doRemote ({ app } as state) =
-    if User.isNone app.me then
-        ( state, Msg.toRemoteCmd RemoteUser.getMyUserInfo )
-
-    else
-        doRemote state
 
 
 doRemoteQueryMyTopics : State -> ( State, Cmd Msg.Msg )

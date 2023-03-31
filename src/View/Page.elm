@@ -20,8 +20,7 @@ module View.Page exposing (Type(..))
 
 
 type Type
-    = Login
-    | Home
+    = Home
     | NotFound
     | Forbidden
     | Loading

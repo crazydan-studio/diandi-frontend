@@ -20,7 +20,7 @@
 module View.App exposing (view)
 
 import Browser
-import Element exposing (Element, column, fill, height, inFront, width)
+import Element exposing (Element, fill, height, inFront, width)
 import Element.Font as Font
 import Model
 import Model.App as App
@@ -31,7 +31,6 @@ import View.Page.Blank
 import View.Page.Forbidden
 import View.Page.Home
 import View.Page.Loading
-import View.Page.Login
 import View.Page.NotFound
 import Widget.StyleSheet
 import Widget.Widget.PageLayer
@@ -66,9 +65,6 @@ view ({ app, theme, widgets } as state) =
 title : App.State -> String
 title model =
     case model.currentPage of
-        PageType.Login ->
-            model.title ++ " - " ++ "用户登录"
-
         PageType.NotFound ->
             model.title ++ " - " ++ "页面不存在"
 
@@ -85,9 +81,6 @@ title model =
 page : Model.State -> Element Msg.Msg
 page ({ app } as state) =
     case app.currentPage of
-        PageType.Login ->
-            View.Page.Login.view state
-
         PageType.NotFound ->
             View.Page.NotFound.view state
 

@@ -22,13 +22,9 @@ module Model.App exposing
     , State
     , addNewTopic
     , getNewTopicWithInit
-    , getSelectedTopicCategory
-    , getTopicCategoriesByParentPath
     , init
-    , loadTopicCategories
     , loadTopics
     , loading
-    , mapTopicCategories
     , removeTopic
     , updateEditTopic
     , updateNewTopic
@@ -46,8 +42,6 @@ import Model.Operation.EditTopic as EditTopic exposing (EditTopic)
 import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Model.Remote.Data as RemoteData
 import Model.Topic exposing (Topic)
-import Model.Topic.Category exposing (Category)
-import Model.User as User
 import Svg.Attributes exposing (result)
 import Url
 import View.I18n.Default
@@ -67,9 +61,6 @@ type alias State =
     , navKey : Nav.Key
     , navUrl : Url.Url
 
-    -- 当前用户信息
-    , me : User.User
-
     -- 远程请求错误信息
     , remoteError : Maybe TranslateResult
     , currentPage : View.Page.Type
@@ -78,11 +69,9 @@ type alias State =
 
     -- 业务数据
     , topics : RemoteTopics
-    , categories : RemoteCategories
 
     -- 操作数据
     , topicSearchingText : Maybe String
-    , selectedTopicCategory : Maybe String
     , newTopics : Dict String NewTopic
     , editTopic : Maybe EditTopic
     }
@@ -99,10 +88,6 @@ type alias Config =
 
 type alias RemoteTopics =
     RemoteData.Status (TreeStore Topic)
-
-
-type alias RemoteCategories =
-    RemoteData.Status (TreeStore Category)
 
 
 init : Config -> State
@@ -122,7 +107,6 @@ init config =
     , navUrl = config.navUrl
 
     --
-    , me = User.None
     , remoteError = Nothing
     , currentPage = View.Page.Loading
     , topicListViewId = "topic-list-view"
@@ -130,11 +114,9 @@ init config =
 
     --
     , topics = RemoteData.LoadWaiting
-    , categories = RemoteData.LoadWaiting
 
     --
     , topicSearchingText = Nothing
-    , selectedTopicCategory = Nothing
     , newTopics = Dict.empty
     , editTopic = Nothing
     }
@@ -155,29 +137,6 @@ loadTopics result state =
             result
                 |> RemoteData.from state.lang createTopicTree
     }
-
-
-loadTopicCategories :
-    Result Http.Error (List Category)
-    -> State
-    -> State
-loadTopicCategories result state =
-    { state
-        | categories =
-            result
-                |> RemoteData.from state.lang createTopicCategoryTree
-    }
-
-
-getSelectedTopicCategory : State -> Maybe Category
-getSelectedTopicCategory { selectedTopicCategory, categories } =
-    selectedTopicCategory
-        |> Maybe.andThen
-            (\id ->
-                categories
-                    |> RemoteData.andThen
-                        (TreeStore.get id)
-            )
 
 
 getNewTopicWithInit : String -> State -> NewTopic
@@ -330,31 +289,6 @@ updateTopicByEdit topicId ({ topics, editTopic } as state) =
         |> Maybe.withDefault state
 
 
-mapTopicCategories :
-    (TreeStore Category -> Maybe a)
-    -> State
-    -> Maybe a
-mapTopicCategories mapper state =
-    state.categories
-        |> RemoteData.andThen mapper
-
-
-getTopicCategoriesByParentPath :
-    String
-    -> State
-    -> Maybe (List Category)
-getTopicCategoriesByParentPath categoryId state =
-    state
-        |> mapTopicCategories
-            (\categories ->
-                Just
-                    (TreeStore.getAllByParentPath
-                        categoryId
-                        categories
-                    )
-            )
-
-
 
 -- --------------------------------------------------------------------
 
@@ -375,13 +309,3 @@ createTopicTree topics =
         , sorter = Nothing
         }
         topics
-
-
-createTopicCategoryTree : List Category -> TreeStore Category
-createTopicCategoryTree categories =
-    TreeStore.create
-        { idGetter = .id
-        , parentGetter = .parent
-        , sorter = Nothing
-        }
-        categories

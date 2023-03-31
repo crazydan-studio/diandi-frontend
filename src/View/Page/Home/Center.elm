@@ -130,29 +130,35 @@ newTopicWindow { theme, widgets, withI18nElement } =
                     )
             , label = Input.labelHidden ""
             }
-        , Input.multiline
+        , el
             (theme.defaultInput
-                ++ [ id "xxxx"
-                   , width fill
+                ++ [ width fill
                    , height fill
+                   , scrollbarY
                    ]
             )
-            { onChange =
-                \text ->
-                    Msg.NoOp
-            , text = ""
-            , selection = Nothing
-            , placeholder =
-                Just
-                    (Input.placeholder
-                        theme.placeholderFont
-                        (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langTextEnd)
-                            |> i18nText
+            (Input.multiline
+                [ id "xxxx"
+                , width fill
+                , Border.width 0
+                ]
+                { onChange =
+                    \text ->
+                        Msg.NoOp
+                , text = ""
+                , selection = Nothing
+                , placeholder =
+                    Just
+                        (Input.placeholder
+                            theme.placeholderFont
+                            (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langTextEnd)
+                                |> i18nText
+                            )
                         )
-                    )
-            , label = Input.labelHidden ""
-            , spellcheck = False
-            }
+                , label = Input.labelHidden ""
+                , spellcheck = False
+                }
+            )
         , row
             [ width fill
             ]

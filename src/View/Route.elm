@@ -22,8 +22,6 @@ module View.Route exposing
     , goto403
     , goto404
     , gotoHome
-    , gotoLogin
-    , gotoLogout
     , route
     , showTopics
     )
@@ -45,9 +43,7 @@ import Url.Parser
 
 
 type Route
-    = Login
-    | Logout
-    | Home
+    = Home
     | Forbidden
     | NotFound
     | TopicsList String
@@ -58,16 +54,6 @@ type Route
 route : Url.Url -> Route
 route url =
     Maybe.withDefault NotFound (parse routeHelper url)
-
-
-gotoLogin : App.State -> Cmd msg
-gotoLogin =
-    goto "/login"
-
-
-gotoLogout : App.State -> Cmd msg
-gotoLogout =
-    goto "/logout"
 
 
 gotoHome : App.State -> Cmd msg
@@ -86,8 +72,8 @@ goto404 =
 
 
 showTopics : String -> App.State -> Cmd msg
-showTopics categoryId =
-    goto ("/topics/" ++ categoryId)
+showTopics keywords =
+    goto ("/topics/" ++ keywords)
 
 
 
@@ -100,8 +86,6 @@ routeHelper =
     oneOf
         [ map Home top
         , map TopicsList (s "topics" </> string)
-        , map Login (s "login")
-        , map Logout (s "logout")
         , map Forbidden (s "error" </> s "403")
         ]
 

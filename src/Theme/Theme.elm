@@ -193,7 +193,10 @@ primaryWhiteBackground theme =
 
 defaultInput : Internal.Theme -> List (Element.Attribute msg)
 defaultInput theme =
-    [ focused
+    [ Border.width 1
+    , Border.color (rgb255 186 189 182)
+    , Border.rounded 3
+    , focused
         [ Border.color (rgb255 25 118 210)
         , Border.width 2
         ]

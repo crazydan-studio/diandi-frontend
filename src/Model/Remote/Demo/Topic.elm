@@ -18,9 +18,7 @@
 
 
 module Model.Remote.Demo.Topic exposing
-    ( getMyAllCategories
-    , getMyAllTopics
-    , queryMyCategories
+    ( getMyAllTopics
     , queryMyTopics
     )
 
@@ -28,7 +26,6 @@ import Http
 import Json.Decode as Decode
 import Model.Remote.Msg exposing (Msg(..))
 import Model.Topic exposing (Topic, topicListDecoder)
-import Model.Topic.Category exposing (categoryListDecoder)
 
 
 getMyAllTopics : Cmd Msg
@@ -48,19 +45,6 @@ queryMyTopics params =
         , expect =
             Http.expectJson QueryMyTopics
                 (decoderWithFilterTopics params.keywords)
-        }
-
-
-getMyAllCategories : Cmd Msg
-getMyAllCategories =
-    queryMyCategories {}
-
-
-queryMyCategories : {} -> Cmd Msg
-queryMyCategories _ =
-    Http.get
-        { url = "/demo/categories.json"
-        , expect = Http.expectJson QueryMyTopicCategories categoryListDecoder
         }
 
 

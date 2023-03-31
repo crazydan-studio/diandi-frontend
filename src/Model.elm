@@ -114,11 +114,19 @@ update msg state =
         Msg.WidgetMsg widgetMsg ->
             state |> updateWidgetsState (Widget.update widgetMsg)
 
-        Msg.SearchTopicMsg text ->
-            state
+        Msg.SearchTopicInputingMsg keywords ->
+            ( state
                 |> updateAppState
-                    (App.updateTopicSearchingText text)
-                |> doRemoteQueryMyTopics
+                    (App.updateTopicSearchingText (Just keywords))
+            , Cmd.none
+            )
+
+        Msg.SearchTopicMsg ->
+            ( state
+            , View.Route.searchTopics
+                (state.app.topicSearchingText |> Maybe.withDefault "")
+                state.app
+            )
 
         Msg.DropTopicMsg topicId ->
             ( state
@@ -126,9 +134,6 @@ update msg state =
                     (App.removeTopic topicId)
             , Cmd.none
             )
-
-        Msg.ShowTopicsList keywords ->
-            ( state, View.Route.showTopics keywords state.app )
 
         Msg.NewTopicMsg inputId newTopicMsg ->
             newTopicUpdateHelper inputId newTopicMsg state
@@ -247,14 +252,16 @@ routeUpdateHelper navUrl state =
                 View.Route.Home ->
                     let
                         ( s, c ) =
-                            doRemoteQueryMyTopics state
+                            state |> doRemoteQueryMyTopics
                     in
                     ( Page.Home, s, c )
 
-                View.Route.TopicsList keywords ->
+                View.Route.TopicsSearch keywords ->
                     let
                         ( s, c ) =
                             state
+                                |> updateAppState
+                                    (App.updateTopicSearchingText keywords)
                                 |> doRemoteQueryMyTopics
                     in
                     ( Page.Home, s, c )

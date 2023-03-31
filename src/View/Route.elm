@@ -23,7 +23,7 @@ module View.Route exposing
     , goto404
     , gotoHome
     , route
-    , showTopics
+    , searchTopics
     )
 
 import Browser.Navigation as Nav
@@ -32,21 +32,22 @@ import Url
 import Url.Parser
     exposing
         ( (</>)
+        , (<?>)
         , Parser
         , map
         , oneOf
         , parse
         , s
-        , string
         , top
         )
+import Url.Parser.Query as Query
 
 
 type Route
     = Home
     | Forbidden
     | NotFound
-    | TopicsList String
+    | TopicsSearch (Maybe String)
 
 
 {-| 解析URL得到路由信息
@@ -71,9 +72,20 @@ goto404 =
     goto "/error/404"
 
 
-showTopics : String -> App.State -> Cmd msg
-showTopics keywords =
-    goto ("/topics/" ++ keywords)
+searchTopics : String -> App.State -> Cmd msg
+searchTopics keywords =
+    let
+        trimmedKeywords =
+            String.trim keywords
+
+        params =
+            if String.isEmpty trimmedKeywords then
+                ""
+
+            else
+                "?q=" ++ trimmedKeywords
+    in
+    goto ("/topics" ++ params)
 
 
 
@@ -85,7 +97,7 @@ routeHelper =
     -- https://package.elm-lang.org/packages/elm/url/latest/Url-Parser
     oneOf
         [ map Home top
-        , map TopicsList (s "topics" </> string)
+        , map TopicsSearch (s "topics" <?> Query.string "q")
         , map Forbidden (s "error" </> s "403")
         ]
 

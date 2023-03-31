@@ -2,6 +2,7 @@ module View.Page.Home.Top exposing (..)
 
 import Element exposing (..)
 import Element.Border as Border
+import Element.Events exposing (onEnter)
 import Element.Input as Input
 import I18n.I18n exposing (langTextEnd)
 import Model
@@ -87,8 +88,9 @@ view ({ app, theme, widgets, withI18nElement } as state) =
                 [ width fill
                 , Border.width 0
                 , theme.transparentBackground
+                , onEnter Msg.SearchTopicMsg
                 ]
-                { onChange = Msg.SearchTopicMsg
+                { onChange = Msg.SearchTopicInputingMsg
                 , text =
                     app.topicSearchingText
                         |> Maybe.withDefault ""

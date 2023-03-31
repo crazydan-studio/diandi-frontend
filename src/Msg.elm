@@ -50,9 +50,9 @@ type Msg
       -- 组件消息
     | WidgetMsg (Widget.Msg Msg)
       -- 数据操作
-    | SearchTopicMsg String
+    | SearchTopicMsg
+    | SearchTopicInputingMsg String
     | DropTopicMsg String
-    | ShowTopicsList String
     | NewTopicAdded String
     | NewTopicMsg String NewTopic.Msg
     | EditTopicUpdated String

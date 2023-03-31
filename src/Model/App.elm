@@ -146,9 +146,9 @@ getNewTopicWithInit inputId { newTopics } =
         |> Maybe.withDefault NewTopic.init
 
 
-updateTopicSearchingText : String -> State -> State
-updateTopicSearchingText text state =
-    { state | topicSearchingText = Just text }
+updateTopicSearchingText : Maybe String -> State -> State
+updateTopicSearchingText keywords state =
+    { state | topicSearchingText = keywords }
 
 
 removeTopic : String -> State -> State

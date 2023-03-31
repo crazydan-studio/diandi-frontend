@@ -19,6 +19,7 @@
 
 module Msg exposing
     ( Msg(..)
+    , batch
     , focusOn
     , scrollToBottom
     , scrollToRight
@@ -34,11 +35,13 @@ import Model.Operation.NewTopic as NewTopic
 import Model.Remote.Msg as RemoteMsg
 import Task
 import Url
+import View.Page as Page
 import Widget.Widget as Widget
 
 
 type Msg
     = NoOp
+    | Batch (List Msg)
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | FocusOn String
@@ -49,14 +52,22 @@ type Msg
     | I18nPortMsg I18n.Port.Msg
       -- 组件消息
     | WidgetMsg (Widget.Msg Msg)
+    | ShowPageLayerMsg Page.Layer
+    | ClosePageLayerMsg Page.Layer
       -- 数据操作
     | SearchTopicMsg
     | SearchTopicInputingMsg String
     | DropTopicMsg String
-    | NewTopicAdded String
-    | NewTopicMsg String NewTopic.Msg
-    | EditTopicUpdated String
+    | NewTopicMsg NewTopic.Msg
+    | NewTopicAddedMsg
+    | NewTopicCleanedMsg
+    | EditTopicUpdatedMsg String
     | EditTopicMsg String EditTopic.Msg
+
+
+batch : List Msg -> Msg
+batch msgs =
+    Batch msgs
 
 
 toCmd : Msg -> Cmd Msg

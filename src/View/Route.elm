@@ -41,6 +41,7 @@ import Url.Parser
         , top
         )
 import Url.Parser.Query as Query
+import Widget.Util.Basic exposing (trim)
 
 
 type Route
@@ -75,15 +76,13 @@ goto404 =
 searchTopics : String -> App.State -> Cmd msg
 searchTopics keywords =
     let
-        trimmedKeywords =
-            String.trim keywords
-
         params =
-            if String.isEmpty trimmedKeywords then
-                ""
+            case trim keywords of
+                Nothing ->
+                    ""
 
-            else
-                "?q=" ++ trimmedKeywords
+                Just k ->
+                    "?q=" ++ k
     in
     goto ("/topics" ++ params)
 

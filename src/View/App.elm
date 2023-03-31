@@ -20,7 +20,14 @@
 module View.App exposing (view)
 
 import Browser
-import Element exposing (Element, fill, height, inFront, width)
+import Element
+    exposing
+        ( Element
+        , fill
+        , height
+        , inFront
+        , width
+        )
 import Element.Font as Font
 import Model
 import Model.App as App
@@ -32,12 +39,12 @@ import View.Page.Forbidden
 import View.Page.Home
 import View.Page.Loading
 import View.Page.NotFound
+import View.PageLayer as PageLayer
 import Widget.StyleSheet
-import Widget.Widget.PageLayer
 
 
 view : Model.State -> Browser.Document Msg.Msg
-view ({ app, theme, widgets } as state) =
+view ({ app, theme } as state) =
     { title = title app
     , body =
         [ Element.layout
@@ -49,11 +56,7 @@ view ({ app, theme, widgets } as state) =
                 ]
             , Font.size theme.primaryFontSize
             , Font.color theme.primaryFontColor
-            , inFront
-                (widgets.with <|
-                    Widget.Widget.PageLayer.create
-                        {}
-                )
+            , inFront (PageLayer.create state)
             ]
             (page state)
         , Theme.StyleSheet.create state

@@ -20,7 +20,6 @@
 module Model exposing
     ( Config
     , State
-    , getNewTopicWithInit
     , init
     , sub
     , update
@@ -32,7 +31,7 @@ import I18n.I18n exposing (I18nElement, withI18nElement)
 import I18n.Port
 import Model.App as App
 import Model.Operation.EditTopic as EditTopic
-import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
+import Model.Operation.NewTopic as NewTopic
 import Model.Remote as Remote
 import Model.Remote.Demo.Topic as RemoteTopic
 import Model.Remote.Msg as RemoteMsg
@@ -60,6 +59,7 @@ type alias State =
 
     -- 组件内部状态
     , widgets : Widget.Widgets Msg.Msg
+    , layers : List Page.Layer
     }
 
 
@@ -85,6 +85,7 @@ init config navUrl navKey =
             , theme = Theme.create ThemeDefault.init
             , withI18nElement = withI18nElement app.lang
             , widgets = widgets
+            , layers = []
             }
                 |> routeUpdateHelper navUrl
     in
@@ -102,6 +103,9 @@ sub state =
 update : Msg.Msg -> State -> ( State, Cmd Msg.Msg )
 update msg state =
     case msg of
+        Msg.Batch msgs ->
+            batchUpdateHelper msgs state
+
         Msg.RemoteMsg remoteMsg ->
             remoteUpdateHelper remoteMsg state
 
@@ -135,32 +139,45 @@ update msg state =
             , Cmd.none
             )
 
-        Msg.NewTopicMsg inputId newTopicMsg ->
-            newTopicUpdateHelper inputId newTopicMsg state
+        Msg.NewTopicMsg newTopicMsg ->
+            newTopicUpdateHelper newTopicMsg state
+
+        Msg.NewTopicAddedMsg ->
+            ( state |> updateAppState App.addNewTopic
+            , Cmd.none
+            )
+
+        Msg.NewTopicCleanedMsg ->
+            ( state |> updateAppState App.cleanNewTopic
+            , Cmd.none
+            )
 
         Msg.EditTopicMsg topicId editTopicMsg ->
             editTopicUpdateHelper topicId editTopicMsg state
 
-        Msg.NewTopicAdded inputId ->
-            ( state |> updateAppState (App.addNewTopic inputId)
-            , Cmd.batch
-                [ Msg.focusOn inputId
-                , Msg.scrollToBottom state.app.topicListViewId
-                ]
+        Msg.EditTopicUpdatedMsg topicId ->
+            ( state |> updateAppState (App.updateTopicByEdit topicId)
+            , Cmd.none
             )
 
-        Msg.EditTopicUpdated topicId ->
-            ( state |> updateAppState (App.updateTopicByEdit topicId)
+        Msg.ShowPageLayerMsg layer ->
+            ( { state
+                | layers = layer :: state.layers
+              }
+            , Cmd.none
+            )
+
+        Msg.ClosePageLayerMsg layer ->
+            ( { state
+                | layers =
+                    state.layers
+                        |> List.filter (\l -> l /= layer)
+              }
             , Cmd.none
             )
 
         _ ->
             ( state, Cmd.none )
-
-
-getNewTopicWithInit : String -> State -> NewTopic
-getNewTopicWithInit inputId { app } =
-    App.getNewTopicWithInit inputId app
 
 
 
@@ -196,6 +213,20 @@ updateWidgetsState updater ({ widgets } as state) =
       }
     , newWidgetsCmd
     )
+
+
+batchUpdateHelper : List Msg.Msg -> State -> ( State, Cmd Msg.Msg )
+batchUpdateHelper msgs state =
+    msgs
+        |> List.foldl
+            (\msg ( s, c ) ->
+                let
+                    ( ns, nc ) =
+                        update msg s
+                in
+                ( ns, Cmd.batch [ c, nc ] )
+            )
+            ( state, Cmd.none )
 
 
 {-| 远程请求更新
@@ -296,22 +327,16 @@ i18nUpdateHelper msg ({ app } as state) =
 
 
 newTopicUpdateHelper :
-    String
-    -> NewTopic.Msg
+    NewTopic.Msg
     -> State
     -> ( State, Cmd Msg.Msg )
-newTopicUpdateHelper inputId msg state =
+newTopicUpdateHelper msg state =
     ( state
         |> updateAppState
-            (App.updateNewTopic inputId
+            (App.updateNewTopic
                 (NewTopic.update msg)
             )
-    , case msg of
-        NewTopic.InputFocusIn ->
-            Msg.focusOn inputId
-
-        _ ->
-            Cmd.none
+    , Cmd.none
     )
 
 

@@ -24,47 +24,43 @@ module Model.Operation.NewTopic exposing
     , update
     )
 
-import Element.Input exposing (Selection)
-
 
 type alias NewTopic =
     { content : String
-    , selection : Maybe Selection
-    , focused : Bool
-    , error : Maybe String
+    , title : String
+    , tags : List String
+    , error : String
     }
 
 
 type Msg
-    = InputFocusIn
-    | InputFocusOut
-    | InputFocusBlur Selection
-    | InputContentChanged String
+    = TitleChanged String
+    | ContentChanged String
+    | TagChanged String
 
 
 init : NewTopic
 init =
     { content = ""
-    , selection = Nothing
-    , focused = False
-    , error = Nothing
+    , title = ""
+    , tags = []
+    , error = ""
     }
 
 
 update : Msg -> NewTopic -> NewTopic
 update msg newTopic =
     case msg of
-        InputFocusIn ->
-            { newTopic | focused = True }
+        TitleChanged title ->
+            { newTopic | title = title }
 
-        InputFocusOut ->
-            { newTopic | focused = False }
-
-        InputFocusBlur selection ->
-            { newTopic | selection = Just selection }
-
-        InputContentChanged content ->
+        ContentChanged content ->
             { newTopic
                 | content = content
-                , error = Nothing
+                , error = ""
+            }
+
+        TagChanged tag ->
+            { newTopic
+                | error = ""
             }

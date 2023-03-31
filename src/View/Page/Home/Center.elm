@@ -1,19 +1,16 @@
 module View.Page.Home.Center exposing (view)
 
 import Element exposing (..)
-import Element.Border as Border
 import Element.Font as Font
-import Element.Input as Input
 import I18n.I18n exposing (langTextEnd)
 import Model
 import Msg
 import View.I18n.Home as I18n
+import View.Page as Page
 import View.Page.Topic.List as TopicList
 import View.Style.Base as BaseStyle
-import Widget.Animation.Transition as Transition
 import Widget.Icon as Icon
 import Widget.Widget.Button as Button
-import Widget.Widget.PageLayer as PageLayer
 
 
 view : Model.State -> Element Msg.Msg
@@ -79,135 +76,6 @@ tools ({ theme, widgets, withI18nElement } as state) =
                         ]
                 , onPress =
                     Just
-                        (widgets.on <|
-                            PageLayer.show (newTopicWindow state)
-                        )
+                        (Msg.ShowPageLayerMsg Page.NewTopicLayer)
                 }
-        ]
-
-
-newTopicWindow : Model.State -> Element Msg.Msg
-newTopicWindow { theme, widgets, withI18nElement } =
-    let
-        i18nText =
-            withI18nElement I18n.text
-    in
-    column
-        (theme.primaryWhiteBackground
-            ++ [ height fill
-               , padding BaseStyle.spacing2x
-               , spacing BaseStyle.spacing2x
-               , centerX
-               , Border.rounded 4
-               , styles
-                    [ ( "width", "70% !important" )
-                    , ( "margin"
-                      , String.fromInt BaseStyle.spacing2x
-                            ++ "px 0"
-                      )
-                    ]
-               ]
-        )
-        [ Input.text
-            (theme.defaultInput
-                ++ [ id "xxxx"
-                   , width fill
-                   , height (px 42)
-                   ]
-            )
-            { onChange =
-                \text ->
-                    Msg.NoOp
-            , text = ""
-            , selection = Nothing
-            , placeholder =
-                Just
-                    (Input.placeholder
-                        theme.placeholderFont
-                        (("可以在这里添加一个醒目的标题哦 ..." :: langTextEnd)
-                            |> i18nText
-                        )
-                    )
-            , label = Input.labelHidden ""
-            }
-        , el
-            (theme.defaultInput
-                ++ [ width fill
-                   , height fill
-                   , scrollbarY
-                   ]
-            )
-            (Input.multiline
-                [ id "xxxx"
-                , width fill
-                , Border.width 0
-                ]
-                { onChange =
-                    \text ->
-                        Msg.NoOp
-                , text = ""
-                , selection = Nothing
-                , placeholder =
-                    Just
-                        (Input.placeholder
-                            theme.placeholderFont
-                            (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langTextEnd)
-                                |> i18nText
-                            )
-                        )
-                , label = Input.labelHidden ""
-                , spellcheck = False
-                }
-            )
-        , row
-            [ width fill
-            ]
-            [ el [ alignTop ]
-                ((I18n.labelText :: "标签：" :: langTextEnd)
-                    |> i18nText
-                )
-            , wrappedRow
-                [ width fill
-                ]
-                [ Input.text
-                    (theme.defaultInput
-                        ++ [ id "xxxx"
-                           , height (px 42)
-                           ]
-                    )
-                    { onChange =
-                        \text ->
-                            Msg.NoOp
-                    , text = ""
-                    , selection = Nothing
-                    , placeholder = Nothing
-                    , label = Input.labelHidden ""
-                    }
-                ]
-            ]
-        , row
-            [ alignRight
-            , spacing BaseStyle.spacing
-            ]
-            [ widgets.with <|
-                Button.button
-                    { attrs = theme.primaryBtn ++ []
-                    , content =
-                        (I18n.buttonText :: "记下来！" :: langTextEnd)
-                            |> i18nText
-                    , onPress = Nothing
-                    }
-            , widgets.with <|
-                Button.button
-                    { attrs = theme.secondaryBtn ++ []
-                    , content =
-                        (I18n.buttonText :: "取消" :: langTextEnd)
-                            |> i18nText
-                    , onPress =
-                        Just
-                            (widgets.on <|
-                                PageLayer.close
-                            )
-                    }
-            ]
         ]

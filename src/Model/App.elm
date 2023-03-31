@@ -21,7 +21,7 @@ module Model.App exposing
     ( Config
     , State
     , addNewTopic
-    , getNewTopicWithInit
+    , cleanNewTopic
     , init
     , loadTopics
     , loading
@@ -34,18 +34,18 @@ module Model.App exposing
 
 import Browser.Navigation as Nav
 import Data.TreeStore as TreeStore exposing (TreeStore)
-import Dict exposing (Dict)
 import Http
 import I18n.Lang exposing (Lang)
 import I18n.Translator exposing (TextsNeedToBeTranslated, TranslateResult)
 import Model.Operation.EditTopic as EditTopic exposing (EditTopic)
 import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Model.Remote.Data as RemoteData
-import Model.Topic exposing (Topic)
+import Model.Topic as Topic exposing (Topic)
 import Svg.Attributes exposing (result)
 import Url
 import View.I18n.Default
 import View.Page
+import Widget.Util.Basic exposing (fromMaybe, trim)
 import Widget.Util.Hash exposing (hash)
 
 
@@ -64,15 +64,13 @@ type alias State =
     -- 远程请求错误信息
     , remoteError : Maybe TranslateResult
     , currentPage : View.Page.Type
-    , topicListViewId : String
-    , newTopicInputId : String
 
     -- 业务数据
     , topics : RemoteTopics
 
     -- 操作数据
     , topicSearchingText : Maybe String
-    , newTopics : Dict String NewTopic
+    , newTopic : Maybe NewTopic
     , editTopic : Maybe EditTopic
     }
 
@@ -109,15 +107,13 @@ init config =
     --
     , remoteError = Nothing
     , currentPage = View.Page.Loading
-    , topicListViewId = "topic-list-view"
-    , newTopicInputId = "new-topic-input"
 
     --
     , topics = RemoteData.LoadWaiting
 
     --
     , topicSearchingText = Nothing
-    , newTopics = Dict.empty
+    , newTopic = Nothing
     , editTopic = Nothing
     }
 
@@ -139,13 +135,6 @@ loadTopics result state =
     }
 
 
-getNewTopicWithInit : String -> State -> NewTopic
-getNewTopicWithInit inputId { newTopics } =
-    newTopics
-        |> Dict.get inputId
-        |> Maybe.withDefault NewTopic.init
-
-
 updateTopicSearchingText : Maybe String -> State -> State
 updateTopicSearchingText keywords state =
     { state | topicSearchingText = keywords }
@@ -162,64 +151,75 @@ removeTopic topicId ({ topics } as state) =
 
 
 updateNewTopic :
-    String
-    -> (NewTopic -> NewTopic)
+    (NewTopic -> NewTopic)
     -> State
     -> State
-updateNewTopic inputId updater ({ newTopics } as state) =
-    let
-        newTopic =
-            getNewTopicWithInit inputId state
-    in
+updateNewTopic updater ({ newTopic } as state) =
     { state
-        | newTopics =
-            newTopics
-                |> Dict.insert inputId (updater newTopic)
+        | newTopic =
+            Just
+                (newTopic
+                    |> Maybe.withDefault NewTopic.init
+                    |> updater
+                )
     }
 
 
-addNewTopic : String -> State -> State
-addNewTopic inputId ({ newTopics } as state) =
-    newTopics
-        |> Dict.get inputId
-        |> Maybe.map
-            (\newTopic ->
-                let
-                    newContent =
-                        newTopic.content
-                            |> String.trim
+cleanNewTopic :
+    State
+    -> State
+cleanNewTopic state =
+    { state
+        | newTopic = Nothing
+    }
 
-                    topic =
-                        Model.Topic.init
-                in
-                if String.length newContent == 0 then
-                    state
-                        |> updateNewTopic inputId
-                            (\t ->
-                                { t | error = Just "主题内容是空白的，请先输入点什么" }
-                            )
 
-                else
-                    state
-                        |> updateNewTopic inputId
-                            (\t ->
-                                { t
-                                    | content = ""
-                                    , selection = Nothing
-                                    , error = Nothing
-                                }
-                            )
-                        |> updateTopics
-                            (RemoteData.update
-                                (TreeStore.add
-                                    { topic
-                                        | id = hash newContent
-                                        , content = newContent
-                                    }
-                                )
-                            )
-            )
-        |> Maybe.withDefault state
+addNewTopic : State -> State
+addNewTopic ({ newTopic } as state) =
+    let
+        content =
+            trim (newTopic |> fromMaybe "" .content)
+
+        title =
+            trim (newTopic |> fromMaybe "" .title)
+
+        tags =
+            newTopic |> fromMaybe [] .tags
+    in
+    case content of
+        Nothing ->
+            state
+                |> updateNewTopic
+                    (\t ->
+                        { t | error = "主题内容是空白的，请先输入点什么" }
+                    )
+
+        Just c ->
+            state
+                |> updateNewTopic
+                    (\t ->
+                        { t
+                            | content = ""
+                            , title = ""
+                            , tags = []
+                            , error = ""
+                        }
+                    )
+                |> updateTopics
+                    (RemoteData.update
+                        (let
+                            topic =
+                                Topic.init
+                         in
+                         TreeStore.add
+                            { topic
+                                | id = hash c
+                                , content = c
+                                , title = title
+                                , tags = tags
+                            }
+                        )
+                    )
 
 
 updateEditTopic :

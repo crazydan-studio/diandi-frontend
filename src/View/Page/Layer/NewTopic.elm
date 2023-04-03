@@ -21,6 +21,7 @@ module View.Page.Layer.NewTopic exposing (create)
 
 import Element exposing (..)
 import Element.Border as Border
+import Element.Events exposing (onEnter)
 import Element.Font as Font
 import Element.Input as Input
 import I18n.I18n exposing (langTextEnd)
@@ -50,6 +51,9 @@ create { app, theme, widgets, withI18nElement } =
         tags =
             app.newTopic |> fromMaybe [] .tags
 
+        taging =
+            app.newTopic |> fromMaybe "" .taging
+
         error =
             app.newTopic |> fromMaybe "" .error
     in
@@ -71,8 +75,7 @@ create { app, theme, widgets, withI18nElement } =
         )
         [ Input.text
             (theme.defaultInput
-                ++ [ id "xxxx"
-                   , width fill
+                ++ [ width fill
                    , height (px 42)
                    ]
             )
@@ -99,8 +102,7 @@ create { app, theme, widgets, withI18nElement } =
                    ]
             )
             (Input.multiline
-                [ id "xxxx"
-                , width fill
+                [ width fill
                 , height fill
                 , Border.width 0
                 ]
@@ -124,35 +126,61 @@ create { app, theme, widgets, withI18nElement } =
         , row
             [ width fill
             ]
-            [ el [ alignTop ]
+            [ el
+                [ alignTop
+                , paddingXY 0 4
+                ]
                 ((I18n.labelText :: "标签：" :: langTextEnd)
                     |> i18nText
                 )
-            , wrappedRow
+            , column
                 [ width fill
+                , spacing BaseStyle.spacing
                 ]
-                ((tags
-                    |> List.map
-                        (\tag ->
-                            text tag
-                        )
-                 )
-                    ++ [ Input.text
-                            (theme.defaultInput
-                                ++ [ id "xxxx"
-                                   , height (px 42)
-                                   ]
+                [ wrappedRow
+                    [ width fill
+                    , spacing BaseStyle.spacing
+                    ]
+                    (tags
+                        |> List.map
+                            (\tag ->
+                                widgets.with <|
+                                    Button.link
+                                        { attrs =
+                                            [ Font.size 13
+                                            , paddingXY 8 0
+                                            ]
+                                        , content = text ("#" ++ tag)
+                                        , onPress = Nothing
+                                        }
                             )
-                            { onChange =
-                                \text ->
-                                    Msg.NewTopicMsg (NewTopic.TagChanged text)
-                            , text = ""
-                            , selection = Nothing
-                            , placeholder = Nothing
-                            , label = Input.labelHidden ""
-                            }
-                       ]
-                )
+                    )
+                , el
+                    [ width fill
+                    ]
+                    (Input.text
+                        (theme.defaultInput
+                            ++ [ height (px 42)
+                               , onEnter (Msg.NewTopicMsg NewTopic.TagDone)
+                               ]
+                        )
+                        { onChange =
+                            \text ->
+                                Msg.NewTopicMsg (NewTopic.TagChanged text)
+                        , text = taging
+                        , selection = Nothing
+                        , placeholder =
+                            Just
+                                (Input.placeholder
+                                    theme.placeholderFont
+                                    (("请输入标签名称，并按回车确认" :: langTextEnd)
+                                        |> i18nText
+                                    )
+                                )
+                        , label = Input.labelHidden ""
+                        }
+                    )
+                ]
             ]
         , row
             [ width fill

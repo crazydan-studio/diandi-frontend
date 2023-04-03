@@ -29,6 +29,7 @@ type alias NewTopic =
     { content : String
     , title : String
     , tags : List String
+    , taging : String
     , error : String
     }
 
@@ -37,6 +38,7 @@ type Msg
     = TitleChanged String
     | ContentChanged String
     | TagChanged String
+    | TagDone
 
 
 init : NewTopic
@@ -44,6 +46,7 @@ init =
     { content = ""
     , title = ""
     , tags = []
+    , taging = ""
     , error = ""
     }
 
@@ -62,5 +65,11 @@ update msg newTopic =
 
         TagChanged tag ->
             { newTopic
-                | error = ""
+                | taging = tag
+            }
+
+        TagDone ->
+            { newTopic
+                | tags = newTopic.tags ++ [ newTopic.taging ]
+                , taging = ""
             }

@@ -30,6 +30,7 @@ type alias NewTopic =
     , title : String
     , tags : List String
     , taging : String
+    , previewed : Bool
     , error : String
     }
 
@@ -37,6 +38,7 @@ type alias NewTopic =
 type Msg
     = TitleChanged String
     | ContentChanged String
+    | ContentPreviewed Bool
     | TagChanged String
     | TagDeleted String
     | TagDone
@@ -48,6 +50,7 @@ init =
     , title = ""
     , tags = []
     , taging = ""
+    , previewed = False
     , error = ""
     }
 
@@ -62,6 +65,11 @@ update msg newTopic =
             { newTopic
                 | content = content
                 , error = ""
+            }
+
+        ContentPreviewed enabled ->
+            { newTopic
+                | previewed = enabled
             }
 
         TagChanged tag ->

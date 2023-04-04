@@ -36,6 +36,7 @@ import Widget.Color as Color
 import Widget.Icon as Icon
 import Widget.Util.Basic exposing (fromMaybe)
 import Widget.Widget.Button as Button
+import Widget.Widget.Markdown as Markdown
 
 
 create : Model.State -> Element Msg.Msg
@@ -56,12 +57,16 @@ create { app, theme, widgets, withI18nElement } =
         taging =
             app.newTopic |> fromMaybe "" .taging
 
+        previewed =
+            app.newTopic |> fromMaybe False .previewed
+
         error =
             app.newTopic |> fromMaybe "" .error
     in
     column
         (theme.primaryWhiteBackground
             ++ [ height fill
+               , class "topic-new-win"
                , padding BaseStyle.spacing2x
                , spacing BaseStyle.spacing2x
                , centerX
@@ -125,7 +130,13 @@ create { app, theme, widgets, withI18nElement } =
                                     , alignRight
                                     ]
                                 , content = text "预览"
-                                , onPress = Nothing
+                                , onPress =
+                                    Just
+                                        (Msg.NewTopicMsg
+                                            (NewTopic.ContentPreviewed
+                                                (not previewed)
+                                            )
+                                        )
                                 }
                        ]
                 )
@@ -136,27 +147,43 @@ create { app, theme, widgets, withI18nElement } =
                        , scrollbarY
                        ]
                 )
-                (Input.multiline
-                    [ width fill
-                    , height fill
-                    , Border.width 0
-                    ]
-                    { onChange =
-                        \text ->
-                            Msg.NewTopicMsg (NewTopic.ContentChanged text)
-                    , text = content
-                    , selection = Nothing
-                    , placeholder =
-                        Just
-                            (Input.placeholder
-                                theme.placeholderFont
-                                (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langTextEnd)
-                                    |> i18nText
+                (if not previewed then
+                    Input.multiline
+                        [ width fill
+                        , height fill
+                        , class "content"
+                        , spacing (20 - theme.primaryFontSize)
+                        , Border.width 0
+                        ]
+                        { onChange =
+                            \text ->
+                                Msg.NewTopicMsg (NewTopic.ContentChanged text)
+                        , text = content
+                        , selection = Nothing
+                        , placeholder =
+                            Just
+                                (Input.placeholder
+                                    theme.placeholderFont
+                                    (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langTextEnd)
+                                        |> i18nText
+                                    )
                                 )
-                            )
-                    , label = Input.labelHidden ""
-                    , spellcheck = False
-                    }
+                        , label = Input.labelHidden ""
+                        , spellcheck = False
+                        }
+
+                 else
+                    paragraph
+                        [ width fill
+                        , height fill
+                        , paddingXY 11 9
+                        ]
+                        [ widgets.with <|
+                            Markdown.render
+                                { lineHeight = 20
+                                }
+                                content
+                        ]
                 )
             ]
         , row

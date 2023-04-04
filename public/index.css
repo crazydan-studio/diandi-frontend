@@ -11,3 +11,7 @@
 .topic-card .head .t {
   line-height: 1.334;
 }
+
+.topic-new-win textarea.content {
+  letter-spacing: 1px;
+}

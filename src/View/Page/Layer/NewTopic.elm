@@ -20,6 +20,7 @@
 module View.Page.Layer.NewTopic exposing (create)
 
 import Element exposing (..)
+import Element.Background as Background
 import Element.Border as Border
 import Element.Events exposing (onEnter)
 import Element.Font as Font
@@ -32,6 +33,7 @@ import View.I18n.Home as I18n
 import View.Page as Page
 import View.Style.Base as BaseStyle
 import Widget.Color as Color
+import Widget.Icon as Icon
 import Widget.Util.Basic exposing (fromMaybe)
 import Widget.Widget.Button as Button
 
@@ -94,41 +96,75 @@ create { app, theme, widgets, withI18nElement } =
                     )
             , label = Input.labelHidden ""
             }
-        , el
-            (theme.defaultInput
-                ++ [ width fill
-                   , height fill
-                   , scrollbarY
-                   ]
-            )
-            (Input.multiline
+        , column
+            [ width fill
+            , height fill
+            ]
+            [ row
                 [ width fill
-                , height fill
-                , Border.width 0
+                , spacing BaseStyle.spacing
                 ]
-                { onChange =
-                    \text ->
-                        Msg.NewTopicMsg (NewTopic.ContentChanged text)
-                , text = content
-                , selection = Nothing
-                , placeholder =
-                    Just
-                        (Input.placeholder
-                            theme.placeholderFont
-                            (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langTextEnd)
-                                |> i18nText
-                            )
+                (([ "表情", "图片", "附件", "语音", "视频" ]
+                    |> List.map
+                        (\t ->
+                            widgets.with <|
+                                Button.link
+                                    { attrs =
+                                        [ paddingXY 4 0
+                                        ]
+                                    , content = text t
+                                    , onPress = Nothing
+                                    }
                         )
-                , label = Input.labelHidden ""
-                , spellcheck = False
-                }
-            )
+                 )
+                    ++ [ widgets.with <|
+                            Button.link
+                                { attrs =
+                                    [ width shrink
+                                    , paddingXY 4 0
+                                    , alignRight
+                                    ]
+                                , content = text "预览"
+                                , onPress = Nothing
+                                }
+                       ]
+                )
+            , el
+                (theme.defaultInput
+                    ++ [ width fill
+                       , height fill
+                       , scrollbarY
+                       ]
+                )
+                (Input.multiline
+                    [ width fill
+                    , height fill
+                    , Border.width 0
+                    ]
+                    { onChange =
+                        \text ->
+                            Msg.NewTopicMsg (NewTopic.ContentChanged text)
+                    , text = content
+                    , selection = Nothing
+                    , placeholder =
+                        Just
+                            (Input.placeholder
+                                theme.placeholderFont
+                                (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langTextEnd)
+                                    |> i18nText
+                                )
+                            )
+                    , label = Input.labelHidden ""
+                    , spellcheck = False
+                    }
+                )
+            ]
         , row
             [ width fill
             ]
             [ el
                 [ alignTop
-                , paddingXY 0 4
+                , paddingXY 0 8
                 ]
                 ((I18n.labelText :: "标签：" :: langTextEnd)
                     |> i18nText
@@ -144,15 +180,27 @@ create { app, theme, widgets, withI18nElement } =
                     (tags
                         |> List.map
                             (\tag ->
-                                widgets.with <|
-                                    Button.link
-                                        { attrs =
-                                            [ Font.size 13
-                                            , paddingXY 8 0
-                                            ]
-                                        , content = text ("#" ++ tag)
-                                        , onPress = Nothing
-                                        }
+                                row
+                                    [ spacing BaseStyle.spacing
+                                    , padding 8
+                                    , Border.rounded 4
+                                    , Background.color (rgba255 25 118 210 0.1)
+                                    , mouseOver
+                                        [ Background.color (rgba255 25 118 210 0.2)
+                                        ]
+                                    ]
+                                    [ text ("#" ++ tag)
+                                    , widgets.with <|
+                                        Button.circle
+                                            { attrs = theme.secondaryBtn ++ [ centerX, padding 2 ]
+                                            , content =
+                                                el [ centerX ]
+                                                    (theme.primaryBtnIcon
+                                                        { icon = Icon.CloseOutlined, size = Just 8 }
+                                                    )
+                                            , onPress = Just (Msg.NewTopicMsg (NewTopic.TagDeleted tag))
+                                            }
+                                    ]
                             )
                     )
                 , el

@@ -38,6 +38,7 @@ type Msg
     = TitleChanged String
     | ContentChanged String
     | TagChanged String
+    | TagDeleted String
     | TagDone
 
 
@@ -68,8 +69,19 @@ update msg newTopic =
                 | taging = tag
             }
 
+        TagDeleted tag ->
+            { newTopic
+                | tags =
+                    newTopic.tags
+                        |> List.filter ((/=) tag)
+            }
+
         TagDone ->
             { newTopic
-                | tags = newTopic.tags ++ [ newTopic.taging ]
+                | tags =
+                    (newTopic.tags
+                        |> List.filter ((/=) newTopic.taging)
+                    )
+                        ++ [ newTopic.taging ]
                 , taging = ""
             }

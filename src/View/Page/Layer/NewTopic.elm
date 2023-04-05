@@ -122,22 +122,24 @@ create { app, theme, widgets, withI18nElement } =
                                     }
                         )
                  )
-                    ++ [ widgets.with <|
-                            Button.link
-                                { attrs =
-                                    [ width shrink
-                                    , paddingXY 4 0
-                                    , alignRight
-                                    ]
-                                , content = text "预览"
-                                , onPress =
-                                    Just
-                                        (Msg.NewTopicMsg
-                                            (NewTopic.ContentPreviewed
-                                                (not previewed)
-                                            )
+                    ++ [ Input.checkbox
+                            [ width shrink
+                            , alignRight
+                            ]
+                            { onChange =
+                                \checked ->
+                                    Msg.NewTopicMsg
+                                        (NewTopic.ContentPreviewed
+                                            checked
                                         )
-                                }
+                            , icon = Input.defaultCheckbox
+                            , checked = previewed
+                            , label =
+                                Input.labelRight
+                                    [ moveUp 1
+                                    ]
+                                    (text "预览")
+                            }
                        ]
                 )
             , el

@@ -2,7 +2,11 @@
   {
     "id": "1",
     "content": "数据操作仅有一个远端接口，通过回传参数确定实际操作：\n- Add: `{dataType: 'User', action: 'Add', data: [{...}, ...]}`\n- Delete: `{dataType: 'User', action: 'Delete', data: [{id: 'xxxx'}, ...]}`\n- Update: `{dataType: 'User', action: 'Update', data: [{id: 'xxx', ...}, ...]}`\n- Query: `{dataType: 'User', action: 'Query', data: [{name: 'xxx', ...}, ...]}`",
-    "tags": ["产品开发/精卫"],
-    "createdAt": "2023-01-08 12:31:45"
+    "tags": ["产品开发", "精卫"]
+  },
+  {
+    "id": "2",
+    "content": "- [不要再问我跨域的问题了](https://segmentfault.com/a/1190000015597029): 通过 Websocket 也可以解决跨域问题，但该方式是异步的，需要识别接收到的消息是哪次请求的数据\n- [不要再问我移动适配的问题了](https://segmentfault.com/a/1190000017784801)",
+    "tags": ["产品开发", "精卫"]
   }
 ]

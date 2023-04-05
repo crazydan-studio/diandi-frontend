@@ -23,6 +23,7 @@ import Element exposing (..)
 import Element.Border as Border
 import Element.Events exposing (..)
 import Element.Font as Font
+import Json.Decode as Json
 import Model
 import Model.Topic exposing (Topic)
 import Msg
@@ -56,6 +57,22 @@ view ({ app, theme, widgets } as state) topic =
                     [ "box-shadow"
                     ]
                ]
+            ++ (if
+                    app.removingTopics
+                        |> List.member topic.id
+                then
+                    [ class "delete-zoom"
+
+                    -- 动画结束后执行真正的删除
+                    , on "animationend"
+                        (Json.succeed
+                            (Msg.DeleteTopic topic.id)
+                        )
+                    ]
+
+                else
+                    []
+               )
         )
         [ column
             [ width fill
@@ -108,6 +125,7 @@ view ({ app, theme, widgets } as state) topic =
         , row
             [ width fill
             , class "bottom"
+            , spacing BaseStyle.spacing
             ]
             [ wrappedRow
                 [ width fill
@@ -127,17 +145,25 @@ view ({ app, theme, widgets } as state) topic =
                                     }
                         )
                 )
-            , el
+            , row
                 [ alignRight
                 ]
-                (widgets.with <|
+                [ widgets.with <|
                     Button.link
                         { attrs = [ width shrink ]
                         , content =
                             theme.primaryLinkBtnIcon
-                                { icon = Icon.MoreOutlined, size = Nothing }
+                                { icon = Icon.DeleteOutlined, size = Nothing }
+                        , onPress = Just (Msg.DeleteTopicPending topic.id)
+                        }
+                , widgets.with <|
+                    Button.link
+                        { attrs = [ width shrink ]
+                        , content =
+                            theme.primaryLinkBtnIcon
+                                { icon = Icon.EditOutlined, size = Nothing }
                         , onPress = Nothing
                         }
-                )
+                ]
             ]
         ]

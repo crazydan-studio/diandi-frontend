@@ -76,6 +76,6 @@ tools ({ theme, widgets, withI18nElement } as state) =
                         ]
                 , onPress =
                     Just
-                        (Msg.ShowPageLayerMsg Page.NewTopicLayer)
+                        (Msg.ShowPageLayer Page.NewTopicLayer)
                 }
         ]

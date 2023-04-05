@@ -118,56 +118,63 @@ update msg state =
         Msg.WidgetMsg widgetMsg ->
             state |> updateWidgetsState (Widget.update widgetMsg)
 
-        Msg.SearchTopicInputingMsg keywords ->
+        Msg.SearchTopicInputing keywords ->
             ( state
                 |> updateAppState
                     (App.updateTopicSearchingText (Just keywords))
             , Cmd.none
             )
 
-        Msg.SearchTopicMsg ->
+        Msg.SearchTopic ->
             ( state
             , View.Route.searchTopics
                 (state.app.topicSearchingText |> Maybe.withDefault "")
                 state.app
             )
 
-        Msg.DropTopicMsg topicId ->
+        Msg.DeleteTopic topicId ->
             ( state
                 |> updateAppState
                     (App.removeTopic topicId)
             , Cmd.none
             )
 
-        Msg.NewTopicMsg newTopicMsg ->
+        Msg.DeleteTopicPending topicId ->
+            ( state
+                |> updateAppState
+                    (App.addRemoveTopic topicId)
+            , Cmd.none
+            )
+
+        Msg.NewTopic newTopicMsg ->
             newTopicUpdateHelper newTopicMsg state
 
-        Msg.NewTopicAddedMsg ->
+        Msg.NewTopicAdded ->
             ( state |> updateAppState App.addNewTopic
             , Cmd.none
             )
 
-        Msg.NewTopicCleanedMsg ->
+        Msg.NewTopicCleaned ->
             ( state |> updateAppState App.cleanNewTopic
             , Cmd.none
             )
 
-        Msg.EditTopicMsg topicId editTopicMsg ->
+        Msg.EditTopic topicId editTopicMsg ->
             editTopicUpdateHelper topicId editTopicMsg state
 
-        Msg.EditTopicUpdatedMsg topicId ->
+        Msg.EditTopicUpdated topicId ->
             ( state |> updateAppState (App.updateTopicByEdit topicId)
             , Cmd.none
             )
 
-        Msg.ShowPageLayerMsg layer ->
+        Msg.ShowPageLayer layer ->
             ( { state
                 | layers = layer :: state.layers
               }
             , Cmd.none
             )
 
-        Msg.ClosePageLayerMsg layer ->
+        Msg.ClosePageLayer layer ->
             ( { state
                 | layers =
                     state.layers

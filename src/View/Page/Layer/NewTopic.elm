@@ -88,7 +88,7 @@ create { app, theme, widgets, withI18nElement } =
             )
             { onChange =
                 \text ->
-                    Msg.NewTopicMsg (NewTopic.TitleChanged text)
+                    Msg.NewTopic (NewTopic.TitleChanged text)
             , text = title
             , selection = Nothing
             , placeholder =
@@ -128,7 +128,7 @@ create { app, theme, widgets, withI18nElement } =
                             ]
                             { onChange =
                                 \checked ->
-                                    Msg.NewTopicMsg
+                                    Msg.NewTopic
                                         (NewTopic.ContentPreviewed
                                             checked
                                         )
@@ -159,7 +159,7 @@ create { app, theme, widgets, withI18nElement } =
                         ]
                         { onChange =
                             \text ->
-                                Msg.NewTopicMsg (NewTopic.ContentChanged text)
+                                Msg.NewTopic (NewTopic.ContentChanged text)
                         , text = content
                         , selection = Nothing
                         , placeholder =
@@ -227,7 +227,7 @@ create { app, theme, widgets, withI18nElement } =
                                                     (theme.primaryBtnIcon
                                                         { icon = Icon.CloseOutlined, size = Just 8 }
                                                     )
-                                            , onPress = Just (Msg.NewTopicMsg (NewTopic.TagDeleted tag))
+                                            , onPress = Just (Msg.NewTopic (NewTopic.TagDeleted tag))
                                             }
                                     ]
                             )
@@ -238,12 +238,12 @@ create { app, theme, widgets, withI18nElement } =
                     (Input.text
                         (theme.defaultInput
                             ++ [ height (px 42)
-                               , onEnter (Msg.NewTopicMsg NewTopic.TagDone)
+                               , onEnter (Msg.NewTopic NewTopic.TagDone)
                                ]
                         )
                         { onChange =
                             \text ->
-                                Msg.NewTopicMsg (NewTopic.TagChanged text)
+                                Msg.NewTopic (NewTopic.TagChanged text)
                         , text = taging
                         , selection = Nothing
                         , placeholder =
@@ -282,7 +282,7 @@ create { app, theme, widgets, withI18nElement } =
                         , content =
                             (I18n.buttonText :: "记下来！" :: langTextEnd)
                                 |> i18nText
-                        , onPress = Just Msg.NewTopicAddedMsg
+                        , onPress = Just Msg.NewTopicAdded
                         }
                 , widgets.with <|
                     Button.button
@@ -293,8 +293,8 @@ create { app, theme, widgets, withI18nElement } =
                         , onPress =
                             Just
                                 (Msg.batch
-                                    [ Msg.NewTopicCleanedMsg
-                                    , Msg.ClosePageLayerMsg Page.NewTopicLayer
+                                    [ Msg.NewTopicCleaned
+                                    , Msg.ClosePageLayer Page.NewTopicLayer
                                     ]
                                 )
                         }

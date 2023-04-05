@@ -52,17 +52,19 @@ type Msg
     | I18nPortMsg I18n.Port.Msg
       -- 组件消息
     | WidgetMsg (Widget.Msg Msg)
-    | ShowPageLayerMsg Page.Layer
-    | ClosePageLayerMsg Page.Layer
+      -- 遮罩
+    | ShowPageLayer Page.Layer
+    | ClosePageLayer Page.Layer
       -- 数据操作
-    | SearchTopicMsg
-    | SearchTopicInputingMsg String
-    | DropTopicMsg String
-    | NewTopicMsg NewTopic.Msg
-    | NewTopicAddedMsg
-    | NewTopicCleanedMsg
-    | EditTopicUpdatedMsg String
-    | EditTopicMsg String EditTopic.Msg
+    | SearchTopic
+    | SearchTopicInputing String
+    | DeleteTopic String
+    | DeleteTopicPending String
+    | NewTopic NewTopic.Msg
+    | NewTopicAdded
+    | NewTopicCleaned
+    | EditTopicUpdated String
+    | EditTopic String EditTopic.Msg
 
 
 batch : List Msg -> Msg

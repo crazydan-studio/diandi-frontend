@@ -88,9 +88,9 @@ view ({ app, theme, widgets, withI18nElement } as state) =
                 [ width fill
                 , Border.width 0
                 , theme.transparentBackground
-                , onEnter Msg.SearchTopicMsg
+                , onEnter Msg.SearchTopic
                 ]
-                { onChange = Msg.SearchTopicInputingMsg
+                { onChange = Msg.SearchTopicInputing
                 , text =
                     app.topicSearchingText
                         |> Maybe.withDefault ""

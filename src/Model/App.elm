@@ -21,6 +21,7 @@ module Model.App exposing
     ( Config
     , State
     , addNewTopic
+    , addRemoveTopic
     , cleanNewTopic
     , init
     , loadTopics
@@ -70,6 +71,7 @@ type alias State =
 
     -- 操作数据
     , topicSearchingText : Maybe String
+    , removingTopics : List String
     , newTopic : Maybe NewTopic
     , editTopic : Maybe EditTopic
     }
@@ -113,6 +115,7 @@ init config =
 
     --
     , topicSearchingText = Nothing
+    , removingTopics = []
     , newTopic = Nothing
     , editTopic = Nothing
     }
@@ -147,6 +150,16 @@ removeTopic topicId ({ topics } as state) =
             topics
                 |> RemoteData.update
                     (TreeStore.removeById topicId)
+        , removingTopics =
+            state.removingTopics
+                |> List.filter ((/=) topicId)
+    }
+
+
+addRemoveTopic : String -> State -> State
+addRemoveTopic topicId state =
+    { state
+        | removingTopics = topicId :: state.removingTopics
     }
 
 

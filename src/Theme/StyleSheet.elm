@@ -38,8 +38,36 @@ body > * { opacity: 1; }
         -- 主题卡片宽度自适应设置：根据每行显示的卡片数量确定其最小宽度
         , Html.text
             ("""
-.topic-card.size-fit {
+.topic-card.size-fit:not(.delete-zoom) {
   min-width: calc((100% - {{topic_card_spacing}}px * {{topic_card_count}}) / {{topic_card_count}}) !important;
+}
+.topic-card.size-fit.delete-zoom {
+  animation: topic-card-delete-zoom forwards 0.7s ease-out 1;
+}
+
+@keyframes topic-card-delete-zoom {
+  0% {
+    width: calc((100% - {{topic_card_spacing}}px * {{topic_card_count}}) / {{topic_card_count}});
+    min-width: calc((100% - {{topic_card_spacing}}px * {{topic_card_count}}) / {{topic_card_count}});
+    transform: scale(1);
+    transform-origin: center;
+    opacity: 1;
+    overflow: hidden;
+  }
+
+  50% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  100% {
+    width: 0;
+    min-width: 0;
+    transform: scale(0);
+    opacity: 0;
+    padding: 0;
+    margin: 0;
+  }
 }
 """
                 |> template

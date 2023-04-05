@@ -61,7 +61,12 @@ topicListView ({ app } as state) topics =
         -- https://guide.elm-lang.org/optimization/keyed.html
         -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Keyed
         -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Lazy
-        (if app.device.class == Phone && app.device.orientation == Portrait then
+        (if
+            app.device.class
+                == Phone
+                && app.device.orientation
+                == Portrait
+         then
             Element.Keyed.column
 
          else

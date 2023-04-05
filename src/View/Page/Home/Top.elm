@@ -67,7 +67,20 @@ view ({ app, theme, widgets, withI18nElement } as state) =
             , height (px logoHeight)
             , alignLeft
             ]
-            { src = "/logo.svg", description = "", onLoad = Nothing }
+            { src =
+                if
+                    app.device.class
+                        == Phone
+                        && app.device.orientation
+                        == Portrait
+                then
+                    "/icon.svg"
+
+                else
+                    "/logo.svg"
+            , description = ""
+            , onLoad = Nothing
+            }
         , row
             [ width
                 (percent 30
@@ -115,8 +128,17 @@ view ({ app, theme, widgets, withI18nElement } as state) =
                         [ theme.primaryBtnIcon
                             { icon = Icon.SettingOutlined, size = Nothing }
                         , -- TODO 点击后，在左侧弹出侧边栏，该侧边栏中展示用户头像/名称、语言切换、主题切换等
-                          (I18n.buttonText :: "设置" :: langTextEnd)
-                            |> i18nText
+                          if
+                            app.device.class
+                                == Phone
+                                && app.device.orientation
+                                == Portrait
+                          then
+                            none
+
+                          else
+                            (I18n.buttonText :: "设置" :: langTextEnd)
+                                |> i18nText
                         ]
                 , onPress = Nothing
                 }

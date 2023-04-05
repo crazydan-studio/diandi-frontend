@@ -46,6 +46,7 @@ type Msg
     | UrlChanged Url.Url
     | FocusOn String
     | ScrollTo String
+    | ScreenResize Int Int
       -- 远端消息
     | RemoteMsg RemoteMsg.Msg
       -- 国际化Port消息

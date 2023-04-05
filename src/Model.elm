@@ -25,7 +25,9 @@ module Model exposing
     , update
     )
 
+import Browser.Events as Events
 import Browser.Navigation as Nav
+import Element exposing (classifyDevice)
 import Http
 import I18n.I18n exposing (I18nElement, withI18nElement)
 import I18n.Port
@@ -47,6 +49,7 @@ import Widget.Widget as Widget
 type alias Config =
     { title : String
     , description : String
+    , screen : { width : Int, height : Int }
     , lang : String
     }
 
@@ -75,6 +78,7 @@ init config navUrl navKey =
             App.init
                 { title = config.title
                 , description = config.description
+                , device = classifyDevice config.screen
                 , lang = config.lang
                 , navKey = navKey
                 , navUrl = navUrl
@@ -95,7 +99,8 @@ init config navUrl navKey =
 sub : State -> Sub Msg.Msg
 sub state =
     Sub.batch
-        [ I18n.Port.sub Msg.I18nPortMsg
+        [ Events.onResize (\w h -> Msg.ScreenResize w h)
+        , I18n.Port.sub Msg.I18nPortMsg
         , Widget.sub state.widgets
         ]
 
@@ -117,6 +122,13 @@ update msg state =
 
         Msg.WidgetMsg widgetMsg ->
             state |> updateWidgetsState (Widget.update widgetMsg)
+
+        Msg.ScreenResize w h ->
+            ( state
+                |> updateAppState
+                    (App.updateDevice (classifyDevice { width = w, height = h }))
+            , Cmd.none
+            )
 
         Msg.SearchTopicInputing keywords ->
             ( state

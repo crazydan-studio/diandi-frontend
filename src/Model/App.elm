@@ -27,6 +27,7 @@ module Model.App exposing
     , loadTopics
     , loading
     , removeTopic
+    , updateDevice
     , updateEditTopic
     , updateNewTopic
     , updateTopicByEdit
@@ -35,6 +36,7 @@ module Model.App exposing
 
 import Browser.Navigation as Nav
 import Data.TreeStore as TreeStore exposing (TreeStore)
+import Element exposing (Device)
 import Http
 import I18n.Lang exposing (Lang)
 import I18n.Translator exposing (TextsNeedToBeTranslated, TranslateResult)
@@ -53,6 +55,7 @@ import Widget.Util.Hash exposing (hash)
 type alias State =
     { title : String
     , description : String
+    , device : Device
 
     -- 国际化
     , lang : Lang
@@ -80,6 +83,7 @@ type alias State =
 type alias Config =
     { title : String
     , description : String
+    , device : Device
     , lang : String
     , navKey : Nav.Key
     , navUrl : Url.Url
@@ -94,6 +98,7 @@ init : Config -> State
 init config =
     { title = config.title
     , description = config.description
+    , device = config.device
 
     --
     , lang =
@@ -136,6 +141,11 @@ loadTopics result state =
             result
                 |> RemoteData.from state.lang createTopicTree
     }
+
+
+updateDevice : Device -> State -> State
+updateDevice device state =
+    { state | device = device }
 
 
 updateTopicSearchingText : Maybe String -> State -> State

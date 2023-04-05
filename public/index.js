@@ -15,6 +15,10 @@ const app = Elm.Main.init({
     title: pkg.title,
     description: pkg.description,
     lang: getFirstBrowserLanguage(),
+    screen: {
+      height: window.innerHeight,
+      width: window.innerWidth,
+    },
   },
 });
 

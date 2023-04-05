@@ -19,6 +19,7 @@
 
 module Theme.StyleSheet exposing (create)
 
+import Element exposing (DeviceClass(..), Orientation(..))
 import Html exposing (Html)
 import Model
 import View.Style.Base as BaseStyle
@@ -72,7 +73,30 @@ body > * { opacity: 1; }
 """
                 |> template
                     [ ( "topic_card_spacing", String.fromInt BaseStyle.spacing2x )
-                    , ( "topic_card_count", "5" )
+                    , ( "topic_card_count"
+                      , case app.device.class of
+                            Phone ->
+                                case app.device.orientation of
+                                    Portrait ->
+                                        "1"
+
+                                    _ ->
+                                        "4"
+
+                            Tablet ->
+                                case app.device.orientation of
+                                    Portrait ->
+                                        "2"
+
+                                    _ ->
+                                        "3"
+
+                            Desktop ->
+                                "5"
+
+                            BigDesktop ->
+                                "6"
+                      )
                     ]
             )
         ]

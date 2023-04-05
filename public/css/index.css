@@ -4,7 +4,9 @@
   aspect-ratio: 600/300;
 }
 
-.topic-card-list>.r {
+.topic-card-list>.r,
+.topic-card-list>.s.at {
+  margin-bottom: 0 !important;
   align-content: flex-start;
 }
 

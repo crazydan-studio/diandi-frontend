@@ -50,6 +50,8 @@ body > * { opacity: 1; }
   0% {
     width: calc((100% - {{topic_card_spacing}}px * {{topic_card_count}}) / {{topic_card_count}});
     min-width: calc((100% - {{topic_card_spacing}}px * {{topic_card_count}}) / {{topic_card_count}});
+    height: min-content;
+    min-height: min-content;
     transform: scale(1);
     transform-origin: center;
     opacity: 1;
@@ -64,6 +66,7 @@ body > * { opacity: 1; }
   100% {
     width: 0;
     min-width: 0;
+    height: 0;
     transform: scale(0);
     opacity: 0;
     padding: 0;

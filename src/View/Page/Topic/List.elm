@@ -49,7 +49,7 @@ topicListView :
     Model.State
     -> TreeStore Topic
     -> Element Msg.Msg
-topicListView state topics =
+topicListView ({ app } as state) topics =
     if TreeStore.isEmpty topics then
         RemoteDataPage.noDataView
             { theme = state.theme
@@ -61,7 +61,12 @@ topicListView state topics =
         -- https://guide.elm-lang.org/optimization/keyed.html
         -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Keyed
         -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Lazy
-        Element.Keyed.wrappedRow
+        (if app.device.class == Phone && app.device.orientation == Portrait then
+            Element.Keyed.column
+
+         else
+            Element.Keyed.wrappedRow
+        )
             [ width fill
             , height fill
             , class "topic-card-list"

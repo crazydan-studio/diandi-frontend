@@ -14,19 +14,28 @@ import Widget.Widget.Button as Button
 
 
 view : Model.State -> Element Msg.Msg
-view state =
+view ({ app } as state) =
     let
         paddingX =
-            BaseStyle.spacing8x * 2
+            if
+                app.device.class
+                    == Phone
+                    && app.device.orientation
+                    == Portrait
+            then
+                BaseStyle.spacing8x
+
+            else
+                BaseStyle.spacing8x * 2
     in
     el
         [ width fill
         , height fill
         , inFront
             (el
-                [ alignRight
-                , centerY
-                , moveLeft (toFloat paddingX / 2 - 40)
+                [ width (px paddingX)
+                , height fill
+                , alignRight
                 ]
                 (tools state)
             )
@@ -45,35 +54,51 @@ view state =
 
 
 tools : Model.State -> Element Msg.Msg
-tools ({ theme, widgets, withI18nElement } as state) =
+tools ({ app, theme, widgets, withI18nElement } as state) =
     let
         i18nText =
             withI18nElement I18n.text
     in
     column
         [ spacing BaseStyle.spacing
+        , centerX
+        , centerY
         ]
         [ widgets.with <|
             Button.circle
-                { attrs = theme.primaryBtn ++ [ centerX ]
+                { attrs =
+                    theme.primaryBtn
+                        ++ [ centerX ]
                 , content =
-                    column
-                        [ width (px 40)
-                        , height (px 40)
-                        , spacing BaseStyle.spacing
-                        ]
-                        [ el [ centerX ]
+                    if
+                        app.device.class
+                            == Phone
+                            && app.device.orientation
+                            == Portrait
+                    then
+                        el [ centerX ]
                             (theme.primaryBtnIcon
-                                { icon = Icon.FormOutlined, size = Just 20 }
+                                { icon = Icon.FormOutlined, size = Just 15 }
                             )
-                        , el
-                            [ centerX
-                            , Font.size theme.secondaryFontSize
+
+                    else
+                        column
+                            [ width (px 40)
+                            , height (px 40)
+                            , spacing BaseStyle.spacing
                             ]
-                            ((I18n.buttonText :: "新增" :: langTextEnd)
-                                |> i18nText
-                            )
-                        ]
+                            [ el [ centerX ]
+                                (theme.primaryBtnIcon
+                                    { icon = Icon.FormOutlined, size = Just 20 }
+                                )
+                            , el
+                                [ centerX
+                                , Font.size theme.secondaryFontSize
+                                ]
+                                ((I18n.buttonText :: "新增" :: langTextEnd)
+                                    |> i18nText
+                                )
+                            ]
                 , onPress =
                     Just
                         (Msg.ShowPageLayer Page.NewTopicLayer)

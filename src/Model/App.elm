@@ -226,7 +226,9 @@ addNewTopic ({ newTopic } as state) =
                         { t
                             | content = ""
                             , title = ""
-                            , tags = []
+
+                            -- Note: 复用上次的标签
+                            -- , tags = []
                             , error = ""
                         }
                     )

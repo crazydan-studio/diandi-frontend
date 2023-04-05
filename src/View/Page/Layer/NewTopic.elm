@@ -260,7 +260,17 @@ create { app, theme, widgets, withI18nElement } =
                     )
                 ]
             ]
-        , row
+        , (if
+            app.device.class
+                == Phone
+                && app.device.orientation
+                == Portrait
+           then
+            column
+
+           else
+            row
+          )
             [ width fill
             , spacing BaseStyle.spacing2x
             ]

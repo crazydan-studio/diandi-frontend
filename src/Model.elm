@@ -163,7 +163,7 @@ update msg state =
 
         Msg.NewTopicAdded ->
             ( state |> updateAppState App.addNewTopic
-            , Cmd.none
+            , Msg.focusOn state.app.topicNewInputId
             )
 
         Msg.NewTopicCleaned ->
@@ -183,7 +183,12 @@ update msg state =
             ( { state
                 | layers = layer :: state.layers
               }
-            , Cmd.none
+            , case layer of
+                Page.NewTopicLayer ->
+                    Msg.focusOn state.app.topicNewInputId
+
+                _ ->
+                    Cmd.none
             )
 
         Msg.ClosePageLayer layer ->

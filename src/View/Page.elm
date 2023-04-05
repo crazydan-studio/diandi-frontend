@@ -30,3 +30,4 @@ type Type
 
 type Layer
     = NewTopicLayer
+    | NoneLayer

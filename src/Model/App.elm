@@ -76,6 +76,7 @@ type alias State =
     , topicSearchingText : Maybe String
     , removingTopics : List String
     , newTopic : Maybe NewTopic
+    , topicNewInputId : String
     , editTopic : Maybe EditTopic
     }
 
@@ -122,6 +123,7 @@ init config =
     , topicSearchingText = Nothing
     , removingTopics = []
     , newTopic = Nothing
+    , topicNewInputId = "topic-new-input"
     , editTopic = Nothing
     }
 

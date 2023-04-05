@@ -151,7 +151,8 @@ create { app, theme, widgets, withI18nElement } =
                 )
                 (if not previewed then
                     Input.multiline
-                        [ width fill
+                        [ id app.topicNewInputId
+                        , width fill
                         , height fill
                         , class "content"
                         , spacing (20 - theme.primaryFontSize)

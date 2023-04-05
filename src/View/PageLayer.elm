@@ -60,3 +60,6 @@ createHelper type_ state =
     case type_ of
         NewTopicLayer ->
             View.Page.Layer.NewTopic.create state
+
+        _ ->
+            none

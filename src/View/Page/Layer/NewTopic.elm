@@ -136,7 +136,9 @@ create { app, theme, widgets, withI18nElement } =
                             , checked = previewed
                             , label =
                                 Input.labelRight
-                                    [ moveUp 1
+                                    [ Font.size 14
+                                    , Font.letterSpacing 0.39998
+                                    , Font.weight 500
                                     ]
                                     (text "预览")
                             }

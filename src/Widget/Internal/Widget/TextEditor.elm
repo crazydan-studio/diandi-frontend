@@ -87,6 +87,6 @@ onKeyDown toMsg =
 
 updateByKeyboard : KeyboardEvent -> State -> State
 updateByKeyboard keyboard state =
-    Debug.log ("Keyboard: " ++ Debug.toString keyboard.key)
-        -- TODO 仅处理控制字符
-        state
+    -- Debug.log ("Keyboard: " ++ Debug.toString keyboard.key)
+    -- TODO 仅处理控制字符
+    state

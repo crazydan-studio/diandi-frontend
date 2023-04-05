@@ -177,6 +177,18 @@ create { app, theme, widgets, withI18nElement } =
                         , spellcheck = False
                         }
 
+                 else if content |> String.isEmpty then
+                    el
+                        (theme.placeholderFont
+                            ++ [ width fill
+                               , height fill
+                               , padding 12
+                               ]
+                        )
+                        (("没有可预览内容，请先写点什么吧 :)" :: langTextEnd)
+                            |> i18nText
+                        )
+
                  else
                     paragraph
                         [ width fill

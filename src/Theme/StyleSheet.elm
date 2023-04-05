@@ -81,7 +81,7 @@ body > * { opacity: 1; }
                                         "1"
 
                                     _ ->
-                                        "4"
+                                        "3"
 
                             Tablet ->
                                 case app.device.orientation of

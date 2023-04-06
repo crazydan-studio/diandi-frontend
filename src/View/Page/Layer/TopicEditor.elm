@@ -22,7 +22,7 @@ module View.Page.Layer.TopicEditor exposing (create)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
-import Element.Events exposing (onEnter)
+import Element.Events exposing (onEnter, onLoseFocus)
 import Element.Font as Font
 import Element.Input as Input
 import I18n.I18n exposing (langTextEnd)
@@ -159,13 +159,7 @@ create config { app, theme, widgets, withI18nElement } =
                 )
                 (if not previewed then
                     Input.multiline
-                        [ id
-                            (if config.isNew then
-                                app.topicNewInputId
-
-                             else
-                                app.topicEditInputId
-                            )
+                        [ id app.topicEditInputId
                         , width fill
                         , height fill
                         , class "content"
@@ -174,7 +168,7 @@ create config { app, theme, widgets, withI18nElement } =
                         ]
                         { onChange = config.onContentChange
                         , text = content
-                        , selection = Nothing
+                        , selection = Just { start = 0, end = 0, direction = "" }
                         , placeholder =
                             Just
                                 (Input.placeholder
@@ -262,8 +256,10 @@ create config { app, theme, widgets, withI18nElement } =
                     ]
                     (Input.text
                         (theme.defaultInput
-                            ++ [ height (px 42)
+                            ++ [ id app.topicTagEditInputId
+                               , height (px 42)
                                , onEnter config.onTagDone
+                               , onLoseFocus config.onTagDone
                                ]
                         )
                         { onChange = config.onTagChange

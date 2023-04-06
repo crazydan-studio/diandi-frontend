@@ -164,7 +164,7 @@ update msg state =
 
         Msg.NewTopicAdded ->
             ( state |> updateAppState App.addNewTopic
-            , Msg.focusOn state.app.topicNewInputId
+            , Msg.focusOn state.app.topicEditInputId
             )
 
         Msg.NewTopicCleaned ->
@@ -172,8 +172,8 @@ update msg state =
             , Cmd.none
             )
 
-        Msg.EditTopic topicId editTopicMsg ->
-            editTopicUpdateHelper topicId editTopicMsg state
+        Msg.EditTopic editTopicMsg ->
+            editTopicUpdateHelper editTopicMsg state
 
         Msg.EditTopicPending topicId ->
             ( state
@@ -182,10 +182,15 @@ update msg state =
             , Cmd.none
             )
 
-        Msg.EditTopicUpdated topicId ->
+        Msg.EditTopicUpdated ->
             ( state
                 |> updateAppState
-                    (App.updateTopicByEdit topicId)
+                    App.updateTopicByEdit
+            , Msg.focusOn state.app.topicEditInputId
+            )
+
+        Msg.EditTopicCleaned ->
+            ( state |> updateAppState App.cleanEditTopic
             , Cmd.none
             )
 
@@ -195,7 +200,7 @@ update msg state =
               }
             , case layer of
                 Page.NewTopicLayer ->
-                    Msg.focusOn state.app.topicNewInputId
+                    Msg.focusOn state.app.topicEditInputId
 
                 Page.EditTopicLayer ->
                     Msg.focusOn state.app.topicEditInputId
@@ -373,22 +378,31 @@ newTopicUpdateHelper msg state =
             (App.updateNewTopic
                 (EditTopic.update msg)
             )
-    , Cmd.none
+    , case msg of
+        EditTopic.TagDeleted _ ->
+            Msg.focusOn state.app.topicTagEditInputId
+
+        _ ->
+            Cmd.none
     )
 
 
 editTopicUpdateHelper :
-    String
-    -> EditTopic.Msg
+    EditTopic.Msg
     -> State
     -> ( State, Cmd Msg.Msg )
-editTopicUpdateHelper topicId msg state =
+editTopicUpdateHelper msg state =
     ( state
         |> updateAppState
-            (App.updateEditTopic topicId
+            (App.updateEditTopic
                 (EditTopic.update msg)
             )
-    , Cmd.none
+    , case msg of
+        EditTopic.TagDeleted _ ->
+            Msg.focusOn state.app.topicTagEditInputId
+
+        _ ->
+            Cmd.none
     )
 
 

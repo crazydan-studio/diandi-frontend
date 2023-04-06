@@ -23,6 +23,7 @@ module Model.App exposing
     , addEditTopic
     , addNewTopic
     , addRemoveTopic
+    , cleanEditTopic
     , cleanNewTopic
     , init
     , loadTopics
@@ -76,9 +77,9 @@ type alias State =
     , topicSearchingText : Maybe String
     , removingTopics : List String
     , newTopic : Maybe EditTopic
-    , topicNewInputId : String
     , editTopic : Maybe EditTopic
     , topicEditInputId : String
+    , topicTagEditInputId : String
     }
 
 
@@ -124,9 +125,9 @@ init config =
     , topicSearchingText = Nothing
     , removingTopics = []
     , newTopic = Nothing
-    , topicNewInputId = "topic-new-input"
     , editTopic = Nothing
     , topicEditInputId = "topic-edit-input"
+    , topicTagEditInputId = "topic-tag-edit-input"
     }
 
 
@@ -252,27 +253,22 @@ addEditTopic topicId ({ topics } as state) =
 
 
 updateEditTopic :
-    String
-    -> (EditTopic -> EditTopic)
+    (EditTopic -> EditTopic)
     -> State
     -> State
-updateEditTopic topicId updater ({ editTopic } as state) =
-    let
-        editTopicMaybe =
-            (case editTopic of
-                Nothing ->
-                    addEditTopic topicId state |> .editTopic
-
-                Just t ->
-                    Just t
-            )
-                |> Maybe.map updater
-    in
-    { state | editTopic = editTopicMaybe }
+updateEditTopic updater ({ editTopic } as state) =
+    { state | editTopic = editTopic |> Maybe.map updater }
 
 
-updateTopicByEdit : String -> State -> State
-updateTopicByEdit topicId ({ topics, editTopic } as state) =
+cleanEditTopic :
+    State
+    -> State
+cleanEditTopic state =
+    { state | editTopic = Nothing }
+
+
+updateTopicByEdit : State -> State
+updateTopicByEdit ({ topics, editTopic } as state) =
     editTopic
         |> Maybe.map
             (\editTopic_ ->
@@ -296,7 +292,7 @@ updateTopicByEdit topicId ({ topics, editTopic } as state) =
                 else
                     topics
                         |> RemoteData.andThen
-                            (TreeStore.get topicId)
+                            (TreeStore.get editTopic_.id)
                         |> Maybe.map
                             (\topic ->
                                 state

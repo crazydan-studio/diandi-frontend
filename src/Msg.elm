@@ -63,9 +63,10 @@ type Msg
     | NewTopic EditTopic.Msg
     | NewTopicAdded
     | NewTopicCleaned
-    | EditTopic String EditTopic.Msg
+    | EditTopic EditTopic.Msg
     | EditTopicPending String
-    | EditTopicUpdated String
+    | EditTopicUpdated
+    | EditTopicCleaned
 
 
 batch : List Msg -> Msg

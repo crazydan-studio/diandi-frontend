@@ -138,11 +138,16 @@ update msg editTopic =
             }
 
         TagDone ->
-            { editTopic
-                | tags =
-                    (editTopic.tags
-                        |> List.filter ((/=) editTopic.taging)
+            trim editTopic.taging
+                |> Maybe.map
+                    (\taging ->
+                        { editTopic
+                            | tags =
+                                (editTopic.tags
+                                    |> List.filter ((/=) taging)
+                                )
+                                    ++ [ taging ]
+                            , taging = ""
+                        }
                     )
-                        ++ [ editTopic.taging ]
-                , taging = ""
-            }
+                |> Maybe.withDefault editTopic

@@ -29,38 +29,32 @@ import View.Page.Layer.TopicEditor as TopicEditor
 
 create : Model.State -> Element Msg.Msg
 create ({ app } as state) =
-    case app.editTopic of
-        Nothing ->
-            none
-
-        Just editTopic ->
-            let
-                msgWith =
-                    Msg.EditTopic editTopic.id
-            in
-            state
-                |> TopicEditor.create
-                    { isNew = False
-                    , topic = app.editTopic
-                    , onTitleChange =
-                        \text ->
-                            msgWith (EditTopic.TitleChanged text)
-                    , onContentPreviewedChange =
-                        \checked ->
-                            msgWith
-                                (EditTopic.ContentPreviewed
-                                    checked
-                                )
-                    , onContentChange =
-                        \text ->
-                            msgWith (EditTopic.ContentChanged text)
-                    , onTagDeleted = \tag -> msgWith (EditTopic.TagDeleted tag)
-                    , onTagDone = msgWith EditTopic.TagDone
-                    , onTagChange =
-                        \text ->
-                            msgWith (EditTopic.TagChanged text)
-                    , onEditDone =
-                        Msg.EditTopicUpdated editTopic.id
-                    , onEditCanceled =
-                        Msg.ClosePageLayer Page.EditTopicLayer
-                    }
+    state
+        |> TopicEditor.create
+            { isNew = False
+            , topic = app.editTopic
+            , onTitleChange =
+                \text ->
+                    Msg.EditTopic (EditTopic.TitleChanged text)
+            , onContentPreviewedChange =
+                \checked ->
+                    Msg.EditTopic
+                        (EditTopic.ContentPreviewed
+                            checked
+                        )
+            , onContentChange =
+                \text ->
+                    Msg.EditTopic (EditTopic.ContentChanged text)
+            , onTagDeleted = \tag -> Msg.EditTopic (EditTopic.TagDeleted tag)
+            , onTagDone = Msg.EditTopic EditTopic.TagDone
+            , onTagChange =
+                \text ->
+                    Msg.EditTopic (EditTopic.TagChanged text)
+            , onEditDone =
+                Msg.EditTopicUpdated
+            , onEditCanceled =
+                Msg.batch
+                    [ Msg.EditTopicCleaned
+                    , Msg.ClosePageLayer Page.EditTopicLayer
+                    ]
+            }

@@ -34,4 +34,5 @@ type alias Theme =
     , primaryBorderColor : Element.Color
     , primaryWhiteBackgroundColor : Element.Color
     , primaryGreyBackgroundColor : Element.Color
+    , layerBackgroundColor : Element.Color
     }

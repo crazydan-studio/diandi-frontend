@@ -26,10 +26,11 @@ module Model.Operation.EditTopic exposing
     , hasError
     , init
     , patch
+    , to
     , update
     )
 
-import Model.Topic exposing (Topic)
+import Model.Topic as Topic exposing (Topic)
 import Widget.Util.Basic exposing (trim)
 
 
@@ -40,6 +41,7 @@ type alias EditTopic =
     , tags : List String
     , taging : String
     , previewed : Bool
+    , updating : Bool
     , error : String
     }
 
@@ -61,6 +63,7 @@ init =
     , tags = []
     , taging = ""
     , previewed = False
+    , updating = False
     , error = ""
     }
 
@@ -74,6 +77,19 @@ from topic =
             topic.title
                 |> Maybe.withDefault ""
         , tags = topic.tags
+    }
+
+
+to : EditTopic -> Topic
+to editTopic =
+    let
+        topic =
+            Topic.init
+    in
+    { topic
+        | content = editTopic.content |> String.trim
+        , title = editTopic.title |> trim
+        , tags = editTopic.tags
     }
 
 

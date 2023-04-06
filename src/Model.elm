@@ -146,24 +146,30 @@ update msg state =
             )
 
         Msg.DeleteTopic topicId ->
-            ( state
-                |> updateAppState
-                    (App.removeTopic topicId)
+            ( state |> updateAppState (App.removeTopic topicId)
             , Cmd.none
             )
 
         Msg.DeleteTopicPending topicId ->
-            ( state
-                |> updateAppState
-                    (App.addRemoveTopic topicId)
+            ( state |> updateAppState (App.addRemoveTopic topicId)
             , Cmd.none
             )
 
-        Msg.NewTopic newTopicMsg ->
+        Msg.NewTopicPending ->
+            ( state |> updateAppState App.addNewTopic
+            , Cmd.none
+            )
+
+        Msg.NewTopicMsg newTopicMsg ->
             newTopicUpdateHelper newTopicMsg state
 
+        Msg.NewTopicAdding ->
+            ( state |> updateAppState App.addTopicByNew
+            , Msg.focusOn state.app.topicEditInputId
+            )
+
         Msg.NewTopicAdded ->
-            ( state |> updateAppState App.addNewTopic
+            ( state |> updateAppState App.addTopicByNew
             , Msg.focusOn state.app.topicEditInputId
             )
 
@@ -172,20 +178,16 @@ update msg state =
             , Cmd.none
             )
 
-        Msg.EditTopic editTopicMsg ->
-            editTopicUpdateHelper editTopicMsg state
-
         Msg.EditTopicPending topicId ->
-            ( state
-                |> updateAppState
-                    (App.addEditTopic topicId)
+            ( state |> updateAppState (App.addEditTopic topicId)
             , Cmd.none
             )
 
+        Msg.EditTopicMsg editTopicMsg ->
+            editTopicUpdateHelper editTopicMsg state
+
         Msg.EditTopicUpdated ->
-            ( state
-                |> updateAppState
-                    App.updateTopicByEdit
+            ( state |> updateAppState App.updateTopicByEdit
             , Msg.focusOn state.app.topicEditInputId
             )
 

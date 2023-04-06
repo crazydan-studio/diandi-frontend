@@ -101,6 +101,10 @@ tools ({ app, theme, widgets, withI18nElement } as state) =
                             ]
                 , onPress =
                     Just
-                        (Msg.ShowPageLayer Page.NewTopicLayer)
+                        (Msg.batch
+                            [ Msg.NewTopicPending
+                            , Msg.ShowPageLayer Page.NewTopicLayer
+                            ]
+                        )
                 }
         ]

@@ -74,6 +74,9 @@ type alias Theme msg =
 
     --
     , defaultInput : List (Element.Attribute msg)
+
+    --
+    , layerBackgroundColor : Element.Color
     }
 
 
@@ -100,6 +103,7 @@ create theme =
     , placeholderFontColor = placeholderFontColor theme
     , placeholderFont = placeholderFont theme
     , defaultInput = defaultInput theme
+    , layerBackgroundColor = theme.layerBackgroundColor
     }
 
 

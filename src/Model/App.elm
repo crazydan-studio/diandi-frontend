@@ -23,6 +23,7 @@ module Model.App exposing
     , addEditTopic
     , addNewTopic
     , addRemoveTopic
+    , addTopicByNew
     , cleanEditTopic
     , cleanNewTopic
     , init
@@ -178,19 +179,19 @@ addRemoveTopic topicId state =
     }
 
 
+addNewTopic :
+    State
+    -> State
+addNewTopic state =
+    { state | newTopic = Just EditTopic.init }
+
+
 updateNewTopic :
     (EditTopic -> EditTopic)
     -> State
     -> State
 updateNewTopic updater ({ newTopic } as state) =
-    { state
-        | newTopic =
-            Just
-                (newTopic
-                    |> Maybe.withDefault EditTopic.init
-                    |> updater
-                )
-    }
+    { state | newTopic = newTopic |> Maybe.map updater }
 
 
 cleanNewTopic :
@@ -202,8 +203,8 @@ cleanNewTopic state =
     }
 
 
-addNewTopic : State -> State
-addNewTopic ({ newTopic } as state) =
+addTopicByNew : State -> State
+addTopicByNew ({ newTopic } as state) =
     newTopic
         |> Maybe.map
             (\topic ->
@@ -221,7 +222,7 @@ addNewTopic ({ newTopic } as state) =
                                 (RemoteData.update
                                     (let
                                         topic_ =
-                                            Topic.init |> EditTopic.patch topic
+                                            EditTopic.to topic
                                      in
                                      TreeStore.add
                                         { topic_

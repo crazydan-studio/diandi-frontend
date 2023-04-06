@@ -35,22 +35,22 @@ create ({ app } as state) =
             , topic = app.newTopic
             , onTitleChange =
                 \text ->
-                    Msg.NewTopic (EditTopic.TitleChanged text)
+                    Msg.NewTopicMsg (EditTopic.TitleChanged text)
             , onContentPreviewedChange =
                 \checked ->
-                    Msg.NewTopic
+                    Msg.NewTopicMsg
                         (EditTopic.ContentPreviewed
                             checked
                         )
             , onContentChange =
                 \text ->
-                    Msg.NewTopic (EditTopic.ContentChanged text)
-            , onTagDeleted = \tag -> Msg.NewTopic (EditTopic.TagDeleted tag)
-            , onTagDone = Msg.NewTopic EditTopic.TagDone
+                    Msg.NewTopicMsg (EditTopic.ContentChanged text)
+            , onTagDeleted = \tag -> Msg.NewTopicMsg (EditTopic.TagDeleted tag)
+            , onTagDone = Msg.NewTopicMsg EditTopic.TagDone
             , onTagChange =
                 \text ->
-                    Msg.NewTopic (EditTopic.TagChanged text)
-            , onEditDone = Msg.NewTopicAdded
+                    Msg.NewTopicMsg (EditTopic.TagChanged text)
+            , onEditDone = Msg.NewTopicAdding
             , onEditCanceled =
                 Msg.batch
                     [ Msg.NewTopicCleaned

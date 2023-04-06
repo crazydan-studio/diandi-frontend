@@ -36,4 +36,5 @@ init =
     , primaryBorderColor = rgba255 0 0 0 0.12
     , primaryWhiteBackgroundColor = rgb255 255 255 255
     , primaryGreyBackgroundColor = rgba255 0 0 0 0.08
+    , layerBackgroundColor = rgba255 0 0 0 0.5
     }

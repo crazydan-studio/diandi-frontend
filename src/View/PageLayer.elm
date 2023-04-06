@@ -38,7 +38,7 @@ import View.Page.Layer.NewTopic
 
 
 create : Model.State -> Element Msg.Msg
-create ({ layers } as state) =
+create ({ layers, theme } as state) =
     case layers of
         [] ->
             none
@@ -47,7 +47,7 @@ create ({ layers } as state) =
             column
                 [ width fill
                 , height fill
-                , Background.color (rgba255 0 0 0 0.5)
+                , Background.color theme.layerBackgroundColor
                 ]
                 [ createHelper layer state ]
 

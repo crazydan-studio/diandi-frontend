@@ -33,6 +33,7 @@ import View.I18n.Home as I18n
 import View.Style.Base as BaseStyle
 import Widget.Color as Color
 import Widget.Icon as Icon
+import Widget.Loading as Loading
 import Widget.Util.Basic exposing (fromMaybe)
 import Widget.Widget.Button as Button
 import Widget.Widget.Markdown as Markdown
@@ -73,6 +74,9 @@ create config { app, theme, widgets, withI18nElement } =
         previewed =
             config.topic |> fromMaybe False .previewed
 
+        updating =
+            config.topic |> fromMaybe False .updating
+
         error =
             config.topic |> fromMaybe "" .error
     in
@@ -92,6 +96,30 @@ create config { app, theme, widgets, withI18nElement } =
                       )
                     ]
                ]
+            ++ (if updating then
+                    [ inFront
+                        (el
+                            [ width fill
+                            , height fill
+                            , Background.color theme.layerBackgroundColor
+                            ]
+                            (row
+                                [ centerX
+                                , centerY
+                                , Font.size 18
+                                , Font.color theme.primaryWhiteBackgroundColor
+                                ]
+                                [ Loading.ball { width = 72, height = 72 }
+                                , ("数据正在更新中，请稍等片刻 ..." :: langTextEnd)
+                                    |> i18nText
+                                ]
+                            )
+                        )
+                    ]
+
+                else
+                    []
+               )
         )
         [ Input.text
             (theme.defaultInput
@@ -120,7 +148,7 @@ create config { app, theme, widgets, withI18nElement } =
                 [ width fill
                 , spacing BaseStyle.spacing
                 ]
-                (([ "表情", "图片", "附件", "语音", "视频" ]
+                (([ "表情", "图片", "附件", "视频" ]
                     |> List.map
                         (\t ->
                             widgets.with <|
@@ -128,7 +156,9 @@ create config { app, theme, widgets, withI18nElement } =
                                     { attrs =
                                         [ paddingXY 4 0
                                         ]
-                                    , content = text t
+                                    , content =
+                                        (I18n.buttonText :: t :: langTextEnd)
+                                            |> i18nText
                                     , onPress = Nothing
                                     }
                         )
@@ -146,7 +176,9 @@ create config { app, theme, widgets, withI18nElement } =
                                     , Font.letterSpacing 0.39998
                                     , Font.weight 500
                                     ]
-                                    (text "预览")
+                                    ((I18n.buttonText :: "预览" :: langTextEnd)
+                                        |> i18nText
+                                    )
                             }
                        ]
                 )

@@ -60,11 +60,13 @@ type Msg
     | SearchTopicInputing String
     | DeleteTopic String
     | DeleteTopicPending String
-    | NewTopic EditTopic.Msg
+    | NewTopicPending
+    | NewTopicMsg EditTopic.Msg
+    | NewTopicAdding
     | NewTopicAdded
     | NewTopicCleaned
-    | EditTopic EditTopic.Msg
     | EditTopicPending String
+    | EditTopicMsg EditTopic.Msg
     | EditTopicUpdated
     | EditTopicCleaned
 

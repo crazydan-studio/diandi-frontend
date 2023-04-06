@@ -20,6 +20,7 @@
 module Model.App exposing
     ( Config
     , State
+    , addEditTopic
     , addNewTopic
     , addRemoveTopic
     , cleanNewTopic
@@ -41,14 +42,13 @@ import Http
 import I18n.Lang exposing (Lang)
 import I18n.Translator exposing (TextsNeedToBeTranslated, TranslateResult)
 import Model.Operation.EditTopic as EditTopic exposing (EditTopic)
-import Model.Operation.NewTopic as NewTopic exposing (NewTopic)
 import Model.Remote.Data as RemoteData
 import Model.Topic as Topic exposing (Topic)
 import Svg.Attributes exposing (result)
 import Url
 import View.I18n.Default
 import View.Page
-import Widget.Util.Basic exposing (fromMaybe, trim)
+import Widget.Util.Basic exposing (trim)
 import Widget.Util.Hash exposing (hash)
 
 
@@ -75,9 +75,10 @@ type alias State =
     -- 操作数据
     , topicSearchingText : Maybe String
     , removingTopics : List String
-    , newTopic : Maybe NewTopic
+    , newTopic : Maybe EditTopic
     , topicNewInputId : String
     , editTopic : Maybe EditTopic
+    , topicEditInputId : String
     }
 
 
@@ -125,6 +126,7 @@ init config =
     , newTopic = Nothing
     , topicNewInputId = "topic-new-input"
     , editTopic = Nothing
+    , topicEditInputId = "topic-edit-input"
     }
 
 
@@ -176,7 +178,7 @@ addRemoveTopic topicId state =
 
 
 updateNewTopic :
-    (NewTopic -> NewTopic)
+    (EditTopic -> EditTopic)
     -> State
     -> State
 updateNewTopic updater ({ newTopic } as state) =
@@ -184,7 +186,7 @@ updateNewTopic updater ({ newTopic } as state) =
         | newTopic =
             Just
                 (newTopic
-                    |> Maybe.withDefault NewTopic.init
+                    |> Maybe.withDefault EditTopic.init
                     |> updater
                 )
     }
@@ -201,60 +203,40 @@ cleanNewTopic state =
 
 addNewTopic : State -> State
 addNewTopic ({ newTopic } as state) =
-    let
-        content =
-            trim (newTopic |> fromMaybe "" .content)
+    newTopic
+        |> Maybe.map
+            (\topic ->
+                case trim topic.content of
+                    Nothing ->
+                        state
+                            |> updateNewTopic
+                                (EditTopic.error "主题内容是空白的，请先输入点什么")
 
-        title =
-            trim (newTopic |> fromMaybe "" .title)
-
-        tags =
-            newTopic |> fromMaybe [] .tags
-    in
-    case content of
-        Nothing ->
-            state
-                |> updateNewTopic
-                    (\t ->
-                        { t | error = "主题内容是空白的，请先输入点什么" }
-                    )
-
-        Just c ->
-            state
-                |> updateNewTopic
-                    (\t ->
-                        { t
-                            | content = ""
-                            , title = ""
-
-                            -- Note: 复用上次的标签
-                            -- , tags = []
-                            , error = ""
-                        }
-                    )
-                |> updateTopics
-                    (RemoteData.update
-                        (let
-                            topic =
-                                Topic.init
-                         in
-                         TreeStore.add
-                            { topic
-                                | id = hash c
-                                , content = c
-                                , title = title
-                                , tags = tags
-                            }
-                        )
-                    )
+                    _ ->
+                        state
+                            |> updateNewTopic
+                                EditTopic.clean
+                            |> updateTopics
+                                (RemoteData.update
+                                    (let
+                                        topic_ =
+                                            Topic.init |> EditTopic.patch topic
+                                     in
+                                     TreeStore.add
+                                        { topic_
+                                            | id = hash topic_.content
+                                        }
+                                    )
+                                )
+            )
+        |> Maybe.withDefault state
 
 
-updateEditTopic :
+addEditTopic :
     String
-    -> (EditTopic -> EditTopic)
     -> State
     -> State
-updateEditTopic topicId updater ({ topics, editTopic } as state) =
+addEditTopic topicId ({ topics } as state) =
     let
         initEditTopic id =
             topics
@@ -263,52 +245,65 @@ updateEditTopic topicId updater ({ topics, editTopic } as state) =
                         store
                             |> TreeStore.get id
                             |> Maybe.map
-                                EditTopic.init
+                                EditTopic.from
                     )
+    in
+    { state | editTopic = initEditTopic topicId }
 
-        newEditTopic =
+
+updateEditTopic :
+    String
+    -> (EditTopic -> EditTopic)
+    -> State
+    -> State
+updateEditTopic topicId updater ({ editTopic } as state) =
+    let
+        editTopicMaybe =
             (case editTopic of
                 Nothing ->
-                    initEditTopic topicId
+                    addEditTopic topicId state |> .editTopic
 
                 Just t ->
-                    if t.id /= topicId then
-                        initEditTopic topicId
-
-                    else
-                        editTopic
+                    Just t
             )
                 |> Maybe.map updater
     in
-    { state | editTopic = newEditTopic }
+    { state | editTopic = editTopicMaybe }
 
 
 updateTopicByEdit : String -> State -> State
 updateTopicByEdit topicId ({ topics, editTopic } as state) =
     editTopic
+        |> Maybe.map
+            (\editTopic_ ->
+                case editTopic_.content |> trim of
+                    Nothing ->
+                        editTopic_
+                            |> EditTopic.error
+                                "主题内容是空白的，请先输入点什么"
+
+                    _ ->
+                        editTopic_
+            )
         |> Maybe.andThen
-            (\edit ->
-                let
-                    newContent =
-                        edit.content
-                            |> String.trim
-                in
-                if String.length newContent == 0 then
-                    Nothing
+            (\editTopic_ ->
+                if EditTopic.hasError editTopic_ then
+                    Just
+                        { state
+                            | editTopic = Just editTopic_
+                        }
 
                 else
                     topics
                         |> RemoteData.andThen
                             (TreeStore.get topicId)
                         |> Maybe.map
-                            (\t ->
-                                { state | editTopic = Nothing }
+                            (\topic ->
+                                state
                                     |> updateTopics
                                         (RemoteData.update
                                             (TreeStore.add
-                                                { t
-                                                    | content = newContent
-                                                }
+                                                (topic |> EditTopic.patch editTopic_)
                                             )
                                         )
                             )

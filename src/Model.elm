@@ -33,7 +33,6 @@ import I18n.I18n exposing (I18nElement, withI18nElement)
 import I18n.Port
 import Model.App as App
 import Model.Operation.EditTopic as EditTopic
-import Model.Operation.NewTopic as NewTopic
 import Model.Remote as Remote
 import Model.Remote.Demo.Topic as RemoteTopic
 import Model.Remote.Msg as RemoteMsg
@@ -126,7 +125,9 @@ update msg state =
         Msg.ScreenResize w h ->
             ( state
                 |> updateAppState
-                    (App.updateDevice (classifyDevice { width = w, height = h }))
+                    (App.updateDevice
+                        (classifyDevice { width = w, height = h })
+                    )
             , Cmd.none
             )
 
@@ -174,8 +175,17 @@ update msg state =
         Msg.EditTopic topicId editTopicMsg ->
             editTopicUpdateHelper topicId editTopicMsg state
 
+        Msg.EditTopicPending topicId ->
+            ( state
+                |> updateAppState
+                    (App.addEditTopic topicId)
+            , Cmd.none
+            )
+
         Msg.EditTopicUpdated topicId ->
-            ( state |> updateAppState (App.updateTopicByEdit topicId)
+            ( state
+                |> updateAppState
+                    (App.updateTopicByEdit topicId)
             , Cmd.none
             )
 
@@ -186,6 +196,9 @@ update msg state =
             , case layer of
                 Page.NewTopicLayer ->
                     Msg.focusOn state.app.topicNewInputId
+
+                Page.EditTopicLayer ->
+                    Msg.focusOn state.app.topicEditInputId
 
                 _ ->
                     Cmd.none
@@ -351,14 +364,14 @@ i18nUpdateHelper msg ({ app } as state) =
 
 
 newTopicUpdateHelper :
-    NewTopic.Msg
+    EditTopic.Msg
     -> State
     -> ( State, Cmd Msg.Msg )
 newTopicUpdateHelper msg state =
     ( state
         |> updateAppState
             (App.updateNewTopic
-                (NewTopic.update msg)
+                (EditTopic.update msg)
             )
     , Cmd.none
     )
@@ -375,12 +388,7 @@ editTopicUpdateHelper topicId msg state =
             (App.updateEditTopic topicId
                 (EditTopic.update msg)
             )
-    , case msg of
-        EditTopic.InputFocusIn ->
-            Msg.focusOn topicId
-
-        _ ->
-            Cmd.none
+    , Cmd.none
     )
 
 

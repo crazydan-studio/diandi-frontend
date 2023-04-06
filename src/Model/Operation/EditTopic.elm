@@ -20,58 +20,129 @@
 module Model.Operation.EditTopic exposing
     ( EditTopic
     , Msg(..)
+    , clean
+    , error
+    , from
+    , hasError
     , init
+    , patch
     , update
     )
 
-import Element.Input exposing (Selection)
 import Model.Topic exposing (Topic)
+import Widget.Util.Basic exposing (trim)
 
 
 type alias EditTopic =
     { id : String
     , content : String
-    , selection : Maybe Selection
-    , focused : Bool
-    , error : Maybe String
+    , title : String
+    , tags : List String
+    , taging : String
+    , previewed : Bool
+    , error : String
     }
 
 
 type Msg
-    = InputFocusIn
-    | InputFocusOut
-    | InputFocusBlur Selection
-    | InputContentChanged String
+    = TitleChanged String
+    | ContentChanged String
+    | ContentPreviewed Bool
+    | TagChanged String
+    | TagDeleted String
+    | TagDone
 
 
-init : Topic -> EditTopic
-init topic =
-    { id = topic.id
-    , content = topic.content
-    , selection = Nothing
-    , focused = False
-    , error = Nothing
+init : EditTopic
+init =
+    { id = ""
+    , content = ""
+    , title = ""
+    , tags = []
+    , taging = ""
+    , previewed = False
+    , error = ""
     }
+
+
+from : Topic -> EditTopic
+from topic =
+    { init
+        | id = topic.id
+        , content = topic.content
+        , title =
+            topic.title
+                |> Maybe.withDefault ""
+        , tags = topic.tags
+    }
+
+
+patch : EditTopic -> Topic -> Topic
+patch editTopic topic =
+    { topic
+        | content = editTopic.content |> String.trim
+        , title = editTopic.title |> trim
+        , tags = editTopic.tags
+    }
+
+
+clean : EditTopic -> EditTopic
+clean editTopic =
+    { editTopic
+        | content = ""
+        , title = ""
+
+        -- Note: 复用上次的标签
+        -- , tags = []
+        , error = ""
+    }
+
+
+error : String -> EditTopic -> EditTopic
+error error_ editTopic =
+    { editTopic | error = error_ }
+
+
+hasError : EditTopic -> Bool
+hasError editTopic =
+    not (String.isEmpty editTopic.error)
 
 
 update : Msg -> EditTopic -> EditTopic
 update msg editTopic =
     case msg of
-        InputFocusIn ->
-            { editTopic | focused = True }
+        TitleChanged title ->
+            { editTopic | title = title }
 
-        InputFocusOut ->
-            { editTopic
-                | -- id置空以确保重新编辑时，编辑内容与当前Topic内容一致
-                  id = ""
-                , focused = False
-            }
-
-        InputFocusBlur selection ->
-            { editTopic | selection = Just selection }
-
-        InputContentChanged content ->
+        ContentChanged content ->
             { editTopic
                 | content = content
-                , error = Nothing
+                , error = ""
+            }
+
+        ContentPreviewed enabled ->
+            { editTopic
+                | previewed = enabled
+            }
+
+        TagChanged tag ->
+            { editTopic
+                | taging = tag
+            }
+
+        TagDeleted tag ->
+            { editTopic
+                | tags =
+                    editTopic.tags
+                        |> List.filter ((/=) tag)
+            }
+
+        TagDone ->
+            { editTopic
+                | tags =
+                    (editTopic.tags
+                        |> List.filter ((/=) editTopic.taging)
+                    )
+                        ++ [ editTopic.taging ]
+                , taging = ""
             }

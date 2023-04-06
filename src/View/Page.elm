@@ -30,4 +30,5 @@ type Type
 
 type Layer
     = NewTopicLayer
+    | EditTopicLayer
     | NoneLayer

@@ -20,309 +20,40 @@
 module View.Page.Layer.NewTopic exposing (create)
 
 import Element exposing (..)
-import Element.Background as Background
-import Element.Border as Border
-import Element.Events exposing (onEnter)
-import Element.Font as Font
-import Element.Input as Input
-import I18n.I18n exposing (langTextEnd)
 import Model
-import Model.Operation.NewTopic as NewTopic
+import Model.Operation.EditTopic as EditTopic
 import Msg
-import View.I18n.Home as I18n
 import View.Page as Page
-import View.Style.Base as BaseStyle
-import Widget.Color as Color
-import Widget.Icon as Icon
-import Widget.Util.Basic exposing (fromMaybe)
-import Widget.Widget.Button as Button
-import Widget.Widget.Markdown as Markdown
+import View.Page.Layer.TopicEditor as TopicEditor
 
 
 create : Model.State -> Element Msg.Msg
-create { app, theme, widgets, withI18nElement } =
-    let
-        i18nText =
-            withI18nElement I18n.text
-
-        title =
-            app.newTopic |> fromMaybe "" .title
-
-        content =
-            app.newTopic |> fromMaybe "" .content
-
-        tags =
-            app.newTopic |> fromMaybe [] .tags
-
-        taging =
-            app.newTopic |> fromMaybe "" .taging
-
-        previewed =
-            app.newTopic |> fromMaybe False .previewed
-
-        error =
-            app.newTopic |> fromMaybe "" .error
-    in
-    column
-        (theme.primaryWhiteBackground
-            ++ [ height fill
-               , class "topic-new-win"
-               , padding BaseStyle.spacing2x
-               , spacing BaseStyle.spacing2x
-               , centerX
-               , Border.rounded 4
-               , styles
-                    [ ( "width", "70% !important" )
-                    , ( "margin"
-                      , String.fromInt BaseStyle.spacing2x
-                            ++ "px 0"
-                      )
-                    ]
-               ]
-        )
-        [ Input.text
-            (theme.defaultInput
-                ++ [ width fill
-                   , height (px 42)
-                   ]
-            )
-            { onChange =
+create ({ app } as state) =
+    state
+        |> TopicEditor.create
+            { isNew = True
+            , topic = app.newTopic
+            , onTitleChange =
                 \text ->
-                    Msg.NewTopic (NewTopic.TitleChanged text)
-            , text = title
-            , selection = Nothing
-            , placeholder =
-                Just
-                    (Input.placeholder
-                        theme.placeholderFont
-                        (("可以在这里添加一个醒目的标题哦 ..." :: langTextEnd)
-                            |> i18nText
+                    Msg.NewTopic (EditTopic.TitleChanged text)
+            , onContentPreviewedChange =
+                \checked ->
+                    Msg.NewTopic
+                        (EditTopic.ContentPreviewed
+                            checked
                         )
-                    )
-            , label = Input.labelHidden ""
+            , onContentChange =
+                \text ->
+                    Msg.NewTopic (EditTopic.ContentChanged text)
+            , onTagDeleted = \tag -> Msg.NewTopic (EditTopic.TagDeleted tag)
+            , onTagDone = Msg.NewTopic EditTopic.TagDone
+            , onTagChange =
+                \text ->
+                    Msg.NewTopic (EditTopic.TagChanged text)
+            , onEditDone = Msg.NewTopicAdded
+            , onEditCanceled =
+                Msg.batch
+                    [ Msg.NewTopicCleaned
+                    , Msg.ClosePageLayer Page.NewTopicLayer
+                    ]
             }
-        , column
-            [ width fill
-            , height fill
-            ]
-            [ row
-                [ width fill
-                , spacing BaseStyle.spacing
-                ]
-                (([ "表情", "图片", "附件", "语音", "视频" ]
-                    |> List.map
-                        (\t ->
-                            widgets.with <|
-                                Button.link
-                                    { attrs =
-                                        [ paddingXY 4 0
-                                        ]
-                                    , content = text t
-                                    , onPress = Nothing
-                                    }
-                        )
-                 )
-                    ++ [ Input.checkbox
-                            [ width shrink
-                            , alignRight
-                            ]
-                            { onChange =
-                                \checked ->
-                                    Msg.NewTopic
-                                        (NewTopic.ContentPreviewed
-                                            checked
-                                        )
-                            , icon = Input.defaultCheckbox
-                            , checked = previewed
-                            , label =
-                                Input.labelRight
-                                    [ Font.size 14
-                                    , Font.letterSpacing 0.39998
-                                    , Font.weight 500
-                                    ]
-                                    (text "预览")
-                            }
-                       ]
-                )
-            , el
-                (theme.defaultInput
-                    ++ [ width fill
-                       , height fill
-                       , scrollbarY
-                       ]
-                )
-                (if not previewed then
-                    Input.multiline
-                        [ id app.topicNewInputId
-                        , width fill
-                        , height fill
-                        , class "content"
-                        , spacing (20 - theme.primaryFontSize)
-                        , Border.width 0
-                        ]
-                        { onChange =
-                            \text ->
-                                Msg.NewTopic (NewTopic.ContentChanged text)
-                        , text = content
-                        , selection = Nothing
-                        , placeholder =
-                            Just
-                                (Input.placeholder
-                                    theme.placeholderFont
-                                    (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langTextEnd)
-                                        |> i18nText
-                                    )
-                                )
-                        , label = Input.labelHidden ""
-                        , spellcheck = False
-                        }
-
-                 else if content |> String.isEmpty then
-                    el
-                        (theme.placeholderFont
-                            ++ [ width fill
-                               , height fill
-                               , padding 12
-                               ]
-                        )
-                        (("没有可预览内容，请先写点什么吧 :)" :: langTextEnd)
-                            |> i18nText
-                        )
-
-                 else
-                    paragraph
-                        [ width fill
-                        , height fill
-                        , paddingXY 11 9
-                        ]
-                        [ widgets.with <|
-                            Markdown.render
-                                { lineHeight = 20
-                                }
-                                content
-                        ]
-                )
-            ]
-        , row
-            [ width fill
-            ]
-            [ el
-                [ alignTop
-                , paddingXY 0 8
-                ]
-                ((I18n.labelText :: "标签：" :: langTextEnd)
-                    |> i18nText
-                )
-            , column
-                [ width fill
-                , spacing BaseStyle.spacing
-                ]
-                [ wrappedRow
-                    [ width fill
-                    , spacing BaseStyle.spacing
-                    ]
-                    (tags
-                        |> List.map
-                            (\tag ->
-                                row
-                                    [ spacing BaseStyle.spacing
-                                    , padding 8
-                                    , Border.rounded 4
-                                    , Background.color (rgba255 25 118 210 0.1)
-                                    , mouseOver
-                                        [ Background.color (rgba255 25 118 210 0.2)
-                                        ]
-                                    ]
-                                    [ text ("#" ++ tag)
-                                    , widgets.with <|
-                                        Button.circle
-                                            { attrs = theme.secondaryBtn ++ [ centerX, padding 2 ]
-                                            , content =
-                                                el [ centerX ]
-                                                    (theme.primaryBtnIcon
-                                                        { icon = Icon.CloseOutlined, size = Just 8 }
-                                                    )
-                                            , onPress = Just (Msg.NewTopic (NewTopic.TagDeleted tag))
-                                            }
-                                    ]
-                            )
-                    )
-                , el
-                    [ width fill
-                    ]
-                    (Input.text
-                        (theme.defaultInput
-                            ++ [ height (px 42)
-                               , onEnter (Msg.NewTopic NewTopic.TagDone)
-                               ]
-                        )
-                        { onChange =
-                            \text ->
-                                Msg.NewTopic (NewTopic.TagChanged text)
-                        , text = taging
-                        , selection = Nothing
-                        , placeholder =
-                            Just
-                                (Input.placeholder
-                                    theme.placeholderFont
-                                    (("请输入标签名称，并按回车确认" :: langTextEnd)
-                                        |> i18nText
-                                    )
-                                )
-                        , label = Input.labelHidden ""
-                        }
-                    )
-                ]
-            ]
-        , (if
-            app.device.class
-                == Phone
-                && app.device.orientation
-                == Portrait
-           then
-            column
-
-           else
-            row
-          )
-            [ width fill
-            , spacing BaseStyle.spacing2x
-            ]
-            [ el
-                [ Font.color (Color.toRgbColor Color.Red900)
-                ]
-                (if String.isEmpty error then
-                    none
-
-                 else
-                    text ("* " ++ error)
-                )
-            , row
-                [ alignRight
-                , spacing BaseStyle.spacing
-                ]
-                [ widgets.with <|
-                    Button.button
-                        { attrs = theme.primaryBtn ++ []
-                        , content =
-                            (I18n.buttonText :: "记下来！" :: langTextEnd)
-                                |> i18nText
-                        , onPress = Just Msg.NewTopicAdded
-                        }
-                , widgets.with <|
-                    Button.button
-                        { attrs = theme.secondaryBtn ++ []
-                        , content =
-                            (I18n.buttonText :: "取消" :: langTextEnd)
-                                |> i18nText
-                        , onPress =
-                            Just
-                                (Msg.batch
-                                    [ Msg.NewTopicCleaned
-                                    , Msg.ClosePageLayer Page.NewTopicLayer
-                                    ]
-                                )
-                        }
-                ]
-            ]
-        ]

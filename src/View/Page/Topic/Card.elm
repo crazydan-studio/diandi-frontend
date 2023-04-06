@@ -27,6 +27,7 @@ import Json.Decode as Json
 import Model
 import Model.Topic exposing (Topic)
 import Msg
+import View.Page as Page
 import View.Style.Base as BaseStyle
 import Widget.Animation.Transition as Transition
 import Widget.Icon as Icon
@@ -162,7 +163,13 @@ view ({ app, theme, widgets } as state) topic =
                         , content =
                             theme.primaryLinkBtnIcon
                                 { icon = Icon.EditOutlined, size = Nothing }
-                        , onPress = Nothing
+                        , onPress =
+                            Just
+                                (Msg.batch
+                                    [ Msg.EditTopicPending topic.id
+                                    , Msg.ShowPageLayer Page.EditTopicLayer
+                                    ]
+                                )
                         }
                 ]
             ]

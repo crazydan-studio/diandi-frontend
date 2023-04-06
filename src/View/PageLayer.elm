@@ -33,6 +33,7 @@ import Element.Background as Background
 import Model
 import Msg
 import View.Page exposing (Layer(..))
+import View.Page.Layer.EditTopic
 import View.Page.Layer.NewTopic
 
 
@@ -60,6 +61,9 @@ createHelper type_ state =
     case type_ of
         NewTopicLayer ->
             View.Page.Layer.NewTopic.create state
+
+        EditTopicLayer ->
+            View.Page.Layer.EditTopic.create state
 
         _ ->
             none

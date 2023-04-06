@@ -31,7 +31,6 @@ import Browser
 import Browser.Dom as Dom
 import I18n.Port
 import Model.Operation.EditTopic as EditTopic
-import Model.Operation.NewTopic as NewTopic
 import Model.Remote.Msg as RemoteMsg
 import Task
 import Url
@@ -61,11 +60,12 @@ type Msg
     | SearchTopicInputing String
     | DeleteTopic String
     | DeleteTopicPending String
-    | NewTopic NewTopic.Msg
+    | NewTopic EditTopic.Msg
     | NewTopicAdded
     | NewTopicCleaned
-    | EditTopicUpdated String
     | EditTopic String EditTopic.Msg
+    | EditTopicPending String
+    | EditTopicUpdated String
 
 
 batch : List Msg -> Msg

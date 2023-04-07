@@ -62,12 +62,11 @@ type Msg
     | DeleteTopicPending String
     | NewTopicPending
     | NewTopicMsg EditTopic.Msg
-    | NewTopicAdding
-    | NewTopicAdded
+    | NewTopicSaving
     | NewTopicCleaned
     | EditTopicPending String
     | EditTopicMsg EditTopic.Msg
-    | EditTopicUpdated
+    | EditTopicSaving
     | EditTopicCleaned
 
 

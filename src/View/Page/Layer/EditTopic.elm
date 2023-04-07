@@ -51,7 +51,7 @@ create ({ app } as state) =
                 \text ->
                     Msg.EditTopicMsg (EditTopic.TagChanged text)
             , onEditDone =
-                Msg.EditTopicUpdated
+                Msg.EditTopicSaving
             , onEditCanceled =
                 Msg.batch
                     [ Msg.EditTopicCleaned

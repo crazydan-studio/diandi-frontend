@@ -31,7 +31,6 @@ import I18n.Translator as Translator
     exposing
         ( TranslateResult
         , default
-        , defaultWith
         , ok
         )
 import View.I18n.Default as Default

@@ -156,22 +156,15 @@ update msg state =
             )
 
         Msg.NewTopicPending ->
-            ( state |> updateAppState App.addNewTopic
+            ( state |> updateAppState App.initNewTopic
             , Cmd.none
             )
 
         Msg.NewTopicMsg newTopicMsg ->
             newTopicUpdateHelper newTopicMsg state
 
-        Msg.NewTopicAdding ->
-            ( state |> updateAppState App.addTopicByNew
-            , Msg.focusOn state.app.topicEditInputId
-            )
-
-        Msg.NewTopicAdded ->
-            ( state |> updateAppState App.addTopicByNew
-            , Msg.focusOn state.app.topicEditInputId
-            )
+        Msg.NewTopicSaving ->
+            newTopicSavingHelper state
 
         Msg.NewTopicCleaned ->
             ( state |> updateAppState App.cleanNewTopic
@@ -179,17 +172,15 @@ update msg state =
             )
 
         Msg.EditTopicPending topicId ->
-            ( state |> updateAppState (App.addEditTopic topicId)
+            ( state |> updateAppState (App.initEditTopic topicId)
             , Cmd.none
             )
 
         Msg.EditTopicMsg editTopicMsg ->
             editTopicUpdateHelper editTopicMsg state
 
-        Msg.EditTopicUpdated ->
-            ( state |> updateAppState App.updateTopicByEdit
-            , Msg.focusOn state.app.topicEditInputId
-            )
+        Msg.EditTopicSaving ->
+            editTopicSavingHelper state
 
         Msg.EditTopicCleaned ->
             ( state |> updateAppState App.cleanEditTopic
@@ -279,7 +270,7 @@ remoteUpdateHelper :
     RemoteMsg.Msg
     -> State
     -> ( State, Cmd Msg.Msg )
-remoteUpdateHelper msg state =
+remoteUpdateHelper msg ({ app } as state) =
     case msg of
         RemoteMsg.QueryMyTopics result ->
             ( state
@@ -288,35 +279,22 @@ remoteUpdateHelper msg state =
             , Cmd.none
             )
 
+        RemoteMsg.SaveMyNewTopic result ->
+            ( state
+                |> updateAppState
+                    (App.updateSavedNewTopic result)
+            , Msg.focusOn app.topicEditInputId
+            )
+
+        RemoteMsg.SaveMyEditTopic result ->
+            ( state
+                |> updateAppState
+                    (App.updateSavedEditTopic result)
+            , Msg.focusOn app.topicEditInputId
+            )
+
         _ ->
             ( state, Cmd.none )
-
-
-{-| 远程请求异常的统一处理
--}
-remoteErrorUpdateHelper : Http.Error -> State -> ( State, Cmd Msg.Msg )
-remoteErrorUpdateHelper error ({ app } as state) =
-    case error of
-        Http.BadStatus status ->
-            if status == 403 then
-                ( state, View.Route.goto403 app )
-
-            else if status == 404 then
-                ( state, View.Route.goto404 app )
-
-            else
-                ( state, Cmd.none )
-
-        _ ->
-            ( { state
-                | app =
-                    { app
-                        | remoteError =
-                            Just (Remote.parseError app.lang error)
-                    }
-              }
-            , Cmd.none
-            )
 
 
 routeUpdateHelper : Url.Url -> State -> ( State, Cmd Msg.Msg )
@@ -386,6 +364,48 @@ newTopicUpdateHelper msg state =
 
         _ ->
             Cmd.none
+    )
+
+
+newTopicSavingHelper :
+    State
+    -> ( State, Cmd Msg.Msg )
+newTopicSavingHelper ({ app } as state) =
+    let
+        ( newTopic, topic ) =
+            App.prepareSavingNewTopic app
+    in
+    ( state
+        |> updateAppState
+            (\s -> { s | newTopic = newTopic })
+    , topic
+        |> Maybe.map
+            (\t ->
+                Msg.toRemoteCmd
+                    (RemoteTopic.saveMyNewTopic t)
+            )
+        |> Maybe.withDefault Cmd.none
+    )
+
+
+editTopicSavingHelper :
+    State
+    -> ( State, Cmd Msg.Msg )
+editTopicSavingHelper ({ app } as state) =
+    let
+        ( editTopic, topic ) =
+            App.prepareSavingEditTopic app
+    in
+    ( state
+        |> updateAppState
+            (\s -> { s | editTopic = editTopic })
+    , topic
+        |> Maybe.map
+            (\t ->
+                Msg.toRemoteCmd
+                    (RemoteTopic.saveMyEditTopic t)
+            )
+        |> Maybe.withDefault Cmd.none
     )
 
 

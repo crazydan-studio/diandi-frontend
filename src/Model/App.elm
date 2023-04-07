@@ -20,20 +20,22 @@
 module Model.App exposing
     ( Config
     , State
-    , addEditTopic
-    , addNewTopic
     , addRemoveTopic
-    , addTopicByNew
     , cleanEditTopic
     , cleanNewTopic
     , init
+    , initEditTopic
+    , initNewTopic
     , loadTopics
     , loading
+    , prepareSavingEditTopic
+    , prepareSavingNewTopic
     , removeTopic
     , updateDevice
     , updateEditTopic
     , updateNewTopic
-    , updateTopicByEdit
+    , updateSavedEditTopic
+    , updateSavedNewTopic
     , updateTopicSearchingText
     )
 
@@ -41,17 +43,19 @@ import Browser.Navigation as Nav
 import Data.TreeStore as TreeStore exposing (TreeStore)
 import Element exposing (Device)
 import Http
+import I18n.I18n exposing (langTextEnd)
 import I18n.Lang exposing (Lang)
 import I18n.Translator exposing (TextsNeedToBeTranslated, TranslateResult)
+import Model.I18n.App as I18n
 import Model.Operation.EditTopic as EditTopic exposing (EditTopic)
+import Model.Remote as Remote
 import Model.Remote.Data as RemoteData
-import Model.Topic as Topic exposing (Topic)
+import Model.Topic exposing (Topic)
 import Svg.Attributes exposing (result)
 import Url
 import View.I18n.Default
 import View.Page
 import Widget.Util.Basic exposing (trim)
-import Widget.Util.Hash exposing (hash)
 
 
 type alias State =
@@ -179,10 +183,10 @@ addRemoveTopic topicId state =
     }
 
 
-addNewTopic :
+initNewTopic :
     State
     -> State
-addNewTopic state =
+initNewTopic state =
     { state | newTopic = Just EditTopic.init }
 
 
@@ -203,54 +207,79 @@ cleanNewTopic state =
     }
 
 
-addTopicByNew : State -> State
-addTopicByNew ({ newTopic } as state) =
+prepareSavingNewTopic : State -> ( Maybe EditTopic, Maybe Topic )
+prepareSavingNewTopic { lang, newTopic } =
     newTopic
         |> Maybe.map
-            (\topic ->
-                case trim topic.content of
+            (\newTopic_ ->
+                case trim newTopic_.content of
                     Nothing ->
-                        state
-                            |> updateNewTopic
-                                (EditTopic.error "主题内容是空白的，请先输入点什么")
+                        ( Just
+                            (newTopic_
+                                |> EditTopic.error
+                                    ("主题内容是空白的，请先输入点什么"
+                                        :: langTextEnd
+                                        |> I18n.translate lang
+                                    )
+                            )
+                        , Nothing
+                        )
 
                     _ ->
-                        state
-                            |> updateNewTopic
-                                EditTopic.clean
-                            |> updateTopics
-                                (RemoteData.update
-                                    (let
-                                        topic_ =
-                                            EditTopic.to topic
-                                     in
-                                     TreeStore.add
-                                        { topic_
-                                            | id = hash topic_.content
-                                        }
-                                    )
-                                )
+                        ( Just { newTopic_ | updating = True }
+                        , Just (EditTopic.to newTopic_)
+                        )
             )
-        |> Maybe.withDefault state
+        |> Maybe.withDefault ( newTopic, Nothing )
 
 
-addEditTopic :
+updateSavedNewTopic :
+    Result Http.Error Topic
+    -> State
+    -> State
+updateSavedNewTopic result ({ lang } as state) =
+    case result of
+        Ok topic ->
+            state
+                |> updateNewTopic
+                    EditTopic.clean
+                |> updateNewTopic
+                    (EditTopic.info
+                        ("新增主题已保存成功"
+                            :: langTextEnd
+                            |> I18n.translate lang
+                        )
+                    )
+                |> updateTopics
+                    (RemoteData.update
+                        (TreeStore.add topic)
+                    )
+
+        Err error ->
+            state
+                |> updateNewTopic
+                    (EditTopic.error
+                        (Remote.parseError lang error)
+                    )
+                |> updateNewTopic (\t -> { t | updating = False })
+
+
+initEditTopic :
     String
     -> State
     -> State
-addEditTopic topicId ({ topics } as state) =
-    let
-        initEditTopic id =
+initEditTopic topicId ({ topics } as state) =
+    { state
+        | editTopic =
             topics
                 |> RemoteData.andThen
                     (\store ->
                         store
-                            |> TreeStore.get id
+                            |> TreeStore.get topicId
                             |> Maybe.map
                                 EditTopic.from
                     )
-    in
-    { state | editTopic = initEditTopic topicId }
+    }
 
 
 updateEditTopic :
@@ -268,44 +297,64 @@ cleanEditTopic state =
     { state | editTopic = Nothing }
 
 
-updateTopicByEdit : State -> State
-updateTopicByEdit ({ topics, editTopic } as state) =
+prepareSavingEditTopic : State -> ( Maybe EditTopic, Maybe Topic )
+prepareSavingEditTopic { lang, editTopic, topics } =
     editTopic
         |> Maybe.map
             (\editTopic_ ->
-                case editTopic_.content |> trim of
+                case trim editTopic_.content of
                     Nothing ->
-                        editTopic_
-                            |> EditTopic.error
-                                "主题内容是空白的，请先输入点什么"
+                        ( Just
+                            (editTopic_
+                                |> EditTopic.error
+                                    ("主题内容是空白的，请先输入点什么"
+                                        :: langTextEnd
+                                        |> I18n.translate lang
+                                    )
+                            )
+                        , Nothing
+                        )
 
                     _ ->
-                        editTopic_
+                        ( Just { editTopic_ | updating = True }
+                        , topics
+                            |> RemoteData.andThen
+                                (TreeStore.get editTopic_.id)
+                            |> Maybe.map
+                                (EditTopic.patch editTopic_)
+                        )
             )
-        |> Maybe.andThen
-            (\editTopic_ ->
-                if EditTopic.hasError editTopic_ then
-                    Just
-                        { state
-                            | editTopic = Just editTopic_
-                        }
+        |> Maybe.withDefault ( editTopic, Nothing )
 
-                else
-                    topics
-                        |> RemoteData.andThen
-                            (TreeStore.get editTopic_.id)
-                        |> Maybe.map
-                            (\topic ->
-                                state
-                                    |> updateTopics
-                                        (RemoteData.update
-                                            (TreeStore.add
-                                                (topic |> EditTopic.patch editTopic_)
-                                            )
-                                        )
-                            )
-            )
-        |> Maybe.withDefault state
+
+updateSavedEditTopic :
+    Result Http.Error Topic
+    -> State
+    -> State
+updateSavedEditTopic result ({ lang } as state) =
+    case result of
+        Ok topic ->
+            state
+                |> updateEditTopic
+                    (EditTopic.info
+                        ("当前主题已更新成功"
+                            :: langTextEnd
+                            |> I18n.translate lang
+                        )
+                    )
+                |> updateEditTopic (\t -> { t | updating = False })
+                |> updateTopics
+                    (RemoteData.update
+                        (TreeStore.add topic)
+                    )
+
+        Err error ->
+            state
+                |> updateEditTopic
+                    (EditTopic.error
+                        (Remote.parseError lang error)
+                    )
+                |> updateEditTopic (\t -> { t | updating = False })
 
 
 

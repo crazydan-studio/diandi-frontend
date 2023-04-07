@@ -17,14 +17,30 @@
 -}
 
 
-module Model.Remote.Msg exposing (Msg(..))
+module Model.I18n.App exposing (translate)
 
-import Http
-import Model.Topic exposing (Topic)
+import I18n.Lang exposing (Lang(..))
+import I18n.Translator as Translator
+    exposing
+        ( TranslateResult
+        , default
+        , ok
+        )
 
 
-type Msg
-    = NoOp
-    | QueryMyTopics (Result Http.Error (List Topic))
-    | SaveMyNewTopic (Result Http.Error Topic)
-    | SaveMyEditTopic (Result Http.Error Topic)
+translate : Lang -> List String -> TranslateResult
+translate lang texts =
+    Translator.translate Zh_CN lang texts <|
+        [ ( [], translator )
+        ]
+
+
+translator : List String -> List ( Lang, TranslateResult )
+translator texts =
+    case texts of
+        [ "主题内容是空白的，请先输入点什么" ] ->
+            ok En_US "The user is not authorized"
+                :: default
+
+        _ ->
+            default

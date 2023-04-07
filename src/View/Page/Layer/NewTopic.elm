@@ -50,7 +50,7 @@ create ({ app } as state) =
             , onTagChange =
                 \text ->
                     Msg.NewTopicMsg (EditTopic.TagChanged text)
-            , onEditDone = Msg.NewTopicAdding
+            , onEditDone = Msg.NewTopicSaving
             , onEditCanceled =
                 Msg.batch
                     [ Msg.NewTopicCleaned

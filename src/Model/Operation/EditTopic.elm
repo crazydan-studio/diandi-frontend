@@ -24,12 +24,15 @@ module Model.Operation.EditTopic exposing
     , error
     , from
     , hasError
+    , info
     , init
     , patch
     , to
     , update
     )
 
+import I18n.Translator exposing (TranslateResult)
+import Model.Error as Error exposing (Error)
 import Model.Topic as Topic exposing (Topic)
 import Widget.Util.Basic exposing (trim)
 
@@ -42,7 +45,7 @@ type alias EditTopic =
     , taging : String
     , previewed : Bool
     , updating : Bool
-    , error : String
+    , error : Error
     }
 
 
@@ -64,7 +67,7 @@ init =
     , taging = ""
     , previewed = False
     , updating = False
-    , error = ""
+    , error = Error.none
     }
 
 
@@ -110,18 +113,24 @@ clean editTopic =
 
         -- Note: 复用上次的标签
         -- , tags = []
-        , error = ""
+        , updating = False
+        , error = Error.none
     }
 
 
-error : String -> EditTopic -> EditTopic
+error : TranslateResult -> EditTopic -> EditTopic
 error error_ editTopic =
-    { editTopic | error = error_ }
+    { editTopic | error = Error.error error_ }
+
+
+info : TranslateResult -> EditTopic -> EditTopic
+info info_ editTopic =
+    { editTopic | error = Error.info info_ }
 
 
 hasError : EditTopic -> Bool
 hasError editTopic =
-    not (String.isEmpty editTopic.error)
+    Error.isError editTopic.error
 
 
 update : Msg -> EditTopic -> EditTopic
@@ -133,7 +142,7 @@ update msg editTopic =
         ContentChanged content ->
             { editTopic
                 | content = content
-                , error = ""
+                , error = Error.none
             }
 
         ContentPreviewed enabled ->

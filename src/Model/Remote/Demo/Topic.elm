@@ -20,12 +20,15 @@
 module Model.Remote.Demo.Topic exposing
     ( getMyAllTopics
     , queryMyTopics
+    , saveMyEditTopic
+    , saveMyNewTopic
     )
 
 import Http
 import Json.Decode as Decode
 import Model.Remote.Msg exposing (Msg(..))
 import Model.Topic exposing (Topic, topicListDecoder)
+import Widget.Util.Hash exposing (hash)
 
 
 getMyAllTopics : Cmd Msg
@@ -45,6 +48,43 @@ queryMyTopics params =
         , expect =
             Http.expectJson QueryMyTopics
                 (decoderWithFilterTopics params.keywords)
+        }
+
+
+{-| 保存新增主题
+-}
+saveMyNewTopic :
+    Topic
+    -> Cmd Msg
+saveMyNewTopic topic =
+    -- Note: 模拟请求，并返回数据
+    Http.get
+        { url = "/demo/topics.json"
+        , expect =
+            Http.expectJson SaveMyNewTopic
+                (Decode.succeed
+                    (if String.isEmpty topic.id then
+                        { topic | id = hash topic.content }
+
+                     else
+                        topic
+                    )
+                )
+        }
+
+
+{-| 保存编辑主题
+-}
+saveMyEditTopic :
+    Topic
+    -> Cmd Msg
+saveMyEditTopic topic =
+    -- Note: 模拟请求，并返回数据
+    Http.get
+        { url = "/demo/topics.json"
+        , expect =
+            Http.expectJson SaveMyEditTopic
+                (Decode.succeed topic)
         }
 
 

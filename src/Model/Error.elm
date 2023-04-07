@@ -17,14 +17,43 @@
 -}
 
 
-module Model.Remote.Msg exposing (Msg(..))
+module Model.Error exposing
+    ( Error(..)
+    , error
+    , info
+    , isError
+    , none
+    )
 
-import Http
-import Model.Topic exposing (Topic)
+import I18n.Translator exposing (TranslateResult)
 
 
-type Msg
-    = NoOp
-    | QueryMyTopics (Result Http.Error (List Topic))
-    | SaveMyNewTopic (Result Http.Error Topic)
-    | SaveMyEditTopic (Result Http.Error Topic)
+type Error
+    = Info TranslateResult
+    | Error TranslateResult
+    | None
+
+
+error : TranslateResult -> Error
+error e =
+    Error e
+
+
+info : TranslateResult -> Error
+info e =
+    Info e
+
+
+none : Error
+none =
+    None
+
+
+isError : Error -> Bool
+isError e =
+    case e of
+        Error _ ->
+            True
+
+        _ ->
+            False

@@ -25,8 +25,10 @@ import Element.Border as Border
 import Element.Events exposing (onEnter, onLoseFocus)
 import Element.Font as Font
 import Element.Input as Input
+import I18n.Element exposing (textWith)
 import I18n.I18n exposing (langTextEnd)
 import Model
+import Model.Error as Error
 import Model.Operation.EditTopic exposing (EditTopic)
 import Msg
 import View.I18n.Home as I18n
@@ -78,7 +80,7 @@ create config { app, theme, widgets, withI18nElement } =
             config.topic |> fromMaybe False .updating
 
         error =
-            config.topic |> fromMaybe "" .error
+            config.topic |> fromMaybe Error.none .error
     in
     column
         (theme.primaryWhiteBackground
@@ -110,7 +112,7 @@ create config { app, theme, widgets, withI18nElement } =
                                 , Font.color theme.primaryWhiteBackgroundColor
                                 ]
                                 [ Loading.ball { width = 72, height = 72 }
-                                , ("数据正在更新中，请稍等片刻 ..." :: langTextEnd)
+                                , ("数据正在保存中，请稍等片刻 ..." :: langTextEnd)
                                     |> i18nText
                                 ]
                             )
@@ -324,15 +326,25 @@ create config { app, theme, widgets, withI18nElement } =
             [ width fill
             , spacing BaseStyle.spacing2x
             ]
-            [ paragraph
-                [ Font.color (Color.toRgbColor Color.Red900)
-                ]
-                [ if String.isEmpty error then
-                    none
+            [ case error of
+                Error.Error e ->
+                    paragraph
+                        [ Font.color (Color.toRgbColor Color.Red900)
+                        ]
+                        [ text "* "
+                        , textWith e
+                        ]
 
-                  else
-                    text ("* " ++ error)
-                ]
+                Error.Info e ->
+                    paragraph
+                        [ Font.color (Color.toRgbColor Color.Green900)
+                        ]
+                        [ text "* "
+                        , textWith e
+                        ]
+
+                _ ->
+                    none
             , row
                 [ alignRight
                 , spacing BaseStyle.spacing

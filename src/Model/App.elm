@@ -20,7 +20,7 @@
 module Model.App exposing
     ( Config
     , State
-    , addRemoveTopic
+    , addToRemovingTopics
     , cleanEditTopic
     , cleanNewTopic
     , init
@@ -176,8 +176,8 @@ removeTopic topicId ({ topics } as state) =
     }
 
 
-addRemoveTopic : String -> State -> State
-addRemoveTopic topicId state =
+addToRemovingTopics : String -> State -> State
+addToRemovingTopics topicId state =
     { state
         | removingTopics = topicId :: state.removingTopics
     }

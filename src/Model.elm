@@ -28,13 +28,11 @@ module Model exposing
 import Browser.Events as Events
 import Browser.Navigation as Nav
 import Element exposing (classifyDevice)
-import Http
 import I18n.I18n exposing (I18nElement, withI18nElement)
 import I18n.Port
 import Model.App as App
 import Model.Operation.EditTopic as EditTopic
-import Model.Remote as Remote
-import Model.Remote.Demo.Topic as RemoteTopic
+import Model.Remote.JingWei.Topic as RemoteTopic
 import Model.Remote.Msg as RemoteMsg
 import Msg
 import Theme.Theme as Theme
@@ -146,12 +144,14 @@ update msg state =
             )
 
         Msg.DeleteTopic topicId ->
-            ( state |> updateAppState (App.removeTopic topicId)
-            , Cmd.none
+            ( state
+            , Msg.toRemoteCmd
+                (RemoteTopic.deleteMyTopic topicId)
             )
 
         Msg.DeleteTopicPending topicId ->
-            ( state |> updateAppState (App.addRemoveTopic topicId)
+            -- TODO 显示等待遮罩，向后端发起删除请求，成功后，显示删除动画，并在动画结束后执行前端清理
+            ( state |> updateAppState (App.addToRemovingTopics topicId)
             , Cmd.none
             )
 
@@ -292,6 +292,18 @@ remoteUpdateHelper msg ({ app } as state) =
                     (App.updateSavedEditTopic result)
             , Msg.focusOn app.topicEditInputId
             )
+
+        RemoteMsg.DeleteMyTopic result ->
+            case result of
+                Ok topicId ->
+                    ( state
+                        |> updateAppState
+                            (App.removeTopic topicId)
+                    , Cmd.none
+                    )
+
+                _ ->
+                    ( state, Cmd.none )
 
         _ ->
             ( state, Cmd.none )

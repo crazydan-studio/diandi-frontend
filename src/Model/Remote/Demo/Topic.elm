@@ -18,7 +18,8 @@
 
 
 module Model.Remote.Demo.Topic exposing
-    ( getMyAllTopics
+    ( deleteMyTopic
+    , getMyAllTopics
     , queryMyTopics
     , saveMyEditTopic
     , saveMyNewTopic
@@ -85,6 +86,21 @@ saveMyEditTopic topic =
         , expect =
             Http.expectJson SaveMyEditTopic
                 (Decode.succeed topic)
+        }
+
+
+{-| 删除主题
+-}
+deleteMyTopic :
+    String
+    -> Cmd Msg
+deleteMyTopic id =
+    -- Note: 模拟请求，并返回数据
+    Http.get
+        { url = "/demo/topics.json"
+        , expect =
+            Http.expectJson DeleteMyTopic
+                (Decode.succeed id)
         }
 
 

@@ -147,8 +147,8 @@ if (MODE === "development") {
       // https://webpack.js.org/configuration/dev-server/#devserverproxy
       proxy: [
         {
-          context: ["/api", "/auth"],
-          target: "http://127.0.0.1:8080",
+          context: ["/api"],
+          target: "http://127.0.0.1:4000",
         },
       ],
     },

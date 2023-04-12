@@ -6,7 +6,7 @@
   },
   {
     "id": "2",
-    "content": "- [不要再问我跨域的问题了](https://segmentfault.com/a/1190000015597029): 通过 Websocket 也可以解决跨域问题，但该方式是异步的，需要识别接收到的消息是哪次请求的数据\n- [不要再问我移动适配的问题了](https://segmentfault.com/a/1190000017784801)",
+    "content": "- [不要再问我跨域的问题了](https://segmentfault.com/a/1190000015597029): 通过 Websocket 也可以解决跨域问题，但该方式是异步的，需要识别接收到的消息是哪次请求的数据\n- [不要再问我移动适配的问题了](https://segmentfault.com/a/1190000017784801)\n- [Elixir on Android](https://github.com/elixir-desktop/android-example-app)",
     "tags": ["产品开发", "精卫"]
   }
 ]

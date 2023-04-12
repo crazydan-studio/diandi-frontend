@@ -49,5 +49,8 @@ parseError lang error =
         Http.NetworkError ->
             "网络连接异常，请稍后再试" :: langTextEnd |> I18n.translate lang
 
+        Http.BadBody msg ->
+            msg :: langTextEnd |> I18n.translate lang
+
         _ ->
             "未知异常" :: langTextEnd |> I18n.translate lang

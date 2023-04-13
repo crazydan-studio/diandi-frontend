@@ -58,7 +58,7 @@ type Msg
       -- 数据操作
     | SearchTopic
     | SearchTopicInputing String
-    | DeleteTopic String
+    | DeleteTopicDone String
     | DeleteTopicPending String
     | NewTopicPending
     | NewTopicMsg EditTopic.Msg

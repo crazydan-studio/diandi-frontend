@@ -207,7 +207,7 @@ deleteMyTopic id =
               )
             ]
         |> GraphQl.Http.send { url = "/api/graphql", headers = [] }
-            DeleteMyTopic
+            (DeleteMyTopic id)
             (Decode.at [ "deleteTopic", "id" ] Decode.string)
 
 

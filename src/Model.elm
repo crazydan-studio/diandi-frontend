@@ -143,16 +143,15 @@ update msg state =
                 state.app
             )
 
-        Msg.DeleteTopic topicId ->
-            ( state
-            , Msg.toRemoteCmd
-                (RemoteTopic.deleteMyTopic topicId)
+        Msg.DeleteTopicDone topicId ->
+            ( state |> updateAppState (App.deleteTopic topicId)
+            , Cmd.none
             )
 
         Msg.DeleteTopicPending topicId ->
-            -- TODO 显示等待遮罩，向后端发起删除请求，成功后，显示删除动画，并在动画结束后执行前端清理
-            ( state |> updateAppState (App.addToRemovingTopics topicId)
-            , Cmd.none
+            ( state |> updateAppState (App.addToDeletingTopics topicId)
+            , Msg.toRemoteCmd
+                (RemoteTopic.deleteMyTopic topicId)
             )
 
         Msg.NewTopicPending ->
@@ -293,17 +292,12 @@ remoteUpdateHelper msg ({ app } as state) =
             , Msg.focusOn app.topicEditInputId
             )
 
-        RemoteMsg.DeleteMyTopic result ->
-            case result of
-                Ok topicId ->
-                    ( state
-                        |> updateAppState
-                            (App.removeTopic topicId)
-                    , Cmd.none
-                    )
-
-                _ ->
-                    ( state, Cmd.none )
+        RemoteMsg.DeleteMyTopic topicId result ->
+            ( state
+                |> updateAppState
+                    (App.addToDeletedTopics topicId result)
+            , Cmd.none
+            )
 
         _ ->
             ( state, Cmd.none )

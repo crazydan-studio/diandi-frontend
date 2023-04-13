@@ -20,9 +20,11 @@
 module Model.App exposing
     ( Config
     , State
-    , addToRemovingTopics
+    , addToDeletedTopics
+    , addToDeletingTopics
     , cleanEditTopic
     , cleanNewTopic
+    , deleteTopic
     , init
     , initEditTopic
     , initNewTopic
@@ -30,7 +32,6 @@ module Model.App exposing
     , loading
     , prepareSavingEditTopic
     , prepareSavingNewTopic
-    , removeTopic
     , updateDevice
     , updateEditTopic
     , updateNewTopic
@@ -80,7 +81,8 @@ type alias State =
 
     -- 操作数据
     , topicSearchingText : Maybe String
-    , removingTopics : List String
+    , deletePendingTopics : List String
+    , deletedTopics : List ( String, Maybe TranslateResult )
     , newTopic : Maybe EditTopic
     , editTopic : Maybe EditTopic
     , topicEditInputId : String
@@ -128,7 +130,8 @@ init config =
 
     --
     , topicSearchingText = Nothing
-    , removingTopics = []
+    , deletePendingTopics = []
+    , deletedTopics = []
     , newTopic = Nothing
     , editTopic = Nothing
     , topicEditInputId = "topic-edit-input"
@@ -163,23 +166,50 @@ updateTopicSearchingText keywords state =
     { state | topicSearchingText = keywords }
 
 
-removeTopic : String -> State -> State
-removeTopic topicId ({ topics } as state) =
+deleteTopic : String -> State -> State
+deleteTopic topicId ({ topics } as state) =
     { state
         | topics =
             topics
                 |> RemoteData.update
                     (TreeStore.removeById topicId)
-        , removingTopics =
-            state.removingTopics
+        , deletedTopics =
+            state.deletedTopics
+                |> List.filter
+                    (\( id, _ ) ->
+                        id /= topicId
+                    )
+    }
+
+
+addToDeletedTopics :
+    String
+    -> Result Http.Error String
+    -> State
+    -> State
+addToDeletedTopics topicId result ({ lang } as state) =
+    let
+        error =
+            case result of
+                Ok _ ->
+                    Nothing
+
+                Err e ->
+                    Just (Remote.parseError lang e)
+    in
+    { state
+        | deletedTopics =
+            ( topicId, error ) :: state.deletedTopics
+        , deletePendingTopics =
+            state.deletePendingTopics
                 |> List.filter ((/=) topicId)
     }
 
 
-addToRemovingTopics : String -> State -> State
-addToRemovingTopics topicId state =
+addToDeletingTopics : String -> State -> State
+addToDeletingTopics topicId state =
     { state
-        | removingTopics = topicId :: state.removingTopics
+        | deletePendingTopics = topicId :: state.deletePendingTopics
     }
 
 

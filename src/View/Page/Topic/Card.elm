@@ -20,17 +20,21 @@
 module View.Page.Topic.Card exposing (view)
 
 import Element exposing (..)
+import Element.Background as Background
 import Element.Border as Border
 import Element.Events exposing (..)
 import Element.Font as Font
+import I18n.I18n exposing (langTextEnd)
 import Json.Decode as Json
 import Model
 import Model.Topic exposing (Topic)
 import Msg
+import View.I18n.Home as I18n
 import View.Page as Page
 import View.Style.Base as BaseStyle
 import Widget.Animation.Transition as Transition
 import Widget.Icon as Icon
+import Widget.Loading as Loading
 import Widget.Shadow as Shadow
 import Widget.Widget.Button as Button
 import Widget.Widget.Markdown as Markdown
@@ -40,7 +44,11 @@ view :
     Model.State
     -> Topic
     -> Element Msg.Msg
-view ({ app, theme, widgets } as state) topic =
+view ({ app, theme, widgets, withI18nElement } as state) topic =
+    let
+        i18nText =
+            withI18nElement I18n.text
+    in
     column
         (theme.primaryWhiteBackground
             ++ [ class "topic-card"
@@ -59,15 +67,43 @@ view ({ app, theme, widgets } as state) topic =
                     ]
                ]
             ++ (if
-                    app.removingTopics
+                    app.deletePendingTopics
                         |> List.member topic.id
                 then
+                    [ inFront
+                        (el
+                            [ width fill
+                            , height fill
+                            , Background.color theme.layerBackgroundColor
+                            ]
+                            (row
+                                [ centerX
+                                , centerY
+                                , Font.size 16
+                                , Font.color theme.primaryWhiteBackgroundColor
+                                ]
+                                [ Loading.ball { width = 64, height = 64 }
+                                , paragraph []
+                                    [ ("数据正在删除中，请稍等片刻 ..." :: langTextEnd)
+                                        |> i18nText
+                                    ]
+                                ]
+                            )
+                        )
+                    ]
+
+                else if
+                    app.deletedTopics
+                        |> List.map Tuple.first
+                        |> List.member topic.id
+                then
+                    -- TODO 在底部工具栏上方显示删除异常信息
                     [ class "delete-zoom"
 
-                    -- 动画结束后执行真正的删除
+                    -- 动画结束后从列表中移除
                     , on "animationend"
                         (Json.succeed
-                            (Msg.DeleteTopic topic.id)
+                            (Msg.DeleteTopicDone topic.id)
                         )
                     ]
 

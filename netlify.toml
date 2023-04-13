@@ -2,7 +2,7 @@
 [[redirects]]
   from = "/api/*"
   # https://docs.netlify.com/routing/redirects/redirect-options/#splats
-  to = "https://diandi.api.studio.crazydan.org/api/:splat"
+  to = "https://jingwei.app.studio.crazydan.org/app/api/diandi/:splat"
   status = 200
   force = true
   headers = {X-From = "Netlify"}

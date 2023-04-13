@@ -17,7 +17,7 @@
 -}
 
 
-module Model.Remote.JingWei.Topic exposing
+module Model.Remote.GraphQL.Topic exposing
     ( deleteMyTopic
     , getMyAllTopics
     , queryMyTopics
@@ -31,25 +31,29 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import Model.Remote.Msg exposing (Msg(..))
 import Model.Topic exposing (Topic, topicDecoder, topicListDecoder)
+import Widget.Util.Basic exposing (trim)
 
 
 getMyAllTopics : Cmd Msg
 getMyAllTopics =
     queryMyTopics
-        { keywords = Nothing
+        { keyword = Nothing
+        , tags = []
         }
 
 
 queryMyTopics :
-    { keywords : Maybe String
+    { keyword : Maybe String
+    , tags : List String
     }
     -> Cmd Msg
-queryMyTopics { keywords } =
+queryMyTopics { keyword, tags } =
     -- https://package.elm-lang.org/packages/ghivert/elm-graphql/5.0.0/GraphQl
     GraphQl.query
         (GraphQl.named "TopicsQuery"
             [ GraphQl.field "topics"
                 |> GraphQl.withArgument "keywords" (GraphQl.variable "keywords")
+                |> GraphQl.withArgument "tags" (GraphQl.variable "tags")
                 |> GraphQl.withSelectors
                     [ GraphQl.field "id"
                     , GraphQl.field "title"
@@ -57,13 +61,27 @@ queryMyTopics { keywords } =
                     , GraphQl.field "tags"
                     ]
             ]
-            |> GraphQl.withVariables [ ( "keywords", "String" ) ]
+            |> GraphQl.withVariables
+                [ ( "keywords", "[String!]" )
+                , ( "tags", "[String!]" )
+                ]
         )
         |> GraphQl.addVariables
             [ ( "keywords"
-              , keywords
-                    |> Maybe.map Encode.string
+              , keyword
+                    |> Maybe.andThen trim
+                    |> Maybe.map
+                        (\s ->
+                            Encode.list Encode.string
+                                (s
+                                    |> String.split " "
+                                    |> List.filter ((/=) "")
+                                )
+                        )
                     |> Maybe.withDefault Encode.null
+              )
+            , ( "tags"
+              , Encode.list Encode.string tags
               )
             ]
         |> GraphQl.Http.send { url = "/api/graphql", headers = [] }

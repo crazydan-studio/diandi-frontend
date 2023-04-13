@@ -32,7 +32,7 @@ import I18n.I18n exposing (I18nElement, withI18nElement)
 import I18n.Port
 import Model.App as App
 import Model.Operation.EditTopic as EditTopic
-import Model.Remote.JingWei.Topic as RemoteTopic
+import Model.Remote.GraphQL.Topic as RemoteTopic
 import Model.Remote.Msg as RemoteMsg
 import Msg
 import Theme.Theme as Theme
@@ -452,7 +452,8 @@ doRemoteQueryMyTopics state =
     , Cmd.batch
         [ Msg.toRemoteCmd
             (RemoteTopic.queryMyTopics
-                { keywords = state.app.topicSearchingText
+                { keyword = state.app.topicSearchingText
+                , tags = []
                 }
             )
         ]

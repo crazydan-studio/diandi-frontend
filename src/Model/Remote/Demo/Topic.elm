@@ -35,20 +35,22 @@ import Widget.Util.Hash exposing (hash)
 getMyAllTopics : Cmd Msg
 getMyAllTopics =
     queryMyTopics
-        { keywords = Nothing
+        { keyword = Nothing
+        , tags = []
         }
 
 
 queryMyTopics :
-    { keywords : Maybe String
+    { keyword : Maybe String
+    , tags : List String
     }
     -> Cmd Msg
-queryMyTopics params =
+queryMyTopics { keyword, tags } =
     Http.get
         { url = "/demo/topics.json"
         , expect =
             Http.expectJson QueryMyTopics
-                (decoderWithFilterTopics params.keywords)
+                (decoderWithFilterTopics keyword)
         }
 
 

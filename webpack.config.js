@@ -145,12 +145,12 @@ if (MODE === "development") {
         directory: filepath(publicDir, "assets"),
       },
       // https://webpack.js.org/configuration/dev-server/#devserverproxy
-      proxy: [
-        {
-          context: ["/api"],
+      proxy: {
+        "/api": {
           target: "http://127.0.0.1:4000",
+          pathRewrite: { "^/api": "/app/api/diandi" },
         },
-      ],
+      },
     },
   });
 }

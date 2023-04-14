@@ -116,7 +116,7 @@ view ({ app, theme, widgets, withI18nElement } as state) topic =
             , padding BaseStyle.spacing
             , spacing BaseStyle.spacing
             ]
-            [ el
+            [ paragraph
                 [ width fill
                 , class "head"
                 , Font.size 20
@@ -131,7 +131,7 @@ view ({ app, theme, widgets, withI18nElement } as state) topic =
                     )
                 , Font.center
                 ]
-                (text (topic.title |> Maybe.withDefault "无标题"))
+                [ text (topic.title |> Maybe.withDefault "无标题") ]
             , row
                 [ width fill
                 , height (shrink |> maximum 144)

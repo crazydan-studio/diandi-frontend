@@ -447,7 +447,7 @@ doRemoteQueryMyTopics state =
         [ Msg.toRemoteCmd
             (RemoteTopic.queryMyTopics
                 { keyword = state.app.topicSearchingText
-                , tags = []
+                , tags = Nothing
                 }
             )
         ]

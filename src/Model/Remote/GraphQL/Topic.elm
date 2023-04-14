@@ -38,13 +38,13 @@ getMyAllTopics : Cmd Msg
 getMyAllTopics =
     queryMyTopics
         { keyword = Nothing
-        , tags = []
+        , tags = Nothing
         }
 
 
 queryMyTopics :
     { keyword : Maybe String
-    , tags : List String
+    , tags : Maybe (List String)
     }
     -> Cmd Msg
 queryMyTopics { keyword, tags } =
@@ -110,7 +110,9 @@ queryMyTopics { keyword, tags } =
                     |> Maybe.withDefault Encode.null
               )
             , ( "tags"
-              , Encode.list Encode.string tags
+              , tags
+                    |> Maybe.map (Encode.list Encode.string)
+                    |> Maybe.withDefault Encode.null
               )
             ]
         |> GraphQl.Http.send { url = "/api/graphql", headers = [] }

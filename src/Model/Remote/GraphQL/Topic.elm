@@ -52,8 +52,37 @@ queryMyTopics { keyword, tags } =
     GraphQl.query
         (GraphQl.named "TopicsQuery"
             [ GraphQl.field "topics"
-                |> GraphQl.withArgument "keywords" (GraphQl.variable "keywords")
-                |> GraphQl.withArgument "tags" (GraphQl.variable "tags")
+                |> GraphQl.withArgument "filter"
+                    (GraphQl.input
+                        [ ( "tags"
+                          , GraphQl.input
+                                [ ( "has_all_members_in", GraphQl.variable "tags" )
+                                ]
+                          )
+                        , ( "or"
+                          , GraphQl.nestedInput
+                                [ [ ( "title"
+                                    , GraphQl.input
+                                        [ ( "contains_any_in", GraphQl.variable "keywords" )
+                                        ]
+                                    )
+                                  ]
+                                , [ ( "content"
+                                    , GraphQl.input
+                                        [ ( "contains_any_in", GraphQl.variable "keywords" )
+                                        ]
+                                    )
+                                  ]
+                                , [ ( "tags"
+                                    , GraphQl.input
+                                        [ ( "contains_any_in", GraphQl.variable "keywords" )
+                                        ]
+                                    )
+                                  ]
+                                ]
+                          )
+                        ]
+                    )
                 |> GraphQl.withSelectors
                     [ GraphQl.field "id"
                     , GraphQl.field "title"

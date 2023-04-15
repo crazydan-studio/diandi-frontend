@@ -32,6 +32,7 @@ import Browser.Dom as Dom
 import I18n.Port
 import Model.Operation.EditTopic as EditTopic
 import Model.Remote.Msg as RemoteMsg
+import Model.TopicCard as TopicCard
 import Task
 import Url
 import View.Page as Page
@@ -52,6 +53,7 @@ type Msg
     | I18nPortMsg I18n.Port.Msg
       -- 组件消息
     | WidgetMsg (Widget.Msg Msg)
+    | TopicCardMsg String TopicCard.Msg
       -- 遮罩
     | ShowPageLayer Page.Layer
     | ClosePageLayer Page.Layer

@@ -24,16 +24,16 @@ import Element exposing (..)
 import Element.Keyed
 import Element.Lazy
 import Model
-import Model.Topic exposing (Topic)
+import Model.TopicCard exposing (TopicCard)
 import Msg
 import View.Page.RemoteData as RemoteDataPage
-import View.Page.Topic.Card as TopicCard
+import View.Page.Topic.Card as TopicCardView
 import View.Style.Base as BaseStyle
 
 
 view : Model.State -> Element Msg.Msg
 view ({ app, theme } as state) =
-    app.topics
+    app.topicCards
         |> RemoteDataPage.view
             { theme = theme
             , lang = app.lang
@@ -47,10 +47,10 @@ view ({ app, theme } as state) =
 
 topicListView :
     Model.State
-    -> TreeStore Topic
+    -> TreeStore TopicCard
     -> Element Msg.Msg
-topicListView ({ app } as state) topics =
-    if TreeStore.isEmpty topics then
+topicListView ({ app } as state) topicCards =
+    if TreeStore.isEmpty topicCards then
         RemoteDataPage.noDataView
             { theme = state.theme
             , lang = state.app.lang
@@ -77,14 +77,14 @@ topicListView ({ app } as state) topics =
             , class "topic-card-list"
             , spacing BaseStyle.spacing2x
             ]
-            (topics
+            (topicCards
                 |> TreeStore.traverseDepth 1
-                    (\_ topic _ ->
-                        ( topic.id
+                    (\_ topicCard _ ->
+                        ( topicCard.topic.id
                         , Element.Lazy.lazy2
-                            TopicCard.view
+                            TopicCardView.view
                             state
-                            topic
+                            topicCard
                         )
                     )
             )

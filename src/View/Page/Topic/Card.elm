@@ -27,7 +27,7 @@ import Element.Font as Font
 import I18n.I18n exposing (langTextEnd)
 import Json.Decode as Json
 import Model
-import Model.Topic exposing (Topic)
+import Model.TopicCard as TopicCard exposing (TopicCard)
 import Msg
 import View.I18n.Home as I18n
 import View.Page as Page
@@ -42,9 +42,9 @@ import Widget.Widget.Markdown as Markdown
 
 view :
     Model.State
-    -> Topic
+    -> TopicCard
     -> Element Msg.Msg
-view ({ app, theme, widgets, withI18nElement } as state) topic =
+view ({ app, theme, widgets, withI18nElement } as state) { config, topic } =
     let
         i18nText =
             withI18nElement I18n.text
@@ -133,12 +133,21 @@ view ({ app, theme, widgets, withI18nElement } as state) topic =
                 ]
                 [ text (topic.title |> Maybe.withDefault "无标题") ]
             , row
-                [ width fill
-                , height (shrink |> maximum 144)
-                , class "body"
-                , Font.size theme.primaryFontSize
-                , Font.color (rgba255 0 0 0 0.54)
-                ]
+                ([ width fill
+                 , class "body"
+                 , Font.size theme.primaryFontSize
+                 , Font.color (rgba255 0 0 0 0.54)
+                 , Transition.defaultWith
+                    [ "max-height"
+                    ]
+                 ]
+                    ++ (if config.expanded then
+                            [ styles [ ( "max-height", "100%" ) ] ]
+
+                        else
+                            [ height (shrink |> maximum 144) ]
+                       )
+                )
                 [ el
                     [ width fill
                     , height fill
@@ -205,6 +214,27 @@ view ({ app, theme, widgets, withI18nElement } as state) topic =
                                     [ Msg.EditTopicPending topic.id
                                     , Msg.ShowPageLayer Page.EditTopicLayer
                                     ]
+                                )
+                        }
+                , widgets.with <|
+                    Button.link
+                        { attrs = [ width shrink ]
+                        , content =
+                            theme.primaryLinkBtnIcon
+                                { icon =
+                                    if config.expanded then
+                                        Icon.ShrinkOutlined
+
+                                    else
+                                        Icon.ArrowsAltOutlined
+                                , size = Nothing
+                                }
+                        , onPress =
+                            Just
+                                (Msg.TopicCardMsg topic.id
+                                    (TopicCard.Expand
+                                        (not config.expanded)
+                                    )
                                 )
                         }
                 ]

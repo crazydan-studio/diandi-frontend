@@ -25,6 +25,7 @@ module Model.App exposing
     , cleanEditTopic
     , cleanNewTopic
     , deleteTopic
+    , getTopic
     , init
     , initEditTopic
     , initNewTopic
@@ -37,6 +38,7 @@ module Model.App exposing
     , updateNewTopic
     , updateSavedEditTopic
     , updateSavedNewTopic
+    , updateTopicCard
     , updateTopicSearchingText
     )
 
@@ -52,6 +54,7 @@ import Model.Operation.EditTopic as EditTopic exposing (EditTopic)
 import Model.Remote as Remote
 import Model.Remote.Data as RemoteData
 import Model.Topic exposing (Topic)
+import Model.TopicCard as TopicCard exposing (TopicCard)
 import Svg.Attributes exposing (result)
 import Url
 import View.I18n.Default
@@ -77,7 +80,7 @@ type alias State =
     , currentPage : View.Page.Type
 
     -- 业务数据
-    , topics : RemoteTopics
+    , topicCards : RemoteTopicCards
 
     -- 操作数据
     , topicSearchingText : Maybe String
@@ -100,8 +103,8 @@ type alias Config =
     }
 
 
-type alias RemoteTopics =
-    RemoteData.Status (TreeStore Topic)
+type alias RemoteTopicCards =
+    RemoteData.Status (TreeStore TopicCard)
 
 
 init : Config -> State
@@ -126,7 +129,7 @@ init config =
     , currentPage = View.Page.Loading
 
     --
-    , topics = RemoteData.LoadWaiting
+    , topicCards = RemoteData.LoadWaiting
 
     --
     , topicSearchingText = Nothing
@@ -150,9 +153,9 @@ loadTopics :
     -> State
 loadTopics result state =
     { state
-        | topics =
+        | topicCards =
             result
-                |> RemoteData.from state.lang createTopicTree
+                |> RemoteData.from state.lang createTopicCardsHelper
     }
 
 
@@ -166,11 +169,31 @@ updateTopicSearchingText keywords state =
     { state | topicSearchingText = keywords }
 
 
+getTopic : String -> State -> Maybe Topic
+getTopic topicId { topicCards } =
+    topicCards
+        |> RemoteData.andThen
+            (\store ->
+                store
+                    |> TreeStore.get topicId
+            )
+        |> Maybe.map .topic
+
+
+updateTopicCard : String -> TopicCard.Msg -> State -> State
+updateTopicCard topicId topicCardMsg state =
+    state
+        |> updateTopicCardHelper topicId
+            (TopicCard.update
+                topicCardMsg
+            )
+
+
 deleteTopic : String -> State -> State
-deleteTopic topicId ({ topics } as state) =
+deleteTopic topicId ({ topicCards } as state) =
     { state
-        | topics =
-            topics
+        | topicCards =
+            topicCards
                 |> RemoteData.update
                     (TreeStore.removeById topicId)
         , deletedTopics =
@@ -280,10 +303,7 @@ updateSavedNewTopic result ({ lang } as state) =
                             |> I18n.translate lang
                         )
                     )
-                |> updateTopics
-                    (RemoteData.update
-                        (TreeStore.add topic)
-                    )
+                |> addTopicHelper topic
 
         Err error ->
             state
@@ -298,17 +318,12 @@ initEditTopic :
     String
     -> State
     -> State
-initEditTopic topicId ({ topics } as state) =
+initEditTopic topicId state =
     { state
         | editTopic =
-            topics
-                |> RemoteData.andThen
-                    (\store ->
-                        store
-                            |> TreeStore.get topicId
-                            |> Maybe.map
-                                EditTopic.from
-                    )
+            state
+                |> getTopic topicId
+                |> Maybe.map EditTopic.from
     }
 
 
@@ -328,7 +343,7 @@ cleanEditTopic state =
 
 
 prepareSavingEditTopic : State -> ( Maybe EditTopic, Maybe Topic )
-prepareSavingEditTopic { lang, editTopic, topics } =
+prepareSavingEditTopic ({ lang, editTopic } as state) =
     editTopic
         |> Maybe.map
             (\editTopic_ ->
@@ -347,9 +362,8 @@ prepareSavingEditTopic { lang, editTopic, topics } =
 
                     _ ->
                         ( Just { editTopic_ | updating = True }
-                        , topics
-                            |> RemoteData.andThen
-                                (TreeStore.get editTopic_.id)
+                        , state
+                            |> getTopic editTopic_.id
                             |> Maybe.map
                                 (EditTopic.patch editTopic_)
                         )
@@ -373,10 +387,7 @@ updateSavedEditTopic result ({ lang } as state) =
                         )
                     )
                 |> updateEditTopic (\t -> { t | updating = False })
-                |> updateTopics
-                    (RemoteData.update
-                        (TreeStore.add topic)
-                    )
+                |> addTopicHelper topic
 
         Err error ->
             state
@@ -391,19 +402,58 @@ updateSavedEditTopic result ({ lang } as state) =
 -- --------------------------------------------------------------------
 
 
-updateTopics :
-    (RemoteTopics -> RemoteTopics)
+addTopicHelper :
+    Topic
     -> State
     -> State
-updateTopics updater ({ topics } as state) =
-    { state | topics = updater topics }
+addTopicHelper topic ({ topicCards } as state) =
+    { state
+        | topicCards =
+            topicCards
+                |> RemoteData.update
+                    (\store ->
+                        store
+                            |> TreeStore.add
+                                (store
+                                    |> TreeStore.get topic.id
+                                    |> Maybe.map
+                                        (\topicCard ->
+                                            { topicCard | topic = topic }
+                                        )
+                                    |> Maybe.withDefault (TopicCard.create topic)
+                                )
+                    )
+    }
 
 
-createTopicTree : List Topic -> TreeStore Topic
-createTopicTree topics =
+updateTopicCardHelper :
+    String
+    -> (TopicCard -> TopicCard)
+    -> State
+    -> State
+updateTopicCardHelper topicId updater ({ topicCards } as state) =
+    topicCards
+        |> RemoteData.andThen
+            (TreeStore.get topicId)
+        |> Maybe.map
+            (\topicCard ->
+                { state
+                    | topicCards =
+                        topicCards
+                            |> RemoteData.update
+                                (TreeStore.add
+                                    (updater topicCard)
+                                )
+                }
+            )
+        |> Maybe.withDefault state
+
+
+createTopicCardsHelper : List Topic -> TreeStore TopicCard
+createTopicCardsHelper topics =
     TreeStore.create
-        { idGetter = .id
+        { idGetter = \{ topic } -> topic.id
         , parentGetter = \_ -> Nothing
         , sorter = Nothing
         }
-        topics
+        (topics |> List.map TopicCard.create)

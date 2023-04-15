@@ -143,6 +143,12 @@ update msg state =
                 state.app
             )
 
+        Msg.TopicCardMsg topicId topicCardMsg ->
+            ( state
+                |> updateAppState (App.updateTopicCard topicId topicCardMsg)
+            , Cmd.none
+            )
+
         Msg.DeleteTopicDone topicId ->
             ( state |> updateAppState (App.deleteTopic topicId)
             , Cmd.none
@@ -440,7 +446,7 @@ doRemoteQueryMyTopics state =
         |> updateAppState
             (\app ->
                 { app
-                    | topics = App.loading
+                    | topicCards = App.loading
                 }
             )
     , Cmd.batch

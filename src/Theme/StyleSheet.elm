@@ -39,7 +39,7 @@ body > * { opacity: 1; }
         -- 主题卡片宽度自适应设置：根据每行显示的卡片数量确定其最小宽度
         , Html.text
             ("""
-.topic-card.size-fit:not(.delete-zoom) {
+.topic-card.size-fit:not(.delete-zoom,.expand) {
   min-width: calc((100% - {{topic_card_spacing}}px * {{topic_card_count}}) / {{topic_card_count}}) !important;
 }
 .topic-card.size-fit.delete-zoom {

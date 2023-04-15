@@ -152,7 +152,7 @@ create config { app, theme, widgets, withI18nElement } =
                 [ width fill
                 , spacing BaseStyle.spacing
                 ]
-                (([ "表情", "图片", "附件", "视频" ]
+                (([ "图片", "附件", "视频" ]
                     |> List.map
                         (\t ->
                             widgets.with <|

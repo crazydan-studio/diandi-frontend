@@ -407,22 +407,24 @@ addTopicHelper :
     -> State
     -> State
 addTopicHelper topic ({ topicCards } as state) =
+    let
+        addTopicToStore topic_ store =
+            store
+                |> TreeStore.add
+                    (store
+                        |> TreeStore.get topic_.id
+                        |> Maybe.map
+                            (\topicCard ->
+                                { topicCard | topic = topic_ }
+                            )
+                        |> Maybe.withDefault (TopicCard.create topic_)
+                    )
+    in
     { state
         | topicCards =
             topicCards
                 |> RemoteData.update
-                    (\store ->
-                        store
-                            |> TreeStore.add
-                                (store
-                                    |> TreeStore.get topic.id
-                                    |> Maybe.map
-                                        (\topicCard ->
-                                            { topicCard | topic = topic }
-                                        )
-                                    |> Maybe.withDefault (TopicCard.create topic)
-                                )
-                    )
+                    (addTopicToStore topic)
     }
 
 

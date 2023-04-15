@@ -20,11 +20,8 @@
 module Model.App exposing
     ( Config
     , State
-    , addToDeletedTopics
-    , addToDeletingTopics
     , cleanEditTopic
     , cleanNewTopic
-    , deleteTopic
     , getTopic
     , init
     , initEditTopic
@@ -84,8 +81,6 @@ type alias State =
 
     -- 操作数据
     , topicSearchingText : Maybe String
-    , deletePendingTopics : List String
-    , deletedTopics : List ( String, Maybe TranslateResult )
     , newTopic : Maybe EditTopic
     , editTopic : Maybe EditTopic
     , topicEditInputId : String
@@ -133,8 +128,6 @@ init config =
 
     --
     , topicSearchingText = Nothing
-    , deletePendingTopics = []
-    , deletedTopics = []
     , newTopic = Nothing
     , editTopic = Nothing
     , topicEditInputId = "topic-edit-input"
@@ -187,53 +180,6 @@ updateTopicCard topicId topicCardMsg state =
             (TopicCard.update
                 topicCardMsg
             )
-
-
-deleteTopic : String -> State -> State
-deleteTopic topicId ({ topicCards } as state) =
-    { state
-        | topicCards =
-            topicCards
-                |> RemoteData.update
-                    (TreeStore.removeById topicId)
-        , deletedTopics =
-            state.deletedTopics
-                |> List.filter
-                    (\( id, _ ) ->
-                        id /= topicId
-                    )
-    }
-
-
-addToDeletedTopics :
-    String
-    -> Result Http.Error String
-    -> State
-    -> State
-addToDeletedTopics topicId result ({ lang } as state) =
-    let
-        error =
-            case result of
-                Ok _ ->
-                    Nothing
-
-                Err e ->
-                    Just (Remote.parseError lang e)
-    in
-    { state
-        | deletedTopics =
-            ( topicId, error ) :: state.deletedTopics
-        , deletePendingTopics =
-            state.deletePendingTopics
-                |> List.filter ((/=) topicId)
-    }
-
-
-addToDeletingTopics : String -> State -> State
-addToDeletingTopics topicId state =
-    { state
-        | deletePendingTopics = topicId :: state.deletePendingTopics
-    }
 
 
 initNewTopic :

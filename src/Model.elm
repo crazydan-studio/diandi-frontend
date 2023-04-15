@@ -31,9 +31,12 @@ import Element exposing (classifyDevice)
 import I18n.I18n exposing (I18nElement, withI18nElement)
 import I18n.Port
 import Model.App as App
+import Model.Operation.Deletion as Deletion
 import Model.Operation.EditTopic as EditTopic
+import Model.Remote as Remote
 import Model.Remote.GraphQL.Topic as RemoteTopic
 import Model.Remote.Msg as RemoteMsg
+import Model.TopicCard as TopicCard
 import Msg
 import Theme.Theme as Theme
 import Theme.Theme.Default as ThemeDefault
@@ -144,21 +147,7 @@ update msg state =
             )
 
         Msg.TopicCardMsg topicId topicCardMsg ->
-            ( state
-                |> updateAppState (App.updateTopicCard topicId topicCardMsg)
-            , Cmd.none
-            )
-
-        Msg.DeleteTopicDone topicId ->
-            ( state |> updateAppState (App.deleteTopic topicId)
-            , Cmd.none
-            )
-
-        Msg.DeleteTopicPending topicId ->
-            ( state |> updateAppState (App.addToDeletingTopics topicId)
-            , Msg.toRemoteCmd
-                (RemoteTopic.deleteMyTopic topicId)
-            )
+            topicCardUpdateHelper topicId topicCardMsg state
 
         Msg.NewTopicPending ->
             ( state |> updateAppState App.initNewTopic
@@ -301,7 +290,18 @@ remoteUpdateHelper msg ({ app } as state) =
         RemoteMsg.DeleteMyTopic topicId result ->
             ( state
                 |> updateAppState
-                    (App.addToDeletedTopics topicId result)
+                    (App.updateTopicCard topicId
+                        (case result of
+                            Ok _ ->
+                                TopicCard.Delete Deletion.DeleteDone
+
+                            Err e ->
+                                TopicCard.Delete
+                                    (Deletion.DeleteError
+                                        (Remote.parseError state.app.lang e)
+                                    )
+                        )
+                    )
             , Cmd.none
             )
 
@@ -360,6 +360,29 @@ i18nUpdateHelper msg ({ app } as state) =
             )
 
 
+topicCardUpdateHelper :
+    String
+    -> TopicCard.Msg
+    -> State
+    -> ( State, Cmd Msg.Msg )
+topicCardUpdateHelper topicId msg state =
+    ( state
+        |> updateAppState (App.updateTopicCard topicId msg)
+    , case msg of
+        TopicCard.Delete deletion ->
+            case deletion of
+                Deletion.DeleteDoing ->
+                    Msg.toRemoteCmd
+                        (RemoteTopic.deleteMyTopic topicId)
+
+                _ ->
+                    Cmd.none
+
+        _ ->
+            Cmd.none
+    )
+
+
 newTopicUpdateHelper :
     EditTopic.Msg
     -> State
@@ -396,7 +419,8 @@ newTopicSavingHelper ({ app } as state) =
                 Msg.toRemoteCmd
                     (RemoteTopic.saveMyNewTopic t)
             )
-        |> Maybe.withDefault Cmd.none
+        |> Maybe.withDefault
+            (Msg.focusOn app.topicEditInputId)
     )
 
 
@@ -417,7 +441,8 @@ editTopicSavingHelper ({ app } as state) =
                 Msg.toRemoteCmd
                     (RemoteTopic.saveMyEditTopic t)
             )
-        |> Maybe.withDefault Cmd.none
+        |> Maybe.withDefault
+            (Msg.focusOn app.topicEditInputId)
     )
 
 

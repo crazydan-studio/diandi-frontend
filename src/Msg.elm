@@ -53,15 +53,13 @@ type Msg
     | I18nPortMsg I18n.Port.Msg
       -- 组件消息
     | WidgetMsg (Widget.Msg Msg)
-    | TopicCardMsg String TopicCard.Msg
       -- 遮罩
     | ShowPageLayer Page.Layer
     | ClosePageLayer Page.Layer
       -- 数据操作
     | SearchTopic
     | SearchTopicInputing String
-    | DeleteTopicDone String
-    | DeleteTopicPending String
+    | TopicCardMsg String TopicCard.Msg
     | NewTopicPending
     | NewTopicMsg EditTopic.Msg
     | NewTopicSaving

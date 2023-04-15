@@ -24,15 +24,18 @@ import Element.Background as Background
 import Element.Border as Border
 import Element.Events exposing (..)
 import Element.Font as Font
+import I18n.Element exposing (textWith)
 import I18n.I18n exposing (langTextEnd)
 import Json.Decode as Json
 import Model
+import Model.Operation.Deletion as Deletion
 import Model.TopicCard as TopicCard exposing (TopicCard)
 import Msg
 import View.I18n.Home as I18n
 import View.Page as Page
 import View.Style.Base as BaseStyle
 import Widget.Animation.Transition as Transition
+import Widget.Color as Color
 import Widget.Icon as Icon
 import Widget.Loading as Loading
 import Widget.Shadow as Shadow
@@ -44,7 +47,7 @@ view :
     Model.State
     -> TopicCard
     -> Element Msg.Msg
-view ({ app, theme, widgets, withI18nElement } as state) { config, topic } =
+view { theme, widgets, withI18nElement } { config, topic, deletion } =
     let
         i18nText =
             withI18nElement I18n.text
@@ -66,49 +69,45 @@ view ({ app, theme, widgets, withI18nElement } as state) { config, topic } =
                     [ "box-shadow"
                     ]
                ]
-            ++ (if
-                    app.deletePendingTopics
-                        |> List.member topic.id
-                then
-                    [ inFront
-                        (el
-                            [ width fill
-                            , height fill
-                            , Background.color theme.layerBackgroundColor
-                            ]
-                            (row
-                                [ centerX
-                                , centerY
-                                , Font.size 16
-                                , Font.color theme.primaryWhiteBackgroundColor
+            ++ (case deletion of
+                    Deletion.DeleteDoing ->
+                        [ inFront
+                            (el
+                                [ width fill
+                                , height fill
+                                , Background.color theme.layerBackgroundColor
                                 ]
-                                [ Loading.ball { width = 64, height = 64 }
-                                , paragraph []
-                                    [ ("数据正在删除中，请稍等片刻 ..." :: langTextEnd)
-                                        |> i18nText
+                                (row
+                                    [ centerX
+                                    , centerY
+                                    , Font.size 16
+                                    , Font.color theme.primaryWhiteBackgroundColor
                                     ]
-                                ]
+                                    [ Loading.ball { width = 64, height = 64 }
+                                    , paragraph []
+                                        [ ("数据正在删除中，请稍等片刻 ..." :: langTextEnd)
+                                            |> i18nText
+                                        ]
+                                    ]
+                                )
                             )
-                        )
-                    ]
+                        ]
 
-                else if
-                    app.deletedTopics
-                        |> List.map Tuple.first
-                        |> List.member topic.id
-                then
-                    -- TODO 在底部工具栏上方显示删除异常信息
-                    [ class "delete-zoom"
+                    Deletion.DeleteDone ->
+                        [ class "delete-zoom"
 
-                    -- 动画结束后从列表中移除
-                    , on "animationend"
-                        (Json.succeed
-                            (Msg.DeleteTopicDone topic.id)
-                        )
-                    ]
+                        -- 动画结束后从列表中移除
+                        , on "animationend"
+                            (Json.succeed
+                                (Msg.TopicCardMsg
+                                    topic.id
+                                    (TopicCard.Delete Deletion.DeleteDone)
+                                )
+                            )
+                        ]
 
-                else
-                    []
+                    _ ->
+                        []
                )
         )
         [ column
@@ -168,75 +167,96 @@ view ({ app, theme, widgets, withI18nElement } as state) { config, topic } =
                     )
                 ]
             ]
-        , row
+        , column
             [ width fill
             , class "bottom"
-            , spacing BaseStyle.spacing
             ]
-            [ wrappedRow
+            [ row
                 [ width fill
-                , spacing (BaseStyle.spacing // 2)
+                , spacing BaseStyle.spacing
                 ]
-                (topic.tags
-                    |> List.map
-                        (\tag ->
-                            widgets.with <|
-                                Button.link
-                                    { attrs =
-                                        [ Font.size 13
-                                        , paddingXY 8 0
-                                        ]
-                                    , content = text ("#" ++ tag)
-                                    , onPress = Nothing
-                                    }
-                        )
-                )
-            , row
-                [ alignRight
-                ]
-                [ widgets.with <|
-                    Button.link
-                        { attrs = [ width shrink ]
-                        , content =
-                            theme.primaryLinkBtnIcon
-                                { icon = Icon.DeleteOutlined, size = Nothing }
-                        , onPress = Just (Msg.DeleteTopicPending topic.id)
-                        }
-                , widgets.with <|
-                    Button.link
-                        { attrs = [ width shrink ]
-                        , content =
-                            theme.primaryLinkBtnIcon
-                                { icon = Icon.EditOutlined, size = Nothing }
-                        , onPress =
-                            Just
-                                (Msg.batch
-                                    [ Msg.EditTopicPending topic.id
-                                    , Msg.ShowPageLayer Page.EditTopicLayer
-                                    ]
-                                )
-                        }
-                , widgets.with <|
-                    Button.link
-                        { attrs = [ width shrink ]
-                        , content =
-                            theme.primaryLinkBtnIcon
-                                { icon =
-                                    if config.expanded then
-                                        Icon.ShrinkOutlined
-
-                                    else
-                                        Icon.ArrowsAltOutlined
-                                , size = Nothing
-                                }
-                        , onPress =
-                            Just
-                                (Msg.TopicCardMsg topic.id
-                                    (TopicCard.Expand
-                                        (not config.expanded)
+                [ wrappedRow
+                    [ width fill
+                    , spacing (BaseStyle.spacing // 2)
+                    ]
+                    (topic.tags
+                        |> List.map
+                            (\tag ->
+                                widgets.with <|
+                                    Button.link
+                                        { attrs =
+                                            [ Font.size 13
+                                            , paddingXY 8 0
+                                            ]
+                                        , content = text ("#" ++ tag)
+                                        , onPress = Nothing
+                                        }
+                            )
+                    )
+                , row
+                    [ alignRight
+                    ]
+                    [ widgets.with <|
+                        Button.link
+                            { attrs = [ width shrink ]
+                            , content =
+                                theme.primaryLinkBtnIcon
+                                    { icon = Icon.DeleteOutlined, size = Nothing }
+                            , onPress =
+                                Just
+                                    (Msg.TopicCardMsg
+                                        topic.id
+                                        (TopicCard.Delete Deletion.DeleteDoing)
                                     )
-                                )
-                        }
+                            }
+                    , widgets.with <|
+                        Button.link
+                            { attrs = [ width shrink ]
+                            , content =
+                                theme.primaryLinkBtnIcon
+                                    { icon = Icon.EditOutlined, size = Nothing }
+                            , onPress =
+                                Just
+                                    (Msg.batch
+                                        [ Msg.EditTopicPending topic.id
+                                        , Msg.ShowPageLayer Page.EditTopicLayer
+                                        ]
+                                    )
+                            }
+                    , widgets.with <|
+                        Button.link
+                            { attrs = [ width shrink ]
+                            , content =
+                                theme.primaryLinkBtnIcon
+                                    { icon =
+                                        if config.expanded then
+                                            Icon.ShrinkOutlined
+
+                                        else
+                                            Icon.ArrowsAltOutlined
+                                    , size = Nothing
+                                    }
+                            , onPress =
+                                Just
+                                    (Msg.TopicCardMsg topic.id
+                                        (TopicCard.Expand
+                                            (not config.expanded)
+                                        )
+                                    )
+                            }
+                    ]
                 ]
+            , case deletion of
+                Deletion.DeleteError e ->
+                    paragraph
+                        [ Font.color (Color.toRgbColor Color.Red900)
+                        ]
+                        [ text "* "
+                        , "删除失败 - " :: langTextEnd |> i18nText
+                        , textWith e
+                        ]
+
+                _ ->
+                    none
             ]
         ]

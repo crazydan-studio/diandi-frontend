@@ -21,26 +21,26 @@ module View.Page.Topic.Card exposing (view)
 
 import Element exposing (..)
 import Element.Background as Background
-import Element.Border as Border
 import Element.Events exposing (..)
 import Element.Font as Font
+import Html
+import Html.Attributes as HtmlAttr
 import I18n.Element exposing (textWith)
 import I18n.I18n exposing (langTextEnd)
 import Json.Decode as Json
+import Material.Button as Button
+import Material.Card as Card
+import Material.IconButton as IconButton
+import Material.Theme as Theme
+import Material.Typography as Typography
 import Model
 import Model.Operation.Deletion as Deletion
 import Model.TopicCard as TopicCard exposing (TopicCard)
 import Msg
 import View.I18n.Home as I18n
 import View.Page as Page
-import View.Style.Base as BaseStyle
-import Widget.Animation.Transition as Transition
-import Widget.Color as Color
-import Widget.Icon as Icon
 import Widget.Loading as Loading
-import Widget.Shadow as Shadow
-import Widget.Widget.Button as Button
-import Widget.Widget.Markdown as Markdown
+import Widget.MdcFontIcon as MdcFontIcon
 
 
 view :
@@ -53,22 +53,10 @@ view { theme, widgets, withI18nElement } { config, topic, deletion } =
             withI18nElement I18n.text
     in
     column
-        (theme.primaryWhiteBackground
-            ++ [ class "topic-card"
-               , class "size-fit"
-
-               -- 启用获取焦点，以支持设置鼠标选中样式
-               , tabindex 1
-               , alignTop
-               , padding BaseStyle.spacing
-               , Border.rounded 4
-               , Shadow.normal
-               , mouseOver [ Shadow.hover ]
-               , focused [ Shadow.hover ]
-               , Transition.defaultWith
-                    [ "box-shadow"
-                    ]
-               ]
+        ([ class "topic-card"
+         , class "size-fit"
+         , alignTop
+         ]
             ++ (case deletion of
                     Deletion.DeleteDoing ->
                         [ inFront
@@ -110,153 +98,133 @@ view { theme, widgets, withI18nElement } { config, topic, deletion } =
                         []
                )
         )
-        [ column
-            [ width fill
-            , padding BaseStyle.spacing
-            , spacing BaseStyle.spacing
-            ]
-            [ paragraph
-                [ width fill
-                , class "head"
-                , Font.size 20
-                , Font.weight 400
-                , Font.color
-                    (topic.title
-                        |> Maybe.map
-                            (\_ ->
-                                theme.primaryFontColor
-                            )
-                        |> Maybe.withDefault theme.placeholderFontColor
-                    )
-                , Font.center
-                ]
-                [ text (topic.title |> Maybe.withDefault "无标题") ]
-            , row
-                ([ width fill
-                 , class "body"
-                 , Font.size theme.primaryFontSize
-                 , Font.color (rgba255 0 0 0 0.54)
-                 , Transition.defaultWith
-                    [ "max-height"
-                    ]
-                 ]
-                    ++ (if config.expanded then
-                            [ styles [ ( "max-height", "100%" ) ] ]
-
-                        else
-                            [ height (shrink |> maximum 144) ]
-                       )
-                )
-                [ el
-                    [ width fill
-                    , height fill
-                    , clip
-                    ]
-                    (el
-                        [ width fill
-                        , scrollbarY
+        [ html <|
+            Card.card
+                (Card.config
+                    |> Card.setAttributes
+                        [ HtmlAttr.style "width" "100%"
                         ]
-                        (paragraph []
-                            [ widgets.with <|
-                                Markdown.render
-                                    { lineHeight = 20
-                                    }
-                                    topic.content
+                )
+                { blocks =
+                    ( Card.block <|
+                        Html.div
+                            [ HtmlAttr.style "padding" "1rem" ]
+                            [ Html.h2
+                                [ Typography.headline6
+                                , HtmlAttr.style "white-space" "pre-wrap"
+                                ]
+                                [ Html.text (topic.title |> Maybe.withDefault "无标题") ]
+                            , Html.h3
+                                [ Typography.subtitle2
+                                , Theme.textSecondaryOnBackground
+                                , HtmlAttr.style "margin" "0"
+                                ]
+                                [ Html.text "@2023-04-12 23:12:36" ]
                             ]
-                        )
-                    )
-                ]
-            ]
-        , column
-            [ width fill
-            , class "bottom"
-            ]
-            [ row
-                [ width fill
-                , spacing BaseStyle.spacing
-                ]
-                [ wrappedRow
-                    [ width fill
-                    , spacing (BaseStyle.spacing // 2)
-                    ]
-                    (topic.tags
-                        |> List.map
-                            (\tag ->
-                                widgets.with <|
-                                    Button.link
-                                        { attrs =
-                                            [ Font.size 13
-                                            , paddingXY 8 0
-                                            ]
-                                        , content = text ("#" ++ tag)
-                                        , onPress = Nothing
-                                        }
-                            )
-                    )
-                , row
-                    [ alignRight
-                    ]
-                    [ widgets.with <|
-                        Button.link
-                            { attrs = [ width shrink ]
-                            , content =
-                                theme.primaryLinkBtnIcon
-                                    { icon = Icon.DeleteOutlined, size = Nothing }
-                            , onPress =
-                                Just
-                                    (Msg.TopicCardMsg
-                                        topic.id
-                                        (TopicCard.Delete Deletion.DeleteDoing)
-                                    )
-                            }
-                    , widgets.with <|
-                        Button.link
-                            { attrs = [ width shrink ]
-                            , content =
-                                theme.primaryLinkBtnIcon
-                                    { icon = Icon.EditOutlined, size = Nothing }
-                            , onPress =
-                                Just
-                                    (Msg.batch
-                                        [ Msg.EditTopicPending topic.id
-                                        , Msg.ShowPageLayer Page.EditTopicLayer
-                                        ]
-                                    )
-                            }
-                    , widgets.with <|
-                        Button.link
-                            { attrs = [ width shrink ]
-                            , content =
-                                theme.primaryLinkBtnIcon
-                                    { icon =
-                                        if config.expanded then
-                                            Icon.ShrinkOutlined
+                    , (Card.block <|
+                        Html.div
+                            [ Typography.body2
+                            , Theme.textSecondaryOnBackground
+                            , HtmlAttr.style "padding" "0 1rem 0.5rem 1rem"
+                            , HtmlAttr.style "white-space" "pre-wrap"
+                            , HtmlAttr.style "overflow-y" "auto"
+                            , HtmlAttr.style "max-height"
+                                (if config.expanded then
+                                    "100%"
 
-                                        else
-                                            Icon.ArrowsAltOutlined
-                                    , size = Nothing
-                                    }
-                            , onPress =
-                                Just
-                                    (Msg.TopicCardMsg topic.id
-                                        (TopicCard.Expand
-                                            (not config.expanded)
+                                 else
+                                    "144px"
+                                )
+                            ]
+                            [ Html.text topic.content
+                            ]
+                      )
+                        :: (case deletion of
+                                Deletion.DeleteError e ->
+                                    [ Card.block <|
+                                        Html.div
+                                            [ Typography.body2
+                                            , Theme.error
+                                            , HtmlAttr.style "padding" "0 1rem 0.5rem 1rem"
+                                            , HtmlAttr.style "white-space" "pre-wrap"
+                                            ]
+                                            [ Html.text ("* " ++ "删除失败 - ")
+                                            ]
+                                    ]
+
+                                -- paragraph
+                                --     [ Font.color (Color.toRgbColor Color.Red900)
+                                --     ]
+                                --     [ text "* "
+                                --     , "删除失败 - " :: langTextEnd |> i18nText
+                                --     , textWith e
+                                --     ]
+                                _ ->
+                                    []
+                           )
+                    )
+                , actions =
+                    Just <|
+                        Card.actions
+                            { buttons =
+                                topic.tags
+                                    |> List.map
+                                        (\tag ->
+                                            Card.button
+                                                (Button.config
+                                                    |> Button.setOnClick Msg.NoOp
+                                                )
+                                                ("#" ++ tag)
+                                        )
+                            , icons =
+                                [ Card.icon
+                                    (IconButton.config
+                                        |> IconButton.setOnClick
+                                            (Msg.TopicCardMsg
+                                                topic.id
+                                                (TopicCard.Delete Deletion.DeleteDoing)
+                                            )
+                                        |> IconButton.setLabel (Just "Delete Topic")
+                                    )
+                                    (IconButton.icon MdcFontIcon.delete)
+                                , Card.icon
+                                    (IconButton.config
+                                        |> IconButton.setOnClick
+                                            (Msg.batch
+                                                [ Msg.EditTopicPending topic.id
+                                                , Msg.ShowPageLayer Page.EditTopicLayer
+                                                ]
+                                            )
+                                        |> IconButton.setLabel (Just "Edit Topic")
+                                    )
+                                    (IconButton.icon MdcFontIcon.edit)
+                                , Card.icon
+                                    (IconButton.config
+                                        |> IconButton.setOnClick
+                                            (Msg.TopicCardMsg topic.id
+                                                (TopicCard.Expand
+                                                    (not config.expanded)
+                                                )
+                                            )
+                                        |> IconButton.setLabel
+                                            (Just
+                                                (if config.expanded then
+                                                    "Collapse"
+
+                                                 else
+                                                    "Expand"
+                                                )
+                                            )
+                                    )
+                                    (IconButton.icon
+                                        (if config.expanded then
+                                            MdcFontIcon.expandLess
+
+                                         else
+                                            MdcFontIcon.expandMore
                                         )
                                     )
+                                ]
                             }
-                    ]
-                ]
-            , case deletion of
-                Deletion.DeleteError e ->
-                    paragraph
-                        [ Font.color (Color.toRgbColor Color.Red900)
-                        ]
-                        [ text "* "
-                        , "删除失败 - " :: langTextEnd |> i18nText
-                        , textWith e
-                        ]
-
-                _ ->
-                    none
-            ]
+                }
         ]

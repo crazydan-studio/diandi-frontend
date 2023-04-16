@@ -94,7 +94,7 @@ body > * { opacity: 1; }
                                         "3"
 
                             Desktop ->
-                                "5"
+                                "4"
 
                             BigDesktop ->
                                 "6"

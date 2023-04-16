@@ -41,6 +41,7 @@ npm run prod
   也可以在 Node 项目中通过 NodeJs 将指定目录的原生代码打包放在`~/.elm/0.19.1/packages/elm/`下的方式实现。
   注：必须在`elm/`或`elm-explorations/`目录下才会被识别为 Elm 内部包，以实现原生代码的加载
 
+
 - [elm/browser](https://package.elm-lang.org/packages/elm/browser/latest/Browser):
   编写 URL 路由的单页面应用
 - [elm/http](https://package.elm-lang.org/packages/elm/http/latest/Http):
@@ -51,9 +52,6 @@ npm run prod
   Elm Markdown 解析库
   - [Custom HTML Block Rendering (with elm-ui)](https://ellie-app.com/d7R3b9FsHfCa1):
     通过 Elm UI 渲染 Markdown，可以自定义样式，对自定义标签的渲染等
-- [Elm Ui Widgets](https://package.elm-lang.org/packages/Orasund/elm-ui-widgets/3.4.0/):
-  Elm UI 组件库
-  - [演示](https://orasund.github.io/elm-ui-widgets/Button)
 - [Elm Simple Animation](https://package.elm-lang.org/packages/andrewMacmurray/elm-simple-animation/2.3.0/):
   通过构造 CSS 实现的动画，无状态，不需要更新模型
   - [Elm Animator](https://package.elm-lang.org/packages/mdgriffith/elm-animator/1.1.1/):
@@ -64,9 +62,15 @@ npm run prod
   支持 Elm UI 的拖拽库
 - [Rich Text Editor Toolkit Markdown example](https://mweiss.github.io/elm-rte-toolkit/#/examples/markdown):
   支持 Markdown 的富文本编辑器，基于`contenteditable`实现，可学习其数据结构的划分
-- [Mini-Rte](https://package.elm-lang.org/packages/dkodaj/rte/latest/):
-  简单的文本编辑器，采取自绘方案，代码较少，有利于从底层学起
 
+
+- [Material Components for Elm](https://github.com/aforemny/material-components-web-elm):
+  通过 Web Component 实现的 Material 组件库，需同时执行
+  `npm install --save material-components-web-elm`、`elm install aforemny/material-components-web-elm`
+  以安装该组件，并确保项目中依赖的`elm/virtual-dom`为`1.0.3`版本
+- [Material Icons for Elm](https://github.com/icidasset/elm-material-icons):
+  Svg 实现
+  - [图标列表](https://fonts.google.com/icons)
 - [Material Design Components](https://m2.material.io/components):
   Material Design 组件样式
   - [Material-UI](https://v4.mui.com/getting-started/installation/):

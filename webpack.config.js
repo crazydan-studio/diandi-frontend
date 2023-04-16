@@ -107,7 +107,7 @@ if (MODE === "development") {
       rules: [
         {
           test: /\.css$/,
-          exclude: [/elm-stuff/, /node_modules/],
+          exclude: [/elm-stuff/],
           use: [
             "style-loader",
             {
@@ -212,7 +212,7 @@ if (MODE === "production") {
         },
         {
           test: /\.css$/,
-          exclude: [/elm-stuff/, /node_modules/],
+          exclude: [/elm-stuff/],
           use: [
             MiniCssExtractPlugin.loader,
             {

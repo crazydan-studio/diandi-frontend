@@ -1,5 +1,9 @@
 "use strict";
 
+import "material-components-web-elm/dist/material-components-web-elm.js";
+import "material-components-web-elm/dist/material-components-web-elm.css";
+import "./css/material-icons.css";
+
 import { Elm } from "../src/Main";
 import { getFirstBrowserLanguage, findNotTranslatedTexts } from "./js/lang";
 import pkg from "../package.json";

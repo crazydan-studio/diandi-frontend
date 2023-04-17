@@ -2,22 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.card>img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 600/300;
-}
-
-.topic-card-list>.r,
-.topic-card-list>.s.at {
-  margin-bottom: 0 !important;
-  align-content: flex-start;
-}
-
-.topic-card .head .t {
-  line-height: 1.334;
-}
-
 .topic-edit-win textarea.content {
   letter-spacing: 1px;
 }

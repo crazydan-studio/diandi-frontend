@@ -21,14 +21,14 @@ module View.Page.Topic.List exposing (view)
 
 import Data.TreeStore as TreeStore exposing (TreeStore)
 import Element exposing (..)
-import Element.Keyed
-import Element.Lazy
+import Html.Attributes as HtmlAttr
+import Html.Keyed
+import Html.Lazy
 import Model
 import Model.TopicCard exposing (TopicCard)
 import Msg
 import View.Page.RemoteData as RemoteDataPage
 import View.Page.Topic.Card as TopicCardView
-import View.Style.Base as BaseStyle
 
 
 view : Model.State -> Element Msg.Msg
@@ -49,42 +49,28 @@ topicListView :
     Model.State
     -> TreeStore TopicCard
     -> Element Msg.Msg
-topicListView ({ app } as state) topicCards =
+topicListView ({ app, theme } as state) topicCards =
     if TreeStore.isEmpty topicCards then
         RemoteDataPage.noDataView
-            { theme = state.theme
-            , lang = state.app.lang
+            { theme = theme
+            , lang = app.lang
             }
 
     else
         -- 列表增删改性能提升方案，同时lazy可确保在刷新页面时，有滚动条的列表的滚动位置可被浏览器记录，刷新后能够自动恢复浏览位置
         -- https://guide.elm-lang.org/optimization/keyed.html
-        -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Keyed
-        -- https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/Element-Lazy
-        (if
-            app.device.class
-                == Phone
-                && app.device.orientation
-                == Portrait
-         then
-            Element.Keyed.column
-
-         else
-            Element.Keyed.wrappedRow
-        )
-            [ width fill
-            , height fill
-            , class "topic-card-list"
-            , spacing BaseStyle.spacing2x
-            ]
-            (topicCards
-                |> TreeStore.traverseDepth 1
-                    (\_ topicCard _ ->
-                        ( topicCard.topic.id
-                        , Element.Lazy.lazy2
-                            TopicCardView.view
-                            state
-                            topicCard
+        html <|
+            Html.Keyed.node "div"
+                [ HtmlAttr.class "flex flex-col md:flex-row flex-wrap min-h-fit content-start"
+                ]
+                (topicCards
+                    |> TreeStore.traverseDepth 1
+                        (\_ topicCard _ ->
+                            ( topicCard.topic.id
+                            , Html.Lazy.lazy2
+                                TopicCardView.view
+                                state
+                                topicCard
+                            )
                         )
-                    )
-            )
+                )

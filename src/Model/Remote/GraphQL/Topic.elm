@@ -18,11 +18,11 @@
 
 
 module Model.Remote.GraphQL.Topic exposing
-    ( deleteMyTopic
-    , getMyAllTopics
+    ( getMyAllTopics
     , queryMyTopics
     , saveMyEditTopic
     , saveMyNewTopic
+    , trashMyTopic
     )
 
 import GraphQl
@@ -57,6 +57,11 @@ queryMyTopics { keyword, tags } =
                         [ ( "tags"
                           , GraphQl.input
                                 [ ( "has_all_members_in", GraphQl.variable "tags" )
+                                ]
+                          )
+                        , ( "trashed"
+                          , GraphQl.input
+                                [ ( "equal", GraphQl.string "false" )
                                 ]
                           )
                         , ( "or"
@@ -213,16 +218,16 @@ saveMyEditTopic topic =
             (Decode.field "updateTopic" topicDecoder)
 
 
-{-| 删除主题
+{-| 主题放入垃圾箱
 -}
-deleteMyTopic :
+trashMyTopic :
     String
     -> Cmd Msg
-deleteMyTopic id =
+trashMyTopic id =
     -- https://package.elm-lang.org/packages/ghivert/elm-graphql/5.0.0/GraphQl
     GraphQl.mutation
-        (GraphQl.named "TopicDelete"
-            [ GraphQl.field "deleteTopic"
+        (GraphQl.named "TopicTrash"
+            [ GraphQl.field "trashTopic"
                 |> GraphQl.withArgument "id" (GraphQl.variable "id")
                 |> GraphQl.withSelectors
                     [ GraphQl.field "id"
@@ -238,8 +243,8 @@ deleteMyTopic id =
               )
             ]
         |> GraphQl.Http.send { url = "/api/graphql", headers = [] }
-            (DeleteMyTopic id)
-            (Decode.at [ "deleteTopic", "id" ] Decode.string)
+            (TrashMyTopic id)
+            (Decode.at [ "trashTopic", "id" ] Decode.string)
 
 
 

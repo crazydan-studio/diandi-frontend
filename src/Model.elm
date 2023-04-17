@@ -31,7 +31,7 @@ import Element exposing (classifyDevice)
 import I18n.I18n exposing (I18nElement, withI18nElement)
 import I18n.Port
 import Model.App as App
-import Model.Operation.Deletion as Deletion
+import Model.Operation as Operation
 import Model.Operation.EditTopic as EditTopic
 import Model.Remote as Remote
 import Model.Remote.GraphQL.Topic as RemoteTopic
@@ -294,17 +294,17 @@ remoteUpdateHelper msg ({ app } as state) =
             , Msg.focusOn app.topicEditInputId
             )
 
-        RemoteMsg.DeleteMyTopic topicId result ->
+        RemoteMsg.TrashMyTopic topicId result ->
             ( state
                 |> updateAppState
                     (App.updateTopicCard topicId
                         (case result of
                             Ok _ ->
-                                TopicCard.Delete Deletion.DeleteDone
+                                TopicCard.Trash Operation.Done
 
                             Err e ->
-                                TopicCard.Delete
-                                    (Deletion.DeleteError
+                                TopicCard.Trash
+                                    (Operation.Error
                                         (Remote.parseError state.app.lang e)
                                     )
                         )
@@ -376,11 +376,11 @@ topicCardUpdateHelper topicId msg state =
     ( state
         |> updateAppState (App.updateTopicCard topicId msg)
     , case msg of
-        TopicCard.Delete deletion ->
-            case deletion of
-                Deletion.DeleteDoing ->
+        TopicCard.Trash op ->
+            case op of
+                Operation.Doing ->
                     Msg.toRemoteCmd
-                        (RemoteTopic.deleteMyTopic topicId)
+                        (RemoteTopic.trashMyTopic topicId)
 
                 _ ->
                     Cmd.none

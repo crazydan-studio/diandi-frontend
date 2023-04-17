@@ -28,4 +28,4 @@ type Msg
     | QueryMyTopics (Result Http.Error (List Topic))
     | SaveMyNewTopic (Result Http.Error Topic)
     | SaveMyEditTopic (Result Http.Error Topic)
-    | DeleteMyTopic String (Result Http.Error String)
+    | TrashMyTopic String (Result Http.Error String)

@@ -24,14 +24,14 @@ module Model.TopicCard exposing
     , update
     )
 
-import Model.Operation.Deletion as Deletion exposing (Deletion)
+import Model.Operation as Operation exposing (Operation)
 import Model.Topic exposing (Topic)
 
 
 type alias TopicCard =
     { topic : Topic
     , config : Config
-    , deletion : Deletion
+    , trashOp : Operation
     }
 
 
@@ -44,7 +44,7 @@ type alias Config =
 type Msg
     = Expand Bool
     | Select Bool
-    | Delete Deletion
+    | Trash Operation
 
 
 create : Topic -> TopicCard
@@ -54,7 +54,7 @@ create topic =
         { expanded = False
         , selected = False
         }
-    , deletion = Deletion.NoOp
+    , trashOp = Operation.NoOp
     }
 
 
@@ -77,5 +77,5 @@ update msg ({ config } as topicCard) =
                     }
             }
 
-        Delete deletion ->
-            { topicCard | deletion = deletion }
+        Trash op ->
+            { topicCard | trashOp = op }

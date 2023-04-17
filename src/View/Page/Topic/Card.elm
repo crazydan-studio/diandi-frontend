@@ -29,7 +29,7 @@ import I18n.I18n exposing (langTextEnd)
 import Material.Icons.Outlined as Outlined
 import Material.Icons.Types exposing (Coloring(..))
 import Model
-import Model.Operation.Deletion as Deletion
+import Model.Operation as Operation
 import Model.TopicCard as TopicCard exposing (TopicCard)
 import Msg
 import View.I18n.Home as I18n
@@ -41,7 +41,7 @@ view :
     Model.State
     -> TopicCard
     -> Html Msg.Msg
-view { theme, widgets, withI18nElement } { config, topic, deletion } =
+view { theme, widgets, withI18nElement } { config, topic, trashOp } =
     let
         i18nText =
             withI18nElement I18n.text
@@ -123,8 +123,8 @@ view { theme, widgets, withI18nElement } { config, topic, deletion } =
 
                    else
                     Html.div [] []
-                 , case deletion of
-                    Deletion.DeleteError e ->
+                 , case trashOp of
+                    Operation.Error e ->
                         Html.div
                             [ HtmlAttr.class "mt-2 text-sm whitespace-pre-wrap text-red-500 dark:text-red-600"
                             ]
@@ -145,7 +145,7 @@ view { theme, widgets, withI18nElement } { config, topic, deletion } =
                                 , HtmlEvent.onClick
                                     (Msg.TopicCardMsg
                                         topic.id
-                                        (TopicCard.Delete Deletion.DeleteDoing)
+                                        (TopicCard.Trash Operation.Doing)
                                     )
                                 ]
                                 [ Outlined.delete 20 Inherit ]

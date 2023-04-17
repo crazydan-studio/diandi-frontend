@@ -17,13 +17,13 @@
 -}
 
 
-module Model.Operation.Deletion exposing (Deletion(..))
+module Model.Operation exposing (Operation(..))
 
 import I18n.Translator exposing (TranslateResult)
 
 
-type Deletion
-    = DeleteDoing
-    | DeleteDone
-    | DeleteError TranslateResult
+type Operation
+    = Doing
+    | Done
+    | Error TranslateResult
     | NoOp

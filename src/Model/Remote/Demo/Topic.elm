@@ -101,7 +101,7 @@ deleteMyTopic id =
     Http.get
         { url = "/demo/topics.json"
         , expect =
-            Http.expectJson (DeleteMyTopic id)
+            Http.expectJson (TrashMyTopic id)
                 (Decode.succeed id)
         }
 

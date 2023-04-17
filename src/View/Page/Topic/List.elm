@@ -21,6 +21,7 @@ module View.Page.Topic.List exposing (view)
 
 import Data.TreeStore as TreeStore exposing (TreeStore)
 import Element exposing (..)
+import Html exposing (Html)
 import Html.Attributes as HtmlAttr
 import Html.Keyed
 import Html.Lazy

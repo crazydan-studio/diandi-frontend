@@ -35,6 +35,6 @@ view ({ theme } as state) =
                , height fill
                ]
         )
-        [ Top.view state
+        [ html <| Top.view state
         , Center.view state
         ]

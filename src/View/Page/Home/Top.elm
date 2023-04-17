@@ -1,145 +1,79 @@
 module View.Page.Home.Top exposing (..)
 
 import Element exposing (..)
-import Element.Border as Border
-import Element.Events exposing (onEnter)
-import Element.Input as Input
+import Html exposing (Html)
+import Html.Attributes as HtmlAttr
+import Html.Events as HtmlEvent
 import I18n.I18n exposing (langTextEnd)
+import Json.Decode as Decode
+import Material.Icons.Outlined as Outlined
+import Material.Icons.Types exposing (Coloring(..))
 import Model
 import Msg
 import View.I18n.Home as I18n
-import View.Style.Base as BaseStyle
-import View.Style.Border.Primary as PrimaryBorder
-import Widget.Icon as Icon
-import Widget.Widget.Button as Button
 
 
-view : Model.State -> Element Msg.Msg
-view ({ app, theme, widgets, withI18nElement } as state) =
-    let
-        i18nText =
-            withI18nElement I18n.text
-
-        headerPaddingY =
-            BaseStyle.spacing
-
-        headerHeight =
-            40 + headerPaddingY * 2
-
-        logoHeight =
-            headerHeight - headerPaddingY * 2
-    in
-    row
-        (PrimaryBorder.bottom 1 theme
-            ++ theme.primaryWhiteBackground
-            ++ [ width fill
-               , height (px headerHeight)
-               , paddingXY
-                    BaseStyle.spacing2x
-                    headerPaddingY
-               , zIndex 2
-
-               -- box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2),0px 3px 1px 0px rgba(0,0,0,0.14),0px 1px 1px 0px rgba(0,0,0,0.12);
-               , Border.shadows
-                    [ { inset = False
-                      , offset = ( 0, 3 )
-                      , blur = 1
-                      , size = -2
-                      , color = rgba255 0 0 0 0.2
-                      }
-                    , { inset = False
-                      , offset = ( 0, 3 )
-                      , blur = 1
-                      , size = 0
-                      , color = rgba255 0 0 0 0.14
-                      }
-                    , { inset = False
-                      , offset = ( 0, 1 )
-                      , blur = 1
-                      , size = 0
-                      , color = rgba255 0 0 0 0.12
-                      }
-                    ]
-               ]
-        )
-        [ image
-            [ width shrink
-            , height (px logoHeight)
-            , alignLeft
+view : Model.State -> Html Msg.Msg
+view ({ app, withI18nElement } as state) =
+    Html.nav
+        [ HtmlAttr.class "z-10 w-full bg-white shadow-md dark:bg-gray-800"
+        ]
+        [ Html.div
+            [ HtmlAttr.class "flex items-center px-6 py-2"
             ]
-            { src =
-                if
-                    app.device.class
-                        == Phone
-                        && app.device.orientation
-                        == Portrait
-                then
-                    "/icon.svg"
-
-                else
-                    "/logo.svg"
-            , description = ""
-            , onLoad = Nothing
-            }
-        , row
-            [ width
-                (percent 30
-                    |> minimum 215
-                )
-            , centerX
-            , Border.width 1
-            , Border.color theme.primaryBorderColor
-            , Border.rounded 32
-            , paddingXY BaseStyle.spacing2x 0
-            ]
-            [ Icon.icon
-                { size = 20
-                , color = theme.primaryFontColor
-                , icon = Icon.SearchOutlined
-                }
-            , Input.text
-                [ width fill
-                , Border.width 0
-                , theme.transparentBackground
-                , onEnter Msg.SearchTopic
+            [ Html.a
+                [ HtmlAttr.href "/"
                 ]
-                { onChange = Msg.SearchTopicInputing
-                , text =
-                    app.topicSearchingText
-                        |> Maybe.withDefault ""
-                , placeholder =
-                    Just
-                        (Input.placeholder []
-                            (("请输入关键字查询 ..." :: langTextEnd)
-                                |> i18nText
-                            )
-                        )
-                , label = Input.labelHidden ""
-                , selection = Nothing
-                }
-            ]
-        , widgets.with <|
-            Button.button
-                { attrs = theme.secondaryBtn
-                , content =
-                    row
-                        [ spacing BaseStyle.spacing
+                [ Html.img
+                    [ HtmlAttr.class "h-10 md:hidden"
+                    , HtmlAttr.src "/icon.svg"
+                    ]
+                    []
+                , Html.img
+                    [ HtmlAttr.class "h-10 hidden md:inline"
+                    , HtmlAttr.src "/logo.svg"
+                    ]
+                    []
+                ]
+            , Html.div
+                [ HtmlAttr.class "flex-1 flex flex-row justify-center text-gray-600 capitalize dark:text-gray-300"
+                ]
+                [ Html.div
+                    [ HtmlAttr.class "relative"
+                    ]
+                    [ Html.span
+                        [ HtmlAttr.class "absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 dark:text-gray-300"
                         ]
-                        [ theme.primaryBtnIcon
-                            { icon = Icon.SettingOutlined, size = Nothing }
-                        , -- TODO 点击后，在左侧弹出侧边栏，该侧边栏中展示用户头像/名称、语言切换、主题切换等
-                          if
-                            app.device.class
-                                == Phone
-                                && app.device.orientation
-                                == Portrait
-                          then
-                            none
+                        [ Outlined.search 24 Inherit
+                        ]
+                    , Html.input
+                        [ HtmlAttr.class "w-48 py-1 pl-10 pr-4 transition duration-300 ease-in-out text-gray-500 placeholder-gray-600 bg-white border-transparent border-b border-gray-600 dark:placeholder-gray-300 dark:focus:border-gray-300 dark:bg-gray-800 dark:text-gray-300 focus:outline-none focus:border-gray-600"
+                        , HtmlAttr.placeholder "请输入关键字查询 ..."
+                        , HtmlAttr.type_ "text"
+                        , HtmlAttr.value (app.topicSearchingText |> Maybe.withDefault "")
+                        , HtmlEvent.onInput Msg.SearchTopicInputing
+                        , HtmlEvent.on "keyup"
+                            (Decode.field "key" Decode.string
+                                |> Decode.andThen
+                                    (\key ->
+                                        if key == "Enter" then
+                                            Decode.succeed Msg.SearchTopic
 
-                          else
-                            (I18n.buttonText :: "设置" :: langTextEnd)
-                                |> i18nText
+                                        else
+                                            Decode.fail "Not the enter key"
+                                    )
+                            )
                         ]
-                , onPress = Nothing
-                }
+                        []
+                    ]
+                ]
+            , Html.div
+                [ HtmlAttr.class "flex"
+                ]
+                [ Html.a
+                    [ HtmlAttr.class "mx-2 text-gray-600 cursor-pointer transition-colors duration-300 transform dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-300"
+                    ]
+                    [ Outlined.settings 24 Inherit ]
+                ]
+            ]
         ]

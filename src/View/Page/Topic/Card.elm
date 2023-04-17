@@ -20,15 +20,12 @@
 module View.Page.Topic.Card exposing (view)
 
 import Element exposing (..)
-import Element.Background as Background
 import Element.Events exposing (..)
-import Element.Font as Font
 import Html exposing (Html)
 import Html.Attributes as HtmlAttr
 import Html.Events as HtmlEvent
 import I18n.Element exposing (textWith)
 import I18n.I18n exposing (langTextEnd)
-import Json.Decode as Json
 import Material.Icons.Outlined as Outlined
 import Material.Icons.Types exposing (Coloring(..))
 import Model

@@ -25,14 +25,12 @@ import Element.Events exposing (..)
 import Element.Font as Font
 import Html
 import Html.Attributes as HtmlAttr
+import Html.Events as HtmlEvent
 import I18n.Element exposing (textWith)
 import I18n.I18n exposing (langTextEnd)
 import Json.Decode as Json
-import Material.Button as Button
-import Material.Card as Card
-import Material.IconButton as IconButton
-import Material.Theme as Theme
-import Material.Typography as Typography
+import Material.Icons.Outlined as Outlined
+import Material.Icons.Types exposing (Coloring(..))
 import Model
 import Model.Operation.Deletion as Deletion
 import Model.TopicCard as TopicCard exposing (TopicCard)
@@ -40,7 +38,6 @@ import Msg
 import View.I18n.Home as I18n
 import View.Page as Page
 import Widget.Loading as Loading
-import Widget.MdcFontIcon as MdcFontIcon
 
 
 view :
@@ -99,132 +96,99 @@ view { theme, widgets, withI18nElement } { config, topic, deletion } =
                )
         )
         [ html <|
-            Card.card
-                (Card.config
-                    |> Card.setAttributes
-                        [ HtmlAttr.style "width" "100%"
+            Html.div
+                [ HtmlAttr.class "w-full px-4 py-3 bg-white rounded-md shadow-md dark:bg-gray-800"
+                ]
+                [ Html.div []
+                    [ Html.h1
+                        [ HtmlAttr.class "mt-2 text-lg whitespace-pre-wrap font-semibold text-blue-400 dark:text-white"
                         ]
-                )
-                { blocks =
-                    ( Card.block <|
-                        Html.div
-                            [ HtmlAttr.style "padding" "1rem" ]
-                            [ Html.h2
-                                [ Typography.headline6
-                                , HtmlAttr.style "white-space" "pre-wrap"
-                                ]
-                                [ Html.text (topic.title |> Maybe.withDefault "无标题") ]
-                            , Html.h3
-                                [ Typography.subtitle2
-                                , Theme.textSecondaryOnBackground
-                                , HtmlAttr.style "margin" "0"
-                                ]
-                                [ Html.text "@2023-04-12 23:12:36" ]
-                            ]
-                    , (Card.block <|
-                        Html.div
-                            [ Typography.body2
-                            , Theme.textSecondaryOnBackground
-                            , HtmlAttr.style "padding" "0 1rem 0.5rem 1rem"
-                            , HtmlAttr.style "white-space" "pre-wrap"
-                            , HtmlAttr.style "overflow-y" "auto"
-                            , HtmlAttr.style "max-height"
-                                (if config.expanded then
-                                    "100%"
+                        [ Html.text (topic.title |> Maybe.withDefault "无标题")
+                        ]
+                    , Html.h2
+                        [ HtmlAttr.class "text-sm text-gray-600 dark:text-gray-400"
+                        ]
+                        [ Html.text "@2023-04-12 12:23:21"
+                        ]
+                    , Html.p
+                        [ HtmlAttr.class "mt-2 text-sm whitespace-pre-wrap overflow-y-auto text-gray-600 dark:text-gray-300"
+                        , HtmlAttr.class
+                            (if config.expanded then
+                                "max-h-full"
 
-                                 else
-                                    "144px"
+                             else
+                                "max-h-36"
+                            )
+                        ]
+                        [ Html.text topic.content ]
+                    ]
+                , Html.div
+                    []
+                    [ Html.div
+                        [ HtmlAttr.class "flex flex-wrap items-center mt-2"
+                        ]
+                        (topic.tags
+                            |> List.map
+                                (\tag ->
+                                    Html.a
+                                        [ HtmlAttr.class "mr-4 my-1.5 cursor-pointer text-blue-800 uppercase dark:text-blue-900 hover:underline hover:text-blue-700 dark:hover:text-blue-800 transition-colors duration-300"
+                                        , HtmlAttr.tabindex 0
+                                        ]
+                                        [ Html.text ("#" ++ tag) ]
+                                )
+                        )
+                    , case deletion of
+                        Deletion.DeleteError e ->
+                            Html.div
+                                [ HtmlAttr.class "mt-2 text-sm whitespace-pre-wrap text-red-500 dark:text-red-600"
+                                ]
+                                [ Html.text ("* " ++ "删除失败 - ")
+                                , Html.span [] [ Html.text "Bad Gateway" ]
+                                ]
+
+                        _ ->
+                            Html.div [] []
+                    , Html.div
+                        [ HtmlAttr.class "flex items-center justify-center mt-2"
+                        ]
+                        [ Html.a
+                            [ HtmlAttr.class "flex items-center mr-4 cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-400 dark:hover:text-gray-300 transition-colors duration-300"
+                            , HtmlAttr.tabindex 0
+                            , HtmlEvent.onClick
+                                (Msg.TopicCardMsg
+                                    topic.id
+                                    (TopicCard.Delete Deletion.DeleteDoing)
                                 )
                             ]
-                            [ Html.text topic.content
-                            ]
-                      )
-                        :: (case deletion of
-                                Deletion.DeleteError e ->
-                                    [ Card.block <|
-                                        Html.div
-                                            [ Typography.body2
-                                            , Theme.error
-                                            , HtmlAttr.style "padding" "0 1rem 0.5rem 1rem"
-                                            , HtmlAttr.style "white-space" "pre-wrap"
-                                            ]
-                                            [ Html.text ("* " ++ "删除失败 - ")
-                                            ]
+                            [ Outlined.delete 24 Inherit, Html.text "删除" ]
+                        , Html.a
+                            [ HtmlAttr.class "flex items-center mr-4 cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-400 dark:hover:text-gray-300 transition-colors duration-300"
+                            , HtmlAttr.tabindex 0
+                            , HtmlEvent.onClick
+                                (Msg.batch
+                                    [ Msg.EditTopicPending topic.id
+                                    , Msg.ShowPageLayer Page.EditTopicLayer
                                     ]
+                                )
+                            ]
+                            [ Outlined.edit 24 Inherit, Html.text "编辑" ]
+                        , Html.a
+                            [ HtmlAttr.class "flex items-center mr-0 cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-400 dark:hover:text-gray-300 transition-colors duration-300"
+                            , HtmlAttr.tabindex 0
+                            , HtmlEvent.onClick
+                                (Msg.TopicCardMsg topic.id
+                                    (TopicCard.Expand
+                                        (not config.expanded)
+                                    )
+                                )
+                            ]
+                            (if config.expanded then
+                                [ Outlined.expand_less 24 Inherit, Html.text "收起" ]
 
-                                -- paragraph
-                                --     [ Font.color (Color.toRgbColor Color.Red900)
-                                --     ]
-                                --     [ text "* "
-                                --     , "删除失败 - " :: langTextEnd |> i18nText
-                                --     , textWith e
-                                --     ]
-                                _ ->
-                                    []
-                           )
-                    )
-                , actions =
-                    Just <|
-                        Card.actions
-                            { buttons =
-                                topic.tags
-                                    |> List.map
-                                        (\tag ->
-                                            Card.button
-                                                (Button.config
-                                                    |> Button.setOnClick Msg.NoOp
-                                                )
-                                                ("#" ++ tag)
-                                        )
-                            , icons =
-                                [ Card.icon
-                                    (IconButton.config
-                                        |> IconButton.setOnClick
-                                            (Msg.TopicCardMsg
-                                                topic.id
-                                                (TopicCard.Delete Deletion.DeleteDoing)
-                                            )
-                                        |> IconButton.setLabel (Just "Delete Topic")
-                                    )
-                                    (IconButton.icon MdcFontIcon.delete)
-                                , Card.icon
-                                    (IconButton.config
-                                        |> IconButton.setOnClick
-                                            (Msg.batch
-                                                [ Msg.EditTopicPending topic.id
-                                                , Msg.ShowPageLayer Page.EditTopicLayer
-                                                ]
-                                            )
-                                        |> IconButton.setLabel (Just "Edit Topic")
-                                    )
-                                    (IconButton.icon MdcFontIcon.edit)
-                                , Card.icon
-                                    (IconButton.config
-                                        |> IconButton.setOnClick
-                                            (Msg.TopicCardMsg topic.id
-                                                (TopicCard.Expand
-                                                    (not config.expanded)
-                                                )
-                                            )
-                                        |> IconButton.setLabel
-                                            (Just
-                                                (if config.expanded then
-                                                    "Collapse"
-
-                                                 else
-                                                    "Expand"
-                                                )
-                                            )
-                                    )
-                                    (IconButton.icon
-                                        (if config.expanded then
-                                            MdcFontIcon.expandLess
-
-                                         else
-                                            MdcFontIcon.expandMore
-                                        )
-                                    )
-                                ]
-                            }
-                }
+                             else
+                                [ Outlined.expand_more 24 Inherit, Html.text "展开" ]
+                            )
+                        ]
+                    ]
+                ]
         ]

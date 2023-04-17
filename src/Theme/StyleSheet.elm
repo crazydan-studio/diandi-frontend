@@ -40,6 +40,7 @@ body > * { opacity: 1; }
         , Html.text
             ("""
 .topic-card.size-fit:not(.delete-zoom,.expand) {
+  width: calc((100% - {{topic_card_spacing}}px * {{topic_card_count}}) / {{topic_card_count}}) !important;
   min-width: calc((100% - {{topic_card_spacing}}px * {{topic_card_count}}) / {{topic_card_count}}) !important;
 }
 .topic-card.size-fit.delete-zoom {

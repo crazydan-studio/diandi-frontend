@@ -37,11 +37,13 @@ type alias TopicCard =
 
 type alias Config =
     { expanded : Bool
+    , selected : Bool
     }
 
 
 type Msg
     = Expand Bool
+    | Select Bool
     | Delete Deletion
 
 
@@ -50,6 +52,7 @@ create topic =
     { topic = topic
     , config =
         { expanded = False
+        , selected = False
         }
     , deletion = Deletion.NoOp
     }
@@ -63,6 +66,14 @@ update msg ({ config } as topicCard) =
                 | config =
                     { config
                         | expanded = expanded
+                    }
+            }
+
+        Select selected ->
+            { topicCard
+                | config =
+                    { config
+                        | selected = selected
                     }
             }
 

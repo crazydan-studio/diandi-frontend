@@ -50,11 +50,34 @@ view { theme, widgets, withI18nElement } { config, topic, deletion } =
         [ HtmlAttr.class "w-full h-fit p-2 basis-auto md:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/5"
         ]
         [ Html.div
-            [ HtmlAttr.class "w-full px-4 py-3 bg-white rounded-md shadow-md dark:bg-gray-800"
+            [ HtmlAttr.class "w-full pb-4 bg-white rounded-md shadow-md dark:bg-gray-800 hover:shadow-lg transition-shadow duration-300"
             ]
-            [ Html.div []
-                [ Html.h1
-                    [ HtmlAttr.class "mt-2 text-lg whitespace-pre-wrap break-all font-semibold text-blue-400 dark:text-white"
+            [ Html.div
+                [ HtmlAttr.class "relative py-3 pb-0 px-4"
+                ]
+                [ Html.span
+                    [ HtmlAttr.class "absolute top-1 right-1 cursor-pointer dark:text-white hover:text-blue-400"
+                    , HtmlAttr.class
+                        (if config.selected then
+                            "text-blue-400"
+
+                         else
+                            "text-gray-300"
+                        )
+                    , HtmlEvent.onClick
+                        (Msg.TopicCardMsg
+                            topic.id
+                            (TopicCard.Select (not config.selected))
+                        )
+                    ]
+                    [ if config.selected then
+                        Outlined.check_circle 20 Inherit
+
+                      else
+                        Outlined.radio_button_unchecked 20 Inherit
+                    ]
+                , Html.h1
+                    [ HtmlAttr.class "flex-1 mr-2 text-lg whitespace-pre-wrap break-all font-semibold text-blue-400 dark:text-white"
                     ]
                     [ Html.text (topic.title |> Maybe.withDefault "无标题")
                     ]
@@ -76,21 +99,26 @@ view { theme, widgets, withI18nElement } { config, topic, deletion } =
                     [ Html.text topic.content ]
                 ]
             , Html.div
-                []
-                [ Html.div
-                    [ HtmlAttr.class "flex flex-wrap items-center gap-2 my-3"
-                    ]
-                    (topic.tags
-                        |> List.map
-                            (\tag ->
-                                Html.a
-                                    [ HtmlAttr.class "text-base cursor-pointer text-blue-800 uppercase dark:text-blue-900 hover:underline hover:text-blue-700 dark:hover:text-blue-800 transition-colors duration-300"
-                                    , HtmlAttr.tabindex 0
-                                    ]
-                                    [ Html.text ("#" ++ tag) ]
-                            )
-                    )
-                , case deletion of
+                [ HtmlAttr.class "px-4"
+                ]
+                ([ if not (List.isEmpty topic.tags) then
+                    Html.div
+                        [ HtmlAttr.class "flex flex-wrap items-center gap-2 mt-2"
+                        ]
+                        (topic.tags
+                            |> List.map
+                                (\tag ->
+                                    Html.span
+                                        [ HtmlAttr.class "cursor-pointer hover:underline text-blue-800 hover:text-blue-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors duration-300"
+                                        , HtmlAttr.tabindex 0
+                                        ]
+                                        [ Html.text ("#" ++ tag) ]
+                                )
+                        )
+
+                   else
+                    Html.div [] []
+                 , case deletion of
                     Deletion.DeleteError e ->
                         Html.div
                             [ HtmlAttr.class "mt-2 text-sm whitespace-pre-wrap text-red-500 dark:text-red-600"
@@ -101,47 +129,54 @@ view { theme, widgets, withI18nElement } { config, topic, deletion } =
 
                     _ ->
                         Html.div [] []
-                , Html.div
-                    [ HtmlAttr.class "flex items-center justify-center gap-4 mt-2"
-                    ]
-                    [ Html.a
-                        [ HtmlAttr.class "flex items-center cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-400 dark:hover:text-gray-300 transition-colors duration-300"
-                        , HtmlAttr.tabindex 0
-                        , HtmlEvent.onClick
-                            (Msg.TopicCardMsg
-                                topic.id
-                                (TopicCard.Delete Deletion.DeleteDoing)
-                            )
-                        ]
-                        [ Outlined.delete 20 Inherit, Html.text "删除" ]
-                    , Html.a
-                        [ HtmlAttr.class "flex items-center cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-400 dark:hover:text-gray-300 transition-colors duration-300"
-                        , HtmlAttr.tabindex 0
-                        , HtmlEvent.onClick
-                            (Msg.batch
-                                [ Msg.EditTopicPending topic.id
-                                , Msg.ShowPageLayer Page.EditTopicLayer
+                 ]
+                    ++ (if config.selected then
+                            [ Html.div
+                                [ HtmlAttr.class "flex items-center justify-center gap-4 mt-2"
                                 ]
-                            )
-                        ]
-                        [ Outlined.edit 20 Inherit, Html.text "编辑" ]
-                    , Html.a
-                        [ HtmlAttr.class "flex items-center cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-400 dark:hover:text-gray-300 transition-colors duration-300"
-                        , HtmlAttr.tabindex 0
-                        , HtmlEvent.onClick
-                            (Msg.TopicCardMsg topic.id
-                                (TopicCard.Expand
-                                    (not config.expanded)
-                                )
-                            )
-                        ]
-                        (if config.expanded then
-                            [ Outlined.expand_less 20 Inherit, Html.text "收起" ]
+                                [ Html.span
+                                    [ HtmlAttr.class "flex items-center cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-400 dark:hover:text-gray-300 transition-colors duration-300"
+                                    , HtmlAttr.tabindex 0
+                                    , HtmlEvent.onClick
+                                        (Msg.TopicCardMsg
+                                            topic.id
+                                            (TopicCard.Delete Deletion.DeleteDoing)
+                                        )
+                                    ]
+                                    [ Outlined.delete 20 Inherit, Html.text "删除" ]
+                                , Html.span
+                                    [ HtmlAttr.class "flex items-center cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-400 dark:hover:text-gray-300 transition-colors duration-300"
+                                    , HtmlAttr.tabindex 0
+                                    , HtmlEvent.onClick
+                                        (Msg.batch
+                                            [ Msg.EditTopicPending topic.id
+                                            , Msg.ShowPageLayer Page.EditTopicLayer
+                                            ]
+                                        )
+                                    ]
+                                    [ Outlined.edit 20 Inherit, Html.text "编辑" ]
+                                , Html.span
+                                    [ HtmlAttr.class "flex items-center cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-400 dark:hover:text-gray-300 transition-colors duration-300"
+                                    , HtmlAttr.tabindex 0
+                                    , HtmlEvent.onClick
+                                        (Msg.TopicCardMsg topic.id
+                                            (TopicCard.Expand
+                                                (not config.expanded)
+                                            )
+                                        )
+                                    ]
+                                    (if config.expanded then
+                                        [ Outlined.expand_less 20 Inherit, Html.text "收起" ]
 
-                         else
-                            [ Outlined.expand_more 20 Inherit, Html.text "展开" ]
-                        )
-                    ]
-                ]
+                                     else
+                                        [ Outlined.expand_more 20 Inherit, Html.text "展开" ]
+                                    )
+                                ]
+                            ]
+
+                        else
+                            []
+                       )
+                )
             ]
         ]

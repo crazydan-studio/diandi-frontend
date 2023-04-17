@@ -23,6 +23,7 @@ import Browser
 import Element
     exposing
         ( Element
+        , class
         , fill
         , height
         , inFront
@@ -44,12 +45,19 @@ import Widget.StyleSheet
 
 
 view : Model.State -> Browser.Document Msg.Msg
-view ({ app, theme } as state) =
+view ({ app, theme, themeDark } as state) =
     { title = title app
     , body =
         [ Element.layout
             [ width fill
             , height fill
+            , class
+                (if themeDark then
+                    "dark"
+
+                 else
+                    ""
+                )
             , Font.family
                 [ Font.typeface "Roboto"
                 , Font.sansSerif

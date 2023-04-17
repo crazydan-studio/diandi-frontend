@@ -47,6 +47,7 @@ type Msg
     | FocusOn String
     | ScrollTo String
     | ScreenResize Int Int
+    | SwitchToDarkTheme Bool
       -- 远端消息
     | RemoteMsg RemoteMsg.Msg
       -- 国际化Port消息

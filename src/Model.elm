@@ -57,6 +57,7 @@ type alias Config =
 type alias State =
     { -- 应用状态
       app : App.State
+    , themeDark : Bool
     , theme : Theme.Theme Msg.Msg
     , withI18nElement : I18nElement Msg.Msg
 
@@ -86,6 +87,7 @@ init config navUrl navKey =
 
         ( state, cmd ) =
             { app = app
+            , themeDark = False
             , theme = Theme.create ThemeDefault.init
             , withI18nElement = withI18nElement app.lang
             , widgets = widgets
@@ -129,6 +131,11 @@ update msg state =
                     (App.updateDevice
                         (classifyDevice { width = w, height = h })
                     )
+            , Cmd.none
+            )
+
+        Msg.SwitchToDarkTheme dark ->
+            ( { state | themeDark = dark }
             , Cmd.none
             )
 

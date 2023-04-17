@@ -23,6 +23,7 @@
             "elm-community/list-extra": "8.5.2",
             "flytreeleft/elm-ui": "6.2.0",
             "ghivert/elm-graphql": "5.0.0",
+            "icidasset/elm-material-icons": "11.0.0",
             "lemol/ant-design-icons-elm": "2.0.0",
             "robinheghan/murmur3": "1.0.0",
             "rtfeldman/elm-hex": "1.0.0",
@@ -30,6 +31,7 @@
         },
         "indirect": {
             "SwiftsNamesake/proper-keyboard": "4.0.0",
+            "avh4/elm-color": "1.0.0",
             "elm/bytes": "1.0.8",
             "elm/file": "1.0.5",
             "elm/parser": "1.1.0",

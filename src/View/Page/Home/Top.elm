@@ -16,7 +16,7 @@ import View.I18n.Home as I18n
 view : Model.State -> Html Msg.Msg
 view ({ app, themeDark, withI18nElement } as state) =
     Html.nav
-        [ HtmlAttr.class "z-10 w-full bg-white shadow-md dark:bg-gray-800"
+        [ HtmlAttr.class "z-10 w-full shadow-md bg-white dark:bg-gray-800"
         ]
         [ Html.div
             [ HtmlAttr.class "flex items-center px-6 py-2"
@@ -71,7 +71,7 @@ view ({ app, themeDark, withI18nElement } as state) =
                 [ HtmlAttr.class "flex gap-2"
                 ]
                 [ Html.span
-                    [ HtmlAttr.class "p-1.5 cursor-pointer text-gray-500 transition-colors duration-300 transform rounded-lg hover:bg-gray-100 focus:outline-none"
+                    [ HtmlAttr.class "icon-button"
                     , HtmlEvent.onClick (Msg.SwitchToDarkTheme (not themeDark))
                     ]
                     [ if themeDark then
@@ -81,9 +81,9 @@ view ({ app, themeDark, withI18nElement } as state) =
                         Outlined.dark_mode 24 Inherit
                     ]
                 , Html.span
-                    [ HtmlAttr.class "p-1.5 cursor-pointer text-gray-500 transition-colors duration-300 transform rounded-lg hover:bg-gray-100 focus:outline-none"
+                    [ HtmlAttr.class "icon-button"
                     ]
-                    [ Outlined.settings 24 Inherit ]
+                    [ Outlined.menu 24 Inherit ]
                 ]
             ]
         ]

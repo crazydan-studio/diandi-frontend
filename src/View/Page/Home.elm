@@ -33,6 +33,7 @@ view ({ theme } as state) =
         (theme.primaryGreyBackground
             ++ [ width fill
                , height fill
+               , class "bg-gray-100 dark:bg-gray-900"
                ]
         )
         [ html <| Top.view state

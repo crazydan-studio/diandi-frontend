@@ -5,3 +5,11 @@
 .topic-edit-win textarea.content {
   letter-spacing: 1px;
 }
+
+.icon-button {
+  @apply p-1.5 cursor-pointer text-gray-500 transition-colors duration-300 transform rounded-lg hover:bg-gray-100 focus:outline-none;
+}
+
+.topic-tag {
+  @apply cursor-pointer font-bold text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 transition-colors duration-300;
+}

@@ -116,6 +116,7 @@ if (MODE === "development") {
                 url: false,
               },
             },
+            "postcss-loader",
           ],
         },
         {
@@ -221,6 +222,7 @@ if (MODE === "production") {
                 url: false,
               },
             },
+            "postcss-loader",
           ],
         },
       ],

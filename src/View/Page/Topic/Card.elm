@@ -24,6 +24,7 @@ import Element.Events exposing (..)
 import Html exposing (Html)
 import Html.Attributes as HtmlAttr
 import Html.Events as HtmlEvent
+import I18n.Html exposing (textWith)
 import I18n.I18n exposing (langTextEnd)
 import Json.Decode as Decode
 import Material.Icons.Outlined as Outlined
@@ -42,10 +43,10 @@ view :
     Model.State
     -> TopicCard
     -> Html Msg.Msg
-view { timeZone, withI18nElement } { config, topic, trashOp } =
+view { timeZone, withI18nHtml } { config, topic, trashOp } =
     let
         i18nText =
-            withI18nElement I18n.text
+            withI18nHtml I18n.htmlText
     in
     Html.div
         ((case trashOp of
@@ -81,7 +82,9 @@ view { timeZone, withI18nElement } { config, topic, trashOp } =
                 , Html.span
                     [ HtmlAttr.class "whitespace-pre-wrap break-all text-white text-base"
                     ]
-                    [ Html.text "数据正在移除中，请稍等片刻 ..."
+                    [ "数据正在移除中，请稍等片刻 ..."
+                        :: langTextEnd
+                        |> i18nText
                     ]
                 ]
             , Html.div
@@ -119,7 +122,16 @@ view { timeZone, withI18nElement } { config, topic, trashOp } =
                                 |> Maybe.withDefault "text-gray-400 dark:text-gray-300"
                             )
                         ]
-                        [ Html.text (topic.title |> Maybe.withDefault "无标题")
+                        [ topic.title
+                            |> Maybe.map
+                                (\t ->
+                                    Html.text t
+                                )
+                            |> Maybe.withDefault
+                                ("无标题"
+                                    :: langTextEnd
+                                    |> i18nText
+                                )
                         ]
                     , Html.h2
                         [ HtmlAttr.class "text-sm text-gray-600 dark:text-gray-400"
@@ -172,8 +184,10 @@ view { timeZone, withI18nElement } { config, topic, trashOp } =
                             Html.div
                                 [ HtmlAttr.class "mt-2 text-sm whitespace-pre-wrap text-red-500 dark:text-red-600"
                                 ]
-                                [ Html.text ("* " ++ "删除失败 - ")
-                                , Html.span [] [ Html.text "Bad Gateway" ]
+                                [ "* 删除失败 - "
+                                    :: langTextEnd
+                                    |> i18nText
+                                , textWith e
                                 ]
 
                         _ ->

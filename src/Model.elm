@@ -28,7 +28,13 @@ module Model exposing
 import Browser.Events as Events
 import Browser.Navigation as Nav
 import Element exposing (classifyDevice)
-import I18n.I18n exposing (I18nElement, withI18nElement)
+import I18n.I18n
+    exposing
+        ( I18nElement
+        , I18nHtml
+        , withI18nElement
+        , withI18nHtml
+        )
 import I18n.Port
 import Model.App as App
 import Model.Operation as Operation
@@ -62,6 +68,7 @@ type alias State =
     , timeZone : Time.Zone
     , themeDark : Bool
     , theme : Theme.Theme Msg.Msg
+    , withI18nHtml : I18nHtml Msg.Msg
     , withI18nElement : I18nElement Msg.Msg
 
     -- 组件内部状态
@@ -94,6 +101,7 @@ init config navUrl navKey =
             , themeDark = False
             , theme = Theme.create ThemeDefault.init
             , withI18nElement = withI18nElement app.lang
+            , withI18nHtml = withI18nHtml app.lang
             , widgets = widgets
             , layers = []
             }

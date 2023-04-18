@@ -19,13 +19,17 @@
 
 module View.I18n.Home exposing
     ( buttonText
+    , htmlAttr
+    , htmlText
     , labelText
     , text
     , translate
     )
 
 import Element exposing (Element)
+import Html exposing (Attribute, Html)
 import I18n.Element
+import I18n.Html
 import I18n.Lang exposing (Lang(..))
 import I18n.Translator as Translator
     exposing
@@ -51,6 +55,20 @@ text lang =
     I18n.Element.text lang translate
 
 
+htmlText : Lang -> List String -> Html msg
+htmlText lang =
+    I18n.Html.text lang translate
+
+
+htmlAttr :
+    Lang
+    -> (String -> Attribute msg)
+    -> List String
+    -> List (Attribute msg)
+htmlAttr lang attr_ =
+    I18n.Html.attr lang translate attr_
+
+
 translate : Lang -> List String -> TranslateResult
 translate lang texts =
     Translator.translate Default.lang lang texts <|
@@ -70,12 +88,27 @@ rootTranslator texts =
 
         [ "请输入关键字查询 ..." ] ->
             ok En_US
-                "Please input the keyword for searching ..."
+                "Searching ..."
                 :: default
 
         [ "可以在这里添加一个醒目的标题哦 ..." ] ->
             ok En_US
                 "You can add a conspicuous title here ..."
+                :: default
+
+        [ "数据正在移除中，请稍等片刻 ..." ] ->
+            ok En_US
+                "The data is removing, please wait a minute ..."
+                :: default
+
+        [ "无标题" ] ->
+            ok En_US
+                "No Title"
+                :: default
+
+        [ "* 删除失败 - " ] ->
+            ok En_US
+                "* Removing failed - "
                 :: default
 
         _ ->

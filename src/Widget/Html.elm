@@ -19,6 +19,7 @@
 
 module Widget.Html exposing
     ( onClickOutOfMe
+    , onEnter
     , onInputBlur
     , template
     , toRgba
@@ -32,6 +33,8 @@ import Element
         )
 import Element.Events as Event
 import Element.Input as Input
+import Html
+import Html.Events as HtmlEvent
 import Json.Decode as Decode
 
 
@@ -67,6 +70,21 @@ onInputBlur toMsg =
     Event.on "blur"
         (Input.selectionDecoder
             |> Decode.map toMsg
+        )
+
+
+onEnter : msg -> Html.Attribute msg
+onEnter msg =
+    HtmlEvent.on "keyup"
+        (Decode.field "key" Decode.string
+            |> Decode.andThen
+                (\key ->
+                    if key == "Enter" then
+                        Decode.succeed msg
+
+                    else
+                        Decode.fail "Not the enter key"
+                )
         )
 
 

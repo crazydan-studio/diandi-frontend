@@ -38,8 +38,10 @@ import Model.Remote.GraphQL.Topic as RemoteTopic
 import Model.Remote.Msg as RemoteMsg
 import Model.TopicCard as TopicCard
 import Msg
+import Task
 import Theme.Theme as Theme
 import Theme.Theme.Default as ThemeDefault
+import Time
 import Url
 import View.Page as Page
 import View.Route
@@ -57,6 +59,7 @@ type alias Config =
 type alias State =
     { -- 应用状态
       app : App.State
+    , timeZone : Time.Zone
     , themeDark : Bool
     , theme : Theme.Theme Msg.Msg
     , withI18nElement : I18nElement Msg.Msg
@@ -87,6 +90,7 @@ init config navUrl navKey =
 
         ( state, cmd ) =
             { app = app
+            , timeZone = Time.utc
             , themeDark = False
             , theme = Theme.create ThemeDefault.init
             , withI18nElement = withI18nElement app.lang
@@ -95,7 +99,13 @@ init config navUrl navKey =
             }
                 |> routeUpdateHelper navUrl
     in
-    ( state, Cmd.batch [ widgetsCmd, cmd ] )
+    ( state
+    , Cmd.batch
+        [ widgetsCmd
+        , cmd
+        , Task.perform Msg.AdjustTimeZone Time.here
+        ]
+    )
 
 
 sub : State -> Sub Msg.Msg
@@ -136,6 +146,11 @@ update msg state =
 
         Msg.SwitchToDarkTheme dark ->
             ( { state | themeDark = dark }
+            , Cmd.none
+            )
+
+        Msg.AdjustTimeZone zone ->
+            ( { state | timeZone = zone }
             , Cmd.none
             )
 

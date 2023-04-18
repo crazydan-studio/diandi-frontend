@@ -54,6 +54,7 @@ import Model.Remote.Data as RemoteData
 import Model.Topic exposing (Topic)
 import Model.TopicCard as TopicCard exposing (TopicCard)
 import Svg.Attributes exposing (result)
+import Time
 import Url
 import View.I18n.Default
 import View.Page
@@ -407,9 +408,21 @@ updateTopicCardHelper topicId updater ({ topicCards } as state) =
 
 createTopicCardsHelper : List Topic -> TreeStore TopicCard
 createTopicCardsHelper topics =
+    let
+        posixToMillis posixMaybe =
+            posixMaybe
+                |> Maybe.map Time.posixToMillis
+                |> Maybe.withDefault 0
+    in
     TreeStore.create
         { idGetter = \{ topic } -> topic.id
         , parentGetter = \_ -> Nothing
-        , sorter = Nothing
+        , sorter =
+            Just
+                (\a b ->
+                    compare
+                        (posixToMillis b.topic.updatedAt)
+                        (posixToMillis a.topic.updatedAt)
+                )
         }
         (topics |> List.map TopicCard.create)

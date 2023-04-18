@@ -24,7 +24,6 @@ import Element.Events exposing (..)
 import Html exposing (Html)
 import Html.Attributes as HtmlAttr
 import Html.Events as HtmlEvent
-import I18n.Element exposing (textWith)
 import I18n.I18n exposing (langTextEnd)
 import Json.Decode as Decode
 import Material.Icons.Outlined as Outlined
@@ -36,13 +35,14 @@ import Msg
 import View.I18n.Home as I18n
 import View.Page as Page
 import Widget.Loading as Loading
+import Widget.Util.DateTime as DateTime
 
 
 view :
     Model.State
     -> TopicCard
     -> Html Msg.Msg
-view { theme, widgets, withI18nElement } { config, topic, trashOp } =
+view { timeZone, withI18nElement } { config, topic, trashOp } =
     let
         i18nText =
             withI18nElement I18n.text
@@ -124,7 +124,17 @@ view { theme, widgets, withI18nElement } { config, topic, trashOp } =
                     , Html.h2
                         [ HtmlAttr.class "text-sm text-gray-600 dark:text-gray-400"
                         ]
-                        [ Html.text "@2023-04-12 12:23:21"
+                        [ Html.text
+                            ("@"
+                                ++ (topic.updatedAt
+                                        |> Maybe.map
+                                            (DateTime.format
+                                                "yyyy-MM-dd HH:mm:ss"
+                                                timeZone
+                                            )
+                                        |> Maybe.withDefault ""
+                                   )
+                            )
                         ]
                     , Html.p
                         [ HtmlAttr.class "mt-2 text-sm whitespace-pre-wrap break-all overflow-y-auto text-gray-600 dark:text-gray-300"

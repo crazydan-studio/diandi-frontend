@@ -34,6 +34,7 @@ import Model.Operation.EditTopic as EditTopic
 import Model.Remote.Msg as RemoteMsg
 import Model.TopicCard as TopicCard
 import Task
+import Time
 import Url
 import View.Page as Page
 import Widget.Widget as Widget
@@ -48,6 +49,7 @@ type Msg
     | ScrollTo String
     | ScreenResize Int Int
     | SwitchToDarkTheme Bool
+    | AdjustTimeZone Time.Zone
       -- 远端消息
     | RemoteMsg RemoteMsg.Msg
       -- 国际化Port消息

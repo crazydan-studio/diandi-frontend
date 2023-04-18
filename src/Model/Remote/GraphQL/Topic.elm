@@ -93,6 +93,7 @@ queryMyTopics { keyword, tags } =
                     , GraphQl.field "title"
                     , GraphQl.field "content"
                     , GraphQl.field "tags"
+                    , GraphQl.field "updated_at"
                     ]
             ]
             |> GraphQl.withVariables
@@ -143,6 +144,7 @@ saveMyNewTopic topic =
                     , GraphQl.field "title"
                     , GraphQl.field "content"
                     , GraphQl.field "tags"
+                    , GraphQl.field "updated_at"
                     ]
             ]
             |> GraphQl.withVariables
@@ -188,6 +190,7 @@ saveMyEditTopic topic =
                     , GraphQl.field "title"
                     , GraphQl.field "content"
                     , GraphQl.field "tags"
+                    , GraphQl.field "updated_at"
                     ]
             ]
             |> GraphQl.withVariables

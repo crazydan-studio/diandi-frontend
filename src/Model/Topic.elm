@@ -29,11 +29,13 @@ module Model.Topic exposing
 import Json.Decode as Decode
     exposing
         ( Decoder
+        , int
         , list
         , nullable
         , string
         )
 import Json.Decode.Pipeline exposing (optional, required)
+import Time exposing (Posix)
 
 
 {-| 点滴卡
@@ -48,6 +50,7 @@ type alias Topic =
     , title : Maybe String
     , content : String
     , tags : List String
+    , updatedAt : Maybe Posix
     }
 
 
@@ -57,6 +60,7 @@ init =
     , title = Nothing
     , content = ""
     , tags = []
+    , updatedAt = Nothing
     }
 
 
@@ -72,3 +76,8 @@ topicDecoder =
         |> optional "title" (nullable string) Nothing
         |> required "content" string
         |> optional "tags" (list string) []
+        |> optional "updated_at"
+            (nullable
+                (Decode.map Time.millisToPosix int)
+            )
+            Nothing

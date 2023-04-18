@@ -61,6 +61,7 @@ type Msg
     | SearchTopic
     | SearchTopicInputing String
     | TopicCardMsg String TopicCard.Msg
+    | RemoveTopicCard String
     | NewTopicPending
     | NewTopicMsg EditTopic.Msg
     | NewTopicSaving

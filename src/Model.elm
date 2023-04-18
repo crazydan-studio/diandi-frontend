@@ -156,6 +156,11 @@ update msg state =
         Msg.TopicCardMsg topicId topicCardMsg ->
             topicCardUpdateHelper topicId topicCardMsg state
 
+        Msg.RemoveTopicCard topicId ->
+            ( state |> updateAppState (App.removeTopicCard topicId)
+            , Cmd.none
+            )
+
         Msg.NewTopicPending ->
             ( state |> updateAppState App.initNewTopic
             , Cmd.none

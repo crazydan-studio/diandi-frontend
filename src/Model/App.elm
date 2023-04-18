@@ -30,6 +30,7 @@ module Model.App exposing
     , loading
     , prepareSavingEditTopic
     , prepareSavingNewTopic
+    , removeTopicCard
     , updateDevice
     , updateEditTopic
     , updateNewTopic
@@ -166,10 +167,7 @@ getTopic : String -> State -> Maybe Topic
 getTopic topicId { topicCards } =
     topicCards
         |> RemoteData.andThen
-            (\store ->
-                store
-                    |> TreeStore.get topicId
-            )
+            (TreeStore.get topicId)
         |> Maybe.map .topic
 
 
@@ -180,6 +178,16 @@ updateTopicCard topicId topicCardMsg state =
             (TopicCard.update
                 topicCardMsg
             )
+
+
+removeTopicCard : String -> State -> State
+removeTopicCard topicId ({ topicCards } as state) =
+    { state
+        | topicCards =
+            topicCards
+                |> RemoteData.update
+                    (TreeStore.removeById topicId)
+    }
 
 
 initNewTopic :

@@ -111,7 +111,7 @@ create config { app, theme, widgets, withI18nElement } =
                                 , Font.size 18
                                 , Font.color theme.primaryWhiteBackgroundColor
                                 ]
-                                [ Loading.ball { width = 72, height = 72 }
+                                [ html <| Loading.ball { width = 72, height = 72 }
                                 , paragraph []
                                     [ ("数据正在保存中，请稍等片刻 ..." :: langTextEnd)
                                         |> i18nText

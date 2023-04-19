@@ -17,7 +17,7 @@
 -}
 
 
-module Widget.Bytemd exposing (viewer)
+module Widget.Bytemd exposing (editor, viewer)
 
 import Html exposing (Attribute, Html, node)
 import Html.Attributes exposing (class, value)
@@ -45,5 +45,14 @@ viewer attrs md =
                , class "prose-h4:mt-6"
                , class "prose-code:before:content-[''] prose-code:after:content-[''] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-lg prose-code:text-sm prose-code:bg-gray-100 dark:prose-code:bg-slate-700"
                ]
+        )
+        []
+
+
+editor : List (Attribute msg) -> Html msg
+editor attrs =
+    node "bytemd-editor"
+        (attrs
+            ++ []
         )
         []

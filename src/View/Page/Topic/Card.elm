@@ -158,13 +158,13 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                         ]
                     ]
                 , div
-                    [ class "mt-2 py-2 text-sm whitespace-pre-wrap break-all overflow-y-auto text-gray-600 dark:text-gray-300"
+                    [ class "mt-2 py-2 text-sm whitespace-pre-wrap break-words overflow-y-auto text-gray-600 dark:text-gray-300"
                     , class
                         (if config.expanded then
                             "max-h-full"
 
                          else
-                            "max-h-36"
+                            "max-h-48"
                         )
                     ]
                     [ topic.content

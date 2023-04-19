@@ -30,7 +30,7 @@ viewer attrs md =
             ++ [ value md
 
                -- https://tailwindcss.com/docs/typography-plugin
-               , class "prose dark:prose-invert leading-5"
+               , class "prose dark:prose-invert leading-6"
                , class "prose-ul:my-0"
                , class "prose-ol:my-0"
                , class "prose-li:my-1"
@@ -43,6 +43,7 @@ viewer attrs md =
                , class "prose-h2:mb-3 prose-h2:mt-6"
                , class "prose-h3:mt-6"
                , class "prose-h4:mt-6"
+               , class "prose-code:before:content-[''] prose-code:after:content-[''] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-lg prose-code:text-sm prose-code:bg-gray-100 dark:prose-code:bg-slate-700"
                ]
         )
         []

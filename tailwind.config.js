@@ -41,8 +41,8 @@ module.exports = {
       theme: "night-owl",
       custom: {
         base: {
-          // 使用 tailwindcss 设置的背景色
-          background: "transparent",
+          // 代码块使用 tailwindcss 设置的背景色
+          background: "transparent !important",
         },
       },
     },

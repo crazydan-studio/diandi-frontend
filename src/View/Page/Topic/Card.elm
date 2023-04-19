@@ -19,11 +19,17 @@
 
 module View.Page.Topic.Card exposing (view)
 
-import Element exposing (..)
-import Element.Events exposing (..)
-import Html exposing (Html)
-import Html.Attributes as HtmlAttr
-import Html.Events as HtmlEvent
+import Html
+    exposing
+        ( Html
+        , div
+        , h1
+        , h2
+        , span
+        , text
+        )
+import Html.Attributes exposing (class, tabindex)
+import Html.Events exposing (on, onClick)
 import I18n.Html exposing (textWith)
 import I18n.I18n exposing (langTextEnd)
 import Json.Decode as Decode
@@ -35,8 +41,10 @@ import Model.TopicCard as TopicCard exposing (TopicCard)
 import Msg
 import View.I18n.Home as I18n
 import View.Page as Page
+import Widget.Bytemd as Makedown
 import Widget.Loading as Loading
 import Widget.Util.DateTime as DateTime
+import Html exposing (p)
 
 
 view :
@@ -48,11 +56,11 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
         i18nText =
             withI18nHtml I18n.htmlText
     in
-    Html.div
+    div
         ((case trashOp of
             Operation.Done ->
-                [ HtmlAttr.class "animate-zoom-in"
-                , HtmlEvent.on "animationend"
+                [ class "animate-zoom-in"
+                , on "animationend"
                     (Decode.succeed
                         (Msg.RemoveTopicCard topic.id)
                     )
@@ -61,15 +69,15 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
             _ ->
                 []
          )
-            ++ [ HtmlAttr.class "w-full h-fit p-2 basis-auto md:basis-1/2 lg:basis-1/3 xl:basis-1/4 2xl:basis-1/5"
+            ++ [ class "w-full h-fit p-2 basis-auto md:basis-1/2 xl:basis-1/4"
                ]
         )
-        [ Html.div
-            [ HtmlAttr.class "relative w-full rounded-md shadow-md bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow duration-300"
+        [ div
+            [ class "relative w-full rounded-md shadow-md bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow duration-300"
             ]
-            [ Html.div
-                [ HtmlAttr.class "absolute w-full h-full z-10 p-8 rounded-md flex flex-row items-center justify-center bg-black/50"
-                , HtmlAttr.class
+            [ div
+                [ class "absolute w-full h-full z-10 p-8 rounded-md flex flex-row items-center justify-center bg-black/50"
+                , class
                     (case trashOp of
                         Operation.Doing ->
                             ""
@@ -79,30 +87,30 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                     )
                 ]
                 [ Loading.ripple { width = 64, height = 64 }
-                , Html.span
-                    [ HtmlAttr.class "whitespace-pre-wrap break-all text-white text-base"
+                , span
+                    [ class "whitespace-pre-wrap break-all text-white text-base"
                     ]
                     [ "数据正在移除中，请稍等片刻 ..."
                         :: langTextEnd
                         |> i18nText
                     ]
                 ]
-            , Html.div
-                [ HtmlAttr.class "px-4 py-3"
+            , div
+                [ class "px-4 py-3 divide-y divide-gray-100 dark:divide-gray-700"
                 ]
-                [ Html.div
-                    [ HtmlAttr.class "relative"
+                [ div
+                    [ class "relative"
                     ]
-                    [ Html.span
-                        [ HtmlAttr.class "hidden absolute -top-2.5 -right-3.5 cursor-pointer dark:text-white hover:text-blue-400"
-                        , HtmlAttr.class
+                    [ span
+                        [ class "hidden absolute -top-2.5 -right-3.5 cursor-pointer dark:text-white hover:text-blue-400"
+                        , class
                             (if config.selected then
                                 "text-blue-400"
 
                              else
                                 "text-gray-300"
                             )
-                        , HtmlEvent.onClick
+                        , onClick
                             (Msg.TopicCardMsg
                                 topic.id
                                 (TopicCard.Select (not config.selected))
@@ -114,9 +122,9 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                           else
                             Outlined.radio_button_unchecked 20 Inherit
                         ]
-                    , Html.h1
-                        [ HtmlAttr.class "flex-1 text-lg whitespace-pre-wrap break-all font-semibold"
-                        , HtmlAttr.class
+                    , h1
+                        [ class "flex-1 text-lg whitespace-pre-wrap break-all font-semibold"
+                        , class
                             (topic.title
                                 |> Maybe.map (\_ -> "text-blue-400 dark:text-white")
                                 |> Maybe.withDefault "text-gray-400 dark:text-gray-300"
@@ -125,7 +133,7 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                         [ topic.title
                             |> Maybe.map
                                 (\t ->
-                                    Html.text t
+                                    text t
                                 )
                             |> Maybe.withDefault
                                 ("无标题"
@@ -133,10 +141,10 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                                     |> i18nText
                                 )
                         ]
-                    , Html.h2
-                        [ HtmlAttr.class "text-sm text-gray-600 dark:text-gray-400"
+                    , h2
+                        [ class "text-sm text-gray-600 dark:text-gray-400"
                         ]
-                        [ Html.text
+                        [ text
                             ("@"
                                 ++ (topic.updatedAt
                                         |> Maybe.map
@@ -148,41 +156,44 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                                    )
                             )
                         ]
-                    , Html.p
-                        [ HtmlAttr.class "mt-2 text-sm whitespace-pre-wrap break-all overflow-y-auto text-gray-600 dark:text-gray-300"
-                        , HtmlAttr.class
-                            (if config.expanded then
-                                "max-h-full"
-
-                             else
-                                "max-h-36"
-                            )
-                        ]
-                        [ Html.text topic.content ]
                     ]
-                , Html.div
+                , div
+                    [ class "mt-2 py-2 text-sm whitespace-pre-wrap break-all overflow-y-auto text-gray-600 dark:text-gray-300"
+                    , class
+                        (if config.expanded then
+                            "max-h-full"
+
+                         else
+                            "max-h-36"
+                        )
+                    ]
+                    [ topic.content
+                        |> Makedown.viewer
+                            []
+                    ]
+                , div
                     []
                     [ if not (List.isEmpty topic.tags) then
-                        Html.div
-                            [ HtmlAttr.class "flex flex-wrap items-center gap-2 mt-2"
+                        div
+                            [ class "flex flex-wrap items-center gap-2 mt-2"
                             ]
                             (topic.tags
                                 |> List.map
                                     (\tag ->
-                                        Html.span
-                                            [ HtmlAttr.class "topic-tag"
-                                            , HtmlAttr.tabindex 0
+                                        span
+                                            [ class "topic-tag"
+                                            , tabindex 0
                                             ]
-                                            [ Html.text ("#" ++ tag) ]
+                                            [ text ("#" ++ tag) ]
                                     )
                             )
 
                       else
-                        Html.div [] []
+                        div [] []
                     , case trashOp of
                         Operation.Error e ->
-                            Html.div
-                                [ HtmlAttr.class "mt-2 text-sm whitespace-pre-wrap text-red-500 dark:text-red-600"
+                            div
+                                [ class "mt-2 text-sm whitespace-pre-wrap text-red-500 dark:text-red-600"
                                 ]
                                 [ "* 删除失败 - "
                                     :: langTextEnd
@@ -191,24 +202,24 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                                 ]
 
                         _ ->
-                            Html.div [] []
-                    , Html.div
-                        [ HtmlAttr.class "flex items-center justify-end gap-1 mt-2"
+                            div [] []
+                    , div
+                        [ class "flex items-center justify-end gap-1 mt-2"
                         ]
-                        [ Html.span
-                            [ HtmlAttr.class "icon-button"
-                            , HtmlAttr.tabindex 0
-                            , HtmlEvent.onClick
+                        [ span
+                            [ class "icon-button"
+                            , tabindex 0
+                            , onClick
                                 (Msg.TopicCardMsg
                                     topic.id
                                     (TopicCard.Trash Operation.Doing)
                                 )
                             ]
                             [ Outlined.delete 20 Inherit ]
-                        , Html.span
-                            [ HtmlAttr.class "icon-button"
-                            , HtmlAttr.tabindex 0
-                            , HtmlEvent.onClick
+                        , span
+                            [ class "icon-button"
+                            , tabindex 0
+                            , onClick
                                 (Msg.batch
                                     [ Msg.EditTopicPending topic.id
                                     , Msg.ShowPageLayer Page.EditTopicLayer
@@ -216,10 +227,10 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                                 )
                             ]
                             [ Outlined.edit 20 Inherit ]
-                        , Html.span
-                            [ HtmlAttr.class "icon-button"
-                            , HtmlAttr.tabindex 0
-                            , HtmlEvent.onClick
+                        , span
+                            [ class "icon-button"
+                            , tabindex 0
+                            , onClick
                                 (Msg.TopicCardMsg topic.id
                                     (TopicCard.Expand
                                         (not config.expanded)

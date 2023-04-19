@@ -27,15 +27,6 @@
   <meta name="twitter:title" content="<%= htmlWebpackPlugin.options.title %>">
   <meta name="twitter:description" content="<%= htmlWebpackPlugin.options.description %>">
   <meta name="twitter:image:src" content="<%= htmlWebpackPlugin.options.image %>">
-  <%= // https://github.com/jantimon/html-webpack-plugin/tree/main/examples/custom-insertion-position
-      htmlWebpackPlugin
-        .tags
-        .headTags
-        .filter((tag)=> {
-          return tag.tagName !== 'script'
-        })
-      .join('')
-  %>
   <title><%= htmlWebpackPlugin.options.description %></title>
   <link rel="canonical" href="<%= htmlWebpackPlugin.options.url %>">
   <link rel="icon" type="image/x-icon" href="<%= htmlWebpackPlugin.options.publicPath %>icon.svg">
@@ -88,6 +79,15 @@
     }
     /** End: 在 elm 渲染结束前，都以透明方式隐藏元素 */
   </style>
+  <%= // https://github.com/jantimon/html-webpack-plugin/tree/main/examples/custom-insertion-position
+    htmlWebpackPlugin
+      .tags
+      .headTags
+      .filter((tag)=> {
+        return tag.tagName !== 'script'
+      })
+    .join('')
+  %>
 </head>
 
 <body>

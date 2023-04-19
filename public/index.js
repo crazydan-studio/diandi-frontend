@@ -1,15 +1,13 @@
 "use strict";
 
-import "material-components-web-elm/dist/material-components-web-elm.js";
-import "material-components-web-elm/dist/material-components-web-elm.css";
-
 import { Elm } from "../src/Main";
 import { getFirstBrowserLanguage, findNotTranslatedTexts } from "./js/lang";
 import pkg from "../package.json";
 
+import "./webcomponents";
+
 import "./js/event";
 import "./css/index.css";
-import "./css/animation.css";
 
 // Note: 采用 Browser.application 方式初始化，无需挂载到dom节点
 const app = Elm.Main.init({

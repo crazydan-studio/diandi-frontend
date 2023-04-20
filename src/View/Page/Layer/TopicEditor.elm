@@ -114,8 +114,8 @@ create config { app, withI18nHtml } =
                             div
                                 [ class "flex gap-1 px-2 py-1"
                                 , class "rounded-full font-bold"
-                                , class "text-white dark:text-gray-300 dark:hover:text-gray-200"
-                                , class "bg-sky-700 hover:bg-sky-600"
+                                , class "text-gray-600 hover:text-gray-500 dark:text-gray-400 dark:hover:text-gray-300"
+                                , class "bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600"
                                 , class "transition-colors duration-300"
                                 ]
                                 [ span [] [ text ("#" ++ tag) ]

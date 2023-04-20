@@ -70,7 +70,7 @@ npm run prod
   以安装该组件，并确保项目中依赖的`elm/virtual-dom`为`1.0.3`版本
 - [Material Icons for Elm](https://github.com/icidasset/elm-material-icons):
   Svg 实现
-  - [图标列表](https://fonts.google.com/icons)
+  - [图标列表](https://fonts.google.com/icons?icon.set=Material+Icons)
 - [Material Design Components](https://m2.material.io/components):
   Material Design 组件样式
   - [Material-UI](https://v4.mui.com/getting-started/installation/):

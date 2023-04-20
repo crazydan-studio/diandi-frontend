@@ -19,36 +19,27 @@
 
 module View.Page.Layer.TopicEditor exposing (create)
 
-import Element exposing (..)
-import Element.Background as Background
-import Element.Border as Border
-import Element.Events exposing (onEnter, onLoseFocus)
-import Element.Font as Font
-import Element.Input as Input
-import Html
-import Html.Attributes as HtmlAttr
-import Html.Events as HtmlEvent
-import I18n.Element exposing (textWith)
+import Html exposing (Html, button, div, input, span, text)
+import Html.Attributes exposing (class, id, placeholder, value)
+import Html.Events exposing (onBlur, onClick, onInput)
 import I18n.I18n exposing (langTextEnd)
+import Material.Icons.Outlined as Outlined
+import Material.Icons.Types exposing (Coloring(..))
 import Model
 import Model.Error as Error
 import Model.Operation.EditTopic exposing (EditTopic)
 import Msg
 import View.I18n.Home as I18n
-import View.Style.Base as BaseStyle
 import Widget.Bytemd as Markdown
-import Widget.Color as Color
-import Widget.Icon as Icon
+import Widget.Html exposing (onEnter)
 import Widget.Loading as Loading
 import Widget.Util.Basic exposing (fromMaybe)
-import Widget.Widget.Button as Button
 
 
 type alias Config msg =
     { isNew : Bool
     , topic : Maybe EditTopic
     , onTitleChange : String -> msg
-    , onContentPreviewedChange : Bool -> msg
     , onContentChange : String -> msg
     , onTagDeleted : String -> msg
     , onTagDone : msg
@@ -58,11 +49,14 @@ type alias Config msg =
     }
 
 
-create : Config Msg.Msg -> Model.State -> Element Msg.Msg
-create config { app, theme, widgets, withI18nElement } =
+create : Config Msg.Msg -> Model.State -> Html Msg.Msg
+create config { app, withI18nHtml } =
     let
         i18nText =
-            withI18nElement I18n.text
+            withI18nHtml I18n.htmlText
+
+        i18nAttr =
+            I18n.htmlAttr app.lang
 
         title =
             config.topic |> fromMaybe "" .title
@@ -76,223 +70,103 @@ create config { app, theme, widgets, withI18nElement } =
         taging =
             config.topic |> fromMaybe "" .taging
 
-        previewed =
-            config.topic |> fromMaybe False .previewed
-
         updating =
             config.topic |> fromMaybe False .updating
 
         error =
             config.topic |> fromMaybe Error.none .error
     in
-    column
-        (theme.primaryWhiteBackground
-            ++ [ width (percent 70)
-               , height fill
-               , class "topic-edit-win"
-               , padding BaseStyle.spacing2x
-               , spacing BaseStyle.spacing2x
-               , centerX
-               , Border.rounded 4
-               , styles
-                    [ ( "margin"
-                      , String.fromInt BaseStyle.spacing2x
-                            ++ "px 0"
-                      )
-                    ]
-               ]
-            ++ (if updating then
-                    [ inFront
-                        (el
-                            [ width fill
-                            , height fill
-                            , Background.color theme.layerBackgroundColor
-                            ]
-                            (row
-                                [ centerX
-                                , centerY
-                                , Font.size 18
-                                , Font.color theme.primaryWhiteBackgroundColor
-                                ]
-                                [ html <| Loading.ball { width = 72, height = 72 }
-                                , paragraph []
-                                    [ ("数据正在保存中，请稍等片刻 ..." :: langTextEnd)
-                                        |> i18nText
-                                    ]
-                                ]
-                            )
-                        )
-                    ]
-
-                else
-                    []
-               )
-        )
-        [ Input.text
-            (theme.defaultInput
-                ++ [ width fill
-                   , height (px 42)
-                   ]
+    div
+        [ class "self-center mt-8"
+        , class "flex flex-col w-3/4 px-3 py-3"
+        , class "rounded-md bg-white dark:bg-gray-800"
+        , class "gap-2"
+        ]
+        [ input
+            ([ class "px-4 py-2 text-gray-700 bg-white border rounded-md dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+             , value title
+             , onInput config.onTitleChange
+             ]
+                ++ i18nAttr
+                    placeholder
+                    ("可以在这里添加一个醒目的标题哦 ..." :: langTextEnd)
             )
-            { onChange = config.onTitleChange
-            , text = title
-            , selection = Nothing
-            , placeholder =
-                Just
-                    (Input.placeholder
-                        theme.placeholderFont
-                        (("可以在这里添加一个醒目的标题哦 ..." :: langTextEnd)
-                            |> i18nText
-                        )
-                    )
-            , label = Input.labelHidden ""
+            []
+        , Markdown.editor
+            { value = content
+            , styles = [ "rounded-md", "border", "dark:border-gray-600" ]
+            , mode = Markdown.Auto
+            , lang = app.lang
+            , placeholder = "又有什么奇妙的想法呢？赶紧记下来吧 :)"
+            , onChange = Just config.onContentChange
             }
-        , el
-            [ width fill
-            , height fill
+        , div
+            [ class "flex flex-col"
+            , class "gap-2"
             ]
-            (html <|
-                Markdown.editor
-                    { value = content
-                    , mode = Markdown.Auto
-                    , lang = app.lang
-                    , placeholder = "又有什么奇妙的想法呢？赶紧记下来吧 :)"
-                    , onChange = Just config.onContentChange
-                    }
-            )
-        , row
-            [ width fill
-            ]
-            [ el
-                [ alignTop
-                , paddingXY 0 8
+            [ div
+                [ class "flex flex-wrap"
+                , class "items-center gap-2"
                 ]
-                ((I18n.labelText :: "标签：" :: langTextEnd)
-                    |> i18nText
-                )
-            , column
-                [ width fill
-                , spacing BaseStyle.spacing
-                ]
-                [ wrappedRow
-                    [ width fill
-                    , spacing BaseStyle.spacing
-                    ]
-                    (tags
-                        |> List.map
-                            (\tag ->
-                                row
-                                    [ spacing BaseStyle.spacing
-                                    , padding 8
-                                    , Border.rounded 4
-                                    , Background.color (rgba255 25 118 210 0.1)
-                                    , mouseOver
-                                        [ Background.color (rgba255 25 118 210 0.2)
-                                        ]
+                (tags
+                    |> List.map
+                        (\tag ->
+                            div
+                                [ class "flex gap-1 px-2 py-1"
+                                , class "rounded-full font-bold"
+                                , class "text-white dark:text-gray-300 dark:hover:text-gray-200"
+                                , class "bg-sky-700 hover:bg-sky-600"
+                                , class "transition-colors duration-300"
+                                ]
+                                [ span [] [ text ("#" ++ tag) ]
+                                , span
+                                    [ class "cursor-pointer"
+                                    , onClick (config.onTagDeleted tag)
                                     ]
-                                    [ text ("#" ++ tag)
-                                    , widgets.with <|
-                                        Button.circle
-                                            { attrs = theme.secondaryBtn ++ [ centerX, padding 2 ]
-                                            , content =
-                                                el [ centerX ]
-                                                    (theme.primaryBtnIcon
-                                                        { icon = Icon.CloseOutlined, size = Just 8 }
-                                                    )
-                                            , onPress = Just (config.onTagDeleted tag)
-                                            }
-                                    ]
-                            )
-                    )
-                , el
-                    [ width fill
-                    ]
-                    (Input.text
-                        (theme.defaultInput
-                            ++ [ id app.topicTagEditInputId
-                               , height (px 42)
-                               , onEnter config.onTagDone
-                               , onLoseFocus config.onTagDone
-                               ]
+                                    [ Outlined.highlight_off 16 Inherit ]
+                                ]
                         )
-                        { onChange = config.onTagChange
-                        , text = taging
-                        , selection = Nothing
-                        , placeholder =
-                            Just
-                                (Input.placeholder
-                                    theme.placeholderFont
-                                    (("请输入标签名称，并按回车确认" :: langTextEnd)
-                                        |> i18nText
-                                    )
-                                )
-                        , label = Input.labelHidden ""
-                        }
-                    )
-                ]
+                )
+            , input
+                ([ id app.topicTagEditInputId
+                 , class "px-4 py-2 text-gray-700 bg-white border rounded-md dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+                 , value taging
+                 , onInput config.onTagChange
+                 , onEnter config.onTagDone
+                 , onBlur config.onTagDone
+                 ]
+                    ++ i18nAttr
+                        placeholder
+                        ("请输入标签名称，并按回车确认" :: langTextEnd)
+                )
+                []
             ]
-        , (if
-            app.device.class
-                == Phone
-                && app.device.orientation
-                == Portrait
-           then
-            column
-
-           else
-            row
-          )
-            [ width fill
-            , spacing BaseStyle.spacing2x
+        , div
+            [ class "mt-4 flex"
+            , class "gap-4 justify-end"
             ]
-            [ case error of
-                Error.Error e ->
-                    paragraph
-                        [ Font.color (Color.toRgbColor Color.Red900)
-                        ]
-                        [ text "* "
-                        , textWith e
-                        ]
-
-                Error.Info e ->
-                    paragraph
-                        [ Font.color (Color.toRgbColor Color.Green900)
-                        ]
-                        [ text "* "
-                        , textWith e
-                        ]
-
-                _ ->
-                    none
-            , row
-                [ alignRight
-                , spacing BaseStyle.spacing
+            [ button
+                [ class "px-4 w-full py-2.5 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+                , onClick config.onEditDone
                 ]
-                [ widgets.with <|
-                    Button.button
-                        { attrs = theme.primaryBtn ++ []
-                        , content =
-                            (I18n.buttonText
-                                :: (if config.isNew then
-                                        "记下来！"
+                [ I18n.buttonText
+                    :: (if config.isNew then
+                            "记下来！"
 
-                                    else
-                                        "保存"
-                                   )
-                                :: langTextEnd
-                            )
-                                |> i18nText
-                        , onPress = Just config.onEditDone
-                        }
-                , widgets.with <|
-                    Button.button
-                        { attrs = theme.secondaryBtn ++ []
-                        , content =
-                            (I18n.buttonText :: "取消" :: langTextEnd)
-                                |> i18nText
-                        , onPress =
-                            Just config.onEditCanceled
-                        }
+                        else
+                            "保存"
+                       )
+                    :: langTextEnd
+                    |> i18nText
+                ]
+            , button
+                [ class "px-4 w-full py-2.5 text-sm font-medium dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-800 tracking-wide text-gray-700 capitalize transition-colors duration-300 transform border border-gray-200 rounded-md hover:bg-gray-100 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40"
+                , onClick config.onEditCanceled
+                ]
+                [ I18n.buttonText
+                    :: "取消"
+                    :: langTextEnd
+                    |> i18nText
                 ]
             ]
         ]

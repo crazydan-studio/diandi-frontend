@@ -168,6 +168,7 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                     ]
                     [ Markdown.viewer
                         { value = topic.content
+                        , styles = []
                         }
                     ]
                 , div

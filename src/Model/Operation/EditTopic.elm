@@ -43,7 +43,6 @@ type alias EditTopic =
     , title : String
     , tags : List String
     , taging : String
-    , previewed : Bool
     , updating : Bool
     , error : Error
     }
@@ -52,7 +51,6 @@ type alias EditTopic =
 type Msg
     = TitleChanged String
     | ContentChanged String
-    | ContentPreviewed Bool
     | TagChanged String
     | TagDeleted String
     | TagDone
@@ -65,7 +63,6 @@ init =
     , title = ""
     , tags = []
     , taging = ""
-    , previewed = False
     , updating = False
     , error = Error.none
     }
@@ -143,11 +140,6 @@ update msg editTopic =
             { editTopic
                 | content = content
                 , error = Error.none
-            }
-
-        ContentPreviewed enabled ->
-            { editTopic
-                | previewed = enabled
             }
 
         TagChanged tag ->

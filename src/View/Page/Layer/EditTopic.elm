@@ -29,32 +29,28 @@ import View.Page.Layer.TopicEditor as TopicEditor
 
 create : Model.State -> Element Msg.Msg
 create ({ app } as state) =
-    state
-        |> TopicEditor.create
-            { isNew = False
-            , topic = app.editTopic
-            , onTitleChange =
-                \text ->
-                    Msg.EditTopicMsg (EditTopic.TitleChanged text)
-            , onContentPreviewedChange =
-                \checked ->
-                    Msg.EditTopicMsg
-                        (EditTopic.ContentPreviewed
-                            checked
-                        )
-            , onContentChange =
-                \text ->
-                    Msg.EditTopicMsg (EditTopic.ContentChanged text)
-            , onTagDeleted = \tag -> Msg.EditTopicMsg (EditTopic.TagDeleted tag)
-            , onTagDone = Msg.EditTopicMsg EditTopic.TagDone
-            , onTagChange =
-                \text ->
-                    Msg.EditTopicMsg (EditTopic.TagChanged text)
-            , onEditDone =
-                Msg.EditTopicSaving
-            , onEditCanceled =
-                Msg.batch
-                    [ Msg.EditTopicCleaned
-                    , Msg.ClosePageLayer Page.EditTopicLayer
-                    ]
-            }
+    html <|
+        (state
+            |> TopicEditor.create
+                { isNew = False
+                , topic = app.editTopic
+                , onTitleChange =
+                    \text ->
+                        Msg.EditTopicMsg (EditTopic.TitleChanged text)
+                , onContentChange =
+                    \text ->
+                        Msg.EditTopicMsg (EditTopic.ContentChanged text)
+                , onTagDeleted = \tag -> Msg.EditTopicMsg (EditTopic.TagDeleted tag)
+                , onTagDone = Msg.EditTopicMsg EditTopic.TagDone
+                , onTagChange =
+                    \text ->
+                        Msg.EditTopicMsg (EditTopic.TagChanged text)
+                , onEditDone =
+                    Msg.EditTopicSaving
+                , onEditCanceled =
+                    Msg.batch
+                        [ Msg.EditTopicCleaned
+                        , Msg.ClosePageLayer Page.EditTopicLayer
+                        ]
+                }
+        )

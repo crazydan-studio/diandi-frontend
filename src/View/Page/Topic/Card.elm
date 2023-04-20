@@ -235,7 +235,7 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                         , class "items-center justify-end gap-1"
                         ]
                         [ span
-                            [ class "icon-button"
+                            [ class "tw-icon-btn"
                             , tabindex 0
                             , onClick
                                 (Msg.TopicCardMsg
@@ -245,7 +245,7 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                             ]
                             [ Outlined.delete 20 Inherit ]
                         , span
-                            [ class "icon-button"
+                            [ class "tw-icon-btn"
                             , tabindex 0
                             , onClick
                                 (Msg.batch
@@ -256,7 +256,7 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                             ]
                             [ Outlined.edit 20 Inherit ]
                         , span
-                            [ class "icon-button"
+                            [ class "tw-icon-btn"
                             , tabindex 0
                             , onClick
                                 (Msg.TopicCardMsg topic.id

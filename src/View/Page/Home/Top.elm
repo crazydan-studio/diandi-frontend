@@ -116,7 +116,7 @@ view ({ app, themeDark, withI18nHtml } as state) =
                 [ class "flex gap-2"
                 ]
                 [ span
-                    [ class "icon-button"
+                    [ class "tw-icon-btn"
                     , onClick (Msg.SwitchToDarkTheme (not themeDark))
                     ]
                     [ if themeDark then
@@ -126,7 +126,7 @@ view ({ app, themeDark, withI18nHtml } as state) =
                         Outlined.dark_mode 24 Inherit
                     ]
                 , span
-                    [ class "icon-button"
+                    [ class "tw-icon-btn"
                     ]
                     [ Outlined.menu 24 Inherit ]
                 ]

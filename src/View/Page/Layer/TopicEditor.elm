@@ -84,7 +84,7 @@ create config { app, withI18nHtml } =
         , class "gap-2"
         ]
         [ input
-            ([ class "text-input"
+            ([ class "tw-text-input"
              , value title
              , onInput config.onTitleChange
              ]
@@ -134,7 +134,7 @@ create config { app, withI18nHtml } =
                 )
             , input
                 ([ id app.topicTagEditInputId
-                 , class "text-input"
+                 , class "tw-text-input"
                  , value taging
                  , onInput config.onTagChange
                  , onEnter config.onTagDone
@@ -151,7 +151,7 @@ create config { app, withI18nHtml } =
             , class "gap-4 justify-end"
             ]
             [ button
-                [ class "primary-button"
+                [ class "tw-primary-btn"
                 , class "w-full"
                 , onClick config.onEditDone
                 ]
@@ -166,7 +166,7 @@ create config { app, withI18nHtml } =
                     |> i18nText
                 ]
             , button
-                [ class "secondary-button"
+                [ class "tw-secondary-btn"
                 , class "w-full"
                 , onClick config.onEditCanceled
                 ]

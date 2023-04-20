@@ -25,6 +25,9 @@ import Element.Border as Border
 import Element.Events exposing (onEnter, onLoseFocus)
 import Element.Font as Font
 import Element.Input as Input
+import Html
+import Html.Attributes as HtmlAttr
+import Html.Events as HtmlEvent
 import I18n.Element exposing (textWith)
 import I18n.I18n exposing (langTextEnd)
 import Model
@@ -33,12 +36,12 @@ import Model.Operation.EditTopic exposing (EditTopic)
 import Msg
 import View.I18n.Home as I18n
 import View.Style.Base as BaseStyle
+import Widget.Bytemd as Markdown
 import Widget.Color as Color
 import Widget.Icon as Icon
 import Widget.Loading as Loading
 import Widget.Util.Basic exposing (fromMaybe)
 import Widget.Widget.Button as Button
-import Widget.Widget.Markdown as Markdown
 
 
 type alias Config msg =
@@ -144,105 +147,19 @@ create config { app, theme, widgets, withI18nElement } =
                     )
             , label = Input.labelHidden ""
             }
-        , column
+        , el
             [ width fill
             , height fill
             ]
-            [ row
-                [ width fill
-                , spacing BaseStyle.spacing
-                ]
-                (([ "图片", "附件", "视频" ]
-                    |> List.map
-                        (\t ->
-                            widgets.with <|
-                                Button.link
-                                    { attrs =
-                                        [ paddingXY 4 0
-                                        ]
-                                    , content =
-                                        (I18n.buttonText :: t :: langTextEnd)
-                                            |> i18nText
-                                    , onPress = Nothing
-                                    }
-                        )
-                 )
-                    ++ [ Input.checkbox
-                            [ width shrink
-                            , alignRight
-                            ]
-                            { onChange = config.onContentPreviewedChange
-                            , icon = Input.defaultCheckbox
-                            , checked = previewed
-                            , label =
-                                Input.labelRight
-                                    [ Font.size 14
-                                    , Font.letterSpacing 0.39998
-                                    , Font.weight 500
-                                    ]
-                                    ((I18n.buttonText :: "预览" :: langTextEnd)
-                                        |> i18nText
-                                    )
-                            }
-                       ]
-                )
-            , el
-                (theme.defaultInput
-                    ++ [ width fill
-                       , height fill
-                       , scrollbarY
-                       ]
-                )
-                (if not previewed then
-                    Input.multiline
-                        [ id app.topicEditInputId
-                        , width fill
-                        , height fill
-                        , class "content"
-                        , spacing (20 - theme.primaryFontSize)
-                        , Border.width 0
-                        ]
-                        { onChange = config.onContentChange
-                        , text = content
-                        , selection = Just { start = 0, end = 0, direction = "" }
-                        , placeholder =
-                            Just
-                                (Input.placeholder
-                                    theme.placeholderFont
-                                    (("又有什么奇妙的想法呢？赶紧记下来吧 :)" :: langTextEnd)
-                                        |> i18nText
-                                    )
-                                )
-                        , label = Input.labelHidden ""
-                        , spellcheck = False
-                        }
-
-                 else if content |> String.isEmpty then
-                    el
-                        (theme.placeholderFont
-                            ++ [ width fill
-                               , height fill
-                               , padding 12
-                               ]
-                        )
-                        (("没有可预览内容，请先写点什么吧 :)" :: langTextEnd)
-                            |> i18nText
-                        )
-
-                 else
-                    paragraph
-                        [ width fill
-                        , height fill
-                        , paddingXY 12 9
-                        ]
-                        [ widgets.with <|
-                            Markdown.render
-                                { lineHeight = 20
-                                }
-                                content
-                        ]
-                )
-            ]
+            (html <|
+                Markdown.editor
+                    { value = content
+                    , mode = Markdown.Auto
+                    , lang = app.lang
+                    , placeholder = "又有什么奇妙的想法呢？赶紧记下来吧 :)"
+                    , onChange = Just config.onContentChange
+                    }
+            )
         , row
             [ width fill
             ]

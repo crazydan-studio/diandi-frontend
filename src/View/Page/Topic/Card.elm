@@ -41,10 +41,9 @@ import Model.TopicCard as TopicCard exposing (TopicCard)
 import Msg
 import View.I18n.Home as I18n
 import View.Page as Page
-import Widget.Bytemd as Makedown
+import Widget.Bytemd as Markdown
 import Widget.Loading as Loading
 import Widget.Util.DateTime as DateTime
-import Html exposing (p)
 
 
 view :
@@ -167,9 +166,9 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                             "max-h-48"
                         )
                     ]
-                    [ topic.content
-                        |> Makedown.viewer
-                            []
+                    [ Markdown.viewer
+                        { value = topic.content
+                        }
                     ]
                 , div
                     []

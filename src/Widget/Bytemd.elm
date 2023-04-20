@@ -17,42 +17,114 @@
 -}
 
 
-module Widget.Bytemd exposing (editor, viewer)
+module Widget.Bytemd exposing
+    ( EditorMode(..)
+    , editor
+    , viewer
+    )
 
 import Html exposing (Attribute, Html, node)
-import Html.Attributes exposing (class, value)
+import Html.Attributes exposing (attribute, class, placeholder, value)
+import Html.Events exposing (on)
+import I18n.Lang exposing (Lang(..))
+import Json.Decode as Decode
 
 
-viewer : List (Attribute msg) -> String -> Html msg
-viewer attrs md =
+type EditorMode
+    = Auto
+    | Split
+    | Tab
+
+
+type alias EditorConfig msg =
+    { value : String
+    , mode : EditorMode
+    , lang : Lang
+    , placeholder : String
+    , onChange : Maybe (String -> msg)
+    }
+
+
+type alias ViewerConfig =
+    { value : String
+    }
+
+
+viewer : ViewerConfig -> Html msg
+viewer config =
     node "bytemd-viewer"
-        (attrs
-            ++ [ value md
-
-               -- https://tailwindcss.com/docs/typography-plugin
-               , class "prose dark:prose-invert leading-6"
-               , class "prose-ul:my-0"
-               , class "prose-ol:my-0"
-               , class "prose-li:my-1"
-               , class "prose-img:my-1"
-               , class "prose-p:my-2"
-               , class "prose-blockquote:my-2"
-               , class "prose-pre:my-2"
-               , class "prose-table:my-2 tr-nth-[even]:bg-slate-50 dark:tr-nth-[even]:bg-slate-800"
-               , class "prose-h1:mb-3"
-               , class "prose-h2:mb-3 prose-h2:mt-6"
-               , class "prose-h3:mt-6"
-               , class "prose-h4:mt-6"
-               , class "prose-code:before:content-[''] prose-code:after:content-[''] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-lg prose-code:text-sm prose-code:bg-gray-100 dark:prose-code:bg-slate-700"
+        (viewerStyles
+            ++ [ value config.value
                ]
         )
         []
 
 
-editor : List (Attribute msg) -> Html msg
-editor attrs =
+editor : EditorConfig msg -> Html msg
+editor config =
     node "bytemd-editor"
-        (attrs
-            ++ []
+        (viewerStyles
+            ++ [ placeholder config.placeholder
+               , value config.value
+               , attribute "lang"
+                    (case config.lang of
+                        Zh_CN ->
+                            "zh_Hans"
+
+                        En_US ->
+                            "en"
+
+                        Default ->
+                            "zh_Hans"
+                    )
+               , attribute "mode"
+                    (case config.mode of
+                        Auto ->
+                            "auto"
+
+                        Split ->
+                            "split"
+
+                        Tab ->
+                            "tab"
+                    )
+               ]
+            ++ (config.onChange
+                    |> Maybe.map
+                        (\onChange ->
+                            [ on "change"
+                                (Decode.at
+                                    [ "detail", "value" ]
+                                    Decode.string
+                                    |> Decode.andThen
+                                        (\value ->
+                                            Decode.succeed
+                                                (onChange value)
+                                        )
+                                )
+                            ]
+                        )
+                    |> Maybe.withDefault []
+               )
         )
         []
+
+
+viewerStyles : List (Attribute msg)
+viewerStyles =
+    -- https://tailwindcss.com/docs/typography-plugin
+    [ class "prose dark:prose-invert max-w-none leading-6"
+    , class "prose-ul:my-0"
+    , class "prose-ol:my-0"
+    , class "prose-li:my-1"
+    , class "prose-img:my-1"
+    , class "prose-p:my-2"
+    , class "prose-blockquote:my-4"
+    , class "prose-pre:my-2"
+    , class "prose-table:my-2 tr-nth-[even]:bg-slate-50 dark:tr-nth-[even]:bg-slate-800"
+    , class "prose-h1:mb-3"
+    , class "prose-h2:mb-3 prose-h2:mt-6"
+    , class "prose-h3:mt-6"
+    , class "prose-h4:mt-6"
+    , class "prose-code:before:content-[''] prose-code:after:content-[''] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-lg prose-code:text-sm prose-code:bg-gray-100 dark:prose-code:bg-slate-700"
+    ]

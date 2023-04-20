@@ -18,14 +18,52 @@ import rehypeMinifyWhitespace from "rehype-minify-whitespace";
 // 只能以 import 方式全局引入样式
 import "./index.css";
 
-function plugins() {
+// https://medium.com/dailyjs/leveraging-webpack-power-to-import-all-files-from-one-folder-cddedd3201b3
+const bytemdLocales = loadPluginLocales(
+  require.context("/node_modules/bytemd/locales", false, /\.json$/)
+);
+const gfmLocales = loadPluginLocales(
+  require.context("/node_modules/@bytemd/plugin-gfm/locales", false, /\.json$/)
+);
+const mathLocales = loadPluginLocales(
+  require.context("/node_modules/@bytemd/plugin-math/locales", false, /\.json$/)
+);
+const mermaidLocales = loadPluginLocales(
+  require.context(
+    "/node_modules/@bytemd/plugin-mermaid/locales",
+    false,
+    /\.json$/
+  )
+);
+
+function loadPluginLocales(ctx) {
+  const locales = {};
+  ctx
+    .keys()
+    .filter((name) => name.startsWith("./"))
+    .forEach((name) => {
+      const locale = name.replaceAll(/^\.\/(.+)\.json$/g, "$1");
+      locales[locale] = ctx(name);
+    });
+  return locales;
+}
+
+function plugins(lang) {
   return [
-    gfm(),
+    gfm({
+      locale: gfmLocales[lang],
+    }),
     breaks(),
     highlight(),
     gemoji(),
-    math(),
-    mermaid(),
+    math({
+      locale: mathLocales[lang],
+      // https://github.com/KaTeX/KaTeX/issues/2796
+      katexOptions: { output: "html" },
+    }),
+    mermaid({
+      locale: mermaidLocales[lang],
+    }),
     mediumZoom(),
     {
       // 清除生成的 HTML 中标签间的换行符，以避免在展示页面中因为换行符而出现不可见的空白行
@@ -39,6 +77,7 @@ function plugins() {
 }
 
 export class ByteMDViewer extends LitElement {
+  // https://lit.dev/docs/components/properties/#when-properties-change
   static properties = {
     bytemd: { state: true },
     // attributes
@@ -75,9 +114,10 @@ export class ByteMDEditor extends LitElement {
     bytemd: { state: true },
     // attributes
     value: { attribute: true },
+    // split, tab, auto
     mode: { attribute: true },
+    lang: { attribute: true },
     placeholder: { attribute: true },
-    locale: { attribute: true },
   };
 
   createRenderRoot() {
@@ -91,8 +131,8 @@ export class ByteMDEditor extends LitElement {
         value: this.value,
         mode: this.mode,
         placeholder: this.placeholder,
-        locale: this.locale,
-        plugins: plugins(),
+        locale: bytemdLocales[this.lang],
+        plugins: plugins(this.lang),
       },
     });
 
@@ -118,6 +158,13 @@ export class ByteMDEditor extends LitElement {
   updated(changedProperties) {
     if (changedProperties.has("value")) {
       this.bytemd.$set({ value: this.value });
+    } else if (changedProperties.has("lang")) {
+      this.bytemd.$set({
+        locale: bytemdLocales[this.lang],
+        plugins: plugins(this.lang),
+      });
+    } else if (changedProperties.has("mode")) {
+      this.bytemd.$set({ mode: this.mode });
     }
   }
 }

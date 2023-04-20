@@ -25,3 +25,7 @@
 .bytemd, .CodeMirror {
     background-color: transparent;
 }
+
+.math-display {
+  overflow-x: auto;
+}

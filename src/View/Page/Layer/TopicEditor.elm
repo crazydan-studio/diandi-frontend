@@ -78,11 +78,12 @@ create config { app, withI18nHtml } =
     in
     div
         [ class "self-center mt-8"
-        , class "flex flex-col w-3/4 px-3 py-3"
+        , class "flex flex-col w-3/4 h-3/4 px-3 py-3"
         , class "rounded-md"
         , class "bg-white dark:bg-gray-800"
         , class "gap-2"
         ]
+        -- TODO 更新遮罩以及异常提示
         [ input
             ([ class "tw-text-input"
              , value title

@@ -68,7 +68,19 @@ editor config =
     node "bytemd-editor"
         (commonStyles
             ++ [ value config.value
-               , attribute "inner-class" (config.styles |> String.join " ")
+
+               -- 高度自适应
+               , class "grow flex flex-col"
+               , attribute "inner-class"
+                    ((config.styles
+                        ++ [ "grow"
+
+                           -- 设置最小高度
+                           , "h-16"
+                           ]
+                     )
+                        |> String.join " "
+                    )
                , placeholder config.placeholder
                , attribute "lang"
                     (case config.lang of

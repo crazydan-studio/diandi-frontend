@@ -68,14 +68,26 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
             _ ->
                 []
          )
-            ++ [ class "w-full h-fit p-2 basis-auto md:basis-1/2 xl:basis-1/4"
+            ++ [ class "w-full h-fit"
+               , class "p-2"
+               , class "basis-auto md:basis-1/2 xl:basis-1/4"
                ]
         )
         [ div
-            [ class "relative w-full rounded-md shadow-md bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow duration-300"
+            [ class "relative"
+            , class "w-full"
+            , class "rounded-md"
+            , class "bg-white dark:bg-gray-800"
+            , class "shadow-md hover:shadow-lg"
+            , class "transition-shadow duration-300"
             ]
             [ div
-                [ class "absolute w-full h-full z-10 p-8 rounded-md flex flex-row items-center justify-center bg-black/50"
+                [ class "w-full h-full"
+                , class "absolute z-10"
+                , class "flex p-8"
+                , class "items-center justify-center"
+                , class "rounded-md"
+                , class "bg-black/50"
                 , class
                     (case trashOp of
                         Operation.Doing ->
@@ -87,7 +99,8 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                 ]
                 [ Loading.ripple { width = 64, height = 64 }
                 , span
-                    [ class "whitespace-pre-wrap break-all text-white text-base"
+                    [ class "text-white text-base"
+                    , class "whitespace-pre-wrap break-all"
                     ]
                     [ "数据正在移除中，请稍等片刻 ..."
                         :: langTextEnd
@@ -95,13 +108,17 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                     ]
                 ]
             , div
-                [ class "px-4 py-3 divide-y divide-gray-100 dark:divide-gray-700"
+                [ class "px-4 py-3"
+                , class "divide-y divide-gray-100 dark:divide-gray-700"
                 ]
                 [ div
                     [ class "relative"
                     ]
                     [ span
-                        [ class "hidden absolute -top-2.5 -right-3.5 cursor-pointer dark:text-white hover:text-blue-400"
+                        [ class "cursor-pointer"
+                        , class "absolute -top-2.5 -right-3.5"
+                        , class "dark:text-white hover:text-blue-400"
+                        , class "hidden"
                         , class
                             (if config.selected then
                                 "text-blue-400"
@@ -122,7 +139,9 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                             Outlined.radio_button_unchecked 20 Inherit
                         ]
                     , h1
-                        [ class "flex-1 text-lg whitespace-pre-wrap break-all font-semibold"
+                        [ class "flex-1"
+                        , class "text-lg font-semibold"
+                        , class "whitespace-pre-wrap break-all"
                         , class
                             (topic.title
                                 |> Maybe.map (\_ -> "text-blue-400 dark:text-white")
@@ -141,7 +160,8 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                                 )
                         ]
                     , h2
-                        [ class "text-sm text-gray-600 dark:text-gray-400"
+                        [ class "text-sm"
+                        , class "text-gray-600 dark:text-gray-400"
                         ]
                         [ text
                             ("@"
@@ -157,7 +177,10 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                         ]
                     ]
                 , div
-                    [ class "mt-2 py-2 text-sm whitespace-pre-wrap break-words overflow-y-auto text-gray-600 dark:text-gray-300"
+                    [ class "mt-2 py-2"
+                    , class "text-sm whitespace-pre-wrap break-words"
+                    , class "text-gray-600 dark:text-gray-300"
+                    , class "overflow-y-auto"
                     , class
                         (if config.expanded then
                             "max-h-full"
@@ -175,7 +198,8 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                     []
                     [ if not (List.isEmpty topic.tags) then
                         div
-                            [ class "flex flex-wrap items-center gap-2 mt-2"
+                            [ class "mt-2 flex"
+                            , class "flex-wrap items-center gap-2"
                             ]
                             (topic.tags
                                 |> List.map
@@ -193,7 +217,10 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                     , case trashOp of
                         Operation.Error e ->
                             div
-                                [ class "mt-2 text-sm whitespace-pre-wrap text-red-500 dark:text-red-600"
+                                [ class "mt-2"
+                                , class "text-sm"
+                                , class "whitespace-pre-wrap"
+                                , class "text-red-500 dark:text-red-600"
                                 ]
                                 [ "* 删除失败 - "
                                     :: langTextEnd
@@ -204,7 +231,8 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                         _ ->
                             div [] []
                     , div
-                        [ class "flex items-center justify-end gap-1 mt-2"
+                        [ class "mt-2 flex"
+                        , class "items-center justify-end gap-1"
                         ]
                         [ span
                             [ class "icon-button"

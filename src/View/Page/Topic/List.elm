@@ -62,7 +62,8 @@ topicListView ({ app, theme } as state) topicCards =
         -- https://guide.elm-lang.org/optimization/keyed.html
         html <|
             Html.Keyed.node "div"
-                [ HtmlAttr.class "flex flex-col md:flex-row flex-wrap min-h-fit content-start"
+                [ HtmlAttr.class "flex flex-col md:flex-row"
+                , HtmlAttr.class "flex-wrap min-h-fit content-start"
                 ]
                 (topicCards
                     |> TreeStore.traverseDepth 1

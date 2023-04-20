@@ -85,7 +85,6 @@ type alias State =
     , topicSearchingText : Maybe String
     , newTopic : Maybe EditTopic
     , editTopic : Maybe EditTopic
-    , topicEditInputId : String
     , topicTagEditInputId : String
     }
 
@@ -132,7 +131,6 @@ init config =
     , topicSearchingText = Nothing
     , newTopic = Nothing
     , editTopic = Nothing
-    , topicEditInputId = "topic-edit-input"
     , topicTagEditInputId = "topic-tag-edit-input"
     }
 

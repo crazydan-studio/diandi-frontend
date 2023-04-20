@@ -55,7 +55,8 @@ view ({ app, themeDark, withI18nHtml } as state) =
             I18n.htmlAttr app.lang
     in
     nav
-        [ class "z-10 w-full shadow-md bg-white dark:bg-gray-800"
+        [ class "z-10 w-full shadow-md"
+        , class "bg-white dark:bg-gray-800"
         ]
         [ div
             [ class "flex items-center px-4 py-2"
@@ -75,18 +76,30 @@ view ({ app, themeDark, withI18nHtml } as state) =
                     []
                 ]
             , div
-                [ class "flex-1 flex flex-row justify-center text-gray-600 capitalize dark:text-gray-300"
+                [ class "flex-1"
+                , class "flex justify-center"
+                , class "capitalize"
+                , class "text-gray-600 dark:text-gray-300"
                 ]
                 [ div
                     [ class "relative"
                     ]
                     [ span
-                        [ class "absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 dark:text-gray-300"
+                        [ class "absolute inset-y-0 left-0"
+                        , class "flex items-center pl-3"
+                        , class "text-gray-500 dark:text-gray-300"
                         ]
                         [ Outlined.search 24 Inherit
                         ]
                     , input
-                        ([ class "w-48 py-1 pl-10 pr-4 transition duration-300 ease-in-out text-gray-500 placeholder-gray-600 bg-white border-transparent border-b border-gray-600 dark:placeholder-gray-300 dark:focus:border-gray-300 dark:bg-gray-800 dark:text-gray-300 focus:outline-none focus:border-gray-600"
+                        ([ class "w-48"
+                         , class "py-1 pl-10 pr-4"
+                         , class "text-gray-500 dark:text-gray-300"
+                         , class "bg-white dark:bg-gray-800"
+                         , class "border-transparent border-b border-gray-600"
+                         , class "placeholder-gray-600 dark:placeholder-gray-300"
+                         , class "focus:outline-none focus:border-gray-600 dark:focus:border-gray-300"
+                         , class "transition duration-300 ease-in-out"
                          , type_ "text"
                          , value (app.topicSearchingText |> Maybe.withDefault "")
                          , onInput Msg.SearchTopicInputing

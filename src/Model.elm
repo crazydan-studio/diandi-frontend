@@ -220,15 +220,7 @@ update msg state =
             ( { state
                 | layers = layer :: state.layers
               }
-            , case layer of
-                Page.NewTopicLayer ->
-                    Msg.focusOn state.app.topicEditInputId
-
-                Page.EditTopicLayer ->
-                    Msg.focusOn state.app.topicEditInputId
-
-                _ ->
-                    Cmd.none
+            , Cmd.none
             )
 
         Msg.ClosePageLayer layer ->
@@ -312,14 +304,14 @@ remoteUpdateHelper msg ({ app } as state) =
             ( state
                 |> updateAppState
                     (App.updateSavedNewTopic result)
-            , Msg.focusOn app.topicEditInputId
+            , Cmd.none
             )
 
         RemoteMsg.SaveMyEditTopic result ->
             ( state
                 |> updateAppState
                     (App.updateSavedEditTopic result)
-            , Msg.focusOn app.topicEditInputId
+            , Cmd.none
             )
 
         RemoteMsg.TrashMyTopic topicId result ->
@@ -455,7 +447,7 @@ newTopicSavingHelper ({ app } as state) =
                     (RemoteTopic.saveMyNewTopic t)
             )
         |> Maybe.withDefault
-            (Msg.focusOn app.topicEditInputId)
+            Cmd.none
     )
 
 
@@ -477,7 +469,7 @@ editTopicSavingHelper ({ app } as state) =
                     (RemoteTopic.saveMyEditTopic t)
             )
         |> Maybe.withDefault
-            (Msg.focusOn app.topicEditInputId)
+            Cmd.none
     )
 
 

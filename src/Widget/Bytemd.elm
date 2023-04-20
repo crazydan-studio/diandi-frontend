@@ -38,6 +38,7 @@ type EditorMode
 
 type alias EditorConfig msg =
     { value : String
+    , styles : List String
     , mode : EditorMode
     , lang : Lang
     , placeholder : String
@@ -47,14 +48,16 @@ type alias EditorConfig msg =
 
 type alias ViewerConfig =
     { value : String
+    , styles : List String
     }
 
 
 viewer : ViewerConfig -> Html msg
 viewer config =
     node "bytemd-viewer"
-        (viewerStyles
+        (commonStyles
             ++ [ value config.value
+               , attribute "inner-class" (config.styles |> String.join " ")
                ]
         )
         []
@@ -63,9 +66,10 @@ viewer config =
 editor : EditorConfig msg -> Html msg
 editor config =
     node "bytemd-editor"
-        (viewerStyles
-            ++ [ placeholder config.placeholder
-               , value config.value
+        (commonStyles
+            ++ [ value config.value
+               , attribute "inner-class" (config.styles |> String.join " ")
+               , placeholder config.placeholder
                , attribute "lang"
                     (case config.lang of
                         Zh_CN ->
@@ -110,8 +114,8 @@ editor config =
         []
 
 
-viewerStyles : List (Attribute msg)
-viewerStyles =
+commonStyles : List (Attribute msg)
+commonStyles =
     -- https://tailwindcss.com/docs/typography-plugin
     [ class "prose dark:prose-invert max-w-none leading-6"
     , class "prose-ul:my-0"

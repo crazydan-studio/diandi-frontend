@@ -54,7 +54,11 @@ function plugins(lang) {
       locale: gfmLocales[lang],
     }),
     breaks(),
-    highlight(),
+    highlight({
+      init: (hljs) => {
+        // console.log(hljs);
+      },
+    }),
     gemoji(),
     math({
       locale: mathLocales[lang],
@@ -76,12 +80,58 @@ function plugins(lang) {
   ];
 }
 
+function updateStyle(root, class_) {
+  const classList = root.firstElementChild.classList;
+  if (root.__user_classes__ && root.__user_classes__.length > 0) {
+    root.__user_classes__.forEach((s) => classList.remove(s));
+    root.__user_classes__ = [];
+  }
+
+  const classes = class_ ? class_.trim().split(/\s+/g) : [];
+  if (classes.length > 0) {
+    root.__user_classes__ = classes;
+    classes.forEach((s) => classList.add(s));
+  }
+}
+
+const commonProperties = {
+  bytemd: { state: true },
+  // attributes
+  value: { attribute: true },
+  innerClass: { attribute: "inner-class" },
+  // split, tab, auto
+  mode: { attribute: true },
+  lang: { attribute: true },
+  placeholder: { attribute: true },
+};
+
+function updateProperties(scope, changedProperties) {
+  Object.keys(commonProperties).forEach((prop) => {
+    if (!changedProperties.has(prop)) {
+      return;
+    }
+
+    const value = scope[prop];
+    if (prop === "innerClass") {
+      updateStyle(scope.renderRoot, value);
+    } else if (prop === "lang") {
+      scope.bytemd.$set({
+        locale: bytemdLocales[value],
+        plugins: plugins(value),
+      });
+    } else {
+      scope.bytemd.$set({ [prop]: value });
+    }
+  });
+}
+
 export class ByteMDViewer extends LitElement {
   // https://lit.dev/docs/components/properties/#when-properties-change
   static properties = {
-    bytemd: { state: true },
+    bytemd: commonProperties.bytemd,
     // attributes
-    value: { attribute: true },
+    value: commonProperties.value,
+    innerClass: commonProperties.innerClass,
   };
 
   // 不使用 shadow dom 以支持全局样式设置
@@ -100,25 +150,17 @@ export class ByteMDViewer extends LitElement {
         plugins: plugins(),
       },
     });
+
+    updateStyle(this.renderRoot, this.innerClass);
   }
 
   updated(changedProperties) {
-    if (changedProperties.has("value")) {
-      this.bytemd.$set({ value: this.value });
-    }
+    updateProperties(this, changedProperties);
   }
 }
 
 export class ByteMDEditor extends LitElement {
-  static properties = {
-    bytemd: { state: true },
-    // attributes
-    value: { attribute: true },
-    // split, tab, auto
-    mode: { attribute: true },
-    lang: { attribute: true },
-    placeholder: { attribute: true },
-  };
+  static properties = commonProperties;
 
   createRenderRoot() {
     return this;
@@ -133,8 +175,16 @@ export class ByteMDEditor extends LitElement {
         placeholder: this.placeholder,
         locale: bytemdLocales[this.lang],
         plugins: plugins(this.lang),
+        // https://codemirror.net/5/doc/manual.html#config
+        editorConfig: {
+          // theme: "",
+          autofocus: true,
+          lineNumbers: true,
+        },
       },
     });
+
+    updateStyle(this.renderRoot, this.innerClass);
 
     this.bytemd.$on("change", (e) => {
       const value = e.detail.value;
@@ -156,16 +206,7 @@ export class ByteMDEditor extends LitElement {
   }
 
   updated(changedProperties) {
-    if (changedProperties.has("value")) {
-      this.bytemd.$set({ value: this.value });
-    } else if (changedProperties.has("lang")) {
-      this.bytemd.$set({
-        locale: bytemdLocales[this.lang],
-        plugins: plugins(this.lang),
-      });
-    } else if (changedProperties.has("mode")) {
-      this.bytemd.$set({ mode: this.mode });
-    }
+    updateProperties(this, changedProperties);
   }
 }
 

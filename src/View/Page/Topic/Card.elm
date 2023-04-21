@@ -43,6 +43,7 @@ import View.I18n.Home as I18n
 import View.Page as Page
 import Widget.Bytemd as Markdown
 import Widget.Loading as Loading
+import Widget.Mask as Mask
 import Widget.Util.DateTime as DateTime
 
 
@@ -81,32 +82,25 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
             , class "shadow-md hover:shadow-lg"
             , class "transition-shadow duration-300"
             ]
-            [ div
-                [ class "w-full h-full"
-                , class "absolute z-10"
-                , class "flex p-8"
-                , class "items-center justify-center"
-                , class "rounded-md"
-                , class "bg-black/50"
-                , class
-                    (case trashOp of
+            [ Mask.create
+                { show =
+                    case trashOp of
                         Operation.Doing ->
-                            ""
+                            True
 
                         _ ->
-                            "hidden"
-                    )
-                ]
-                [ Loading.ripple { width = 64, height = 64 }
-                , span
-                    [ class "text-white text-base"
-                    , class "whitespace-pre-wrap break-all"
+                            False
+                , styles = []
+                , content =
+                    [ Loading.ripple { width = 64, height = 64 }
+                    , span
+                        []
+                        [ "数据正在移除中，请稍等片刻 ..."
+                            :: langTextEnd
+                            |> i18nText
+                        ]
                     ]
-                    [ "数据正在移除中，请稍等片刻 ..."
-                        :: langTextEnd
-                        |> i18nText
-                    ]
-                ]
+                }
             , div
                 [ class "px-4 py-3"
                 , class "divide-y divide-gray-100 dark:divide-gray-700"

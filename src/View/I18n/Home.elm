@@ -101,6 +101,11 @@ rootTranslator texts =
                 "The data is removing, please wait a minute ..."
                 :: default
 
+        [ "数据正在保存中，请稍等片刻 ..." ] ->
+            ok En_US
+                "The data is saving, please wait a minute ..."
+                :: default
+
         [ "无标题" ] ->
             ok En_US
                 "No Title"

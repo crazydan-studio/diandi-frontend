@@ -134,7 +134,10 @@ update : Msg -> EditTopic -> EditTopic
 update msg editTopic =
     case msg of
         TitleChanged title ->
-            { editTopic | title = title }
+            { editTopic
+                | title = title
+                , error = Error.none
+            }
 
         ContentChanged content ->
             { editTopic
@@ -145,6 +148,7 @@ update msg editTopic =
         TagChanged tag ->
             { editTopic
                 | taging = tag
+                , error = Error.none
             }
 
         TagDeleted tag ->
@@ -152,6 +156,7 @@ update msg editTopic =
                 | tags =
                     editTopic.tags
                         |> List.filter ((/=) tag)
+                , error = Error.none
             }
 
         TagDone ->

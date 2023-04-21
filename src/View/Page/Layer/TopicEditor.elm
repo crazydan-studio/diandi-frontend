@@ -22,6 +22,7 @@ module View.Page.Layer.TopicEditor exposing (create)
 import Html exposing (Html, button, div, input, span, text)
 import Html.Attributes exposing (class, id, placeholder, value)
 import Html.Events exposing (onBlur, onClick, onInput)
+import I18n.Html exposing (textWith)
 import I18n.I18n exposing (langTextEnd)
 import Material.Icons.Outlined as Outlined
 import Material.Icons.Types exposing (Coloring(..))
@@ -33,6 +34,7 @@ import View.I18n.Home as I18n
 import Widget.Bytemd as Markdown
 import Widget.Html exposing (onEnter)
 import Widget.Loading as Loading
+import Widget.Mask as Mask
 import Widget.Util.Basic exposing (fromMaybe)
 
 
@@ -77,14 +79,26 @@ create config { app, withI18nHtml } =
             config.topic |> fromMaybe Error.none .error
     in
     div
-        [ class "self-center mt-8"
+        [ class "relative self-center mt-8"
         , class "flex flex-col w-3/4 h-3/4 px-3 py-3"
         , class "rounded-md"
         , class "bg-white dark:bg-gray-800"
         , class "gap-2"
         ]
-        -- TODO 更新遮罩以及异常提示
-        [ input
+        [ Mask.create
+            { show = updating
+            , styles = [ "top-0", "left-0" ]
+            , content =
+                [ Loading.ripple { width = 64, height = 64 }
+                , span
+                    []
+                    [ "数据正在保存中，请稍等片刻 ..."
+                        :: langTextEnd
+                        |> i18nText
+                    ]
+                ]
+            }
+        , input
             ([ class "tw-text-input"
              , value title
              , onInput config.onTitleChange
@@ -147,6 +161,29 @@ create config { app, withI18nHtml } =
                 )
                 []
             ]
+        , case error of
+            Error.Error e ->
+                div
+                    [ class "text-sm"
+                    , class "whitespace-pre-wrap"
+                    , class "text-red-500 dark:text-red-600"
+                    ]
+                    [ text "* "
+                    , textWith e
+                    ]
+
+            Error.Info e ->
+                div
+                    [ class "text-sm"
+                    , class "whitespace-pre-wrap"
+                    , class "text-green-600 dark:text-green-500"
+                    ]
+                    [ text "* "
+                    , textWith e
+                    ]
+
+            _ ->
+                div [] []
         , div
             [ class "mt-4 flex"
             , class "gap-4 justify-end"

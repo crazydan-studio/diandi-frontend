@@ -19,7 +19,7 @@
 
 module View.Page.Layer.EditTopic exposing (create)
 
-import Element exposing (..)
+import Html exposing (Html)
 import Model
 import Model.Operation.EditTopic as EditTopic
 import Msg
@@ -27,30 +27,28 @@ import View.Page as Page
 import View.Page.Layer.TopicEditor as TopicEditor
 
 
-create : Model.State -> Element Msg.Msg
+create : Model.State -> Html Msg.Msg
 create ({ app } as state) =
-    html <|
-        (state
-            |> TopicEditor.create
-                { isNew = False
-                , topic = app.editTopic
-                , onTitleChange =
-                    \text ->
-                        Msg.EditTopicMsg (EditTopic.TitleChanged text)
-                , onContentChange =
-                    \text ->
-                        Msg.EditTopicMsg (EditTopic.ContentChanged text)
-                , onTagDeleted = \tag -> Msg.EditTopicMsg (EditTopic.TagDeleted tag)
-                , onTagDone = Msg.EditTopicMsg EditTopic.TagDone
-                , onTagChange =
-                    \text ->
-                        Msg.EditTopicMsg (EditTopic.TagChanged text)
-                , onEditDone =
-                    Msg.EditTopicSaving
-                , onEditCanceled =
-                    Msg.batch
-                        [ Msg.EditTopicCleaned
-                        , Msg.ClosePageLayer Page.EditTopicLayer
-                        ]
-                }
-        )
+    state
+        |> TopicEditor.create
+            { isNew = False
+            , topic = app.editTopic
+            , onTitleChange =
+                \text ->
+                    Msg.EditTopicMsg (EditTopic.TitleChanged text)
+            , onContentChange =
+                \text ->
+                    Msg.EditTopicMsg (EditTopic.ContentChanged text)
+            , onTagDeleted = \tag -> Msg.EditTopicMsg (EditTopic.TagDeleted tag)
+            , onTagDone = Msg.EditTopicMsg EditTopic.TagDone
+            , onTagChange =
+                \text ->
+                    Msg.EditTopicMsg (EditTopic.TagChanged text)
+            , onEditDone =
+                Msg.EditTopicSaving
+            , onEditCanceled =
+                Msg.batch
+                    [ Msg.EditTopicCleaned
+                    , Msg.ClosePageLayer Page.EditTopicLayer
+                    ]
+            }

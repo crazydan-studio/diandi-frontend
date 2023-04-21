@@ -20,16 +20,8 @@
 module View.App exposing (view)
 
 import Browser
-import Element
-    exposing
-        ( Element
-        , class
-        , fill
-        , height
-        , inFront
-        , width
-        )
-import Element.Font as Font
+import Html exposing (Html, div)
+import Html.Attributes exposing (class)
 import Model
 import Model.App as App
 import Msg
@@ -45,12 +37,12 @@ import Widget.StyleSheet
 
 
 view : Model.State -> Browser.Document Msg.Msg
-view ({ app, theme, themeDark } as state) =
+view ({ app, themeDark } as state) =
     { title = title app
     , body =
-        [ Element.layout
-            [ width fill
-            , height fill
+        [ div
+            [ class "w-full h-full"
+            , class "flex flex-col"
             , class
                 (if themeDark then
                     "dark"
@@ -58,15 +50,15 @@ view ({ app, theme, themeDark } as state) =
                  else
                     ""
                 )
-            , Font.family
-                [ Font.typeface "Roboto"
-                , Font.sansSerif
-                ]
-            , Font.size theme.primaryFontSize
-            , Font.color theme.primaryFontColor
-            , inFront (PageLayer.create state)
             ]
-            (page state)
+            [ div
+                [ class "w-full h-full"
+                , class "flex"
+                , class "bg-gray-100 dark:bg-gray-900"
+                ]
+                [ page state ]
+            , PageLayer.create state
+            ]
         , Theme.StyleSheet.create state
         , Widget.StyleSheet.create
         ]
@@ -89,7 +81,7 @@ title model =
             model.description
 
 
-page : Model.State -> Element Msg.Msg
+page : Model.State -> Html Msg.Msg
 page ({ app } as state) =
     case app.currentPage of
         PageType.NotFound ->

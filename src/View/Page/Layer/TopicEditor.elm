@@ -78,7 +78,7 @@ create config { app, withI18nHtml } =
             config.topic |> fromMaybe Error.none .error
     in
     div
-        [ class "relative self-center mt-8"
+        [ class "mt-8"
         , class "flex flex-col w-3/4 h-3/4 px-3 py-3"
         , class "rounded-md"
         , class "bg-white dark:bg-gray-800"
@@ -130,8 +130,9 @@ create config { app, withI18nHtml } =
                     |> List.map
                         (\tag ->
                             div
-                                [ class "flex gap-1 px-2 py-1"
-                                , class "rounded-full font-bold"
+                                [ class "flex gap-1 px-2 py-0.5 items-center"
+                                , class "rounded-full"
+                                , class "text-sm font-bold"
                                 , class "text-gray-600 hover:text-gray-500 dark:text-gray-400 dark:hover:text-gray-300"
                                 , class "bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600"
                                 , class "transition-colors duration-300"

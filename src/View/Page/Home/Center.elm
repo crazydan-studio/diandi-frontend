@@ -19,110 +19,58 @@
 
 module View.Page.Home.Center exposing (view)
 
-import Element exposing (..)
-import Element.Font as Font
+import Html exposing (Html, div, span)
+import Html.Attributes exposing (class)
+import Html.Events exposing (onClick)
+import Material.Icons.Outlined as Outlined
+import Material.Icons.Types exposing (Coloring(..))
 import Model
 import Msg
-import View.I18n.Home as I18n
 import View.Page as Page
 import View.Page.Topic.List as TopicList
-import View.Style.Base as BaseStyle
-import Widget.Icon as Icon
-import Widget.Widget.Button as Button
 
 
-view : Model.State -> Element Msg.Msg
-view ({ app } as state) =
-    let
-        paddingX =
-            if
-                app.device.class
-                    == Phone
-                    && app.device.orientation
-                    == Portrait
-            then
-                BaseStyle.spacing8x
-
-            else
-                BaseStyle.spacing8x * 2
-    in
-    el
-        [ width fill
-        , height fill
-        , inFront
-            (el
-                [ width (px paddingX)
-                , height fill
-                , alignRight
-                ]
-                (tools state)
-            )
-
-        -- for child scrollbar: https://github.com/mdgriffith/elm-ui/issues/149#issuecomment-582229271
-        , clip
+view : Model.State -> Html Msg.Msg
+view state =
+    div
+        [ class "w-full h-full"
+        , class "flex"
+        , class "overflow-hidden"
         ]
-        (el
-            [ width fill
-            , height fill
-            , scrollbarY
-            , paddingXY paddingX BaseStyle.spacing3x
+        [ div
+            [ class "w-full h-full"
+            , class "overflow-y-auto"
+            , class "px-14 md:px-20 pt-8 pb-4"
             ]
-            (TopicList.view state)
-        )
-
-
-tools : Model.State -> Element Msg.Msg
-tools ({ app, theme, widgets, withI18nElement } as state) =
-    let
-        i18nText =
-            withI18nElement I18n.text
-    in
-    column
-        [ spacing BaseStyle.spacing
-        , centerX
-        , centerY
+            [ TopicList.view state ]
+        , tools state
         ]
-        [ widgets.with <|
-            Button.circle
-                { attrs =
-                    theme.primaryBtn
-                        ++ [ centerX ]
-                , content =
-                    if
-                        app.device.class
-                            == Phone
-                            && app.device.orientation
-                            == Portrait
-                    then
-                        el [ centerX ]
-                            (theme.primaryBtnIcon
-                                { icon = Icon.FormOutlined, size = Just 15 }
-                            )
 
-                    else
-                        column
-                            [ width (px 40)
-                            , height (px 40)
-                            , spacing BaseStyle.spacing
-                            ]
-                            [ el [ centerX ]
-                                (theme.primaryBtnIcon
-                                    { icon = Icon.FormOutlined, size = Just 20 }
-                                )
-                            , el
-                                [ centerX
-                                , Font.size theme.secondaryFontSize
-                                ]
-                                ([ I18n.buttonText, "新增" ]
-                                    |> i18nText
-                                )
-                            ]
-                , onPress =
-                    Just
-                        (Msg.batch
-                            [ Msg.NewTopicPending
-                            , Msg.ShowPageLayer Page.NewTopicLayer
-                            ]
-                        )
-                }
+
+tools : Model.State -> Html Msg.Msg
+tools _ =
+    div
+        [ class "absolute right-0"
+        , class "h-full w-14 md:w-20"
+        , class "flex flex-col"
+        , class "items-center justify-center"
+        ]
+        [ span
+            [ class "w-10 h-10 md:w-14 md:h-14"
+            , class "flex"
+            , class "items-center justify-center"
+            , class "rounded-full cursor-pointer"
+            , class "text-white"
+            , class "bg-blue-600 hover:bg-blue-500"
+            , class "shadow-md hover:shadow-lg"
+            , class "transition-colors duration-300 transform"
+            , onClick
+                (Msg.batch
+                    [ Msg.NewTopicPending
+                    , Msg.ShowPageLayer Page.NewTopicLayer
+                    ]
+                )
+            ]
+            [ Outlined.add 48 Inherit
+            ]
         ]

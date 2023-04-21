@@ -54,80 +54,78 @@ view ({ app, themeDark, withI18nHtml } as state) =
             I18n.htmlAttr app.lang
     in
     nav
-        [ class "z-10 w-full shadow-md"
+        [ class "z-10 w-full min-h-fit shadow-md"
+        , class "flex px-4 py-2"
+        , class "items-center"
         , class "bg-white dark:bg-gray-800"
         ]
-        [ div
-            [ class "flex items-center px-4 py-2"
+        [ a
+            [ href "/"
             ]
-            [ a
-                [ href "/"
+            [ img
+                [ class "h-10 md:hidden"
+                , src "/icon.svg"
                 ]
-                [ img
-                    [ class "h-10 md:hidden"
-                    , src "/icon.svg"
-                    ]
-                    []
-                , img
-                    [ class "h-10 hidden md:inline"
-                    , src "/logo.svg"
-                    ]
-                    []
+                []
+            , img
+                [ class "h-10 hidden md:inline"
+                , src "/logo.svg"
                 ]
-            , div
-                [ class "flex-1"
-                , class "flex justify-center"
-                , class "capitalize"
-                , class "text-gray-600 dark:text-gray-300"
-                ]
-                [ div
-                    [ class "relative"
-                    ]
-                    [ span
-                        [ class "absolute inset-y-0 left-0"
-                        , class "flex items-center pl-3"
-                        , class "text-gray-500 dark:text-gray-300"
-                        ]
-                        [ Outlined.search 24 Inherit
-                        ]
-                    , input
-                        ([ class "w-48"
-                         , class "py-1 pl-10 pr-4"
-                         , class "text-gray-500 dark:text-gray-300"
-                         , class "bg-white dark:bg-gray-800"
-                         , class "border-transparent border-b border-gray-600"
-                         , class "placeholder-gray-600 dark:placeholder-gray-300"
-                         , class "focus:outline-none focus:border-gray-600 dark:focus:border-gray-300"
-                         , class "transition duration-300 ease-in-out"
-                         , type_ "text"
-                         , value (app.topicSearchingText |> Maybe.withDefault "")
-                         , onInput Msg.SearchTopicInputing
-                         , onEnter Msg.SearchTopic
-                         ]
-                            ++ i18nAttr
-                                placeholder
-                                [ "请输入关键字查询 ..." ]
-                        )
-                        []
-                    ]
-                ]
-            , div
-                [ class "flex gap-2"
+                []
+            ]
+        , div
+            [ class "grow"
+            , class "flex justify-center"
+            , class "capitalize"
+            , class "text-gray-600 dark:text-gray-300"
+            ]
+            [ div
+                [ class "relative w-2/5"
                 ]
                 [ span
-                    [ class "tw-icon-btn"
-                    , onClick (Msg.SwitchToDarkTheme (not themeDark))
+                    [ class "absolute inset-y-0 left-0"
+                    , class "flex items-center pl-3"
+                    , class "text-gray-500 dark:text-gray-300"
                     ]
-                    [ if themeDark then
-                        Outlined.light_mode 24 Inherit
-
-                      else
-                        Outlined.dark_mode 24 Inherit
+                    [ Outlined.search 24 Inherit
                     ]
-                , span
-                    [ class "tw-icon-btn"
-                    ]
-                    [ Outlined.menu 24 Inherit ]
+                , input
+                    ([ class "w-full"
+                     , class "py-1 pl-10 pr-4"
+                     , class "text-gray-500 dark:text-gray-300"
+                     , class "bg-white dark:bg-gray-800"
+                     , class "border-transparent border-b border-gray-600"
+                     , class "placeholder-gray-600 dark:placeholder-gray-300"
+                     , class "focus:outline-none focus:border-gray-600 dark:focus:border-gray-300"
+                     , class "transition duration-300 ease-in-out"
+                     , type_ "text"
+                     , value (app.topicSearchingText |> Maybe.withDefault "")
+                     , onInput Msg.SearchTopicInputing
+                     , onEnter Msg.SearchTopic
+                     ]
+                        ++ i18nAttr
+                            placeholder
+                            [ "请输入关键字查询 ..." ]
+                    )
+                    []
                 ]
+            ]
+        , div
+            [ class "flex gap-2"
+            ]
+            [ span
+                [ class "tw-icon-btn"
+                , onClick (Msg.SwitchToDarkTheme (not themeDark))
+                ]
+                [ if themeDark then
+                    Outlined.light_mode 24 Inherit
+
+                  else
+                    Outlined.dark_mode 24 Inherit
+                ]
+            , span
+                [ class "tw-icon-btn"
+                ]
+                [ Outlined.menu 24 Inherit ]
             ]
         ]

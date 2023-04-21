@@ -19,7 +19,8 @@
 
 module View.Page.Home exposing (view)
 
-import Element exposing (..)
+import Html exposing (Html, div)
+import Html.Attributes exposing (class)
 import Model
 import Msg
 import View.Page
@@ -27,15 +28,12 @@ import View.Page.Home.Center as Center
 import View.Page.Home.Top as Top
 
 
-view : Model.State -> Element Msg.Msg
-view ({ theme } as state) =
-    column
-        (theme.primaryGreyBackground
-            ++ [ width fill
-               , height fill
-               , class "bg-gray-100 dark:bg-gray-900"
-               ]
-        )
-        [ html <| Top.view state
+view : Model.State -> Html Msg.Msg
+view state =
+    div
+        [ class "w-full h-full"
+        , class "flex flex-col"
+        ]
+        [ Top.view state
         , Center.view state
         ]

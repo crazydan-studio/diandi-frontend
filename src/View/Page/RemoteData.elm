@@ -23,54 +23,51 @@ module View.Page.RemoteData exposing
     , view
     )
 
-import Element exposing (..)
-import Element.Font as Font
+import Html exposing (Html, div, text)
+import Html.Attributes exposing (class)
+import I18n.Html exposing (textWith)
 import I18n.Lang exposing (Lang)
 import Model.Remote.Data as RemoteData
-import Theme.Theme exposing (Theme)
 import View.I18n.RemoteData as I18n
 
 
 view :
-    { theme : Theme msg
-    , lang : Lang
+    { lang : Lang
     }
-    -> (a -> Element msg)
+    -> (a -> Html msg)
     -> RemoteData.Status a
-    -> Element msg
-view { theme, lang } dataView dataStatus =
+    -> Html msg
+view { lang } dataView dataStatus =
     case dataStatus of
         RemoteData.LoadWaiting ->
-            errorView theme
-                ([ "数据未加载" ] |> I18n.text lang)
+            errorView
+                ([ "数据未加载" ] |> I18n.htmlText lang)
 
         RemoteData.Loading ->
-            errorView theme
-                ([ "数据加载中，请稍候..." ] |> I18n.text lang)
+            errorView
+                ([ "数据加载中，请稍候..." ] |> I18n.htmlText lang)
 
         RemoteData.Loaded data ->
             dataView data
 
         RemoteData.LoadingError error ->
-            errorView theme (error |> I18n.textWith)
+            errorView (error |> textWith)
 
 
 noDataView :
-    { theme : Theme msg
-    , lang : Lang
+    { lang : Lang
     }
-    -> Element msg
-noDataView { theme, lang } =
-    errorView theme
-        ([ "数据已加载，但结果为空" ] |> I18n.text lang)
+    -> Html msg
+noDataView { lang } =
+    errorView
+        ([ "数据已加载，但结果为空" ] |> I18n.htmlText lang)
 
 
 noDataViewWith :
-    Theme msg
-    -> String
-    -> Element msg
-noDataViewWith theme error =
-    errorView theme (text error)
+    String
+    -> Html msg
+noDataViewWith error =
+    errorView (text error)
 
 
 
@@ -78,20 +75,13 @@ noDataViewWith theme error =
 
 
 errorView :
-    Theme msg
-    -> Element msg
-    -> Element msg
-errorView theme errorText =
-    column
-        [ width fill
-        , height fill
-        , paddingXY 8 16
+    Html msg
+    -> Html msg
+errorView errorText =
+    div
+        [ class "w-full"
+        , class "flex"
+        , class "items-center justify-center"
+        , class "text-gray-500 dark:text-gray-300"
         ]
-        [ paragraph
-            ([ centerX
-             , Font.center
-             ]
-                ++ theme.placeholderFont
-            )
-            [ errorText ]
-        ]
+        [ errorText ]

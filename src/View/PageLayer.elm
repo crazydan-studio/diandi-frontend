@@ -19,17 +19,8 @@
 
 module View.PageLayer exposing (create)
 
-import Element
-    exposing
-        ( Element
-        , column
-        , fill
-        , height
-        , none
-        , rgba255
-        , width
-        )
-import Element.Background as Background
+import Html exposing (Html, div)
+import Html.Attributes exposing (class)
 import Model
 import Msg
 import View.Page exposing (Layer(..))
@@ -37,17 +28,19 @@ import View.Page.Layer.EditTopic
 import View.Page.Layer.NewTopic
 
 
-create : Model.State -> Element Msg.Msg
-create ({ layers, theme } as state) =
+create : Model.State -> Html Msg.Msg
+create ({ layers } as state) =
     case layers of
         [] ->
-            none
+            div [] []
 
         layer :: _ ->
-            column
-                [ width fill
-                , height fill
-                , Background.color theme.layerBackgroundColor
+            div
+                [ class "absolute z-50"
+                , class "flex"
+                , class "justify-center"
+                , class "w-full h-full"
+                , class "bg-black/60 dark:bg-black/50"
                 ]
                 [ createHelper layer state ]
 
@@ -56,7 +49,7 @@ create ({ layers, theme } as state) =
 -- -----------------------------------------------------------
 
 
-createHelper : Layer -> Model.State -> Element Msg.Msg
+createHelper : Layer -> Model.State -> Html Msg.Msg
 createHelper type_ state =
     case type_ of
         NewTopicLayer ->
@@ -66,4 +59,4 @@ createHelper type_ state =
             View.Page.Layer.EditTopic.create state
 
         _ ->
-            none
+            div [] []

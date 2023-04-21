@@ -50,8 +50,8 @@ translator texts =
             ok En_US "The URL doesn't exist"
                 :: default
 
-        [ "异常请求状态码：", code ] ->
-            ok En_US ("Error request code: " ++ code)
+        [ "[", code, "] 请求异常" ] ->
+            ok En_US ("[" ++ code ++ "] Error Request")
                 :: default
 
         [ "网络请求超时，请稍后再试" ] ->

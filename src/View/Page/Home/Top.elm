@@ -39,7 +39,6 @@ import Html.Attributes
         , value
         )
 import Html.Events exposing (onClick, onInput)
-import I18n.I18n exposing (langTextEnd)
 import Material.Icons.Outlined as Outlined
 import Material.Icons.Types exposing (Coloring(..))
 import Model
@@ -107,7 +106,7 @@ view ({ app, themeDark, withI18nHtml } as state) =
                          ]
                             ++ i18nAttr
                                 placeholder
-                                ("请输入关键字查询 ..." :: langTextEnd)
+                                [ "请输入关键字查询 ..." ]
                         )
                         []
                     ]

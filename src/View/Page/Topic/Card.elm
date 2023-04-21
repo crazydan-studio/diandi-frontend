@@ -31,7 +31,6 @@ import Html
 import Html.Attributes exposing (class, tabindex)
 import Html.Events exposing (on, onClick)
 import I18n.Html exposing (textWith)
-import I18n.I18n exposing (langTextEnd)
 import Json.Decode as Decode
 import Material.Icons.Outlined as Outlined
 import Material.Icons.Types exposing (Coloring(..))
@@ -95,8 +94,7 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                     [ Loading.ripple { width = 64, height = 64 }
                     , span
                         []
-                        [ "数据正在移除中，请稍等片刻 ..."
-                            :: langTextEnd
+                        [ [ "数据正在移除中，请稍等片刻 ..." ]
                             |> i18nText
                         ]
                     ]
@@ -148,8 +146,7 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                                     text t
                                 )
                             |> Maybe.withDefault
-                                ("无标题"
-                                    :: langTextEnd
+                                ([ "无标题" ]
                                     |> i18nText
                                 )
                         ]
@@ -216,8 +213,7 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                                 , class "whitespace-pre-wrap"
                                 , class "text-red-500 dark:text-red-600"
                                 ]
-                                [ "* 删除失败 - "
-                                    :: langTextEnd
+                                [ [ "* 删除失败 - " ]
                                     |> i18nText
                                 , textWith e
                                 ]

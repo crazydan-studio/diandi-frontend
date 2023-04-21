@@ -23,7 +23,6 @@ import Html exposing (Html, button, div, input, span, text)
 import Html.Attributes exposing (class, id, placeholder, value)
 import Html.Events exposing (onBlur, onClick, onInput)
 import I18n.Html exposing (textWith)
-import I18n.I18n exposing (langTextEnd)
 import Material.Icons.Outlined as Outlined
 import Material.Icons.Types exposing (Coloring(..))
 import Model
@@ -92,8 +91,7 @@ create config { app, withI18nHtml } =
                 [ Loading.ripple { width = 64, height = 64 }
                 , span
                     []
-                    [ "数据正在保存中，请稍等片刻 ..."
-                        :: langTextEnd
+                    [ [ "数据正在保存中，请稍等片刻 ..." ]
                         |> i18nText
                     ]
                 ]
@@ -105,7 +103,7 @@ create config { app, withI18nHtml } =
              ]
                 ++ i18nAttr
                     placeholder
-                    ("可以在这里添加一个醒目的标题哦 ..." :: langTextEnd)
+                    [ "可以在这里添加一个醒目的标题哦 ..." ]
             )
             []
         , Markdown.editor
@@ -157,7 +155,7 @@ create config { app, withI18nHtml } =
                  ]
                     ++ i18nAttr
                         placeholder
-                        ("请输入标签名称，并按回车确认" :: langTextEnd)
+                        [ "请输入标签名称，并按回车确认" ]
                 )
                 []
             ]
@@ -193,14 +191,13 @@ create config { app, withI18nHtml } =
                 , class "w-full"
                 , onClick config.onEditDone
                 ]
-                [ I18n.buttonText
-                    :: (if config.isNew then
-                            "记下来！"
+                [ [ I18n.buttonText
+                  , if config.isNew then
+                        "记下来！"
 
-                        else
-                            "保存"
-                       )
-                    :: langTextEnd
+                    else
+                        "保存"
+                  ]
                     |> i18nText
                 ]
             , button
@@ -208,9 +205,9 @@ create config { app, withI18nHtml } =
                 , class "w-full"
                 , onClick config.onEditCanceled
                 ]
-                [ I18n.buttonText
-                    :: "取消"
-                    :: langTextEnd
+                [ [ I18n.buttonText
+                  , "取消"
+                  ]
                     |> i18nText
                 ]
             ]

@@ -44,7 +44,6 @@ import Browser.Navigation as Nav
 import Data.TreeStore as TreeStore exposing (TreeStore)
 import Element exposing (Device)
 import Http
-import I18n.I18n exposing (langTextEnd)
 import I18n.Lang exposing (Lang)
 import I18n.Translator exposing (TextsNeedToBeTranslated, TranslateResult)
 import Model.I18n.App as I18n
@@ -223,8 +222,7 @@ prepareSavingNewTopic { lang, newTopic } =
                         ( Just
                             (newTopic_
                                 |> EditTopic.error
-                                    ("主题内容是空白的，请先输入点什么"
-                                        :: langTextEnd
+                                    ([ "主题内容是空白的，请先输入点什么" ]
                                         |> I18n.translate lang
                                     )
                             )
@@ -251,8 +249,7 @@ updateSavedNewTopic result ({ lang } as state) =
                     EditTopic.clean
                 |> updateNewTopic
                     (EditTopic.info
-                        ("新增主题已保存成功"
-                            :: langTextEnd
+                        ([ "新增主题已保存成功" ]
                             |> I18n.translate lang
                         )
                     )
@@ -305,8 +302,7 @@ prepareSavingEditTopic ({ lang, editTopic } as state) =
                         ( Just
                             (editTopic_
                                 |> EditTopic.error
-                                    ("主题内容是空白的，请先输入点什么"
-                                        :: langTextEnd
+                                    ([ "主题内容是空白的，请先输入点什么" ]
                                         |> I18n.translate lang
                                     )
                             )
@@ -334,8 +330,7 @@ updateSavedEditTopic result ({ lang } as state) =
             state
                 |> updateEditTopic
                     (EditTopic.info
-                        ("当前主题已更新成功"
-                            :: langTextEnd
+                        ([ "当前主题已更新成功" ]
                             |> I18n.translate lang
                         )
                     )

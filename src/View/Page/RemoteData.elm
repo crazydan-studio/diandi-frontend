@@ -25,7 +25,6 @@ module View.Page.RemoteData exposing
 
 import Element exposing (..)
 import Element.Font as Font
-import I18n.I18n exposing (langTextEnd)
 import I18n.Lang exposing (Lang)
 import Model.Remote.Data as RemoteData
 import Theme.Theme exposing (Theme)
@@ -43,11 +42,11 @@ view { theme, lang } dataView dataStatus =
     case dataStatus of
         RemoteData.LoadWaiting ->
             errorView theme
-                ("数据未加载" :: langTextEnd |> I18n.text lang)
+                ([ "数据未加载" ] |> I18n.text lang)
 
         RemoteData.Loading ->
             errorView theme
-                ("数据加载中，请稍候..." :: langTextEnd |> I18n.text lang)
+                ([ "数据加载中，请稍候..." ] |> I18n.text lang)
 
         RemoteData.Loaded data ->
             dataView data
@@ -63,7 +62,7 @@ noDataView :
     -> Element msg
 noDataView { theme, lang } =
     errorView theme
-        ("数据已加载，但结果为空" :: langTextEnd |> I18n.text lang)
+        ([ "数据已加载，但结果为空" ] |> I18n.text lang)
 
 
 noDataViewWith :

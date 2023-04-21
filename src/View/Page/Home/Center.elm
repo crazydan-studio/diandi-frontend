@@ -21,7 +21,6 @@ module View.Page.Home.Center exposing (view)
 
 import Element exposing (..)
 import Element.Font as Font
-import I18n.I18n exposing (langTextEnd)
 import Model
 import Msg
 import View.I18n.Home as I18n
@@ -114,7 +113,7 @@ tools ({ app, theme, widgets, withI18nElement } as state) =
                                 [ centerX
                                 , Font.size theme.secondaryFontSize
                                 ]
-                                ((I18n.buttonText :: "新增" :: langTextEnd)
+                                ([ I18n.buttonText, "新增" ]
                                     |> i18nText
                                 )
                             ]

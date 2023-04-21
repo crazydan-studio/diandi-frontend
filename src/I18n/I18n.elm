@@ -1,7 +1,6 @@
 module I18n.I18n exposing
     ( I18nElement
     , I18nHtml
-    , langTextEnd
     , withI18nElement
     , withI18nHtml
     )
@@ -27,11 +26,6 @@ type alias I18nHtml msg =
     )
     -> List String
     -> Html msg
-
-
-langTextEnd : List String
-langTextEnd =
-    []
 
 
 withI18nHtml :

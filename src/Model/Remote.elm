@@ -20,7 +20,6 @@
 module Model.Remote exposing (parseError)
 
 import Http
-import I18n.I18n exposing (langTextEnd)
 import I18n.Lang exposing (Lang)
 import I18n.Translator exposing (TranslateResult)
 import Model.I18n.Remote as I18n
@@ -30,27 +29,50 @@ parseError : Lang -> Http.Error -> TranslateResult
 parseError lang error =
     case error of
         Http.BadStatus status ->
-            if status == 401 then
-                "用户未登录" :: langTextEnd |> I18n.translate lang
+            (case status of
+                400 ->
+                    [ "Bad Request" ]
 
-            else if status == 403 then
-                "请求未授权" :: langTextEnd |> I18n.translate lang
+                401 ->
+                    [ "用户未登录" ]
 
-            else if status == 404 then
-                "请求URL不存在" :: langTextEnd |> I18n.translate lang
+                403 ->
+                    [ "请求未授权" ]
 
-            else
-                ("异常请求状态码：" :: String.fromInt status :: langTextEnd)
-                    |> I18n.translate lang
+                404 ->
+                    [ "请求URL不存在" ]
+
+                405 ->
+                    [ "Method Not Allowed" ]
+
+                413 ->
+                    [ "Payload Too Large" ]
+
+                500 ->
+                    [ "Internal Server Error" ]
+
+                502 ->
+                    [ "Bad Gateway" ]
+
+                503 ->
+                    [ "Service Unavailable" ]
+
+                504 ->
+                    [ "Gateway Timeout" ]
+
+                _ ->
+                    [ "[", String.fromInt status, "] 请求异常" ]
+            )
+                |> I18n.translate lang
 
         Http.Timeout ->
-            "网络请求超时，请稍后再试" :: langTextEnd |> I18n.translate lang
+            [ "网络请求超时，请稍后再试" ] |> I18n.translate lang
 
         Http.NetworkError ->
-            "网络连接异常，请稍后再试" :: langTextEnd |> I18n.translate lang
+            [ "网络连接异常，请稍后再试" ] |> I18n.translate lang
 
         Http.BadBody msg ->
-            msg :: langTextEnd |> I18n.translate lang
+            [ msg ] |> I18n.translate lang
 
         _ ->
-            "未知异常" :: langTextEnd |> I18n.translate lang
+            [ "未知异常" ] |> I18n.translate lang

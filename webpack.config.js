@@ -160,18 +160,18 @@ if (MODE === "production") {
   module.exports = merge(common, {
     optimization: {
       minimizer: [
-        new ClosurePlugin(
-          { mode: "STANDARD" },
-          {
-            // compiler flags here
-            //
-            // for debugging help, try these:
-            //
-            // formatting: 'PRETTY_PRINT',
-            // debug: true
-            // renaming: false
-          }
-        ),
+        // new ClosurePlugin(
+        //   { mode: "STANDARD" },
+        //   {
+        //     // compiler flags here
+        //     //
+        //     // for debugging help, try these:
+        //     //
+        //     // formatting: 'PRETTY_PRINT',
+        //     // debug: true
+        //     // renaming: false
+        //   }
+        // ),
         new OptimizeCSSAssetsPlugin({}),
       ],
     },

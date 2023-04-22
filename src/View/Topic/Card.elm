@@ -34,26 +34,27 @@ import I18n.Html exposing (textWith)
 import Json.Decode as Decode
 import Material.Icons.Outlined as Outlined
 import Material.Icons.Types exposing (Coloring(..))
-import Model
+import Model exposing (Model)
 import Model.Operation as Operation
 import Model.TopicCard as TopicCard exposing (TopicCard)
-import Msg
+import Msg exposing (Msg)
 import View.I18n.Home as I18n
-import View.Page as Page
+import View.Topic.Layer.EditTopic
 import Widget.Bytemd as Markdown
 import Widget.Loading as Loading
 import Widget.Mask as Mask
+import Widget.PageLayer as PageLayer
 import Widget.Util.DateTime as DateTime
 
 
 view :
-    Model.State
+    Model
     -> TopicCard
-    -> Html Msg.Msg
-view { timeZone, withI18nHtml } { config, topic, trashOp } =
+    -> Html Msg
+view { app, timeZone } { config, topic, trashOp } =
     let
         i18nText =
-            withI18nHtml I18n.htmlText
+            I18n.htmlText app.lang
     in
     div
         ((case trashOp of
@@ -61,7 +62,7 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                 [ class "animate-zoom-in"
                 , on "animationend"
                     (Decode.succeed
-                        (Msg.RemoveTopicCard topic.id)
+                        (Msg.model (Model.RemoveTopicCard topic.id))
                     )
                 ]
 
@@ -119,9 +120,11 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                                 "text-gray-300"
                             )
                         , onClick
-                            (Msg.TopicCardMsg
-                                topic.id
-                                (TopicCard.Select (not config.selected))
+                            (Msg.model
+                                (Model.TopicCardMsg
+                                    topic.id
+                                    (TopicCard.Select (not config.selected))
+                                )
                             )
                         ]
                         [ if config.selected then
@@ -228,9 +231,11 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                             [ class "tw-icon-btn"
                             , tabindex 0
                             , onClick
-                                (Msg.TopicCardMsg
-                                    topic.id
-                                    (TopicCard.Trash Operation.Doing)
+                                (Msg.model
+                                    (Model.TopicCardMsg
+                                        topic.id
+                                        (TopicCard.Trash Operation.Doing)
+                                    )
                                 )
                             ]
                             [ Outlined.delete 20 Inherit ]
@@ -239,8 +244,9 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                             , tabindex 0
                             , onClick
                                 (Msg.batch
-                                    [ Msg.EditTopicPending topic.id
-                                    , Msg.ShowPageLayer Page.EditTopicLayer
+                                    [ Msg.model (Model.EditTopicPending topic.id)
+                                    , Msg.pageLayerOpen
+                                        View.Topic.Layer.EditTopic.create
                                     ]
                                 )
                             ]
@@ -249,9 +255,11 @@ view { timeZone, withI18nHtml } { config, topic, trashOp } =
                             [ class "tw-icon-btn"
                             , tabindex 0
                             , onClick
-                                (Msg.TopicCardMsg topic.id
-                                    (TopicCard.Expand
-                                        (not config.expanded)
+                                (Msg.model
+                                    (Model.TopicCardMsg topic.id
+                                        (TopicCard.Expand
+                                            (not config.expanded)
+                                        )
                                     )
                                 )
                             ]

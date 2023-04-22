@@ -19,18 +19,16 @@
 
 module Model exposing
     ( Config
-    , State
+    , Model
+    , Msg(..)
     , init
     , sub
     , update
     )
 
+import Browser
+import Browser.Dom as Dom
 import Browser.Navigation as Nav
-import I18n.I18n
-    exposing
-        ( I18nHtml
-        , withI18nHtml
-        )
 import I18n.Port
 import Model.App as App
 import Model.Operation as Operation
@@ -39,7 +37,6 @@ import Model.Remote as Remote
 import Model.Remote.GraphQL.Topic as RemoteTopic
 import Model.Remote.Msg as RemoteMsg
 import Model.TopicCard as TopicCard
-import Msg
 import Task
 import Time
 import Url
@@ -55,19 +52,55 @@ type alias Config =
     }
 
 
-type alias State =
+type alias Model =
     { -- 应用状态
       app : App.State
     , timeZone : Time.Zone
     , themeDark : Bool
-    , withI18nHtml : I18nHtml Msg.Msg
-
-    -- 组件内部状态
-    , layers : List Page.Layer
     }
 
 
-init : Config -> Url.Url -> Nav.Key -> ( State, Cmd Msg.Msg )
+type Msg
+    = NoOp
+    | LinkClicked Browser.UrlRequest
+    | UrlChanged Url.Url
+    | FocusOn String
+    | SwitchToDarkTheme Bool
+    | AdjustTimeZone Time.Zone
+      -- 远端消息
+    | RemoteMsg RemoteMsg.Msg
+      -- 国际化Port消息
+    | I18nPortMsg I18n.Port.Msg
+      -- 数据操作
+    | SearchTopic
+    | SearchTopicInputing String
+    | TopicCardMsg String TopicCard.Msg
+    | RemoveTopicCard String
+    | NewTopicPending
+    | NewTopicMsg EditTopic.Msg
+    | NewTopicSaving
+    | NewTopicCleaned
+    | EditTopicPending String
+    | EditTopicMsg EditTopic.Msg
+    | EditTopicSaving
+    | EditTopicCleaned
+
+
+{-| 发起远程请求
+-}
+toRemoteCmd : Cmd RemoteMsg.Msg -> Cmd Msg
+toRemoteCmd msg =
+    Cmd.map RemoteMsg msg
+
+
+focusOn : String -> Cmd Msg
+focusOn id =
+    Task.attempt
+        (\_ -> FocusOn id)
+        (Dom.focus id)
+
+
+init : Config -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init config navUrl navKey =
     let
         app =
@@ -83,118 +116,97 @@ init config navUrl navKey =
             { app = app
             , timeZone = Time.utc
             , themeDark = False
-            , withI18nHtml = withI18nHtml app.lang
-            , layers = []
             }
                 |> routeUpdateHelper navUrl
     in
     ( state
     , Cmd.batch
         [ cmd
-        , Task.perform Msg.AdjustTimeZone Time.here
+        , Task.perform AdjustTimeZone Time.here
         ]
     )
 
 
-sub : State -> Sub Msg.Msg
+sub : Model -> Sub Msg
 sub state =
     Sub.batch
-        [ I18n.Port.sub Msg.I18nPortMsg
+        [ I18n.Port.sub I18nPortMsg
         ]
 
 
-update : Msg.Msg -> State -> ( State, Cmd Msg.Msg )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg state =
     case msg of
-        Msg.Batch msgs ->
-            batchUpdateHelper msgs state
-
-        Msg.RemoteMsg remoteMsg ->
+        RemoteMsg remoteMsg ->
             remoteUpdateHelper remoteMsg state
 
-        Msg.UrlChanged url ->
+        UrlChanged url ->
             routeUpdateHelper url state
 
-        Msg.I18nPortMsg i18nPortMsg ->
+        I18nPortMsg i18nPortMsg ->
             i18nUpdateHelper i18nPortMsg state
 
-        Msg.SwitchToDarkTheme dark ->
+        SwitchToDarkTheme dark ->
             ( { state | themeDark = dark }
             , Cmd.none
             )
 
-        Msg.AdjustTimeZone zone ->
+        AdjustTimeZone zone ->
             ( { state | timeZone = zone }
             , Cmd.none
             )
 
-        Msg.SearchTopicInputing keywords ->
+        SearchTopicInputing keywords ->
             ( state
                 |> updateAppState
                     (App.updateTopicSearchingText (Just keywords))
             , Cmd.none
             )
 
-        Msg.SearchTopic ->
+        SearchTopic ->
             ( state
             , View.Route.searchTopics
                 (state.app.topicSearchingText |> Maybe.withDefault "")
                 state.app
             )
 
-        Msg.TopicCardMsg topicId topicCardMsg ->
+        TopicCardMsg topicId topicCardMsg ->
             topicCardUpdateHelper topicId topicCardMsg state
 
-        Msg.RemoveTopicCard topicId ->
+        RemoveTopicCard topicId ->
             ( state |> updateAppState (App.removeTopicCard topicId)
             , Cmd.none
             )
 
-        Msg.NewTopicPending ->
+        NewTopicPending ->
             ( state |> updateAppState App.initNewTopic
             , Cmd.none
             )
 
-        Msg.NewTopicMsg newTopicMsg ->
+        NewTopicMsg newTopicMsg ->
             newTopicUpdateHelper newTopicMsg state
 
-        Msg.NewTopicSaving ->
+        NewTopicSaving ->
             newTopicSavingHelper state
 
-        Msg.NewTopicCleaned ->
+        NewTopicCleaned ->
             ( state |> updateAppState App.cleanNewTopic
             , Cmd.none
             )
 
-        Msg.EditTopicPending topicId ->
+        EditTopicPending topicId ->
             ( state |> updateAppState (App.initEditTopic topicId)
             , Cmd.none
             )
 
-        Msg.EditTopicMsg editTopicMsg ->
+        EditTopicMsg editTopicMsg ->
             editTopicUpdateHelper editTopicMsg state
 
-        Msg.EditTopicSaving ->
+        EditTopicSaving ->
             editTopicSavingHelper state
 
-        Msg.EditTopicCleaned ->
+        EditTopicCleaned ->
             ( state |> updateAppState App.cleanEditTopic
-            , Cmd.none
-            )
-
-        Msg.ShowPageLayer layer ->
-            ( { state
-                | layers = layer :: state.layers
-              }
-            , Cmd.none
-            )
-
-        Msg.ClosePageLayer layer ->
-            ( { state
-                | layers =
-                    state.layers
-                        |> List.filter (\l -> l /= layer)
-              }
             , Cmd.none
             )
 
@@ -208,8 +220,8 @@ update msg state =
 
 updateAppState :
     (App.State -> App.State)
-    -> State
-    -> State
+    -> Model
+    -> Model
 updateAppState updater ({ app } as state) =
     let
         newApp =
@@ -217,30 +229,15 @@ updateAppState updater ({ app } as state) =
     in
     { state
         | app = newApp
-        , withI18nHtml = withI18nHtml newApp.lang
     }
-
-
-batchUpdateHelper : List Msg.Msg -> State -> ( State, Cmd Msg.Msg )
-batchUpdateHelper msgs state =
-    msgs
-        |> List.foldl
-            (\msg ( s, c ) ->
-                let
-                    ( ns, nc ) =
-                        update msg s
-                in
-                ( ns, Cmd.batch [ c, nc ] )
-            )
-            ( state, Cmd.none )
 
 
 {-| 远程请求更新
 -}
 remoteUpdateHelper :
     RemoteMsg.Msg
-    -> State
-    -> ( State, Cmd Msg.Msg )
+    -> Model
+    -> ( Model, Cmd Msg )
 remoteUpdateHelper msg ({ app } as state) =
     case msg of
         RemoteMsg.QueryMyTopics result ->
@@ -286,7 +283,7 @@ remoteUpdateHelper msg ({ app } as state) =
             ( state, Cmd.none )
 
 
-routeUpdateHelper : Url.Url -> State -> ( State, Cmd Msg.Msg )
+routeUpdateHelper : Url.Url -> Model -> ( Model, Cmd Msg )
 routeUpdateHelper navUrl state =
     let
         ( page, newState, cmd ) =
@@ -326,7 +323,7 @@ routeUpdateHelper navUrl state =
     )
 
 
-i18nUpdateHelper : I18n.Port.Msg -> State -> ( State, Cmd Msg.Msg )
+i18nUpdateHelper : I18n.Port.Msg -> Model -> ( Model, Cmd Msg )
 i18nUpdateHelper msg ({ app } as state) =
     case I18n.Port.update msg of
         ( r, m ) ->
@@ -340,8 +337,8 @@ i18nUpdateHelper msg ({ app } as state) =
 topicCardUpdateHelper :
     String
     -> TopicCard.Msg
-    -> State
-    -> ( State, Cmd Msg.Msg )
+    -> Model
+    -> ( Model, Cmd Msg )
 topicCardUpdateHelper topicId msg state =
     ( state
         |> updateAppState (App.updateTopicCard topicId msg)
@@ -349,7 +346,7 @@ topicCardUpdateHelper topicId msg state =
         TopicCard.Trash op ->
             case op of
                 Operation.Doing ->
-                    Msg.toRemoteCmd
+                    toRemoteCmd
                         (RemoteTopic.trashMyTopic topicId)
 
                 _ ->
@@ -362,8 +359,8 @@ topicCardUpdateHelper topicId msg state =
 
 newTopicUpdateHelper :
     EditTopic.Msg
-    -> State
-    -> ( State, Cmd Msg.Msg )
+    -> Model
+    -> ( Model, Cmd Msg )
 newTopicUpdateHelper msg state =
     ( state
         |> updateAppState
@@ -372,7 +369,7 @@ newTopicUpdateHelper msg state =
             )
     , case msg of
         EditTopic.TagDeleted _ ->
-            Msg.focusOn state.app.topicTagEditInputId
+            focusOn state.app.topicTagEditInputId
 
         _ ->
             Cmd.none
@@ -380,8 +377,8 @@ newTopicUpdateHelper msg state =
 
 
 newTopicSavingHelper :
-    State
-    -> ( State, Cmd Msg.Msg )
+    Model
+    -> ( Model, Cmd Msg )
 newTopicSavingHelper ({ app } as state) =
     let
         ( newTopic, topic ) =
@@ -393,7 +390,7 @@ newTopicSavingHelper ({ app } as state) =
     , topic
         |> Maybe.map
             (\t ->
-                Msg.toRemoteCmd
+                toRemoteCmd
                     (RemoteTopic.saveMyNewTopic t)
             )
         |> Maybe.withDefault
@@ -402,8 +399,8 @@ newTopicSavingHelper ({ app } as state) =
 
 
 editTopicSavingHelper :
-    State
-    -> ( State, Cmd Msg.Msg )
+    Model
+    -> ( Model, Cmd Msg )
 editTopicSavingHelper ({ app } as state) =
     let
         ( editTopic, topic ) =
@@ -415,7 +412,7 @@ editTopicSavingHelper ({ app } as state) =
     , topic
         |> Maybe.map
             (\t ->
-                Msg.toRemoteCmd
+                toRemoteCmd
                     (RemoteTopic.saveMyEditTopic t)
             )
         |> Maybe.withDefault
@@ -425,8 +422,8 @@ editTopicSavingHelper ({ app } as state) =
 
 editTopicUpdateHelper :
     EditTopic.Msg
-    -> State
-    -> ( State, Cmd Msg.Msg )
+    -> Model
+    -> ( Model, Cmd Msg )
 editTopicUpdateHelper msg state =
     ( state
         |> updateAppState
@@ -435,14 +432,14 @@ editTopicUpdateHelper msg state =
             )
     , case msg of
         EditTopic.TagDeleted _ ->
-            Msg.focusOn state.app.topicTagEditInputId
+            focusOn state.app.topicTagEditInputId
 
         _ ->
             Cmd.none
     )
 
 
-doRemoteQueryMyTopics : State -> ( State, Cmd Msg.Msg )
+doRemoteQueryMyTopics : Model -> ( Model, Cmd Msg )
 doRemoteQueryMyTopics state =
     ( state
         |> updateAppState
@@ -452,7 +449,7 @@ doRemoteQueryMyTopics state =
                 }
             )
     , Cmd.batch
-        [ Msg.toRemoteCmd
+        [ toRemoteCmd
             (RemoteTopic.queryMyTopics
                 { keyword = state.app.topicSearchingText
                 , tags = Nothing

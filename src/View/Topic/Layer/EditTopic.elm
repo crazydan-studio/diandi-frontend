@@ -20,35 +20,37 @@
 module View.Topic.Layer.EditTopic exposing (create)
 
 import Html exposing (Html)
-import Model
+import Model exposing (Model)
 import Model.Operation.EditTopic as EditTopic
-import Msg
-import View.Page as Page
+import Msg exposing (Msg)
 import View.Topic.Layer.TopicEditor as TopicEditor
+import Widget.PageLayer as PageLayer
 
 
-create : Model.State -> Html Msg.Msg
-create ({ app } as state) =
-    state
+create : PageLayer.PagerId -> Model -> Html Msg
+create pagerId ({ app } as model) =
+    model
         |> TopicEditor.create
             { isNew = False
             , topic = app.editTopic
             , onTitleChange =
                 \text ->
-                    Msg.EditTopicMsg (EditTopic.TitleChanged text)
+                    Msg.model (Model.EditTopicMsg (EditTopic.TitleChanged text))
             , onContentChange =
                 \text ->
-                    Msg.EditTopicMsg (EditTopic.ContentChanged text)
-            , onTagDeleted = \tag -> Msg.EditTopicMsg (EditTopic.TagDeleted tag)
-            , onTagDone = Msg.EditTopicMsg EditTopic.TagDone
+                    Msg.model (Model.EditTopicMsg (EditTopic.ContentChanged text))
+            , onTagDeleted =
+                \tag ->
+                    Msg.model (Model.EditTopicMsg (EditTopic.TagDeleted tag))
+            , onTagDone = Msg.model (Model.EditTopicMsg EditTopic.TagDone)
             , onTagChange =
                 \text ->
-                    Msg.EditTopicMsg (EditTopic.TagChanged text)
+                    Msg.model (Model.EditTopicMsg (EditTopic.TagChanged text))
             , onEditDone =
-                Msg.EditTopicSaving
+                Msg.model Model.EditTopicSaving
             , onEditCanceled =
                 Msg.batch
-                    [ Msg.EditTopicCleaned
-                    , Msg.ClosePageLayer Page.EditTopicLayer
+                    [ Msg.model Model.EditTopicCleaned
+                    , Msg.pageLayerClose pagerId
                     ]
             }

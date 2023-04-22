@@ -21,19 +21,19 @@ module View.Page.Home exposing (view)
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
-import Model
-import Msg
+import Model exposing (Model)
+import Msg exposing (Msg)
 import View.Page
 import View.Page.Home.Center as Center
 import View.Page.Home.Top as Top
 
 
-view : Model.State -> Html Msg.Msg
-view state =
+view : Model -> Html Msg
+view model =
     div
         [ class "w-full h-full"
         , class "flex flex-col"
         ]
-        [ Top.view state
-        , Center.view state
+        [ Top.view model
+        , Center.view model
         ]

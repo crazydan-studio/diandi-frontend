@@ -41,14 +41,14 @@ import Html.Attributes
 import Html.Events exposing (onClick, onInput)
 import Material.Icons.Outlined as Outlined
 import Material.Icons.Types exposing (Coloring(..))
-import Model
-import Msg
+import Model exposing (Model)
+import Msg exposing (Msg)
 import View.I18n.Home as I18n
 import Widget.Html exposing (onEnter)
 
 
-view : Model.State -> Html Msg.Msg
-view ({ app, themeDark, withI18nHtml } as state) =
+view : Model -> Html Msg
+view { app, themeDark } =
     let
         i18nAttr =
             I18n.htmlAttr app.lang
@@ -100,8 +100,11 @@ view ({ app, themeDark, withI18nHtml } as state) =
                      , class "transition duration-300 ease-in-out"
                      , type_ "text"
                      , value (app.topicSearchingText |> Maybe.withDefault "")
-                     , onInput Msg.SearchTopicInputing
-                     , onEnter Msg.SearchTopic
+                     , onInput
+                        (\t ->
+                            Msg.model (Model.SearchTopicInputing t)
+                        )
+                     , onEnter (Msg.model Model.SearchTopic)
                      ]
                         ++ i18nAttr
                             placeholder
@@ -115,7 +118,10 @@ view ({ app, themeDark, withI18nHtml } as state) =
             ]
             [ span
                 [ class "tw-icon-btn"
-                , onClick (Msg.SwitchToDarkTheme (not themeDark))
+                , onClick
+                    (Msg.model
+                        (Model.SwitchToDarkTheme (not themeDark))
+                    )
                 ]
                 [ if themeDark then
                     Outlined.light_mode 24 Inherit

@@ -17,7 +17,7 @@
 -}
 
 
-module View.Page exposing (Layer(..), Type(..))
+module View.Page exposing (Type(..))
 
 
 type Type
@@ -26,9 +26,3 @@ type Type
     | Forbidden
     | Loading
     | Blank
-
-
-type Layer
-    = NewTopicLayer
-    | EditTopicLayer
-    | NoneLayer

@@ -22,21 +22,24 @@ module View.App exposing (view)
 import Browser
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
-import Model
+import Model exposing (Model)
 import Model.App as App
-import Msg
-import View.StyleSheet
+import Msg exposing (Msg)
 import View.Page as PageType
 import View.Page.Blank
 import View.Page.Forbidden
 import View.Page.Home
 import View.Page.Loading
 import View.Page.NotFound
-import View.PageLayer as PageLayer
+import View.StyleSheet
+import Widget.PageLayer as PageLayer exposing (PageLayer)
 
 
-view : Model.State -> Browser.Document Msg.Msg
-view ({ app, themeDark } as state) =
+view :
+    PageLayer Model Msg
+    -> Model
+    -> Browser.Document Msg
+view pageLayer ({ app, themeDark } as model) =
     { title = title app
     , body =
         [ div
@@ -55,44 +58,44 @@ view ({ app, themeDark } as state) =
                 , class "flex"
                 , class "bg-gray-100 dark:bg-gray-900"
                 ]
-                [ page state ]
-            , PageLayer.create state
+                [ page model ]
+            , PageLayer.create pageLayer model
             ]
-        , View.StyleSheet.create state
+        , View.StyleSheet.create model
         ]
     }
 
 
 title : App.State -> String
-title model =
-    case model.currentPage of
-        PageType.NotFound ->
-            model.title ++ " - " ++ "页面不存在"
-
-        PageType.Forbidden ->
-            model.title ++ " - " ++ "无操作权限"
-
-        PageType.Loading ->
-            model.title ++ " - " ++ "页面加载中..."
-
-        _ ->
-            model.description
-
-
-page : Model.State -> Html Msg.Msg
-page ({ app } as state) =
+title app =
     case app.currentPage of
         PageType.NotFound ->
-            View.Page.NotFound.view state
+            app.title ++ " - " ++ "页面不存在"
 
         PageType.Forbidden ->
-            View.Page.Forbidden.view state
+            app.title ++ " - " ++ "无操作权限"
 
         PageType.Loading ->
-            View.Page.Loading.view state
+            app.title ++ " - " ++ "页面加载中..."
+
+        _ ->
+            app.description
+
+
+page : Model -> Html Msg
+page ({ app } as model) =
+    case app.currentPage of
+        PageType.NotFound ->
+            View.Page.NotFound.view model
+
+        PageType.Forbidden ->
+            View.Page.Forbidden.view model
+
+        PageType.Loading ->
+            View.Page.Loading.view model
 
         PageType.Blank ->
-            View.Page.Blank.view state
+            View.Page.Blank.view model
 
         PageType.Home ->
-            View.Page.Home.view state
+            View.Page.Home.view model

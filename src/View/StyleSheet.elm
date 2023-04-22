@@ -20,10 +20,10 @@
 module View.StyleSheet exposing (create)
 
 import Html exposing (Html)
-import Model
+import Model exposing (Model)
 
 
-create : Model.State -> Html msg
+create : Model -> Html msg
 create _ =
     Html.node "style"
         []

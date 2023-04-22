@@ -25,10 +25,10 @@ import Html.Events exposing (onBlur, onClick, onInput)
 import I18n.Html exposing (textWith)
 import Material.Icons.Outlined as Outlined
 import Material.Icons.Types exposing (Coloring(..))
-import Model
+import Model exposing (Model)
 import Model.Error as Error
 import Model.Operation.EditTopic exposing (EditTopic)
-import Msg
+import Msg exposing (Msg)
 import View.I18n.Home as I18n
 import Widget.Bytemd as Markdown
 import Widget.Html exposing (onEnter)
@@ -50,11 +50,11 @@ type alias Config msg =
     }
 
 
-create : Config Msg.Msg -> Model.State -> Html Msg.Msg
-create config { app, withI18nHtml } =
+create : Config Msg -> Model -> Html Msg
+create config { app } =
     let
         i18nText =
-            withI18nHtml I18n.htmlText
+            I18n.htmlText app.lang
 
         i18nAttr =
             I18n.htmlAttr app.lang

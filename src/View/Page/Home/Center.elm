@@ -24,14 +24,15 @@ import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Material.Icons.Outlined as Outlined
 import Material.Icons.Types exposing (Coloring(..))
-import Model
-import Msg
-import View.Page as Page
+import Model exposing (Model)
+import Msg exposing (Msg)
+import View.Topic.Layer.NewTopic
 import View.Topic.List as TopicList
+import Widget.PageLayer as PageLayer
 
 
-view : Model.State -> Html Msg.Msg
-view state =
+view : Model -> Html Msg
+view model =
     div
         [ class "w-full h-full"
         , class "flex"
@@ -42,12 +43,12 @@ view state =
             , class "overflow-y-auto"
             , class "px-14 md:px-20 pt-8 pb-4"
             ]
-            [ TopicList.view state ]
-        , tools state
+            [ TopicList.view model ]
+        , tools model
         ]
 
 
-tools : Model.State -> Html Msg.Msg
+tools : Model -> Html Msg
 tools _ =
     div
         [ class "absolute right-0"
@@ -66,8 +67,9 @@ tools _ =
             , class "transition-colors duration-300 transform"
             , onClick
                 (Msg.batch
-                    [ Msg.NewTopicPending
-                    , Msg.ShowPageLayer Page.NewTopicLayer
+                    [ Msg.model Model.NewTopicPending
+                    , Msg.pageLayerOpen
+                        View.Topic.Layer.NewTopic.create
                     ]
                 )
             ]

@@ -21,11 +21,11 @@ module View.Page.Blank exposing (view)
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
-import Model
-import Msg
+import Model exposing (Model)
+import Msg exposing (Msg)
 
 
-view : Model.State -> Html Msg.Msg
+view : Model -> Html Msg
 view _ =
     div
         [ class "w-full h-full"

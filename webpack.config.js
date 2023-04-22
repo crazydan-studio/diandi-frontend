@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const { merge } = require("webpack-merge");
 
-const ClosurePlugin = require("closure-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
@@ -160,18 +160,10 @@ if (MODE === "production") {
   module.exports = merge(common, {
     optimization: {
       minimizer: [
-        // new ClosurePlugin(
-        //   { mode: "STANDARD" },
-        //   {
-        //     // compiler flags here
-        //     //
-        //     // for debugging help, try these:
-        //     //
-        //     // formatting: 'PRETTY_PRINT',
-        //     // debug: true
-        //     // renaming: false
-        //   }
-        // ),
+        // https://webpack.js.org/plugins/terser-webpack-plugin/
+        new TerserPlugin({
+          parallel: true,
+        }),
         new OptimizeCSSAssetsPlugin({}),
       ],
     },

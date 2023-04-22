@@ -25,7 +25,7 @@ import Html.Attributes exposing (class)
 import Model
 import Model.App as App
 import Msg
-import Theme.StyleSheet
+import View.StyleSheet
 import View.Page as PageType
 import View.Page.Blank
 import View.Page.Forbidden
@@ -33,7 +33,6 @@ import View.Page.Home
 import View.Page.Loading
 import View.Page.NotFound
 import View.PageLayer as PageLayer
-import Widget.StyleSheet
 
 
 view : Model.State -> Browser.Document Msg.Msg
@@ -59,8 +58,7 @@ view ({ app, themeDark } as state) =
                 [ page state ]
             , PageLayer.create state
             ]
-        , Theme.StyleSheet.create state
-        , Widget.StyleSheet.create
+        , View.StyleSheet.create state
         ]
     }
 

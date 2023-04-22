@@ -22,13 +22,10 @@ module View.I18n.Home exposing
     , htmlAttr
     , htmlText
     , labelText
-    , text
     , translate
     )
 
-import Element exposing (Element)
 import Html exposing (Attribute, Html)
-import I18n.Element
 import I18n.Html
 import I18n.Lang exposing (Lang(..))
 import I18n.Translator as Translator
@@ -48,11 +45,6 @@ buttonText =
 labelText : String
 labelText =
     "Home/Label"
-
-
-text : Lang -> List String -> Element msg
-text lang =
-    I18n.Element.text lang translate
 
 
 htmlText : Lang -> List String -> Html msg

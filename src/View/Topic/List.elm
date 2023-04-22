@@ -17,7 +17,7 @@
 -}
 
 
-module View.Page.Topic.List exposing (view)
+module View.Topic.List exposing (view)
 
 import Data.TreeStore as TreeStore exposing (TreeStore)
 import Html exposing (Html)
@@ -28,7 +28,7 @@ import Model
 import Model.TopicCard exposing (TopicCard)
 import Msg
 import View.Page.RemoteData as RemoteDataPage
-import View.Page.Topic.Card as TopicCardView
+import View.Topic.Card as TopicCardView
 
 
 view : Model.State -> Html Msg.Msg

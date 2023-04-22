@@ -25,14 +25,10 @@ module Model exposing
     , update
     )
 
-import Browser.Events as Events
 import Browser.Navigation as Nav
-import Element exposing (classifyDevice)
 import I18n.I18n
     exposing
-        ( I18nElement
-        , I18nHtml
-        , withI18nElement
+        ( I18nHtml
         , withI18nHtml
         )
 import I18n.Port
@@ -45,13 +41,10 @@ import Model.Remote.Msg as RemoteMsg
 import Model.TopicCard as TopicCard
 import Msg
 import Task
-import Theme.Theme as Theme
-import Theme.Theme.Default as ThemeDefault
 import Time
 import Url
 import View.Page as Page
 import View.Route
-import Widget.Widget as Widget
 
 
 type alias Config =
@@ -67,12 +60,9 @@ type alias State =
       app : App.State
     , timeZone : Time.Zone
     , themeDark : Bool
-    , theme : Theme.Theme Msg.Msg
     , withI18nHtml : I18nHtml Msg.Msg
-    , withI18nElement : I18nElement Msg.Msg
 
     -- 组件内部状态
-    , widgets : Widget.Widgets Msg.Msg
     , layers : List Page.Layer
     }
 
@@ -80,16 +70,10 @@ type alias State =
 init : Config -> Url.Url -> Nav.Key -> ( State, Cmd Msg.Msg )
 init config navUrl navKey =
     let
-        ( widgets, widgetsCmd ) =
-            Widget.init
-                { toAppMsg = Msg.WidgetMsg
-                }
-
         app =
             App.init
                 { title = config.title
                 , description = config.description
-                , device = classifyDevice config.screen
                 , lang = config.lang
                 , navKey = navKey
                 , navUrl = navUrl
@@ -99,18 +83,14 @@ init config navUrl navKey =
             { app = app
             , timeZone = Time.utc
             , themeDark = False
-            , theme = Theme.create ThemeDefault.init
-            , withI18nElement = withI18nElement app.lang
             , withI18nHtml = withI18nHtml app.lang
-            , widgets = widgets
             , layers = []
             }
                 |> routeUpdateHelper navUrl
     in
     ( state
     , Cmd.batch
-        [ widgetsCmd
-        , cmd
+        [ cmd
         , Task.perform Msg.AdjustTimeZone Time.here
         ]
     )
@@ -119,9 +99,7 @@ init config navUrl navKey =
 sub : State -> Sub Msg.Msg
 sub state =
     Sub.batch
-        [ Events.onResize (\w h -> Msg.ScreenResize w h)
-        , I18n.Port.sub Msg.I18nPortMsg
-        , Widget.sub state.widgets
+        [ I18n.Port.sub Msg.I18nPortMsg
         ]
 
 
@@ -139,18 +117,6 @@ update msg state =
 
         Msg.I18nPortMsg i18nPortMsg ->
             i18nUpdateHelper i18nPortMsg state
-
-        Msg.WidgetMsg widgetMsg ->
-            state |> updateWidgetsState (Widget.update widgetMsg)
-
-        Msg.ScreenResize w h ->
-            ( state
-                |> updateAppState
-                    (App.updateDevice
-                        (classifyDevice { width = w, height = h })
-                    )
-            , Cmd.none
-            )
 
         Msg.SwitchToDarkTheme dark ->
             ( { state | themeDark = dark }
@@ -251,24 +217,8 @@ updateAppState updater ({ app } as state) =
     in
     { state
         | app = newApp
-        , withI18nElement = withI18nElement newApp.lang
+        , withI18nHtml = withI18nHtml newApp.lang
     }
-
-
-updateWidgetsState :
-    Widget.Updater Msg.Msg
-    -> State
-    -> ( State, Cmd Msg.Msg )
-updateWidgetsState updater ({ widgets } as state) =
-    let
-        ( newWidgets, newWidgetsCmd ) =
-            updater widgets
-    in
-    ( { state
-        | widgets = newWidgets
-      }
-    , newWidgetsCmd
-    )
 
 
 batchUpdateHelper : List Msg.Msg -> State -> ( State, Cmd Msg.Msg )

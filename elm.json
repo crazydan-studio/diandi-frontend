@@ -6,10 +6,8 @@
     "elm-version": "0.19.1",
     "dependencies": {
         "direct": {
-            "Gizra/elm-keyboard-event": "1.0.1",
             "NoRedInk/elm-json-decode-pipeline": "1.0.1",
             "danhandrea/elm-date-format": "2.0.2",
-            "dillonkearns/elm-markdown": "7.0.1",
             "elm/browser": "1.0.2",
             "elm/core": "1.0.5",
             "elm/html": "1.0.0",
@@ -21,16 +19,12 @@
             "elm/time": "1.0.0",
             "elm/url": "1.0.0",
             "elm-community/list-extra": "8.5.2",
-            "flytreeleft/elm-ui": "6.2.0",
             "ghivert/elm-graphql": "5.0.0",
             "icidasset/elm-material-icons": "11.0.0",
-            "lemol/ant-design-icons-elm": "2.0.0",
             "robinheghan/murmur3": "1.0.0",
-            "rtfeldman/elm-hex": "1.0.0",
-            "truqu/elm-base64": "2.0.4"
+            "rtfeldman/elm-hex": "1.0.0"
         },
         "indirect": {
-            "SwiftsNamesake/proper-keyboard": "4.0.0",
             "avh4/elm-color": "1.0.0",
             "elm/bytes": "1.0.8",
             "elm/file": "1.0.5",

@@ -24,8 +24,8 @@ import Html.Attributes exposing (class)
 import Model
 import Msg
 import View.Page exposing (Layer(..))
-import View.Page.Layer.EditTopic
-import View.Page.Layer.NewTopic
+import View.Topic.Layer.EditTopic
+import View.Topic.Layer.NewTopic
 
 
 create : Model.State -> Html Msg.Msg
@@ -53,10 +53,10 @@ createHelper : Layer -> Model.State -> Html Msg.Msg
 createHelper type_ state =
     case type_ of
         NewTopicLayer ->
-            View.Page.Layer.NewTopic.create state
+            View.Topic.Layer.NewTopic.create state
 
         EditTopicLayer ->
-            View.Page.Layer.EditTopic.create state
+            View.Topic.Layer.EditTopic.create state
 
         _ ->
             div [] []

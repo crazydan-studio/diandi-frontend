@@ -17,39 +17,19 @@
 -}
 
 
-module View.Style.Base exposing
-    ( spacing
-    , spacing2x
-    , spacing3x
-    , spacing8x
-    )
+module View.StyleSheet exposing (create)
 
-{-| -}
+import Html exposing (Html)
+import Model
 
 
-{-| 留白
--}
-spacing : Int
-spacing =
-    8
-
-
-{-| 2倍留白
--}
-spacing2x : Int
-spacing2x =
-    spacing * 2
-
-
-{-| 3倍留白
--}
-spacing3x : Int
-spacing3x =
-    spacing * 3
-
-
-{-| 8倍留白
--}
-spacing8x : Int
-spacing8x =
-    spacing * 8
+create : Model.State -> Html msg
+create _ =
+    Html.node "style"
+        []
+        [ -- 隐藏加载动画，显示 body 下的元素
+          Html.text """
+body::after { opacity: 0; }
+body > * { opacity: 1; }
+"""
+        ]

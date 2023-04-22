@@ -37,7 +37,6 @@ import Task
 import Time
 import Url
 import View.Page as Page
-import Widget.Widget as Widget
 
 
 type Msg
@@ -47,15 +46,12 @@ type Msg
     | UrlChanged Url.Url
     | FocusOn String
     | ScrollTo String
-    | ScreenResize Int Int
     | SwitchToDarkTheme Bool
     | AdjustTimeZone Time.Zone
       -- 远端消息
     | RemoteMsg RemoteMsg.Msg
       -- 国际化Port消息
     | I18nPortMsg I18n.Port.Msg
-      -- 组件消息
-    | WidgetMsg (Widget.Msg Msg)
       -- 遮罩
     | ShowPageLayer Page.Layer
     | ClosePageLayer Page.Layer

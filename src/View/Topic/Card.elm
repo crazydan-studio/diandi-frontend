@@ -17,7 +17,7 @@
 -}
 
 
-module View.Page.Topic.Card exposing (view)
+module View.Topic.Card exposing (view)
 
 import Html
     exposing

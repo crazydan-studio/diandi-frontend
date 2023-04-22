@@ -27,7 +27,7 @@ import Material.Icons.Types exposing (Coloring(..))
 import Model
 import Msg
 import View.Page as Page
-import View.Page.Topic.List as TopicList
+import View.Topic.List as TopicList
 
 
 view : Model.State -> Html Msg.Msg

@@ -31,7 +31,6 @@ module Model.App exposing
     , prepareSavingEditTopic
     , prepareSavingNewTopic
     , removeTopicCard
-    , updateDevice
     , updateEditTopic
     , updateNewTopic
     , updateSavedEditTopic
@@ -42,7 +41,6 @@ module Model.App exposing
 
 import Browser.Navigation as Nav
 import Data.TreeStore as TreeStore exposing (TreeStore)
-import Element exposing (Device)
 import Http
 import I18n.Lang exposing (Lang)
 import I18n.Translator exposing (TextsNeedToBeTranslated, TranslateResult)
@@ -63,7 +61,6 @@ import Widget.Util.Basic exposing (trim)
 type alias State =
     { title : String
     , description : String
-    , device : Device
 
     -- 国际化
     , lang : Lang
@@ -91,7 +88,6 @@ type alias State =
 type alias Config =
     { title : String
     , description : String
-    , device : Device
     , lang : String
     , navKey : Nav.Key
     , navUrl : Url.Url
@@ -106,7 +102,6 @@ init : Config -> State
 init config =
     { title = config.title
     , description = config.description
-    , device = config.device
 
     --
     , lang =
@@ -149,11 +144,6 @@ loadTopics result state =
             result
                 |> RemoteData.from state.lang createTopicCardsHelper
     }
-
-
-updateDevice : Device -> State -> State
-updateDevice device state =
-    { state | device = device }
 
 
 updateTopicSearchingText : Maybe String -> State -> State

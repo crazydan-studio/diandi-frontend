@@ -17,14 +17,14 @@
 -}
 
 
-module View.Page.Layer.NewTopic exposing (create)
+module View.Topic.Layer.NewTopic exposing (create)
 
 import Html exposing (Html)
 import Model
 import Model.Operation.EditTopic as EditTopic
 import Msg
 import View.Page as Page
-import View.Page.Layer.TopicEditor as TopicEditor
+import View.Topic.Layer.TopicEditor as TopicEditor
 
 
 create : Model.State -> Html Msg.Msg

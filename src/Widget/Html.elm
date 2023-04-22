@@ -20,62 +20,22 @@
 module Widget.Html exposing
     ( onClickOutOfMe
     , onEnter
-    , onInputBlur
-    , template
-    , toRgba
     )
 
-import Element
-    exposing
-        ( Attribute
-        , Color
-        , toRgb
-        )
-import Element.Events as Event
-import Element.Input as Input
-import Html
-import Html.Events as HtmlEvent
+import Html exposing (Attribute)
+import Html.Events exposing (on)
 import Json.Decode as Decode
-
-
-toRgba : Color -> String
-toRgba color =
-    let
-        { red, green, blue, alpha } =
-            toRgb color
-    in
-    "rgba("
-        ++ ([ red * 255
-            , green * 255
-            , blue * 255
-            , alpha
-            ]
-                |> List.map
-                    (\n ->
-                        String.fromFloat n
-                    )
-                |> String.join ","
-           )
-        ++ ")"
 
 
 onClickOutOfMe : msg -> Attribute msg
 onClickOutOfMe msg =
-    Event.on "clickOutOfMe"
+    on "clickOutOfMe"
         (Decode.succeed msg)
-
-
-onInputBlur : (Input.Selection -> msg) -> Attribute msg
-onInputBlur toMsg =
-    Event.on "blur"
-        (Input.selectionDecoder
-            |> Decode.map toMsg
-        )
 
 
 onEnter : msg -> Html.Attribute msg
 onEnter msg =
-    HtmlEvent.on "keyup"
+    on "keyup"
         (Decode.field "key" Decode.string
             |> Decode.andThen
                 (\key ->
@@ -86,16 +46,3 @@ onEnter msg =
                         Decode.fail "Not the enter key"
                 )
         )
-
-
-template : List ( String, String ) -> String -> String
-template data tpl =
-    data
-        |> List.foldl
-            (\( name, value ) t ->
-                t
-                    |> String.replace
-                        ("{{" ++ name ++ "}}")
-                        value
-            )
-            tpl

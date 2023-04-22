@@ -1,22 +1,10 @@
 module I18n.I18n exposing
-    ( I18nElement
-    , I18nHtml
-    , withI18nElement
+    ( I18nHtml
     , withI18nHtml
     )
 
-import Element exposing (Element)
 import Html exposing (Html)
 import I18n.Lang exposing (Lang)
-
-
-type alias I18nElement msg =
-    (Lang
-     -> List String
-     -> Element msg
-    )
-    -> List String
-    -> Element msg
 
 
 type alias I18nHtml msg =
@@ -38,17 +26,4 @@ withI18nHtml :
     -> List String
     -> Html msg
 withI18nHtml lang translate =
-    translate lang
-
-
-withI18nElement :
-    Lang
-    ->
-        (Lang
-         -> List String
-         -> Element msg
-        )
-    -> List String
-    -> Element msg
-withI18nElement lang translate =
     translate lang

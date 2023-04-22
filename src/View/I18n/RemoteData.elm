@@ -1,14 +1,10 @@
 module View.I18n.RemoteData exposing
     ( htmlAttr
     , htmlText
-    , text
-    , textWith
     , translate
     )
 
-import Element exposing (Element)
 import Html exposing (Attribute, Html)
-import I18n.Element
 import I18n.Html
 import I18n.Lang exposing (Lang(..))
 import I18n.Translator as Translator
@@ -18,16 +14,6 @@ import I18n.Translator as Translator
         , ok
         )
 import View.I18n.Default as Default
-
-
-text : Lang -> List String -> Element msg
-text lang =
-    I18n.Element.text lang translate
-
-
-textWith : TranslateResult -> Element msg
-textWith =
-    I18n.Element.textWith
 
 
 htmlText : Lang -> List String -> Html msg

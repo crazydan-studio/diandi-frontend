@@ -17,7 +17,7 @@
 -}
 
 
-module View.Page.Layer.TopicEditor exposing (create)
+module View.Topic.Layer.TopicEditor exposing (create)
 
 import Html exposing (Html, button, div, input, span, text)
 import Html.Attributes exposing (class, id, placeholder, value)

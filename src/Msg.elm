@@ -20,39 +20,62 @@
 module Msg exposing
     ( Msg(..)
     , batch
-    , fromModelCmd
-    , fromModelSub
-    , model
+    , fromApp
+    , fromAppCmd
+    , fromAppSub
+    , onUrlChange
+    , onUrlRequest
     , pageLayerClose
     , pageLayerOpen
     )
 
-import Model exposing (Model)
+import App.Msg as AppMsg
+import App.State as AppState
+import Browser exposing (UrlRequest)
+import Url
 import Widget.PageLayer as PageLayer
 
 
 type Msg
-    = BatchMsg (List Msg)
-    | PageLayerMsg (PageLayer.Msg Model Msg)
-    | ModelMsg Model.Msg
+    = -- 批量消息
+      BatchMsg (List Msg)
+      -- 遮罩侧消息
+    | PageLayerMsg (PageLayer.Msg AppState.State Msg)
+      -- 应用侧消息
+    | AppMsg AppMsg.Msg
 
 
-model : Model.Msg -> Msg
-model =
-    ModelMsg
+batch : List Msg -> Msg
+batch =
+    BatchMsg
 
 
-fromModelCmd : Cmd Model.Msg -> Cmd Msg
-fromModelCmd =
-    Cmd.map model
+onUrlChange : Url.Url -> Msg
+onUrlChange url =
+    fromApp (AppMsg.UrlChanged url)
 
 
-fromModelSub : Sub Model.Msg -> Sub Msg
-fromModelSub =
-    Sub.map model
+onUrlRequest : UrlRequest -> Msg
+onUrlRequest req =
+    fromApp (AppMsg.LinkClicked req)
 
 
-pageLayerOpen : PageLayer.Pager Model Msg -> Msg
+fromApp : AppMsg.Msg -> Msg
+fromApp =
+    AppMsg
+
+
+fromAppCmd : Cmd AppMsg.Msg -> Cmd Msg
+fromAppCmd =
+    Cmd.map fromApp
+
+
+fromAppSub : Sub AppMsg.Msg -> Sub Msg
+fromAppSub =
+    Sub.map fromApp
+
+
+pageLayerOpen : PageLayer.Pager AppState.State Msg -> Msg
 pageLayerOpen =
     PageLayer.open PageLayerMsg
 
@@ -60,8 +83,3 @@ pageLayerOpen =
 pageLayerClose : PageLayer.PagerId -> Msg
 pageLayerClose =
     PageLayer.close PageLayerMsg
-
-
-batch : List Msg -> Msg
-batch =
-    BatchMsg

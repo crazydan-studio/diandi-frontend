@@ -17,7 +17,7 @@
 -}
 
 
-module Model.Remote.Data exposing
+module App.Remote.Data exposing
     ( Status(..)
     , andThen
     , from
@@ -29,7 +29,7 @@ module Model.Remote.Data exposing
 import Http
 import I18n.Lang exposing (Lang)
 import I18n.Translator exposing (TranslateResult)
-import Model.Remote exposing (parseError)
+import App.Remote exposing (parseError)
 
 
 type Status dataType

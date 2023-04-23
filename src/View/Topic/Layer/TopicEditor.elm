@@ -19,15 +19,15 @@
 
 module View.Topic.Layer.TopicEditor exposing (create)
 
+import App.Error as Error
+import App.Operation.EditTopic exposing (EditTopic)
+import App.State as AppState
 import Html exposing (Html, button, div, input, span, text)
 import Html.Attributes exposing (class, id, placeholder, value)
 import Html.Events exposing (onBlur, onClick, onInput)
 import I18n.Html exposing (textWith)
 import Material.Icons.Outlined as Outlined
 import Material.Icons.Types exposing (Coloring(..))
-import Model exposing (Model)
-import Model.Error as Error
-import Model.Operation.EditTopic exposing (EditTopic)
 import Msg exposing (Msg)
 import View.I18n.Home as I18n
 import Widget.Bytemd as Markdown
@@ -50,8 +50,8 @@ type alias Config msg =
     }
 
 
-create : Config Msg -> Model -> Html Msg
-create config { app } =
+create : Config Msg -> AppState.State -> Html Msg
+create config app =
     let
         i18nText =
             I18n.htmlText app.lang

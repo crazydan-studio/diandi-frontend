@@ -19,9 +19,9 @@
 
 module Widget.PageLayer exposing
     ( Msg(..)
-    , PageLayer
     , Pager
     , PagerId
+    , State
     , close
     , create
     , init
@@ -33,7 +33,7 @@ import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 
 
-type alias PageLayer model msg =
+type alias State model msg =
     { pagers : List ( PagerId, Pager model msg )
     , nextId : PagerId
     }
@@ -52,15 +52,15 @@ type Msg model msg
     | Close PagerId
 
 
-init : PageLayer model msg
+init : State model msg
 init =
     { pagers = []
     , nextId = 0
     }
 
 
-update : PageLayer model msg -> Msg model msg -> PageLayer model msg
-update ({ pagers, nextId } as state) msg =
+update : Msg model msg -> State model msg -> State model msg
+update msg ({ pagers, nextId } as state) =
     case msg of
         Open pager ->
             { state
@@ -76,7 +76,7 @@ update ({ pagers, nextId } as state) msg =
             }
 
 
-create : PageLayer model msg -> model -> Html msg
+create : State model msg -> model -> Html msg
 create { pagers } model =
     case pagers of
         [] ->

@@ -19,20 +19,20 @@
 
 module View.Page.Home.Center exposing (view)
 
+import App.Msg as AppMsg
+import App.State as AppState
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Material.Icons.Outlined as Outlined
 import Material.Icons.Types exposing (Coloring(..))
-import Model exposing (Model)
 import Msg exposing (Msg)
 import View.Topic.Layer.NewTopic
 import View.Topic.List as TopicList
-import Widget.PageLayer as PageLayer
 
 
-view : Model -> Html Msg
-view model =
+view : AppState.State -> Html Msg
+view app =
     div
         [ class "w-full h-full"
         , class "flex"
@@ -43,12 +43,12 @@ view model =
             , class "overflow-y-auto"
             , class "px-14 md:px-20 pt-8 pb-4"
             ]
-            [ TopicList.view model ]
-        , tools model
+            [ TopicList.view app ]
+        , tools app
         ]
 
 
-tools : Model -> Html Msg
+tools : AppState.State -> Html Msg
 tools _ =
     div
         [ class "absolute right-0"
@@ -67,7 +67,7 @@ tools _ =
             , class "transition-colors duration-300 transform"
             , onClick
                 (Msg.batch
-                    [ Msg.model Model.NewTopicPending
+                    [ Msg.fromApp AppMsg.NewTopicPending
                     , Msg.pageLayerOpen
                         View.Topic.Layer.NewTopic.create
                     ]

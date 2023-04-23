@@ -19,14 +19,14 @@
 
 module View.Page.Loading exposing (view)
 
+import App.State as AppState
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
-import Model exposing (Model)
 import Msg exposing (Msg)
 import Widget.Loading as Loading
 
 
-view : Model -> Html Msg
+view : AppState.State -> Html Msg
 view _ =
     div
         [ class "w-full h-full"

@@ -17,7 +17,7 @@
 -}
 
 
-module Model.Remote.GraphQL.Topic exposing
+module App.Remote.GraphQL.Topic exposing
     ( getMyAllTopics
     , queryMyTopics
     , saveMyEditTopic
@@ -29,8 +29,8 @@ import GraphQl
 import GraphQl.Http
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Model.Remote.Msg exposing (Msg(..))
-import Model.Topic exposing (Topic, topicDecoder, topicListDecoder)
+import App.Remote.Msg exposing (Msg(..))
+import App.Topic exposing (Topic, topicDecoder, topicListDecoder)
 import Widget.Util.Basic exposing (trim)
 
 

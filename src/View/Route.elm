@@ -27,7 +27,6 @@ module View.Route exposing
     )
 
 import Browser.Navigation as Nav
-import Model.App as App
 import Url
 import Url.Parser
     exposing
@@ -58,22 +57,22 @@ route url =
     Maybe.withDefault NotFound (parse routeHelper url)
 
 
-gotoHome : App.State -> Cmd msg
+gotoHome : Nav.Key -> Cmd msg
 gotoHome =
     goto "/"
 
 
-goto403 : App.State -> Cmd msg
+goto403 : Nav.Key -> Cmd msg
 goto403 =
     goto "/error/403"
 
 
-goto404 : App.State -> Cmd msg
+goto404 : Nav.Key -> Cmd msg
 goto404 =
     goto "/error/404"
 
 
-searchTopics : String -> App.State -> Cmd msg
+searchTopics : String -> Nav.Key -> Cmd msg
 searchTopics keywords =
     let
         params =
@@ -101,6 +100,6 @@ routeHelper =
         ]
 
 
-goto : String -> App.State -> Cmd msg
-goto url app =
-    Nav.pushUrl app.navKey url
+goto : String -> Nav.Key -> Cmd msg
+goto url navKey =
+    Nav.pushUrl navKey url

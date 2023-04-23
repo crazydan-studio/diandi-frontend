@@ -17,7 +17,7 @@
 -}
 
 
-module Model.Remote.Demo.Topic exposing
+module App.Remote.Demo.Topic exposing
     ( deleteMyTopic
     , getMyAllTopics
     , queryMyTopics
@@ -27,8 +27,8 @@ module Model.Remote.Demo.Topic exposing
 
 import Http
 import Json.Decode as Decode
-import Model.Remote.Msg exposing (Msg(..))
-import Model.Topic exposing (Topic, topicListDecoder)
+import App.Remote.Msg exposing (Msg(..))
+import App.Topic exposing (Topic, topicListDecoder)
 import Widget.Util.Hash exposing (hash)
 
 

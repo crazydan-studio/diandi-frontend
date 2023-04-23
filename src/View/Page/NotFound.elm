@@ -19,13 +19,13 @@
 
 module View.Page.NotFound exposing (view)
 
+import App.State as AppState
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
-import Model exposing (Model)
 import Msg exposing (Msg)
 
 
-view : Model -> Html Msg
+view : AppState.State -> Html Msg
 view _ =
     div
         [ class "w-full h-full"

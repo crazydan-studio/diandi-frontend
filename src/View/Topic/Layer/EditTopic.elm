@@ -19,38 +19,39 @@
 
 module View.Topic.Layer.EditTopic exposing (create)
 
+import App.Msg as AppMsg
+import App.Operation.EditTopic as EditTopic
+import App.State as AppState
 import Html exposing (Html)
-import Model exposing (Model)
-import Model.Operation.EditTopic as EditTopic
 import Msg exposing (Msg)
 import View.Topic.Layer.TopicEditor as TopicEditor
 import Widget.PageLayer as PageLayer
 
 
-create : PageLayer.PagerId -> Model -> Html Msg
-create pagerId ({ app } as model) =
-    model
+create : PageLayer.PagerId -> AppState.State -> Html Msg
+create pagerId app =
+    app
         |> TopicEditor.create
             { isNew = False
             , topic = app.editTopic
             , onTitleChange =
                 \text ->
-                    Msg.model (Model.EditTopicMsg (EditTopic.TitleChanged text))
+                    Msg.fromApp (AppMsg.EditTopicMsg (EditTopic.TitleChanged text))
             , onContentChange =
                 \text ->
-                    Msg.model (Model.EditTopicMsg (EditTopic.ContentChanged text))
+                    Msg.fromApp (AppMsg.EditTopicMsg (EditTopic.ContentChanged text))
             , onTagDeleted =
                 \tag ->
-                    Msg.model (Model.EditTopicMsg (EditTopic.TagDeleted tag))
-            , onTagDone = Msg.model (Model.EditTopicMsg EditTopic.TagDone)
+                    Msg.fromApp (AppMsg.EditTopicMsg (EditTopic.TagDeleted tag))
+            , onTagDone = Msg.fromApp (AppMsg.EditTopicMsg EditTopic.TagDone)
             , onTagChange =
                 \text ->
-                    Msg.model (Model.EditTopicMsg (EditTopic.TagChanged text))
+                    Msg.fromApp (AppMsg.EditTopicMsg (EditTopic.TagChanged text))
             , onEditDone =
-                Msg.model Model.EditTopicSaving
+                Msg.fromApp AppMsg.EditTopicSaving
             , onEditCanceled =
                 Msg.batch
-                    [ Msg.model Model.EditTopicCleaned
+                    [ Msg.fromApp AppMsg.EditTopicCleaned
                     , Msg.pageLayerClose pagerId
                     ]
             }

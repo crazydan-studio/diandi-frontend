@@ -19,37 +19,38 @@
 
 module View.Topic.Layer.NewTopic exposing (create)
 
+import App.Msg as AppMsg
+import App.Operation.EditTopic as EditTopic
+import App.State as AppState
 import Html exposing (Html)
-import Model exposing (Model)
-import Model.Operation.EditTopic as EditTopic
 import Msg exposing (Msg)
 import View.Topic.Layer.TopicEditor as TopicEditor
 import Widget.PageLayer as PageLayer
 
 
-create : PageLayer.PagerId -> Model -> Html Msg
-create pagerId ({ app } as model) =
-    model
+create : PageLayer.PagerId -> AppState.State -> Html Msg
+create pagerId app =
+    app
         |> TopicEditor.create
             { isNew = True
             , topic = app.newTopic
             , onTitleChange =
                 \text ->
-                    Msg.model (Model.NewTopicMsg (EditTopic.TitleChanged text))
+                    Msg.fromApp (AppMsg.NewTopicMsg (EditTopic.TitleChanged text))
             , onContentChange =
                 \text ->
-                    Msg.model (Model.NewTopicMsg (EditTopic.ContentChanged text))
+                    Msg.fromApp (AppMsg.NewTopicMsg (EditTopic.ContentChanged text))
             , onTagDeleted =
                 \tag ->
-                    Msg.model (Model.NewTopicMsg (EditTopic.TagDeleted tag))
-            , onTagDone = Msg.model (Model.NewTopicMsg EditTopic.TagDone)
+                    Msg.fromApp (AppMsg.NewTopicMsg (EditTopic.TagDeleted tag))
+            , onTagDone = Msg.fromApp (AppMsg.NewTopicMsg EditTopic.TagDone)
             , onTagChange =
                 \text ->
-                    Msg.model (Model.NewTopicMsg (EditTopic.TagChanged text))
-            , onEditDone = Msg.model Model.NewTopicSaving
+                    Msg.fromApp (AppMsg.NewTopicMsg (EditTopic.TagChanged text))
+            , onEditDone = Msg.fromApp AppMsg.NewTopicSaving
             , onEditCanceled =
                 Msg.batch
-                    [ Msg.model Model.NewTopicCleaned
+                    [ Msg.fromApp AppMsg.NewTopicCleaned
                     , Msg.pageLayerClose pagerId
                     ]
             }

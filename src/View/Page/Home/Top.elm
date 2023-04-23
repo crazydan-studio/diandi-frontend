@@ -19,6 +19,8 @@
 
 module View.Page.Home.Top exposing (..)
 
+import App.Msg as AppMsg
+import App.State as AppState
 import Html
     exposing
         ( Html
@@ -41,17 +43,16 @@ import Html.Attributes
 import Html.Events exposing (onClick, onInput)
 import Material.Icons.Outlined as Outlined
 import Material.Icons.Types exposing (Coloring(..))
-import Model exposing (Model)
 import Msg exposing (Msg)
 import View.I18n.Home as I18n
 import Widget.Html exposing (onEnter)
 
 
-view : Model -> Html Msg
-view { app, themeDark } =
+view : AppState.State -> Html Msg
+view ({ lang, themeDark } as app) =
     let
         i18nAttr =
-            I18n.htmlAttr app.lang
+            I18n.htmlAttr lang
     in
     nav
         [ class "z-10 w-full min-h-fit shadow-md"
@@ -102,9 +103,9 @@ view { app, themeDark } =
                      , value (app.topicSearchingText |> Maybe.withDefault "")
                      , onInput
                         (\t ->
-                            Msg.model (Model.SearchTopicInputing t)
+                            Msg.fromApp (AppMsg.SearchTopicInputing t)
                         )
-                     , onEnter (Msg.model Model.SearchTopic)
+                     , onEnter (Msg.fromApp AppMsg.SearchTopic)
                      ]
                         ++ i18nAttr
                             placeholder
@@ -119,8 +120,8 @@ view { app, themeDark } =
             [ span
                 [ class "tw-icon-btn"
                 , onClick
-                    (Msg.model
-                        (Model.SwitchToDarkTheme (not themeDark))
+                    (Msg.fromApp
+                        (AppMsg.SwitchToDarkTheme (not themeDark))
                     )
                 ]
                 [ if themeDark then

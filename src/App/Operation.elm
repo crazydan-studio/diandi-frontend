@@ -17,15 +17,13 @@
 -}
 
 
-module Model.Remote.Msg exposing (Msg(..))
+module App.Operation exposing (Operation(..))
 
-import Http
-import Model.Topic exposing (Topic)
+import I18n.Translator exposing (TranslateResult)
 
 
-type Msg
-    = NoOp
-    | QueryMyTopics (Result Http.Error (List Topic))
-    | SaveMyNewTopic (Result Http.Error Topic)
-    | SaveMyEditTopic (Result Http.Error Topic)
-    | TrashMyTopic String (Result Http.Error String)
+type Operation
+    = Doing
+    | Done
+    | Error TranslateResult
+    | NoOp

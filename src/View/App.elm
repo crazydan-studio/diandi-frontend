@@ -19,11 +19,10 @@
 
 module View.App exposing (view)
 
+import App.State as AppState
 import Browser
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
-import Model exposing (Model)
-import Model.App as App
 import Msg exposing (Msg)
 import View.Page as PageType
 import View.Page.Blank
@@ -32,14 +31,14 @@ import View.Page.Home
 import View.Page.Loading
 import View.Page.NotFound
 import View.StyleSheet
-import Widget.PageLayer as PageLayer exposing (PageLayer)
+import Widget.PageLayer as PageLayer exposing (State)
 
 
 view :
-    PageLayer Model Msg
-    -> Model
+    State AppState.State Msg
+    -> AppState.State
     -> Browser.Document Msg
-view pageLayer ({ app, themeDark } as model) =
+view pageLayer ({ themeDark } as app) =
     { title = title app
     , body =
         [ div
@@ -58,15 +57,15 @@ view pageLayer ({ app, themeDark } as model) =
                 , class "flex"
                 , class "bg-gray-100 dark:bg-gray-900"
                 ]
-                [ page model ]
-            , PageLayer.create pageLayer model
+                [ page app ]
+            , PageLayer.create pageLayer app
             ]
-        , View.StyleSheet.create model
+        , View.StyleSheet.create app
         ]
     }
 
 
-title : App.State -> String
+title : AppState.State -> String
 title app =
     case app.currentPage of
         PageType.NotFound ->
@@ -82,20 +81,20 @@ title app =
             app.description
 
 
-page : Model -> Html Msg
-page ({ app } as model) =
+page : AppState.State -> Html Msg
+page app =
     case app.currentPage of
         PageType.NotFound ->
-            View.Page.NotFound.view model
+            View.Page.NotFound.view app
 
         PageType.Forbidden ->
-            View.Page.Forbidden.view model
+            View.Page.Forbidden.view app
 
         PageType.Loading ->
-            View.Page.Loading.view model
+            View.Page.Loading.view app
 
         PageType.Blank ->
-            View.Page.Blank.view model
+            View.Page.Blank.view app
 
         PageType.Home ->
-            View.Page.Home.view model
+            View.Page.Home.view app

@@ -17,7 +17,7 @@
 -}
 
 
-module Model.Topic exposing
+module App.Topic exposing
     ( Topic
     , init
     , topicDecoder

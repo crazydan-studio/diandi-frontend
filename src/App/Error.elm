@@ -17,30 +17,43 @@
 -}
 
 
-module Model.I18n.App exposing (translate)
+module App.Error exposing
+    ( Error(..)
+    , error
+    , info
+    , isError
+    , none
+    )
 
-import I18n.Lang exposing (Lang(..))
-import I18n.Translator as Translator
-    exposing
-        ( TranslateResult
-        , default
-        , ok
-        )
-
-
-translate : Lang -> List String -> TranslateResult
-translate lang texts =
-    Translator.translate Zh_CN lang texts <|
-        [ ( [], translator )
-        ]
+import I18n.Translator exposing (TranslateResult)
 
 
-translator : List String -> List ( Lang, TranslateResult )
-translator texts =
-    case texts of
-        [ "主题内容是空白的，请先输入点什么" ] ->
-            ok En_US "The user is not authorized"
-                :: default
+type Error
+    = Info TranslateResult
+    | Error TranslateResult
+    | None
+
+
+error : TranslateResult -> Error
+error e =
+    Error e
+
+
+info : TranslateResult -> Error
+info e =
+    Info e
+
+
+none : Error
+none =
+    None
+
+
+isError : Error -> Bool
+isError e =
+    case e of
+        Error _ ->
+            True
 
         _ ->
-            default
+            False

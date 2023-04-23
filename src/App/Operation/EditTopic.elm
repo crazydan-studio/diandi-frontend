@@ -17,7 +17,7 @@
 -}
 
 
-module Model.Operation.EditTopic exposing
+module App.Operation.EditTopic exposing
     ( EditTopic
     , Msg(..)
     , clean
@@ -32,8 +32,8 @@ module Model.Operation.EditTopic exposing
     )
 
 import I18n.Translator exposing (TranslateResult)
-import Model.Error as Error exposing (Error)
-import Model.Topic as Topic exposing (Topic)
+import App.Error as Error exposing (Error)
+import App.Topic as Topic exposing (Topic)
 import Widget.Util.Basic exposing (trim)
 
 

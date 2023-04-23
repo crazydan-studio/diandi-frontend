@@ -17,15 +17,15 @@
 -}
 
 
-module Model.TopicCard exposing
+module App.TopicCard exposing
     ( Msg(..)
     , TopicCard
     , create
     , update
     )
 
-import Model.Operation as Operation exposing (Operation)
-import Model.Topic exposing (Topic)
+import App.Operation as Operation exposing (Operation)
+import App.Topic exposing (Topic)
 
 
 type alias TopicCard =

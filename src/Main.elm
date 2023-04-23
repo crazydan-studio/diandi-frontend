@@ -19,16 +19,25 @@
 
 module Main exposing (main)
 
+import App.State as AppState
 import Browser
-import Model exposing (Config, Model)
+import Browser.Navigation as Nav
 import Msg exposing (Msg)
+import Url
 import View.App
-import Widget.PageLayer as PageLayer exposing (PageLayer)
+import Widget.PageLayer as PageLayer
 
 
 type alias State =
-    { model : Model
-    , pageLayer : PageLayer Model Msg
+    { app : AppState.State
+    , pageLayer : PageLayer.State AppState.State Msg
+    }
+
+
+type alias Config =
+    { title : String
+    , description : String
+    , lang : String
     }
 
 
@@ -36,35 +45,41 @@ main : Program Config State Msg
 main =
     -- https://guide.elm-lang.org/webapps/navigation.html
     Browser.application
-        { view =
-            \{ model, pageLayer } ->
-                View.App.view pageLayer model
-        , init =
-            \config url navKey ->
-                let
-                    ( model, cmd ) =
-                        Model.init config url navKey
-                in
-                ( { model = model
-                  , pageLayer = PageLayer.init
-                  }
-                , Msg.fromModelCmd cmd
-                )
+        { -- view
+          view = \{ app, pageLayer } -> View.App.view pageLayer app
+
+        -- model
+        , init = init
         , update = update
-        , subscriptions =
-            \{ model } ->
-                Msg.fromModelSub (Model.sub model)
-        , onUrlChange =
-            \url ->
-                Msg.model (Model.UrlChanged url)
-        , onUrlRequest =
-            \req ->
-                Msg.model (Model.LinkClicked req)
+        , subscriptions = \{ app } -> Msg.fromAppSub (AppState.sub app)
+
+        -- routes
+        , onUrlChange = Msg.onUrlChange
+        , onUrlRequest = Msg.onUrlRequest
         }
 
 
+init : Config -> Url.Url -> Nav.Key -> ( State, Cmd Msg )
+init config navUrl navKey =
+    let
+        ( app, cmd ) =
+            AppState.init
+                { title = config.title
+                , description = config.description
+                , lang = config.lang
+                , navKey = navKey
+                , navUrl = navUrl
+                }
+    in
+    ( { app = app
+      , pageLayer = PageLayer.init
+      }
+    , Msg.fromAppCmd cmd
+    )
+
+
 update : Msg -> State -> ( State, Cmd Msg )
-update msg ({ model, pageLayer } as state) =
+update msg ({ app, pageLayer } as state) =
     case msg of
         Msg.BatchMsg batchMsg ->
             batchMsg
@@ -84,19 +99,19 @@ update msg ({ model, pageLayer } as state) =
             ( { state
                 | pageLayer =
                     PageLayer.update
-                        pageLayer
                         pageLayerMsg
+                        pageLayer
               }
             , Cmd.none
             )
 
-        Msg.ModelMsg modelMsg ->
+        Msg.AppMsg appMsg ->
             let
-                ( newModel, newCmd ) =
-                    Model.update modelMsg model
+                ( newApp, newCmd ) =
+                    AppState.update appMsg app
             in
             ( { state
-                | model = newModel
+                | app = newApp
               }
-            , Msg.fromModelCmd newCmd
+            , Msg.fromAppCmd newCmd
             )

@@ -17,12 +17,12 @@
 -}
 
 
-module Model.Remote exposing (parseError)
+module App.Remote exposing (parseError)
 
 import Http
 import I18n.Lang exposing (Lang)
 import I18n.Translator exposing (TranslateResult)
-import Model.I18n.Remote as I18n
+import App.I18n.Remote as I18n
 
 
 parseError : Lang -> Http.Error -> TranslateResult

@@ -19,6 +19,10 @@
 
 module View.Topic.Card exposing (view)
 
+import App.Msg as AppMsg
+import App.Operation as Operation
+import App.State as AppState
+import App.TopicCard as TopicCard exposing (TopicCard)
 import Html
     exposing
         ( Html
@@ -34,27 +38,23 @@ import I18n.Html exposing (textWith)
 import Json.Decode as Decode
 import Material.Icons.Outlined as Outlined
 import Material.Icons.Types exposing (Coloring(..))
-import Model exposing (Model)
-import Model.Operation as Operation
-import Model.TopicCard as TopicCard exposing (TopicCard)
 import Msg exposing (Msg)
 import View.I18n.Home as I18n
 import View.Topic.Layer.EditTopic
 import Widget.Bytemd as Markdown
 import Widget.Loading as Loading
 import Widget.Mask as Mask
-import Widget.PageLayer as PageLayer
 import Widget.Util.DateTime as DateTime
 
 
 view :
-    Model
+    AppState.State
     -> TopicCard
     -> Html Msg
-view { app, timeZone } { config, topic, trashOp } =
+view { lang, timeZone } { config, topic, trashOp } =
     let
         i18nText =
-            I18n.htmlText app.lang
+            I18n.htmlText lang
     in
     div
         ((case trashOp of
@@ -62,7 +62,7 @@ view { app, timeZone } { config, topic, trashOp } =
                 [ class "animate-zoom-in"
                 , on "animationend"
                     (Decode.succeed
-                        (Msg.model (Model.RemoveTopicCard topic.id))
+                        (Msg.fromApp (AppMsg.RemoveTopicCard topic.id))
                     )
                 ]
 
@@ -120,8 +120,8 @@ view { app, timeZone } { config, topic, trashOp } =
                                 "text-gray-300"
                             )
                         , onClick
-                            (Msg.model
-                                (Model.TopicCardMsg
+                            (Msg.fromApp
+                                (AppMsg.TopicCardMsg
                                     topic.id
                                     (TopicCard.Select (not config.selected))
                                 )
@@ -231,8 +231,8 @@ view { app, timeZone } { config, topic, trashOp } =
                             [ class "tw-icon-btn"
                             , tabindex 0
                             , onClick
-                                (Msg.model
-                                    (Model.TopicCardMsg
+                                (Msg.fromApp
+                                    (AppMsg.TopicCardMsg
                                         topic.id
                                         (TopicCard.Trash Operation.Doing)
                                     )
@@ -244,7 +244,7 @@ view { app, timeZone } { config, topic, trashOp } =
                             , tabindex 0
                             , onClick
                                 (Msg.batch
-                                    [ Msg.model (Model.EditTopicPending topic.id)
+                                    [ Msg.fromApp (AppMsg.EditTopicPending topic.id)
                                     , Msg.pageLayerOpen
                                         View.Topic.Layer.EditTopic.create
                                     ]
@@ -255,8 +255,8 @@ view { app, timeZone } { config, topic, trashOp } =
                             [ class "tw-icon-btn"
                             , tabindex 0
                             , onClick
-                                (Msg.model
-                                    (Model.TopicCardMsg topic.id
+                                (Msg.fromApp
+                                    (AppMsg.TopicCardMsg topic.id
                                         (TopicCard.Expand
                                             (not config.expanded)
                                         )

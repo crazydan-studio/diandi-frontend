@@ -19,11 +19,11 @@
 
 module View.StyleSheet exposing (create)
 
+import App.State as AppState
 import Html exposing (Html)
-import Model exposing (Model)
 
 
-create : Model -> Html msg
+create : AppState.State -> Html msg
 create _ =
     Html.node "style"
         []

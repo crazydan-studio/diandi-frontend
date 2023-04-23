@@ -17,7 +17,7 @@
 -}
 
 
-module Model.I18n.Remote exposing (translate)
+module App.I18n.App exposing (translate)
 
 import I18n.Lang exposing (Lang(..))
 import I18n.Translator as Translator
@@ -38,32 +38,8 @@ translate lang texts =
 translator : List String -> List ( Lang, TranslateResult )
 translator texts =
     case texts of
-        [ "用户未登录" ] ->
+        [ "主题内容是空白的，请先输入点什么" ] ->
             ok En_US "The user is not authorized"
-                :: default
-
-        [ "请求未授权" ] ->
-            ok En_US "The request is not permitted"
-                :: default
-
-        [ "请求URL不存在" ] ->
-            ok En_US "The URL doesn't exist"
-                :: default
-
-        [ "[", code, "] 请求异常" ] ->
-            ok En_US ("[" ++ code ++ "] Error Request")
-                :: default
-
-        [ "网络请求超时，请稍后再试" ] ->
-            ok En_US "Request timeout, please try it later"
-                :: default
-
-        [ "网络连接异常，请稍后再试" ] ->
-            ok En_US "Network connection failed, please try it later"
-                :: default
-
-        [ "未知异常" ] ->
-            ok En_US "Unknown error"
                 :: default
 
         _ ->

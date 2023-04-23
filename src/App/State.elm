@@ -17,44 +17,31 @@
 -}
 
 
-module Model.App exposing
-    ( Config
-    , State
-    , cleanEditTopic
-    , cleanNewTopic
-    , getTopic
-    , init
-    , initEditTopic
-    , initNewTopic
-    , loadTopics
-    , loading
-    , prepareSavingEditTopic
-    , prepareSavingNewTopic
-    , removeTopicCard
-    , updateEditTopic
-    , updateNewTopic
-    , updateSavedEditTopic
-    , updateSavedNewTopic
-    , updateTopicCard
-    , updateTopicSearchingText
-    )
+module App.State exposing (Config, State, init, sub, update)
 
+import App.I18n.App as I18n
+import App.Msg as Msg exposing (Msg)
+import App.Operation as Operation
+import App.Operation.EditTopic as EditTopic exposing (EditTopic)
+import App.Remote as Remote
+import App.Remote.Data as RemoteData
+import App.Remote.GraphQL.Topic as RemoteTopic
+import App.Remote.Msg as RemoteMsg
+import App.Topic exposing (Topic)
+import App.TopicCard as TopicCard exposing (TopicCard)
 import Browser.Navigation as Nav
 import Data.TreeStore as TreeStore exposing (TreeStore)
 import Http
 import I18n.Lang exposing (Lang)
+import I18n.Port
 import I18n.Translator exposing (TextsNeedToBeTranslated, TranslateResult)
-import Model.I18n.App as I18n
-import Model.Operation.EditTopic as EditTopic exposing (EditTopic)
-import Model.Remote as Remote
-import Model.Remote.Data as RemoteData
-import Model.Topic exposing (Topic)
-import Model.TopicCard as TopicCard exposing (TopicCard)
 import Svg.Attributes exposing (result)
+import Task
 import Time
 import Url
 import View.I18n.Default
-import View.Page
+import View.Page as Page
+import View.Route
 import Widget.Util.Basic exposing (trim)
 
 
@@ -65,6 +52,8 @@ type alias State =
     -- 国际化
     , lang : Lang
     , textsWithoutI18n : List TextsNeedToBeTranslated
+    , timeZone : Time.Zone
+    , themeDark : Bool
 
     -- 路由
     , navKey : Nav.Key
@@ -72,7 +61,7 @@ type alias State =
 
     -- 远程请求错误信息
     , remoteError : Maybe TranslateResult
-    , currentPage : View.Page.Type
+    , currentPage : Page.Type
 
     -- 业务数据
     , topicCards : RemoteTopicCards
@@ -98,35 +87,133 @@ type alias RemoteTopicCards =
     RemoteData.Status (TreeStore TopicCard)
 
 
-init : Config -> State
+init : Config -> ( State, Cmd Msg )
 init config =
-    { title = config.title
-    , description = config.description
+    let
+        ( state, cmd ) =
+            { title = config.title
+            , description = config.description
 
-    --
-    , lang =
-        I18n.Lang.fromStringWithDefault
-            View.I18n.Default.lang
-            config.lang
-    , textsWithoutI18n = []
+            --
+            , lang =
+                I18n.Lang.fromStringWithDefault
+                    View.I18n.Default.lang
+                    config.lang
+            , textsWithoutI18n = []
+            , timeZone = Time.utc
+            , themeDark = False
 
-    --
-    , navKey = config.navKey
-    , navUrl = config.navUrl
+            --
+            , navKey = config.navKey
+            , navUrl = config.navUrl
 
-    --
-    , remoteError = Nothing
-    , currentPage = View.Page.Loading
+            --
+            , remoteError = Nothing
+            , currentPage = Page.Loading
 
-    --
-    , topicCards = RemoteData.LoadWaiting
+            --
+            , topicCards = RemoteData.LoadWaiting
 
-    --
-    , topicSearchingText = Nothing
-    , newTopic = Nothing
-    , editTopic = Nothing
-    , topicTagEditInputId = "topic-tag-edit-input"
-    }
+            --
+            , topicSearchingText = Nothing
+            , newTopic = Nothing
+            , editTopic = Nothing
+            , topicTagEditInputId = "topic-tag-edit-input"
+            }
+                |> routeUpdateHelper config.navUrl
+    in
+    ( state
+    , Cmd.batch
+        [ cmd
+        , Task.perform Msg.AdjustTimeZone Time.here
+        ]
+    )
+
+
+sub : State -> Sub Msg
+sub state =
+    Sub.batch
+        [ I18n.Port.sub Msg.I18nPortMsg
+        ]
+
+
+update : Msg -> State -> ( State, Cmd Msg )
+update msg state =
+    case msg of
+        Msg.RemoteMsg remoteMsg ->
+            remoteUpdateHelper remoteMsg state
+
+        Msg.UrlChanged url ->
+            routeUpdateHelper url state
+
+        Msg.I18nPortMsg i18nPortMsg ->
+            i18nUpdateHelper i18nPortMsg state
+
+        Msg.SwitchToDarkTheme dark ->
+            ( { state | themeDark = dark }
+            , Cmd.none
+            )
+
+        Msg.AdjustTimeZone zone ->
+            ( { state | timeZone = zone }
+            , Cmd.none
+            )
+
+        Msg.SearchTopicInputing keywords ->
+            ( state
+                |> updateTopicSearchingText (Just keywords)
+            , Cmd.none
+            )
+
+        Msg.SearchTopic ->
+            ( state
+            , View.Route.searchTopics
+                (state.topicSearchingText |> Maybe.withDefault "")
+                state.navKey
+            )
+
+        Msg.TopicCardMsg topicId topicCardMsg ->
+            topicCardUpdateHelper topicId topicCardMsg state
+
+        Msg.RemoveTopicCard topicId ->
+            ( state |> removeTopicCard topicId
+            , Cmd.none
+            )
+
+        Msg.NewTopicPending ->
+            ( state |> initNewTopic
+            , Cmd.none
+            )
+
+        Msg.NewTopicMsg newTopicMsg ->
+            newTopicUpdateHelper newTopicMsg state
+
+        Msg.NewTopicSaving ->
+            newTopicSavingHelper state
+
+        Msg.NewTopicCleaned ->
+            ( state |> cleanNewTopic
+            , Cmd.none
+            )
+
+        Msg.EditTopicPending topicId ->
+            ( state |> initEditTopic topicId
+            , Cmd.none
+            )
+
+        Msg.EditTopicMsg editTopicMsg ->
+            editTopicUpdateHelper editTopicMsg state
+
+        Msg.EditTopicSaving ->
+            editTopicSavingHelper state
+
+        Msg.EditTopicCleaned ->
+            ( state |> cleanEditTopic
+            , Cmd.none
+            )
+
+        _ ->
+            ( state, Cmd.none )
 
 
 loading : RemoteData.Status a
@@ -409,3 +496,216 @@ createTopicCardsHelper topics =
                 )
         }
         (topics |> List.map TopicCard.create)
+
+
+{-| 远程请求更新
+-}
+remoteUpdateHelper :
+    RemoteMsg.Msg
+    -> State
+    -> ( State, Cmd Msg )
+remoteUpdateHelper msg state =
+    case msg of
+        RemoteMsg.QueryMyTopics result ->
+            ( state
+                |> loadTopics result
+            , Cmd.none
+            )
+
+        RemoteMsg.SaveMyNewTopic result ->
+            ( state
+                |> updateSavedNewTopic result
+            , Cmd.none
+            )
+
+        RemoteMsg.SaveMyEditTopic result ->
+            ( state
+                |> updateSavedEditTopic result
+            , Cmd.none
+            )
+
+        RemoteMsg.TrashMyTopic topicId result ->
+            ( state
+                |> updateTopicCard topicId
+                    (case result of
+                        Ok _ ->
+                            TopicCard.Trash Operation.Done
+
+                        Err e ->
+                            TopicCard.Trash
+                                (Operation.Error
+                                    (Remote.parseError state.lang e)
+                                )
+                    )
+            , Cmd.none
+            )
+
+        _ ->
+            ( state, Cmd.none )
+
+
+routeUpdateHelper : Url.Url -> State -> ( State, Cmd Msg )
+routeUpdateHelper navUrl state =
+    let
+        ( page, newState, cmd ) =
+            case View.Route.route navUrl of
+                View.Route.Home ->
+                    let
+                        ( s, c ) =
+                            state |> doRemoteQueryMyTopics
+                    in
+                    ( Page.Home, s, c )
+
+                View.Route.TopicsSearch keywords ->
+                    let
+                        ( s, c ) =
+                            state
+                                |> updateTopicSearchingText keywords
+                                |> doRemoteQueryMyTopics
+                    in
+                    ( Page.Home, s, c )
+
+                View.Route.Forbidden ->
+                    ( Page.Forbidden, state, Cmd.none )
+
+                View.Route.NotFound ->
+                    ( Page.NotFound, state, Cmd.none )
+    in
+    ( newState
+        |> (\app ->
+                { app
+                    | currentPage = page
+                    , navUrl = navUrl
+                }
+           )
+    , cmd
+    )
+
+
+i18nUpdateHelper : I18n.Port.Msg -> State -> ( State, Cmd Msg )
+i18nUpdateHelper msg state =
+    case I18n.Port.update msg of
+        ( r, m ) ->
+            ( { state
+                | textsWithoutI18n = r.results
+              }
+            , m
+            )
+
+
+topicCardUpdateHelper :
+    String
+    -> TopicCard.Msg
+    -> State
+    -> ( State, Cmd Msg )
+topicCardUpdateHelper topicId msg state =
+    ( state
+        |> updateTopicCard topicId msg
+    , case msg of
+        TopicCard.Trash op ->
+            case op of
+                Operation.Doing ->
+                    Msg.toRemoteCmd
+                        (RemoteTopic.trashMyTopic topicId)
+
+                _ ->
+                    Cmd.none
+
+        _ ->
+            Cmd.none
+    )
+
+
+newTopicUpdateHelper :
+    EditTopic.Msg
+    -> State
+    -> ( State, Cmd Msg )
+newTopicUpdateHelper msg state =
+    ( state
+        |> updateNewTopic
+            (EditTopic.update msg)
+    , case msg of
+        EditTopic.TagDeleted _ ->
+            Msg.focusOn state.topicTagEditInputId
+
+        _ ->
+            Cmd.none
+    )
+
+
+newTopicSavingHelper :
+    State
+    -> ( State, Cmd Msg )
+newTopicSavingHelper state =
+    let
+        ( newTopic, topic ) =
+            prepareSavingNewTopic state
+    in
+    ( state
+        |> (\s -> { s | newTopic = newTopic })
+    , topic
+        |> Maybe.map
+            (\t ->
+                Msg.toRemoteCmd
+                    (RemoteTopic.saveMyNewTopic t)
+            )
+        |> Maybe.withDefault
+            Cmd.none
+    )
+
+
+editTopicSavingHelper :
+    State
+    -> ( State, Cmd Msg )
+editTopicSavingHelper state =
+    let
+        ( editTopic, topic ) =
+            prepareSavingEditTopic state
+    in
+    ( state
+        |> (\s -> { s | editTopic = editTopic })
+    , topic
+        |> Maybe.map
+            (\t ->
+                Msg.toRemoteCmd
+                    (RemoteTopic.saveMyEditTopic t)
+            )
+        |> Maybe.withDefault
+            Cmd.none
+    )
+
+
+editTopicUpdateHelper :
+    EditTopic.Msg
+    -> State
+    -> ( State, Cmd Msg )
+editTopicUpdateHelper msg state =
+    ( state
+        |> updateEditTopic
+            (EditTopic.update msg)
+    , case msg of
+        EditTopic.TagDeleted _ ->
+            Msg.focusOn state.topicTagEditInputId
+
+        _ ->
+            Cmd.none
+    )
+
+
+doRemoteQueryMyTopics : State -> ( State, Cmd Msg )
+doRemoteQueryMyTopics state =
+    ( state
+        |> (\app ->
+                { app
+                    | topicCards = loading
+                }
+           )
+    , Cmd.batch
+        [ Msg.toRemoteCmd
+            (RemoteTopic.queryMyTopics
+                { keyword = state.topicSearchingText
+                , tags = Nothing
+                }
+            )
+        ]
+    )

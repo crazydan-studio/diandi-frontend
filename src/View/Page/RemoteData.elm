@@ -27,7 +27,7 @@ import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 import I18n.Html exposing (textWith)
 import I18n.Lang exposing (Lang)
-import Model.Remote.Data as RemoteData
+import App.Remote.Data as RemoteData
 import View.I18n.RemoteData as I18n
 
 

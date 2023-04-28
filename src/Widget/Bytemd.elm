@@ -55,56 +55,53 @@ type alias ViewerConfig =
 viewer : ViewerConfig -> Html msg
 viewer config =
     node "bytemd-viewer"
-        (commonStyles
-            ++ [ value config.value
-               , attribute "inner-class" (config.styles |> String.join " ")
-               ]
-        )
+        [ value config.value
+        , attribute "inner-class" (config.styles |> String.join " ")
+        ]
         []
 
 
 editor : EditorConfig msg -> Html msg
 editor config =
     node "bytemd-editor"
-        (commonStyles
-            ++ [ value config.value
+        ([ value config.value
 
-               -- 高度自适应
-               , class "grow flex flex-col"
-               , attribute "inner-class"
-                    ((config.styles
-                        ++ [ "grow"
+         -- 高度自适应
+         , class "grow flex flex-col"
+         , attribute "inner-class"
+            ((config.styles
+                ++ [ "grow"
 
-                           -- 设置最小高度
-                           , "h-16"
-                           ]
-                     )
-                        |> String.join " "
-                    )
-               , placeholder config.placeholder
-               , attribute "lang"
-                    (case config.lang of
-                        Zh_CN ->
-                            "zh_Hans"
+                   -- 设置最小高度
+                   , "h-16"
+                   ]
+             )
+                |> String.join " "
+            )
+         , placeholder config.placeholder
+         , attribute "lang"
+            (case config.lang of
+                Zh_CN ->
+                    "zh_Hans"
 
-                        En_US ->
-                            "en"
+                En_US ->
+                    "en"
 
-                        Default ->
-                            "zh_Hans"
-                    )
-               , attribute "mode"
-                    (case config.mode of
-                        Auto ->
-                            "auto"
+                Default ->
+                    "zh_Hans"
+            )
+         , attribute "mode"
+            (case config.mode of
+                Auto ->
+                    "auto"
 
-                        Split ->
-                            "split"
+                Split ->
+                    "split"
 
-                        Tab ->
-                            "tab"
-                    )
-               ]
+                Tab ->
+                    "tab"
+            )
+         ]
             ++ (config.onChange
                     |> Maybe.map
                         (\onChange ->
@@ -124,23 +121,3 @@ editor config =
                )
         )
         []
-
-
-commonStyles : List (Attribute msg)
-commonStyles =
-    -- https://tailwindcss.com/docs/typography-plugin
-    [ class "prose dark:prose-invert max-w-none leading-6"
-    , class "prose-ul:my-0"
-    , class "prose-ol:my-0"
-    , class "prose-li:my-1"
-    , class "prose-img:my-1"
-    , class "prose-p:my-2"
-    , class "prose-blockquote:my-4"
-    , class "prose-pre:my-2"
-    , class "prose-table:my-2 tr-nth-[even]:bg-slate-50 dark:tr-nth-[even]:bg-slate-800"
-    , class "prose-h1:mb-3"
-    , class "prose-h2:mb-3 prose-h2:mt-6"
-    , class "prose-h3:mt-6"
-    , class "prose-h4:mt-6"
-    , class "prose-code:before:content-[''] prose-code:after:content-[''] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-lg prose-code:text-sm prose-code:bg-gray-100 dark:prose-code:bg-slate-700"
-    ]

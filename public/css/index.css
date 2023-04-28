@@ -21,11 +21,3 @@
 .topic-tag {
   @apply cursor-pointer font-bold text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 transition-colors duration-300;
 }
-
-.bytemd, .CodeMirror {
-    background-color: transparent;
-}
-
-.math-display {
-  overflow-x: auto;
-}

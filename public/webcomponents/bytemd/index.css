@@ -1,3 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.bytemd,
+.CodeMirror {
+  @apply bg-white dark:bg-gray-800;
+}
+
+.bytemd-fullscreen {
+  z-index: 100;
+}
+
+.bytemd-preview .markdown-body,
+.bytemd-editor .CodeMirror pre.CodeMirror-line,
+.bytemd-editor .CodeMirror pre.CodeMirror-line-like {
+  @apply px-16;
+}
+
+.bytemd-editor .CodeMirror .CodeMirror-lines {
+  @apply mx-0;
+}
+
+.bytemd-editor .CodeMirror .CodeMirror-lines,
+.bytemd-preview .markdown-body {
+  max-width: none;
+}
+
+.bytemd-fullscreen .bytemd-toolbar, .bytemd-fullscreen.bytemd {
+  border-radius: 0;
+}
+
+/* start: tooltip */
+.tippy-box {
+  @apply dark:text-gray-300 dark:bg-gray-700;
+}
+
+.tippy-box .tippy-arrow {
+  @apply dark:text-gray-700;
+}
+/* end: tooltip */
+
+/* start: dropdown */
+.bytemd-toolbar .tippy-box {
+  @apply dark:text-gray-400 dark:bg-gray-700;
+}
+
+.bytemd-dropdown-title {
+  @apply dark:text-gray-400 dark:border-b-gray-600;
+}
+
+.bytemd-dropdown-item {
+  @apply dark:hover:bg-gray-600;
+}
+/* end: dropdown */
+
+.bytemd-toolbar {
+  @apply rounded-tl-md rounded-tr-md bg-white dark:bg-gray-800 dark:border-b-gray-600;
+}
+
+.bytemd-toolbar-icon {
+  @apply text-gray-500 transition-colors duration-300 hover:bg-gray-100 dark:hover:bg-gray-700;
+}
+
+.bytemd-status {
+  @apply dark:text-gray-500 dark:border-t-gray-600;
+}
+
+.bytemd-status strong {
+  @apply dark:text-gray-400;
+}
+
+.bytemd-status-right span,
+.bytemd-status-right label {
+  @apply dark:hover:text-gray-400 transition-colors duration-300;
+}
+
+.bytemd-split .bytemd-preview {
+  @apply dark:border-l-gray-600;
+}
+
+.CodeMirror-gutters {
+  @apply dark:border-r-gray-600;
+}
+
+.CodeMirror-linenumbers {
+  @apply dark:bg-gray-900;
+}
+
+.CodeMirror-linenumber {
+  @apply pr-2 dark:text-gray-500;
+}
+
+.markdown-body {
+  /* https://tailwindcss.com/docs/typography-plugin */
+  @apply prose dark:prose-invert max-w-none leading-6 prose-ul:my-0 prose-ol:my-0 prose-li:my-1 prose-img:my-1 prose-p:my-2 prose-blockquote:my-4 prose-pre:my-2 prose-table:my-2 tr-nth-[even]:bg-slate-50 dark:tr-nth-[even]:bg-slate-800 prose-h1:mb-3 prose-h2:mb-3 prose-h2:mt-6 prose-h3:mt-6 prose-h4:mt-6 prose-code:before:content-[''] prose-code:after:content-[''] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-lg prose-code:text-sm prose-code:bg-gray-100 dark:prose-code:bg-slate-700;
+}
+
+.math-display {
+  overflow-x: auto;
+}
+
 .markdown-body:before {
   display: table;
   content: "";

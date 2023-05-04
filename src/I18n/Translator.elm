@@ -97,13 +97,13 @@ translate :
     -- List (modules, translator)
     -> List ( List String, Translator )
     -> TranslateResult
-translate defaultLang lang texts translators =
+translate sourceLang lang texts translators =
     case doTranslate lang texts translators of
         Translated r ->
             Translated r
 
         WaitingToTranslate r ->
-            if defaultLang == r.lang then
+            if sourceLang == r.lang then
                 Translated (textsToString r.texts)
 
             else

@@ -17,7 +17,7 @@
 -}
 
 
-module App.Msg exposing (Msg(..), focusOn, toRemoteCmd)
+module App.Msg exposing (Msg(..), focusOn, fromRemoteCmd)
 
 import Browser
 import Browser.Dom as Dom
@@ -58,8 +58,8 @@ type Msg
 
 {-| 发起远程请求
 -}
-toRemoteCmd : Cmd RemoteMsg.Msg -> Cmd Msg
-toRemoteCmd msg =
+fromRemoteCmd : Cmd RemoteMsg.Msg -> Cmd Msg
+fromRemoteCmd msg =
     Cmd.map RemoteMsg msg
 
 

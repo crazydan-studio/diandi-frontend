@@ -33,33 +33,33 @@ import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 
 
-type alias State model msg =
-    { pagers : List ( PagerId, Pager model msg )
+type alias State app msg =
+    { pagers : List ( PagerId, Pager app msg )
     , nextId : PagerId
     }
 
 
-type alias Pager model msg =
-    PagerId -> model -> Html msg
+type alias Pager app msg =
+    PagerId -> app -> Html msg
 
 
 type alias PagerId =
     Int
 
 
-type Msg model msg
-    = Open (Pager model msg)
+type Msg app msg
+    = Open (Pager app msg)
     | Close PagerId
 
 
-init : State model msg
+init : State app msg
 init =
     { pagers = []
     , nextId = 0
     }
 
 
-update : Msg model msg -> State model msg -> State model msg
+update : Msg app msg -> State app msg -> State app msg
 update msg ({ pagers, nextId } as state) =
     case msg of
         Open pager ->
@@ -76,8 +76,8 @@ update msg ({ pagers, nextId } as state) =
             }
 
 
-create : State model msg -> model -> Html msg
-create { pagers } model =
+create : State app msg -> app -> Html msg
+create { pagers } app =
     case pagers of
         [] ->
             div [] []
@@ -90,14 +90,14 @@ create { pagers } model =
                 , class "w-full h-full"
                 , class "bg-black/60 dark:bg-black/50"
                 ]
-                [ pager id model ]
+                [ pager id app ]
 
 
-open : (Msg model msg -> msg) -> Pager model msg -> msg
+open : (Msg app msg -> msg) -> Pager app msg -> msg
 open toMsg pager =
     toMsg (Open pager)
 
 
-close : (Msg model msg -> msg) -> PagerId -> msg
+close : (Msg app msg -> msg) -> PagerId -> msg
 close toMsg pagerId =
     toMsg (Close pagerId)

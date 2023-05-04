@@ -38,19 +38,12 @@ view :
     State AppState.State Msg
     -> AppState.State
     -> Browser.Document Msg
-view pageLayer ({ themeDark } as app) =
+view pageLayer app =
     { title = title app
     , body =
         [ div
             [ class "w-full h-full"
             , class "flex flex-col"
-            , class
-                (if themeDark then
-                    "dark"
-
-                 else
-                    ""
-                )
             ]
             [ div
                 [ class "w-full h-full"

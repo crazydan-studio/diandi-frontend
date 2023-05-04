@@ -190,7 +190,12 @@ create config app =
             [ button
                 [ class "tw-primary-btn"
                 , class "w-full"
-                , onClick config.onEditDone
+                , onClick
+                    (Msg.batch
+                        [ config.onEditDone
+                        , config.onEditCanceled
+                        ]
+                    )
                 ]
                 [ [ I18n.buttonText
                   , if config.isNew then
@@ -203,6 +208,16 @@ create config app =
                 ]
             , button
                 [ class "tw-secondary-btn"
+                , class "w-full"
+                , onClick config.onEditDone
+                ]
+                [ [ I18n.buttonText
+                  , "保存并继续"
+                  ]
+                    |> i18nText
+                ]
+            , button
+                [ class "tw-normal-btn"
                 , class "w-full"
                 , onClick config.onEditCanceled
                 ]

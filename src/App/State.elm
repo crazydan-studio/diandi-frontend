@@ -17,7 +17,13 @@
 -}
 
 
-module App.State exposing (Config, State, init, sub, update)
+module App.State exposing
+    ( Config
+    , State
+    , init
+    , sub
+    , update
+    )
 
 import App.I18n.App as I18n
 import App.Msg as Msg exposing (Msg)
@@ -35,7 +41,6 @@ import Http
 import I18n.Lang exposing (Lang)
 import I18n.Port
 import I18n.Translator exposing (TextsNeedToBeTranslated, TranslateResult)
-import Svg.Attributes exposing (result)
 import Task
 import Time
 import Url
@@ -101,7 +106,7 @@ init config =
                     config.lang
             , textsWithoutI18n = []
             , timeZone = Time.utc
-            , themeDark = False
+            , themeDark = True
 
             --
             , navKey = config.navKey
@@ -160,8 +165,9 @@ update msg state =
             )
 
         Msg.SearchTopicInputing keywords ->
-            ( state
-                |> updateTopicSearchingText (Just keywords)
+            ( { state
+                | topicSearchingText = Just keywords
+              }
             , Cmd.none
             )
 
@@ -181,7 +187,7 @@ update msg state =
             )
 
         Msg.NewTopicPending ->
-            ( state |> initNewTopic
+            ( { state | newTopic = Just EditTopic.init }
             , Cmd.none
             )
 
@@ -192,7 +198,9 @@ update msg state =
             newTopicSavingHelper state
 
         Msg.NewTopicCleaned ->
-            ( state |> cleanNewTopic
+            ( { state
+                | newTopic = Nothing
+              }
             , Cmd.none
             )
 
@@ -208,34 +216,12 @@ update msg state =
             editTopicSavingHelper state
 
         Msg.EditTopicCleaned ->
-            ( state |> cleanEditTopic
+            ( { state | editTopic = Nothing }
             , Cmd.none
             )
 
         _ ->
             ( state, Cmd.none )
-
-
-loading : RemoteData.Status a
-loading =
-    RemoteData.Loading
-
-
-loadTopics :
-    Result Http.Error (List Topic)
-    -> State
-    -> State
-loadTopics result state =
-    { state
-        | topicCards =
-            result
-                |> RemoteData.from state.lang createTopicCardsHelper
-    }
-
-
-updateTopicSearchingText : Maybe String -> State -> State
-updateTopicSearchingText keywords state =
-    { state | topicSearchingText = keywords }
 
 
 getTopic : String -> State -> Maybe Topic
@@ -265,28 +251,12 @@ removeTopicCard topicId ({ topicCards } as state) =
     }
 
 
-initNewTopic :
-    State
-    -> State
-initNewTopic state =
-    { state | newTopic = Just EditTopic.init }
-
-
 updateNewTopic :
     (EditTopic -> EditTopic)
     -> State
     -> State
 updateNewTopic updater ({ newTopic } as state) =
     { state | newTopic = newTopic |> Maybe.map updater }
-
-
-cleanNewTopic :
-    State
-    -> State
-cleanNewTopic state =
-    { state
-        | newTopic = Nothing
-    }
 
 
 prepareSavingNewTopic : State -> ( Maybe EditTopic, Maybe Topic )
@@ -360,13 +330,6 @@ updateEditTopic :
     -> State
 updateEditTopic updater ({ editTopic } as state) =
     { state | editTopic = editTopic |> Maybe.map updater }
-
-
-cleanEditTopic :
-    State
-    -> State
-cleanEditTopic state =
-    { state | editTopic = Nothing }
 
 
 prepareSavingEditTopic : State -> ( Maybe EditTopic, Maybe Topic )
@@ -507,8 +470,13 @@ remoteUpdateHelper :
 remoteUpdateHelper msg state =
     case msg of
         RemoteMsg.QueryMyTopics result ->
-            ( state
-                |> loadTopics result
+            ( { state
+                | topicCards =
+                    result
+                        |> RemoteData.from
+                            state.lang
+                            createTopicCardsHelper
+              }
             , Cmd.none
             )
 
@@ -559,8 +527,9 @@ routeUpdateHelper navUrl state =
                 View.Route.TopicsSearch keywords ->
                     let
                         ( s, c ) =
-                            state
-                                |> updateTopicSearchingText keywords
+                            { state
+                                | topicSearchingText = keywords
+                            }
                                 |> doRemoteQueryMyTopics
                     in
                     ( Page.Home, s, c )
@@ -605,7 +574,7 @@ topicCardUpdateHelper topicId msg state =
         TopicCard.Trash op ->
             case op of
                 Operation.Doing ->
-                    Msg.toRemoteCmd
+                    Msg.fromRemoteCmd
                         (RemoteTopic.trashMyTopic topicId)
 
                 _ ->
@@ -646,7 +615,7 @@ newTopicSavingHelper state =
     , topic
         |> Maybe.map
             (\t ->
-                Msg.toRemoteCmd
+                Msg.fromRemoteCmd
                     (RemoteTopic.saveMyNewTopic t)
             )
         |> Maybe.withDefault
@@ -667,7 +636,7 @@ editTopicSavingHelper state =
     , topic
         |> Maybe.map
             (\t ->
-                Msg.toRemoteCmd
+                Msg.fromRemoteCmd
                     (RemoteTopic.saveMyEditTopic t)
             )
         |> Maybe.withDefault
@@ -697,11 +666,11 @@ doRemoteQueryMyTopics state =
     ( state
         |> (\app ->
                 { app
-                    | topicCards = loading
+                    | topicCards = RemoteData.Loading
                 }
            )
     , Cmd.batch
-        [ Msg.toRemoteCmd
+        [ Msg.fromRemoteCmd
             (RemoteTopic.queryMyTopics
                 { keyword = state.topicSearchingText
                 , tags = Nothing

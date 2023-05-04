@@ -118,3 +118,11 @@
 .markdown-body>*:last-child {
   margin-bottom: 0;
 }
+
+.medium-zoom-overlay {
+  @apply z-[5000] dark:bg-gray-900 !important;
+}
+
+.medium-zoom-image {
+  @apply z-[5001];
+}

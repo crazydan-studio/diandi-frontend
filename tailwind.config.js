@@ -4,8 +4,10 @@ const plugin = require("tailwindcss/plugin");
 module.exports = {
   // https://github.com/csaltos/elm-tailwindcss
   content: ["./src/**/*.elm"],
-  // Note: 在任意 root 节点加上 class="dark"，即可启用暗黑模式
-  darkMode: "class",
+  // Note: 在任意父节点加上 class="dark" 或 [theme="dark"]，
+  // 即可对其子节点启用暗黑模式
+  // https://tailwindcss.com/docs/dark-mode#customizing-the-class-name
+  darkMode: ["class", '[theme="dark"]'],
   theme: {
     extend: {
       animation: {
@@ -62,12 +64,9 @@ module.exports = {
     // https://tailwindcss.com/docs/plugins#dynamic-variants
     plugin(function ({ matchVariant }) {
       // tr-nth-[odd], tr-nth-[even], tr-[2n+1]
-      matchVariant(
-        "tr-nth",
-        (value) => {
-          return `& tr:nth-child(${value})`;
-        }
-      );
+      matchVariant("tr-nth", (value) => {
+        return `& tr:nth-child(${value})`;
+      });
     }),
   ],
 };

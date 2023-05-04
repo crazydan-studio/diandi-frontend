@@ -29,11 +29,13 @@ import Html
         , img
         , input
         , nav
+        , node
         , span
         )
 import Html.Attributes
     exposing
-        ( class
+        ( attribute
+        , class
         , href
         , placeholder
         , src
@@ -117,18 +119,25 @@ view ({ lang, themeDark } as app) =
         , div
             [ class "flex gap-2"
             ]
-            [ span
+            [ node "theme-switcher"
                 [ class "tw-icon-btn"
+                , attribute "mode"
+                    (if themeDark then
+                        "dark"
+
+                     else
+                        ""
+                    )
                 , onClick
                     (Msg.fromApp
                         (AppMsg.SwitchToDarkTheme (not themeDark))
                     )
                 ]
                 [ if themeDark then
-                    Outlined.light_mode 24 Inherit
+                    Outlined.dark_mode 24 Inherit
 
                   else
-                    Outlined.dark_mode 24 Inherit
+                    Outlined.light_mode 24 Inherit
                 ]
             , span
                 [ class "tw-icon-btn"

@@ -14,7 +14,7 @@
 .bytemd-preview .markdown-body,
 .bytemd-editor .CodeMirror pre.CodeMirror-line,
 .bytemd-editor .CodeMirror pre.CodeMirror-line-like {
-  @apply px-16;
+  @apply px-4;
 }
 
 .bytemd-editor .CodeMirror .CodeMirror-lines {

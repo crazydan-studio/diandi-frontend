@@ -17,6 +17,7 @@ import rehypeMinifyWhitespace from "rehype-minify-whitespace";
 // Note: 框架的 css 机制在不使用 shadow dom 时不可用，
 // 只能以 import 方式全局引入样式
 import "./index.css";
+import "./codemirror.css";
 
 // https://medium.com/dailyjs/leveraging-webpack-power-to-import-all-files-from-one-folder-cddedd3201b3
 const bytemdLocales = loadPluginLocales(
@@ -177,7 +178,7 @@ export class ByteMDEditor extends LitElement {
         plugins: plugins(this.lang),
         // https://codemirror.net/5/doc/manual.html#config
         editorConfig: {
-          // theme: "",
+          theme: "vars",
           autofocus: true,
           lineNumbers: true,
         },

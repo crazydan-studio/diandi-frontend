@@ -2118,6 +2118,11 @@ codemirror-ssr@^0.65.0:
   resolved "https://registry.npmmirror.com/codemirror-ssr/-/codemirror-ssr-0.65.0.tgz#2da55cb21fbe6142df10aece7e286834734c0fb3"
   integrity sha512-ofTAfPkQV56SYFfymNMYJ1ELo3+Jnkw3mOLgnIiQjhonwNmNzX1OFvnihAnYRXL0PWl2kT7s0gKrLc2ExshK4g==
 
+codemirror-theme-vars@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.npmmirror.com/codemirror-theme-vars/-/codemirror-theme-vars-0.1.2.tgz#60db6877d16a400809e919b9bec33d72dbab1dfa"
+  integrity sha512-WTau8X2q58b0SOAY9DO+iQVw8JKVEgyQIqArp2D732tcc+pobbMta3bnVMdQdmgwuvNrOFFr6HoxPRoQOgooFA==
+
 color-convert@^1.9.0:
   version "1.9.3"
   resolved "https://registry.npmmirror.com/color-convert/-/color-convert-1.9.3.tgz#bb71850690e1f136567de629d2d5471deda4c1e8"

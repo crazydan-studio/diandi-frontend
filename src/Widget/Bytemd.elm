@@ -23,7 +23,7 @@ module Widget.Bytemd exposing
     , viewer
     )
 
-import Html exposing (Attribute, Html, node)
+import Html exposing (Html, node)
 import Html.Attributes exposing (attribute, class, placeholder, value)
 import Html.Events exposing (on)
 import I18n.Lang exposing (Lang(..))

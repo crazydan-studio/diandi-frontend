@@ -26,6 +26,7 @@
     "@geoffcodesthings/tailwind-md-base": "^1.1.0",
     "@tailwindcss/typography": "^0.5.9",
     "bytemd": "^1.21.0",
+    "codemirror-theme-vars": "^0.1.2",
     "lit": "^2.7.2",
     "rehype-minify-whitespace": "^5.0.1",
     "tailwind-highlightjs": "^2.0.1",

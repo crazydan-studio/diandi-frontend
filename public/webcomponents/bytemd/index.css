@@ -1,33 +1,26 @@
-@tailwind base;
+/* 在入口 css 中引入 */
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
 
-.bytemd,
-.CodeMirror {
+.bytemd {
   @apply bg-white dark:bg-gray-800;
 }
 
 .bytemd-fullscreen {
-  z-index: 100;
+  @apply z-[100];
 }
 
-.bytemd-preview .markdown-body,
-.bytemd-editor .CodeMirror pre.CodeMirror-line,
-.bytemd-editor .CodeMirror pre.CodeMirror-line-like {
+.bytemd-preview .markdown-body {
   @apply px-4;
 }
 
-.bytemd-editor .CodeMirror .CodeMirror-lines {
-  @apply mx-0;
-}
-
-.bytemd-editor .CodeMirror .CodeMirror-lines,
 .bytemd-preview .markdown-body {
-  max-width: none;
+  @apply max-w-none;
 }
 
 .bytemd-fullscreen .bytemd-toolbar, .bytemd-fullscreen.bytemd {
-  border-radius: 0;
+  @apply rounded-none;
 }
 
 /* start: tooltip */
@@ -79,25 +72,17 @@
   @apply dark:border-l-gray-600;
 }
 
-.CodeMirror-gutters {
-  @apply dark:border-r-gray-600;
-}
-
-.CodeMirror-linenumbers {
-  @apply dark:bg-gray-900;
-}
-
-.CodeMirror-linenumber {
-  @apply pr-2 dark:text-gray-500;
-}
-
 .markdown-body {
   /* https://tailwindcss.com/docs/typography-plugin */
   @apply prose dark:prose-invert max-w-none leading-6 prose-ul:my-0 prose-ol:my-0 prose-li:my-1 prose-img:my-1 prose-p:my-2 prose-blockquote:my-4 prose-pre:my-2 prose-table:my-2 tr-nth-[even]:bg-slate-50 dark:tr-nth-[even]:bg-slate-800 prose-h1:mb-3 prose-h2:mb-3 prose-h2:mt-6 prose-h3:mt-6 prose-h4:mt-6 prose-code:before:content-[''] prose-code:after:content-[''] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-lg prose-code:text-sm prose-code:bg-gray-100 dark:prose-code:bg-slate-700;
 }
 
 .math-display {
-  overflow-x: auto;
+  @apply overflow-x-auto;
+}
+
+.markdown-body .hljs {
+  @apply whitespace-break-spaces break-words;
 }
 
 .markdown-body:before {
@@ -112,11 +97,11 @@
 }
 
 .markdown-body>*:first-child {
-  margin-top: 0;
+  @apply mt-0;
 }
 
 .markdown-body>*:last-child {
-  margin-bottom: 0;
+  @apply mb-0;
 }
 
 .medium-zoom-overlay {

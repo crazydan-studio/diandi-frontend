@@ -19,7 +19,8 @@
   @apply max-w-none;
 }
 
-.bytemd-fullscreen .bytemd-toolbar, .bytemd-fullscreen.bytemd {
+.bytemd-fullscreen .bytemd-toolbar,
+.bytemd-fullscreen.bytemd {
   @apply rounded-none;
 }
 
@@ -48,11 +49,15 @@
 /* end: dropdown */
 
 .bytemd-toolbar {
-  @apply rounded-tl-md rounded-tr-md bg-white dark:bg-gray-800 dark:border-b-gray-600;
+  @apply rounded-tl-md rounded-tr-md;
+  @apply dark:border-b-gray-600;
+  @apply bg-white dark:bg-gray-800;
 }
 
 .bytemd-toolbar-icon {
-  @apply text-gray-500 transition-colors duration-300 hover:bg-gray-100 dark:hover:bg-gray-700;
+  @apply text-gray-500;
+  @apply hover:bg-gray-100 dark:hover:bg-gray-700;
+  @apply transition-colors duration-300;
 }
 
 .bytemd-status {
@@ -65,7 +70,8 @@
 
 .bytemd-status-right span,
 .bytemd-status-right label {
-  @apply dark:hover:text-gray-400 transition-colors duration-300;
+  @apply dark:hover:text-gray-400;
+  @apply transition-colors duration-300;
 }
 
 .bytemd-split .bytemd-preview {
@@ -74,15 +80,47 @@
 
 .markdown-body {
   /* https://tailwindcss.com/docs/typography-plugin */
-  @apply prose dark:prose-invert max-w-none leading-6 prose-ul:my-0 prose-ol:my-0 prose-li:my-1 prose-img:my-1 prose-p:my-2 prose-blockquote:my-4 prose-pre:my-2 prose-table:my-2 tr-nth-[even]:bg-slate-50 dark:tr-nth-[even]:bg-slate-800 prose-h1:mb-3 prose-h2:mb-3 prose-h2:mt-6 prose-h3:mt-6 prose-h4:mt-6 prose-code:before:content-[''] prose-code:after:content-[''] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-lg prose-code:text-sm prose-code:bg-gray-100 dark:prose-code:bg-slate-700;
+  @apply prose dark:prose-invert max-w-none leading-6;
+  @apply prose-ul:my-0 prose-ol:my-0 prose-li:my-1;
+  @apply prose-img:my-1 prose-p:my-2;
+  @apply prose-blockquote:my-4 prose-pre:my-2;
+  @apply prose-table:my-2 tr-nth-[even]:bg-slate-50 dark:tr-nth-[even]:bg-slate-800;
+  @apply prose-h1:mb-3 prose-h2:mb-3 prose-h2:mt-6 prose-h3:mt-6 prose-h4:mt-6;
+  @apply prose-code:before:content-[''] prose-code:after:content-[''];
+  @apply prose-code:px-1.5 prose-code:py-0.5;
+  @apply prose-code:rounded-lg prose-code:text-sm;
+  @apply prose-code:bg-gray-100 dark:prose-code:bg-slate-700;
 }
 
 .math-display {
   @apply overflow-x-auto;
 }
 
-.markdown-body .hljs {
-  @apply whitespace-break-spaces break-words;
+.markdown-body code[class*="language-"],
+.markdown-body pre[class*="language-"] {
+  @apply m-0;
+  @apply text-base bg-gray-800 dark:bg-gray-900;
+  @apply rounded-md border-none shadow-none;
+  @apply before:content-none after:content-none;
+  /* Note: 行号为浮动元素，若出现换行，则行号会发生错位，故而，不能启用换行 */
+  /* @apply whitespace-break-spaces break-words; */
+  text-shadow: none;
+}
+
+.markdown-body pre[class*="language-"] {
+  @apply py-6;
+}
+
+.markdown-body code[class*="language-"] {
+  @apply p-0;
+}
+
+.markdown-body .code-toolbar > .toolbar {
+  @apply top-0.5;
+}
+
+.markdown-body .code-toolbar > .toolbar > .toolbar-item > * {
+  @apply py-0.5 mx-0.5 text-sm;
 }
 
 .markdown-body:before {

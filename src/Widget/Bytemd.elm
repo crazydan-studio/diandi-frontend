@@ -49,6 +49,7 @@ type alias EditorConfig msg =
 type alias ViewerConfig =
     { value : String
     , styles : List String
+    , lang : Lang
     }
 
 
@@ -57,6 +58,17 @@ viewer config =
     node "bytemd-viewer"
         [ value config.value
         , attribute "inner-class" (config.styles |> String.join " ")
+        , attribute "lang"
+            (case config.lang of
+                Zh_CN ->
+                    "zh_Hans"
+
+                En_US ->
+                    "en"
+
+                Default ->
+                    "zh_Hans"
+            )
         ]
         []
 

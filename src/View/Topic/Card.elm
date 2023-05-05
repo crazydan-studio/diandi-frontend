@@ -187,6 +187,7 @@ view { lang, timeZone } { config, topic, trashOp } =
                     [ Markdown.viewer
                         { value = topic.content
                         , styles = []
+                        , lang = lang
                         }
                     ]
                 , div

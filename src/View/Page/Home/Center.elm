@@ -62,7 +62,7 @@ tools _ =
             , class "items-center justify-center"
             , class "rounded-full cursor-pointer"
             , class "text-white"
-            , class "bg-indigo-600 hover:bg-indigo-500"
+            , class "bg-blue-600 hover:bg-blue-500"
             , class "shadow-md hover:shadow-lg"
             , class "transition-colors duration-300 transform"
             , onClick

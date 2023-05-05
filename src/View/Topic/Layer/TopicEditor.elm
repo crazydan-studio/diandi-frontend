@@ -46,6 +46,7 @@ type alias Config msg =
     , onTagDone : msg
     , onTagChange : String -> msg
     , onEditDone : msg
+    , onEditDoneAndContinue : msg
     , onEditCanceled : msg
     }
 
@@ -188,31 +189,30 @@ create config app =
             , class "gap-4 justify-end"
             ]
             [ button
-                [ class "tw-primary-btn"
+                [ class "tw-normal-btn"
                 , class "w-full"
-                , onClick
-                    (Msg.batch
-                        [ config.onEditDone
-                        , config.onEditCanceled
-                        ]
-                    )
+                , onClick config.onEditDoneAndContinue
                 ]
                 [ [ I18n.buttonText
                   , if config.isNew then
-                        "记下来！"
+                        "新增并继续"
 
                     else
-                        "保存"
+                        "保存并继续"
                   ]
                     |> i18nText
                 ]
             , button
-                [ class "tw-secondary-btn"
+                [ class "tw-primary-btn"
                 , class "w-full"
                 , onClick config.onEditDone
                 ]
                 [ [ I18n.buttonText
-                  , "保存并继续"
+                  , if config.isNew then
+                        "新增"
+
+                    else
+                        "保存"
                   ]
                     |> i18nText
                 ]

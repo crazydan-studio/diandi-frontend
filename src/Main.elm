@@ -31,6 +31,10 @@ import Widget.PageLayer as PageLayer
 type alias State =
     { app : AppState.State
     , pageLayer : PageLayer.State AppState.State Msg
+    , stepMsgQueue :
+        { nextMsgId : Int
+        , msg : List ( Int, Msg )
+        }
     }
 
 
@@ -73,14 +77,53 @@ init config navUrl navKey =
     in
     ( { app = app
       , pageLayer = PageLayer.init
+      , stepMsgQueue =
+            { nextMsgId = 0
+            , msg = []
+            }
       }
     , Msg.fromAppCmd cmd
     )
 
 
 update : Msg -> State -> ( State, Cmd Msg )
-update msg ({ app, pageLayer } as state) =
+update msg state =
+    updateHelper msg -1 state
+
+
+
+-- -------------------------------------------------------------------------------
+
+
+updateHelper : Msg -> Int -> State -> ( State, Cmd Msg )
+updateHelper msg nextMsgId ({ app, pageLayer, stepMsgQueue } as state) =
     case msg of
+        Msg.PageLayerMsg pageLayerMsg ->
+            ( { state
+                | pageLayer =
+                    PageLayer.update
+                        pageLayerMsg
+                        pageLayer
+              }
+            , Cmd.none
+            )
+
+        Msg.AppMsg appMsg ->
+            let
+                ( newApp, newAppCmd, nextMsg ) =
+                    AppState.update appMsg nextMsgId app
+
+                ( newState, nextCmd ) =
+                    updateByNextStepMsg nextMsg
+                        { state
+                            | app = newApp
+                        }
+
+                newCmd =
+                    Msg.fromAppCmd newAppCmd
+            in
+            ( newState, Cmd.batch [ newCmd, nextCmd ] )
+
         Msg.BatchMsg batchMsg ->
             batchMsg
                 |> List.foldl
@@ -95,23 +138,48 @@ update msg ({ app, pageLayer } as state) =
                     )
                     ( state, Cmd.none )
 
-        Msg.PageLayerMsg pageLayerMsg ->
-            ( { state
-                | pageLayer =
-                    PageLayer.update
-                        pageLayerMsg
-                        pageLayer
-              }
-            , Cmd.none
-            )
+        Msg.StepMsg currentMsg nextMsg ->
+            updateHelper currentMsg
+                stepMsgQueue.nextMsgId
+                { state
+                    | stepMsgQueue =
+                        { nextMsgId = stepMsgQueue.nextMsgId + 1
+                        , msg =
+                            ( stepMsgQueue.nextMsgId, nextMsg )
+                                :: stepMsgQueue.msg
+                        }
+                }
 
-        Msg.AppMsg appMsg ->
+
+updateByNextStepMsg : Maybe ( Int, Bool ) -> State -> ( State, Cmd Msg )
+updateByNextStepMsg stepMsg ({ stepMsgQueue } as state) =
+    case stepMsg of
+        Nothing ->
+            ( state, Cmd.none )
+
+        Just ( msgId, shouldBeContinue ) ->
             let
-                ( newApp, newCmd ) =
-                    AppState.update appMsg app
+                newState =
+                    { state
+                        | stepMsgQueue =
+                            { stepMsgQueue
+                                | msg =
+                                    stepMsgQueue.msg
+                                        |> List.filter
+                                            (\( id, _ ) -> id /= msgId)
+                            }
+                    }
             in
-            ( { state
-                | app = newApp
-              }
-            , Msg.fromAppCmd newCmd
-            )
+            if shouldBeContinue then
+                stepMsgQueue.msg
+                    |> List.filter (\( id, _ ) -> id == msgId)
+                    |> List.head
+                    |> Maybe.map
+                        (\( _, msg ) ->
+                            updateHelper msg -1 newState
+                        )
+                    |> Maybe.withDefault ( newState, Cmd.none )
+
+            else
+                -- 失败：直接移除，不处理该消息
+                ( newState, Cmd.none )

@@ -62,7 +62,9 @@ view { lang, timeZone } { config, topic, trashOp } =
                 [ class "animate-zoom-in"
                 , on "animationend"
                     (Decode.succeed
-                        (Msg.fromApp (AppMsg.RemoveTopicCard topic.id))
+                        (Msg.fromApp <|
+                            AppMsg.RemoveTopicCard topic.id
+                        )
                     )
                 ]
 
@@ -120,11 +122,10 @@ view { lang, timeZone } { config, topic, trashOp } =
                                 "text-gray-300"
                             )
                         , onClick
-                            (Msg.fromApp
-                                (AppMsg.TopicCardMsg
+                            (Msg.fromApp <|
+                                AppMsg.TopicCardMsg
                                     topic.id
                                     (TopicCard.Select (not config.selected))
-                                )
                             )
                         ]
                         [ if config.selected then
@@ -231,11 +232,10 @@ view { lang, timeZone } { config, topic, trashOp } =
                             [ class "tw-icon-btn"
                             , tabindex 0
                             , onClick
-                                (Msg.fromApp
-                                    (AppMsg.TopicCardMsg
+                                (Msg.fromApp <|
+                                    AppMsg.TopicCardMsg
                                         topic.id
                                         (TopicCard.Trash Operation.Doing)
-                                    )
                                 )
                             ]
                             [ Outlined.delete 20 Inherit ]
@@ -244,7 +244,8 @@ view { lang, timeZone } { config, topic, trashOp } =
                             , tabindex 0
                             , onClick
                                 (Msg.batch
-                                    [ Msg.fromApp (AppMsg.EditTopicPending topic.id)
+                                    [ Msg.fromApp <|
+                                        AppMsg.EditTopicPending topic.id
                                     , Msg.pageLayerOpen
                                         View.Topic.Layer.EditTopic.create
                                     ]
@@ -255,12 +256,11 @@ view { lang, timeZone } { config, topic, trashOp } =
                             [ class "tw-icon-btn"
                             , tabindex 0
                             , onClick
-                                (Msg.fromApp
-                                    (AppMsg.TopicCardMsg topic.id
+                                (Msg.fromApp <|
+                                    AppMsg.TopicCardMsg topic.id
                                         (TopicCard.Expand
                                             (not config.expanded)
                                         )
-                                    )
                                 )
                             ]
                             (if config.expanded then

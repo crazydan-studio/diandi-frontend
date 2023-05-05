@@ -67,7 +67,8 @@ tools _ =
             , class "transition-colors duration-300 transform"
             , onClick
                 (Msg.batch
-                    [ Msg.fromApp AppMsg.NewTopicPending
+                    [ Msg.fromApp <|
+                        AppMsg.NewTopicPending
                     , Msg.pageLayerOpen
                         View.Topic.Layer.NewTopic.create
                     ]

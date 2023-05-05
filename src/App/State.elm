@@ -142,86 +142,108 @@ sub state =
         ]
 
 
-update : Msg -> State -> ( State, Cmd Msg )
-update msg state =
+update : Msg -> Int -> State -> ( State, Cmd Msg, Maybe ( Int, Bool ) )
+update msg nextMsgId state =
     case msg of
         Msg.RemoteMsg remoteMsg ->
             remoteUpdateHelper remoteMsg state
 
         Msg.UrlChanged url ->
-            routeUpdateHelper url state
+            withOutNextMsg <|
+                routeUpdateHelper url state
 
         Msg.I18nPortMsg i18nPortMsg ->
-            i18nUpdateHelper i18nPortMsg state
+            withOutNextMsg <|
+                i18nUpdateHelper i18nPortMsg state
 
         Msg.SwitchToDarkTheme dark ->
-            ( { state | themeDark = dark }
-            , Cmd.none
-            )
+            withOutNextMsg <|
+                ( { state | themeDark = dark }
+                , Cmd.none
+                )
 
         Msg.AdjustTimeZone zone ->
-            ( { state | timeZone = zone }
-            , Cmd.none
-            )
+            withOutNextMsg <|
+                ( { state | timeZone = zone }
+                , Cmd.none
+                )
 
         Msg.SearchTopicInputing keywords ->
-            ( { state
-                | topicSearchingText = Just keywords
-              }
-            , Cmd.none
-            )
+            withOutNextMsg <|
+                ( { state
+                    | topicSearchingText = Just keywords
+                  }
+                , Cmd.none
+                )
 
         Msg.SearchTopic ->
-            ( state
-            , View.Route.searchTopics
-                (state.topicSearchingText |> Maybe.withDefault "")
-                state.navKey
-            )
+            withOutNextMsg <|
+                ( state
+                , View.Route.searchTopics
+                    (state.topicSearchingText |> Maybe.withDefault "")
+                    state.navKey
+                )
 
         Msg.TopicCardMsg topicId topicCardMsg ->
-            topicCardUpdateHelper topicId topicCardMsg state
+            withOutNextMsg <|
+                topicCardUpdateHelper topicId topicCardMsg state
 
         Msg.RemoveTopicCard topicId ->
-            ( state |> removeTopicCard topicId
-            , Cmd.none
-            )
+            withOutNextMsg <|
+                ( state |> removeTopicCard topicId
+                , Cmd.none
+                )
 
         Msg.NewTopicPending ->
-            ( { state | newTopic = Just EditTopic.init }
-            , Cmd.none
-            )
+            withOutNextMsg <|
+                ( { state | newTopic = Just EditTopic.init }
+                , Cmd.none
+                )
 
         Msg.NewTopicMsg newTopicMsg ->
-            newTopicUpdateHelper newTopicMsg state
+            withOutNextMsg <|
+                newTopicUpdateHelper newTopicMsg state
 
         Msg.NewTopicSaving ->
-            newTopicSavingHelper state
+            withOutNextMsg <|
+                newTopicSavingHelper nextMsgId state
 
         Msg.NewTopicCleaned ->
-            ( { state
-                | newTopic = Nothing
-              }
-            , Cmd.none
-            )
+            withOutNextMsg <|
+                ( { state
+                    | newTopic = Nothing
+                  }
+                , Cmd.none
+                )
 
         Msg.EditTopicPending topicId ->
-            ( state |> initEditTopic topicId
-            , Cmd.none
-            )
+            withOutNextMsg <|
+                ( state |> initEditTopic topicId
+                , Cmd.none
+                )
 
         Msg.EditTopicMsg editTopicMsg ->
-            editTopicUpdateHelper editTopicMsg state
+            withOutNextMsg <|
+                editTopicUpdateHelper editTopicMsg state
 
         Msg.EditTopicSaving ->
-            editTopicSavingHelper state
+            withOutNextMsg <|
+                editTopicSavingHelper nextMsgId state
 
         Msg.EditTopicCleaned ->
-            ( { state | editTopic = Nothing }
-            , Cmd.none
-            )
+            withOutNextMsg <|
+                ( { state | editTopic = Nothing }
+                , Cmd.none
+                )
 
         _ ->
-            ( state, Cmd.none )
+            withOutNextMsg <|
+                ( state, Cmd.none )
+
+
+withOutNextMsg : ( State, Cmd Msg ) -> ( State, Cmd Msg, Maybe ( Int, Bool ) )
+withOutNextMsg ( state, msg ) =
+    ( state, msg, Nothing )
 
 
 getTopic : String -> State -> Maybe Topic
@@ -466,50 +488,71 @@ createTopicCardsHelper topics =
 remoteUpdateHelper :
     RemoteMsg.Msg
     -> State
-    -> ( State, Cmd Msg )
+    -> ( State, Cmd Msg, Maybe ( Int, Bool ) )
 remoteUpdateHelper msg state =
     case msg of
         RemoteMsg.QueryMyTopics result ->
-            ( { state
-                | topicCards =
-                    result
-                        |> RemoteData.from
-                            state.lang
-                            createTopicCardsHelper
-              }
-            , Cmd.none
-            )
+            withOutNextMsg <|
+                ( { state
+                    | topicCards =
+                        result
+                            |> RemoteData.from
+                                state.lang
+                                createTopicCardsHelper
+                  }
+                , Cmd.none
+                )
 
-        RemoteMsg.SaveMyNewTopic result ->
+        RemoteMsg.SaveMyNewTopic nextMsgId result ->
             ( state
                 |> updateSavedNewTopic result
             , Cmd.none
+            , Just
+                ( nextMsgId
+                , case result of
+                    Ok _ ->
+                        True
+
+                    Err _ ->
+                        False
+                )
             )
 
-        RemoteMsg.SaveMyEditTopic result ->
+        RemoteMsg.SaveMyEditTopic nextMsgId result ->
             ( state
                 |> updateSavedEditTopic result
             , Cmd.none
+            , Just
+                ( nextMsgId
+                , case result of
+                    Ok _ ->
+                        True
+
+                    Err _ ->
+                        False
+                )
             )
 
         RemoteMsg.TrashMyTopic topicId result ->
-            ( state
-                |> updateTopicCard topicId
-                    (case result of
-                        Ok _ ->
-                            TopicCard.Trash Operation.Done
+            withOutNextMsg <|
+                ( state
+                    |> updateTopicCard topicId
+                        (case result of
+                            Ok _ ->
+                                TopicCard.Trash Operation.Done
 
-                        Err e ->
-                            TopicCard.Trash
-                                (Operation.Error
-                                    (Remote.parseError state.lang e)
-                                )
-                    )
-            , Cmd.none
-            )
+                            Err e ->
+                                TopicCard.Trash
+                                    (Operation.Error
+                                        (Remote.parseError state.lang e)
+                                    )
+                        )
+                , Cmd.none
+                )
 
         _ ->
-            ( state, Cmd.none )
+            withOutNextMsg <|
+                ( state, Cmd.none )
 
 
 routeUpdateHelper : Url.Url -> State -> ( State, Cmd Msg )
@@ -603,9 +646,10 @@ newTopicUpdateHelper msg state =
 
 
 newTopicSavingHelper :
-    State
+    Int
+    -> State
     -> ( State, Cmd Msg )
-newTopicSavingHelper state =
+newTopicSavingHelper nextMsgId state =
     let
         ( newTopic, topic ) =
             prepareSavingNewTopic state
@@ -616,7 +660,7 @@ newTopicSavingHelper state =
         |> Maybe.map
             (\t ->
                 Msg.fromRemoteCmd
-                    (RemoteTopic.saveMyNewTopic t)
+                    (RemoteTopic.saveMyNewTopic nextMsgId t)
             )
         |> Maybe.withDefault
             Cmd.none
@@ -624,9 +668,10 @@ newTopicSavingHelper state =
 
 
 editTopicSavingHelper :
-    State
+    Int
+    -> State
     -> ( State, Cmd Msg )
-editTopicSavingHelper state =
+editTopicSavingHelper nextMsgId state =
     let
         ( editTopic, topic ) =
             prepareSavingEditTopic state
@@ -637,7 +682,7 @@ editTopicSavingHelper state =
         |> Maybe.map
             (\t ->
                 Msg.fromRemoteCmd
-                    (RemoteTopic.saveMyEditTopic t)
+                    (RemoteTopic.saveMyEditTopic nextMsgId t)
             )
         |> Maybe.withDefault
             Cmd.none

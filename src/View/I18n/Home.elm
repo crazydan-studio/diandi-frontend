@@ -119,8 +119,12 @@ buttonTranslator texts =
             ok En_US "Language"
                 :: default
 
-        [ "记下来！" ] ->
-            ok En_US "Got it!"
+        [ "保存" ] ->
+            ok En_US "Save"
+                :: default
+
+        [ "保存并继续" ] ->
+            ok En_US "Save & Continue"
                 :: default
 
         [ "设置" ] ->
@@ -128,7 +132,11 @@ buttonTranslator texts =
                 :: default
 
         [ "新增" ] ->
-            ok En_US "New"
+            ok En_US "Add"
+                :: default
+
+        [ "新增并继续" ] ->
+            ok En_US "Add & Continue"
                 :: default
 
         [ "确定" ] ->

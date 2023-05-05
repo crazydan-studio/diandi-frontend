@@ -25,12 +25,12 @@ module App.Remote.GraphQL.Topic exposing
     , trashMyTopic
     )
 
+import App.Remote.Msg exposing (Msg(..))
+import App.Topic exposing (Topic, topicDecoder, topicListDecoder)
 import GraphQl
 import GraphQl.Http
 import Json.Decode as Decode
 import Json.Encode as Encode
-import App.Remote.Msg exposing (Msg(..))
-import App.Topic exposing (Topic, topicDecoder, topicListDecoder)
 import Widget.Util.Basic exposing (trim)
 
 
@@ -129,9 +129,10 @@ queryMyTopics { keyword, tags } =
 {-| 保存新增主题
 -}
 saveMyNewTopic :
-    Topic
+    Int
+    -> Topic
     -> Cmd Msg
-saveMyNewTopic topic =
+saveMyNewTopic nextMsgId topic =
     -- https://package.elm-lang.org/packages/ghivert/elm-graphql/5.0.0/GraphQl
     GraphQl.mutation
         (GraphQl.named "TopicCreate"
@@ -167,16 +168,17 @@ saveMyNewTopic topic =
               )
             ]
         |> GraphQl.Http.send { url = "/api/graphql", headers = [] }
-            SaveMyNewTopic
+            (SaveMyNewTopic nextMsgId)
             (Decode.field "createTopic" topicDecoder)
 
 
 {-| 保存编辑主题
 -}
 saveMyEditTopic :
-    Topic
+    Int
+    -> Topic
     -> Cmd Msg
-saveMyEditTopic topic =
+saveMyEditTopic nextMsgId topic =
     -- https://package.elm-lang.org/packages/ghivert/elm-graphql/5.0.0/GraphQl
     GraphQl.mutation
         (GraphQl.named "TopicUpdate"
@@ -217,7 +219,7 @@ saveMyEditTopic topic =
               )
             ]
         |> GraphQl.Http.send { url = "/api/graphql", headers = [] }
-            SaveMyEditTopic
+            (SaveMyEditTopic nextMsgId)
             (Decode.field "updateTopic" topicDecoder)
 
 

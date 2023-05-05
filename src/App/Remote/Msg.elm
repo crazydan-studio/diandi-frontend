@@ -26,6 +26,6 @@ import App.Topic exposing (Topic)
 type Msg
     = NoOp
     | QueryMyTopics (Result Http.Error (List Topic))
-    | SaveMyNewTopic (Result Http.Error Topic)
-    | SaveMyEditTopic (Result Http.Error Topic)
+    | SaveMyNewTopic Int (Result Http.Error Topic)
+    | SaveMyEditTopic Int (Result Http.Error Topic)
     | TrashMyTopic String (Result Http.Error String)

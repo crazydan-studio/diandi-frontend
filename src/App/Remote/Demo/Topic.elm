@@ -25,10 +25,10 @@ module App.Remote.Demo.Topic exposing
     , saveMyNewTopic
     )
 
-import Http
-import Json.Decode as Decode
 import App.Remote.Msg exposing (Msg(..))
 import App.Topic exposing (Topic, topicListDecoder)
+import Http
+import Json.Decode as Decode
 import Widget.Util.Hash exposing (hash)
 
 
@@ -57,14 +57,15 @@ queryMyTopics { keyword, tags } =
 {-| 保存新增主题
 -}
 saveMyNewTopic :
-    Topic
+    Int
+    -> Topic
     -> Cmd Msg
-saveMyNewTopic topic =
+saveMyNewTopic nextMsgId topic =
     -- Note: 模拟请求，并返回数据
     Http.get
         { url = "/demo/topics.json"
         , expect =
-            Http.expectJson SaveMyNewTopic
+            Http.expectJson (SaveMyNewTopic nextMsgId)
                 (Decode.succeed
                     (if String.isEmpty topic.id then
                         { topic | id = hash topic.content }
@@ -79,14 +80,15 @@ saveMyNewTopic topic =
 {-| 保存编辑主题
 -}
 saveMyEditTopic :
-    Topic
+    Int
+    -> Topic
     -> Cmd Msg
-saveMyEditTopic topic =
+saveMyEditTopic nextMsgId topic =
     -- Note: 模拟请求，并返回数据
     Http.get
         { url = "/demo/topics.json"
         , expect =
-            Http.expectJson SaveMyEditTopic
+            Http.expectJson (SaveMyEditTopic nextMsgId)
                 (Decode.succeed topic)
         }
 

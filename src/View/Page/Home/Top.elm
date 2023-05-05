@@ -105,9 +105,13 @@ view ({ lang, themeDark } as app) =
                      , value (app.topicSearchingText |> Maybe.withDefault "")
                      , onInput
                         (\t ->
-                            Msg.fromApp (AppMsg.SearchTopicInputing t)
+                            Msg.fromApp <|
+                                AppMsg.SearchTopicInputing t
                         )
-                     , onEnter (Msg.fromApp AppMsg.SearchTopic)
+                     , onEnter
+                        (Msg.fromApp <|
+                            AppMsg.SearchTopic
+                        )
                      ]
                         ++ i18nAttr
                             placeholder
@@ -129,8 +133,8 @@ view ({ lang, themeDark } as app) =
                         ""
                     )
                 , onClick
-                    (Msg.fromApp
-                        (AppMsg.SwitchToDarkTheme (not themeDark))
+                    (Msg.fromApp <|
+                        AppMsg.SwitchToDarkTheme (not themeDark)
                     )
                 ]
                 [ if themeDark then

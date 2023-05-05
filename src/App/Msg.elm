@@ -19,12 +19,12 @@
 
 module App.Msg exposing (Msg(..), focusOn, fromRemoteCmd)
 
-import Browser
-import Browser.Dom as Dom
-import I18n.Port
 import App.Operation.EditTopic as EditTopic
 import App.Remote.Msg as RemoteMsg
 import App.TopicCard as TopicCard
+import Browser
+import Browser.Dom as Dom
+import I18n.Port
 import Task
 import Time
 import Url
@@ -32,6 +32,7 @@ import Url
 
 type Msg
     = NoOp
+      -- 浏览器相关消息
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | FocusOn String

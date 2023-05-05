@@ -27,6 +27,7 @@ module Msg exposing
     , onUrlRequest
     , pageLayerClose
     , pageLayerOpen
+    , step
     )
 
 import App.Msg as AppMsg
@@ -39,6 +40,8 @@ import Widget.PageLayer as PageLayer
 type Msg
     = -- 批量消息
       BatchMsg (List Msg)
+      -- 依次执行前后两个消息，且前一个需执行成功才能继续执行下一个消息
+    | StepMsg Msg Msg
       -- 遮罩侧消息
     | PageLayerMsg (PageLayer.Msg AppState.State Msg)
       -- 应用侧消息
@@ -48,6 +51,11 @@ type Msg
 batch : List Msg -> Msg
 batch =
     BatchMsg
+
+
+step : Msg -> Msg -> Msg
+step =
+    StepMsg
 
 
 onUrlChange : Url.Url -> Msg

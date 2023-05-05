@@ -36,22 +36,46 @@ create pagerId app =
             , topic = app.editTopic
             , onTitleChange =
                 \text ->
-                    Msg.fromApp (AppMsg.EditTopicMsg (EditTopic.TitleChanged text))
+                    Msg.fromApp <|
+                        AppMsg.EditTopicMsg <|
+                            EditTopic.TitleChanged text
             , onContentChange =
                 \text ->
-                    Msg.fromApp (AppMsg.EditTopicMsg (EditTopic.ContentChanged text))
+                    Msg.fromApp <|
+                        AppMsg.EditTopicMsg <|
+                            EditTopic.ContentChanged text
             , onTagDeleted =
                 \tag ->
-                    Msg.fromApp (AppMsg.EditTopicMsg (EditTopic.TagDeleted tag))
-            , onTagDone = Msg.fromApp (AppMsg.EditTopicMsg EditTopic.TagDone)
+                    Msg.fromApp <|
+                        AppMsg.EditTopicMsg <|
+                            EditTopic.TagDeleted tag
+            , onTagDone =
+                Msg.fromApp <|
+                    AppMsg.EditTopicMsg <|
+                        EditTopic.TagDone
             , onTagChange =
                 \text ->
-                    Msg.fromApp (AppMsg.EditTopicMsg (EditTopic.TagChanged text))
+                    Msg.fromApp <|
+                        AppMsg.EditTopicMsg <|
+                            EditTopic.TagChanged text
             , onEditDone =
-                Msg.fromApp AppMsg.EditTopicSaving
+                Msg.step
+                    (Msg.fromApp <|
+                        AppMsg.EditTopicSaving
+                    )
+                    (Msg.batch
+                        [ Msg.fromApp <|
+                            AppMsg.EditTopicCleaned
+                        , Msg.pageLayerClose pagerId
+                        ]
+                    )
+            , onEditDoneAndContinue =
+                Msg.fromApp <|
+                    AppMsg.EditTopicSaving
             , onEditCanceled =
                 Msg.batch
-                    [ Msg.fromApp AppMsg.EditTopicCleaned
+                    [ Msg.fromApp <|
+                        AppMsg.EditTopicCleaned
                     , Msg.pageLayerClose pagerId
                     ]
             }

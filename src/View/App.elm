@@ -24,22 +24,22 @@ import Browser
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 import Msg exposing (Msg)
-import View.Page as PageType
+import View.Page as Page
 import View.Page.Blank
 import View.Page.Forbidden
 import View.Page.Home
 import View.Page.Loading
 import View.Page.NotFound
 import View.StyleSheet
-import Widget.PageLayer as PageLayer exposing (State)
+import Widget.PageLayer as PageLayer
 
 
 view :
-    State AppState.State Msg
+    PageLayer.State AppState.State Msg
     -> AppState.State
     -> Browser.Document Msg
 view pageLayer app =
-    { title = title app
+    { title = createTitle app
     , body =
         [ div
             [ class "w-full h-full"
@@ -50,7 +50,7 @@ view pageLayer app =
                 , class "flex"
                 , class "bg-gray-100 dark:bg-gray-900"
                 ]
-                [ page app ]
+                [ createPage app ]
             , PageLayer.create pageLayer app
             ]
         , View.StyleSheet.create app
@@ -58,36 +58,36 @@ view pageLayer app =
     }
 
 
-title : AppState.State -> String
-title app =
-    case app.currentPage of
-        PageType.NotFound ->
-            app.title ++ " - " ++ "页面不存在"
+createTitle : AppState.State -> String
+createTitle { currentPage, title, description } =
+    case currentPage of
+        Page.NotFound ->
+            title ++ " - " ++ "页面不存在"
 
-        PageType.Forbidden ->
-            app.title ++ " - " ++ "无操作权限"
+        Page.Forbidden ->
+            title ++ " - " ++ "无操作权限"
 
-        PageType.Loading ->
-            app.title ++ " - " ++ "页面加载中..."
+        Page.Loading ->
+            title ++ " - " ++ "页面加载中..."
 
         _ ->
-            app.description
+            description
 
 
-page : AppState.State -> Html Msg
-page app =
+createPage : AppState.State -> Html Msg
+createPage app =
     case app.currentPage of
-        PageType.NotFound ->
+        Page.NotFound ->
             View.Page.NotFound.view app
 
-        PageType.Forbidden ->
+        Page.Forbidden ->
             View.Page.Forbidden.view app
 
-        PageType.Loading ->
+        Page.Loading ->
             View.Page.Loading.view app
 
-        PageType.Blank ->
+        Page.Blank ->
             View.Page.Blank.view app
 
-        PageType.Home ->
+        Page.Home ->
             View.Page.Home.view app

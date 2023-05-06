@@ -108,7 +108,7 @@
 }
 
 .markdown-body pre[class*="language-"] {
-  @apply py-6;
+  @apply py-6 max-h-80;
 }
 
 .markdown-body code[class*="language-"] {

@@ -41,7 +41,7 @@ view app =
         [ div
             [ class "w-full h-full"
             , class "overflow-y-auto"
-            , class "px-14 md:px-20 pt-8 pb-4"
+            , class "px-6 md:px-20 pt-8 pb-4"
             ]
             [ TopicList.view app ]
         , tools app
@@ -55,9 +55,10 @@ tools _ =
         , class "h-full w-14 md:w-20"
         , class "flex flex-col"
         , class "items-center justify-center"
+        , class "pointer-events-none"
         ]
         [ span
-            [ class "w-10 h-10 md:w-14 md:h-14"
+            [ class "w-12 h-12 md:w-14 md:h-14"
             , class "flex"
             , class "items-center justify-center"
             , class "rounded-full cursor-pointer"
@@ -65,6 +66,7 @@ tools _ =
             , class "bg-blue-600 hover:bg-blue-500"
             , class "shadow-md hover:shadow-lg"
             , class "transition-colors duration-300 transform"
+            , class "pointer-events-auto"
             , onClick
                 (Msg.batch
                     [ Msg.fromApp <|

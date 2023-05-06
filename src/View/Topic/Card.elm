@@ -73,7 +73,13 @@ view { lang, timeZone } { config, topic, trashOp } =
          )
             ++ [ class "w-full h-fit"
                , class "p-2"
-               , class "basis-auto md:basis-1/2 xl:basis-1/4"
+               , class
+                    (if config.expanded then
+                        "basis-auto lg:basis-1/2"
+
+                     else
+                        "basis-auto md:basis-1/2 xl:basis-1/4"
+                    )
                ]
         )
         [ div
@@ -172,13 +178,13 @@ view { lang, timeZone } { config, topic, trashOp } =
                         ]
                     ]
                 , div
-                    [ class "mt-2 py-2"
+                    [ class "mt-2 p-4"
                     , class "text-sm whitespace-pre-wrap break-words"
                     , class "text-gray-600 dark:text-gray-300"
                     , class "overflow-y-auto"
                     , class
                         (if config.expanded then
-                            "max-h-full"
+                            "max-h-96"
 
                          else
                             "max-h-48"
@@ -265,10 +271,10 @@ view { lang, timeZone } { config, topic, trashOp } =
                                 )
                             ]
                             (if config.expanded then
-                                [ Outlined.expand_less 20 Inherit ]
+                                [ Outlined.close_fullscreen 20 Inherit ]
 
                              else
-                                [ Outlined.expand_more 20 Inherit ]
+                                [ Outlined.open_in_full 20 Inherit ]
                             )
                         ]
                     ]

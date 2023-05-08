@@ -25,9 +25,9 @@ console.log(
 
 const srcDir = "src";
 const publicDir = "public";
-const __ROOT__ = path.dirname(__filename);
+const __ROOT_DIR__ = __dirname;
 function filepath(...paths) {
-  return path.join(__ROOT__, ...paths);
+  return path.join(__ROOT_DIR__, ...paths);
 }
 
 const packageJson = require("./package.json");

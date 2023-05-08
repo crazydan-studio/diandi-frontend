@@ -14,13 +14,13 @@ yarn install
 启动本地调试：
 
 ```bash
-npm run dev
+yarn dev
 ```
 
 构建发布产物：
 
 ```bash
-npm run prod
+yarn prod
 ```
 
 ## 许可证

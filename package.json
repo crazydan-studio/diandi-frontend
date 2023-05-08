@@ -12,8 +12,9 @@
   "scripts": {
     "dev": "webpack-dev-server --hot --port 3010",
     "prod": "webpack",
-    "test": "elm-test",
-    "analyse": "elm-analyse -s -p 3001 -o"
+    "elm": "elm",
+    "elm-test": "elm-test",
+    "elm-analyse": "elm-analyse -s -p 3001 -o"
   },
   "dependencies": {
     "@bytemd/plugin-breaks": "^1.21.0",
@@ -50,7 +51,6 @@
     "express": "^4.17.3",
     "file-loader": "^6.1.0",
     "fs-extra": "^10.0.1",
-    "google-closure-compiler": "^20220301.0.0",
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.6.0",
     "optimize-css-assets-webpack-plugin": "^6.0.1",

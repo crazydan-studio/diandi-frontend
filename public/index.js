@@ -1,13 +1,16 @@
 "use strict";
 
-import { Elm } from "../src/Main";
-import { getFirstBrowserLanguage, findNotTranslatedTexts } from "./js/lang";
 import pkg from "../package.json";
 
-import "./webcomponents";
+import { Elm } from "../src/Main";
+import {
+  getFirstBrowserLanguage,
+  findNotTranslatedTexts,
+} from "../src/Native/lang";
+import "../src/Native/event";
+import "../src/Native/webcomponents";
 
-import "./js/event";
-import "./css/index.css";
+import "./index.css";
 
 // Note: 采用 Browser.application 方式初始化，无需挂载到dom节点
 const app = Elm.Main.init({

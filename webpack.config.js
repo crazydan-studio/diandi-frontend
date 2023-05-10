@@ -71,7 +71,7 @@ const common = {
     rules: [
       {
         test: /\.(js|mjs)$/,
-        exclude: /node_modules/,
+        exclude: [/node_modules/],
         use: {
           loader: "babel-loader",
         },

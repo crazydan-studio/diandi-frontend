@@ -1,4 +1,4 @@
-/* 在入口 css 中引入 */
+/* Note: 仅需在 public/index.css 中配置一次。多次配置将生成多份样式定义 */
 /* @tailwind base;
 @tailwind components;
 @tailwind utilities; */

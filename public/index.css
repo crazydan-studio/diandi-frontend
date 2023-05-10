@@ -1,6 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* 引入 tailwindcss 基础库
+ * https://tailwindcss.com/docs/functions-and-directives#tailwind
+ */
+ @tailwind base;
+ @tailwind components;
+ @tailwind utilities;
+ @tailwind variants;
 
 .tw-primary-btn {
   @apply px-4 py-2.5 tracking-wide text-sm font-medium capitalize text-white bg-blue-600 hover:bg-blue-500 rounded-md focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 transition-colors duration-300 transform;

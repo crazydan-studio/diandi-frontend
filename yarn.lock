@@ -936,13 +936,6 @@
   dependencies:
     remark-gfm "^3.0.1"
 
-"@bytemd/plugin-highlight@^1.21.0":
-  version "1.21.0"
-  resolved "https://registry.npmmirror.com/@bytemd/plugin-highlight/-/plugin-highlight-1.21.0.tgz#b19cc18847eca10b6f254ff2da6e2d072db0738c"
-  integrity sha512-JM9rwzj9pFBXVwxmD9mgGIQPO4cTFVHvDhffS93IMK+tqvo0Vw76zDIqJWT3f421j8iNxffGsVQQs6389u3Z9A==
-  dependencies:
-    highlight.js "^11.7.0"
-
 "@bytemd/plugin-math@^1.21.0":
   version "1.21.0"
   resolved "https://registry.npmmirror.com/@bytemd/plugin-math/-/plugin-math-1.21.0.tgz#c3a7d870f2346f141f8cb1477342292d3d6599fb"
@@ -3779,11 +3772,6 @@ heap@^0.2.6:
   version "0.2.7"
   resolved "https://registry.npmmirror.com/heap/-/heap-0.2.7.tgz#1e6adf711d3f27ce35a81fe3b7bd576c2260a8fc"
   integrity sha512-2bsegYkkHO+h/9MGbn6KWcE45cHZgPANo5LXF7EvWdT0yT2EguSVO1nDgU5c8+ZOPwp2vMNa7YFsJhVcDR9Sdg==
-
-highlight.js@^11.7.0:
-  version "11.7.0"
-  resolved "https://registry.npmmirror.com/highlight.js/-/highlight.js-11.7.0.tgz#3ff0165bc843f8c9bce1fd89e2fda9143d24b11e"
-  integrity sha512-1rRqesRFhMO/PRF+G86evnyJkCgaZFOI+Z6kdj15TA18funfoqJXvgPCLSf0SWq3SRfg1j3HlDs8o4s3EGq1oQ==
 
 hpack.js@^2.1.6:
   version "2.1.6"

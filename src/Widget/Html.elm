@@ -35,14 +35,24 @@ onClickOutOfMe msg =
 
 onEnter : msg -> Html.Attribute msg
 onEnter msg =
-    on "keyup"
-        (Decode.field "key" Decode.string
+    -- Note: 只有监听 keydown 事件才能判断当前是否在输入法输入过程中
+    -- https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent#keyboardevent.iscomposing
+    on "keydown"
+        (Decode.map2 EnterEvent
+            (Decode.field "key" Decode.string)
+            (Decode.field "isComposing" Decode.bool)
             |> Decode.andThen
-                (\key ->
-                    if key == "Enter" then
+                (\{ key, composing } ->
+                    if key == "Enter" && not composing then
                         Decode.succeed msg
 
                     else
                         Decode.fail "Not the enter key"
                 )
         )
+
+
+type alias EnterEvent =
+    { key : String
+    , composing : Bool
+    }

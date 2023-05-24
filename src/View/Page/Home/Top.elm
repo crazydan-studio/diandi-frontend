@@ -83,7 +83,7 @@ view { lang, themeDark, topicFilter } =
             , class "text-gray-600 dark:text-gray-300"
             ]
             [ div
-                [ class "relative w-2/5"
+                [ class "relative w-4/5 md:w-2/5"
                 ]
                 [ span
                     [ class "absolute inset-y-0 left-0"
@@ -94,12 +94,12 @@ view { lang, themeDark, topicFilter } =
                     ]
                 , input
                     ([ class "w-full"
-                     , class "py-1 pl-10 pr-4"
+                     , class "py-1 pl-10 pr-4 rounded-md"
                      , class "text-gray-500 dark:text-gray-300"
-                     , class "bg-white dark:bg-gray-800"
+                     , class "bg-gray-100 dark:bg-gray-900"
                      , class "border-transparent border-b border-gray-600"
                      , class "placeholder-gray-600 dark:placeholder-gray-300"
-                     , class "focus:outline-none focus:border-gray-600 dark:focus:border-gray-300"
+                     , class "focus:outline-none"
                      , class "transition duration-300 ease-in-out"
                      , type_ "text"
                      , value (topicFilter.keyword |> Maybe.withDefault "")

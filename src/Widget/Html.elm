@@ -38,7 +38,7 @@ onEnter msg =
     -- Note: 只有监听 keydown 事件才能判断当前是否在输入法输入过程中
     -- https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent#keyboardevent.iscomposing
     on "keydown"
-        (Decode.map2 EnterEvent
+        (Decode.map2 KeyEvent
             (Decode.field "key" Decode.string)
             (Decode.field "isComposing" Decode.bool)
             |> Decode.andThen
@@ -52,7 +52,7 @@ onEnter msg =
         )
 
 
-type alias EnterEvent =
+type alias KeyEvent =
     { key : String
     , composing : Bool
     }

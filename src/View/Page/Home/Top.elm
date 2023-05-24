@@ -17,7 +17,7 @@
 -}
 
 
-module View.Page.Home.Top exposing (..)
+module View.Page.Home.Top exposing (view)
 
 import App.Msg as AppMsg
 import App.State as AppState
@@ -51,13 +51,13 @@ import Widget.Html exposing (onEnter)
 
 
 view : AppState.State -> Html Msg
-view ({ lang, themeDark } as app) =
+view { lang, themeDark, topicFilter } =
     let
         i18nAttr =
             I18n.htmlAttr lang
     in
     nav
-        [ class "z-10 w-full min-h-fit shadow-md"
+        [ class "z-[1] w-full min-h-fit shadow-md"
         , class "flex px-4 py-2"
         , class "items-center"
         , class "bg-white dark:bg-gray-800"
@@ -102,15 +102,15 @@ view ({ lang, themeDark } as app) =
                      , class "focus:outline-none focus:border-gray-600 dark:focus:border-gray-300"
                      , class "transition duration-300 ease-in-out"
                      , type_ "text"
-                     , value (app.topicSearchingText |> Maybe.withDefault "")
+                     , value (topicFilter.keyword |> Maybe.withDefault "")
                      , onInput
                         (\t ->
                             Msg.fromApp <|
-                                AppMsg.SearchTopicInputing t
+                                AppMsg.FilterTopicKeywordInputing t
                         )
                      , onEnter
                         (Msg.fromApp <|
-                            AppMsg.SearchTopic
+                            AppMsg.FilterTopicByKeyword
                         )
                      ]
                         ++ i18nAttr

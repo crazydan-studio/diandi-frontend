@@ -26,7 +26,13 @@ module App.Remote.GraphQL.Topic exposing
     )
 
 import App.Remote.Msg exposing (Msg(..))
-import App.Topic exposing (Topic, topicDecoder, topicListDecoder)
+import App.Topic
+    exposing
+        ( Topic
+        , topicDecoder
+        , topicListDecoder
+        )
+import App.TopicFilter as TopicFilter exposing (TopicFilter)
 import GraphQl
 import GraphQl.Http
 import Json.Decode as Decode
@@ -37,15 +43,11 @@ import Widget.Util.Basic exposing (trim)
 getMyAllTopics : Cmd Msg
 getMyAllTopics =
     queryMyTopics
-        { keyword = Nothing
-        , tags = Nothing
-        }
+        TopicFilter.all
 
 
 queryMyTopics :
-    { keyword : Maybe String
-    , tags : Maybe (List String)
-    }
+    TopicFilter
     -> Cmd Msg
 queryMyTopics { keyword, tags } =
     -- https://package.elm-lang.org/packages/ghivert/elm-graphql/5.0.0/GraphQl
@@ -116,9 +118,12 @@ queryMyTopics { keyword, tags } =
                     |> Maybe.withDefault Encode.null
               )
             , ( "tags"
-              , tags
-                    |> Maybe.map (Encode.list Encode.string)
-                    |> Maybe.withDefault Encode.null
+              , if tags |> List.isEmpty then
+                    Encode.null
+
+                else
+                    tags
+                        |> Encode.list Encode.string
               )
             ]
         |> GraphQl.Http.send { url = "/api/graphql", headers = [] }

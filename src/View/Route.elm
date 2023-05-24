@@ -19,13 +19,14 @@
 
 module View.Route exposing
     ( Route(..)
+    , filterTopics
     , goto403
     , goto404
     , gotoHome
     , route
-    , searchTopics
     )
 
+import App.TopicFilter exposing (TopicFilter)
 import Browser.Navigation as Nav
 import Url
 import Url.Parser
@@ -47,14 +48,15 @@ type Route
     = Home
     | Forbidden
     | NotFound
-    | TopicsSearch (Maybe String)
+    | TopicsFilter TopicFilter
 
 
 {-| 解析URL得到路由信息
 -}
 route : Url.Url -> Route
 route url =
-    Maybe.withDefault NotFound (parse routeHelper url)
+    parse routeHelper url
+        |> Maybe.withDefault NotFound
 
 
 gotoHome : Nav.Key -> Cmd msg
@@ -72,18 +74,33 @@ goto404 =
     goto "/error/404"
 
 
-searchTopics : String -> Nav.Key -> Cmd msg
-searchTopics keywords =
+filterTopics : TopicFilter -> Nav.Key -> Cmd msg
+filterTopics { keyword, tags } =
     let
         params =
-            case trim keywords of
+            (case trim (keyword |> Maybe.withDefault "") of
                 Nothing ->
-                    ""
+                    []
 
                 Just k ->
-                    "?q=" ++ k
+                    [ "q=" ++ k ]
+            )
+                ++ (tags
+                        |> List.map
+                            (\tag ->
+                                "tags=" ++ tag
+                            )
+                   )
     in
-    goto ("/topics" ++ params)
+    goto
+        ("/topics"
+            ++ (if params |> List.isEmpty then
+                    ""
+
+                else
+                    "?" ++ (params |> String.join "&")
+               )
+        )
 
 
 
@@ -95,7 +112,13 @@ routeHelper =
     -- https://package.elm-lang.org/packages/elm/url/latest/Url-Parser
     oneOf
         [ map Home top
-        , map TopicsSearch (s "topics" <?> Query.string "q")
+        , map TopicsFilter
+            (map TopicFilter
+                (s "topics"
+                    <?> Query.string "q"
+                    <?> Query.custom "tags" identity
+                )
+            )
         , map Forbidden (s "error" </> s "403")
         ]
 

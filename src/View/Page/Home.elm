@@ -26,6 +26,7 @@ import Msg exposing (Msg)
 import View.Page
 import View.Page.Home.Center as Center
 import View.Page.Home.Top as Top
+import View.Page.Home.TopicTags as Tags
 
 
 view : AppState.State -> Html Msg
@@ -35,5 +36,6 @@ view app =
         , class "flex flex-col"
         ]
         [ Top.view app
+        , Tags.view app
         , Center.view app
         ]

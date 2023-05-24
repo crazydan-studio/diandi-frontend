@@ -18,7 +18,9 @@
 
 
 module Widget.Util.Basic exposing
-    ( fromMaybe
+    ( appendToUniqueList
+    , fromMaybe
+    , removeFromList
     , trim
     )
 
@@ -44,3 +46,18 @@ fromMaybe default_ getter maybe =
 
         Just m ->
             getter m
+
+
+appendToUniqueList : a -> List a -> List a
+appendToUniqueList a list =
+    if list |> List.member a then
+        list
+
+    else
+        list ++ [ a ]
+
+
+removeFromList : a -> List a -> List a
+removeFromList a list =
+    list
+        |> List.filter ((/=) a)

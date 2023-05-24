@@ -31,10 +31,10 @@ module App.Operation.EditTopic exposing
     , update
     )
 
-import I18n.Translator exposing (TranslateResult)
 import App.Error as Error exposing (Error)
 import App.Topic as Topic exposing (Topic)
-import Widget.Util.Basic exposing (trim)
+import I18n.Translator exposing (TranslateResult)
+import Widget.Util.Basic exposing (appendToUniqueList, removeFromList, trim)
 
 
 type alias EditTopic =
@@ -155,7 +155,7 @@ update msg editTopic =
             { editTopic
                 | tags =
                     editTopic.tags
-                        |> List.filter ((/=) tag)
+                        |> removeFromList tag
                 , error = Error.none
             }
 
@@ -165,10 +165,8 @@ update msg editTopic =
                     (\taging ->
                         { editTopic
                             | tags =
-                                (editTopic.tags
-                                    |> List.filter ((/=) taging)
-                                )
-                                    ++ [ taging ]
+                                editTopic.tags
+                                    |> appendToUniqueList taging
                             , taging = ""
                         }
                     )

@@ -43,8 +43,10 @@ type Msg
       -- 国际化Port消息
     | I18nPortMsg I18n.Port.Msg
       -- 数据操作
-    | SearchTopic
-    | SearchTopicInputing String
+    | FilterTopicByKeyword
+    | FilterTopicKeywordInputing String
+    | FilterTopicTagSelected String
+    | FilterTopicTagDeleted String
     | TopicCardMsg String TopicCard.Msg
     | RemoveTopicCard String
     | NewTopicPending

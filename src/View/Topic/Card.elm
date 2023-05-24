@@ -209,6 +209,11 @@ view { lang, timeZone } { config, topic, trashOp } =
                                         span
                                             [ class "topic-tag"
                                             , tabindex 0
+                                            , onClick
+                                                (Msg.fromApp <|
+                                                    AppMsg.FilterTopicTagSelected
+                                                        tag
+                                                )
                                             ]
                                             [ text ("#" ++ tag) ]
                                     )

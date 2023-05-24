@@ -35,6 +35,7 @@ import App.Remote.GraphQL.Topic as RemoteTopic
 import App.Remote.Msg as RemoteMsg
 import App.Topic exposing (Topic)
 import App.TopicCard as TopicCard exposing (TopicCard)
+import App.TopicFilter as TopicFilter exposing (TopicFilter)
 import Browser.Navigation as Nav
 import Data.TreeStore as TreeStore exposing (TreeStore)
 import Http
@@ -47,7 +48,7 @@ import Url
 import View.I18n.Default
 import View.Page as Page
 import View.Route
-import Widget.Util.Basic exposing (trim)
+import Widget.Util.Basic exposing (appendToUniqueList, removeFromList, trim)
 
 
 type alias State =
@@ -72,7 +73,7 @@ type alias State =
     , topicCards : RemoteTopicCards
 
     -- 操作数据
-    , topicSearchingText : Maybe String
+    , topicFilter : TopicFilter
     , newTopic : Maybe EditTopic
     , editTopic : Maybe EditTopic
     , topicTagEditInputId : String
@@ -120,7 +121,7 @@ init config =
             , topicCards = RemoteData.LoadWaiting
 
             --
-            , topicSearchingText = Nothing
+            , topicFilter = TopicFilter.all
             , newTopic = Nothing
             , editTopic = Nothing
             , topicTagEditInputId = "topic-tag-edit-input"
@@ -143,7 +144,7 @@ sub state =
 
 
 update : Msg -> Int -> State -> ( State, Cmd Msg, Maybe ( Int, Bool ) )
-update msg nextMsgId state =
+update msg nextMsgId ({ topicFilter } as state) =
     case msg of
         Msg.RemoteMsg remoteMsg ->
             remoteUpdateHelper remoteMsg state
@@ -168,19 +169,46 @@ update msg nextMsgId state =
                 , Cmd.none
                 )
 
-        Msg.SearchTopicInputing keywords ->
+        Msg.FilterTopicKeywordInputing keyword ->
             withOutNextMsg <|
                 ( { state
-                    | topicSearchingText = Just keywords
+                    | topicFilter =
+                        { topicFilter
+                            | keyword = Just keyword
+                        }
                   }
                 , Cmd.none
                 )
 
-        Msg.SearchTopic ->
+        Msg.FilterTopicByKeyword ->
             withOutNextMsg <|
                 ( state
-                , View.Route.searchTopics
-                    (state.topicSearchingText |> Maybe.withDefault "")
+                , View.Route.filterTopics
+                    topicFilter
+                    state.navKey
+                )
+
+        Msg.FilterTopicTagSelected tag ->
+            withOutNextMsg <|
+                ( state
+                , View.Route.filterTopics
+                    { topicFilter
+                        | tags =
+                            topicFilter.tags
+                                |> appendToUniqueList tag
+                    }
+                    state.navKey
+                )
+
+        Msg.FilterTopicTagDeleted tag ->
+            withOutNextMsg <|
+                ( state
+                , View.Route.filterTopics
+                    { topicFilter
+                        | tags =
+                            topicFilter.tags
+                                |> removeFromList tag
+                    }
                     state.navKey
                 )
 
@@ -563,17 +591,18 @@ routeUpdateHelper navUrl state =
                 View.Route.Home ->
                     let
                         ( s, c ) =
-                            state |> doRemoteQueryMyTopics
+                            state
+                                |> doRemoteQueryMyTopics
+                                    TopicFilter.all
                     in
                     ( Page.Home, s, c )
 
-                View.Route.TopicsSearch keywords ->
+                View.Route.TopicsFilter filter ->
                     let
                         ( s, c ) =
-                            { state
-                                | topicSearchingText = keywords
-                            }
+                            state
                                 |> doRemoteQueryMyTopics
+                                    filter
                     in
                     ( Page.Home, s, c )
 
@@ -706,20 +735,19 @@ editTopicUpdateHelper msg state =
     )
 
 
-doRemoteQueryMyTopics : State -> ( State, Cmd Msg )
-doRemoteQueryMyTopics state =
-    ( state
-        |> (\app ->
-                { app
-                    | topicCards = RemoteData.Loading
-                }
-           )
+doRemoteQueryMyTopics :
+    TopicFilter
+    -> State
+    -> ( State, Cmd Msg )
+doRemoteQueryMyTopics topicFilter state =
+    ( { state
+        | topicCards = RemoteData.Loading
+        , topicFilter = topicFilter
+      }
     , Cmd.batch
         [ Msg.fromRemoteCmd
             (RemoteTopic.queryMyTopics
-                { keyword = state.topicSearchingText
-                , tags = Nothing
-                }
+                topicFilter
             )
         ]
     )

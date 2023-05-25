@@ -29,13 +29,13 @@ import View.Page.Home.Top as Top
 import View.Page.Home.TopicTags as Tags
 
 
-view : AppState.State -> Html Msg
-view app =
+view : Bool -> AppState.State -> Html Msg
+view trashed app =
     div
         [ class "w-full h-full"
         , class "flex flex-col"
         ]
         [ Top.view app
         , Tags.view app
-        , Center.view app
+        , Center.view trashed app
         ]

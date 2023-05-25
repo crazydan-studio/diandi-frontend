@@ -230,6 +230,20 @@ update msg nextMsgId ({ topicFilter } as state) =
                     state.navKey
                 )
 
+        Msg.ShowTashedTopics ->
+            let
+                filter =
+                    TopicFilter.all
+            in
+            withOutNextMsg <|
+                ( state
+                , View.Route.filterTopics
+                    { filter
+                        | trashed = True
+                    }
+                    state.navKey
+                )
+
         Msg.TopicCardMsg topicId topicCardMsg ->
             withOutNextMsg <|
                 topicCardUpdateHelper topicId topicCardMsg state
@@ -596,6 +610,40 @@ storeUpdateHelper msg state =
                 , Cmd.none
                 )
 
+        StoreMsg.DeleteMyTopic topicId result ->
+            withOutNextMsg <|
+                ( state
+                    |> updateTopicCard topicId
+                        (case result of
+                            Ok _ ->
+                                TopicCard.Delete Operation.Done
+
+                            Err e ->
+                                TopicCard.Delete
+                                    (Operation.Error
+                                        (Store.parseError state.lang e)
+                                    )
+                        )
+                , Cmd.none
+                )
+
+        StoreMsg.RestoreMyTrashedTopic topicId result ->
+            withOutNextMsg <|
+                ( state
+                    |> updateTopicCard topicId
+                        (case result of
+                            Ok _ ->
+                                TopicCard.Restore Operation.Done
+
+                            Err e ->
+                                TopicCard.Restore
+                                    (Operation.Error
+                                        (Store.parseError state.lang e)
+                                    )
+                        )
+                , Cmd.none
+                )
+
         _ ->
             withOutNextMsg <|
                 ( state, Cmd.none )
@@ -613,7 +661,7 @@ routeUpdateHelper navUrl state =
                                 |> doStoreQueryMyTopics
                                     TopicFilter.all
                     in
-                    ( Page.Home, s, c )
+                    ( Page.Home False, s, c )
 
                 View.Route.TopicsFilter filter ->
                     let
@@ -622,7 +670,7 @@ routeUpdateHelper navUrl state =
                                 |> doStoreQueryMyTopics
                                     filter
                     in
-                    ( Page.Home, s, c )
+                    ( Page.Home filter.trashed, s, c )
 
                 View.Route.Forbidden ->
                     ( Page.Forbidden, state, Cmd.none )
@@ -666,6 +714,24 @@ topicCardUpdateHelper topicId msg ({ store } as state) =
                 Operation.Doing ->
                     Msg.fromStoreCmd
                         (store.topic.trash topicId)
+
+                _ ->
+                    Cmd.none
+
+        TopicCard.Delete op ->
+            case op of
+                Operation.Doing ->
+                    Msg.fromStoreCmd
+                        (store.topic.delete topicId)
+
+                _ ->
+                    Cmd.none
+
+        TopicCard.Restore op ->
+            case op of
+                Operation.Doing ->
+                    Msg.fromStoreCmd
+                        (store.topic.trashRestore topicId)
 
                 _ ->
                     Cmd.none

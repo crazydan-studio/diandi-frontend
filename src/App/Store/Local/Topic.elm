@@ -18,8 +18,10 @@
 
 
 module App.Store.Local.Topic exposing
-    ( getMyAllTopics
+    ( deleteMyTopic
+    , getMyAllTopics
     , queryMyTopics
+    , restoreMyTrashedTopic
     , saveMyEditTopic
     , saveMyNewTopic
     , trashMyTopic
@@ -34,6 +36,8 @@ import App.Topic
         , topicListDecoder
         )
 import App.TopicFilter as TopicFilter exposing (TopicFilter)
+import Html.Attributes exposing (download)
+import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Native.LocalStore as LocalStore
@@ -48,7 +52,7 @@ getMyAllTopics =
 queryMyTopics :
     TopicFilter
     -> Cmd Msg
-queryMyTopics { keyword, tags } =
+queryMyTopics { trashed, keyword, tags } =
     LocalStore.get
         { path = "queryTopics"
         , args =
@@ -59,7 +63,7 @@ queryMyTopics { keyword, tags } =
                         |> Maybe.withDefault Encode.null
                   )
                 , ( "tags", Encode.list Encode.string tags )
-                , ( "trashed", Encode.bool False )
+                , ( "trashed", Encode.bool trashed )
                 ]
         }
         QueryMyTopics
@@ -101,14 +105,47 @@ saveMyEditTopic nextMsgId topic =
 trashMyTopic :
     String
     -> Cmd Msg
-trashMyTopic id =
-    LocalStore.get
-        { path = "trashTopic"
-        , args = Encode.string id
-        }
-        (TrashMyTopic id)
-        (Decode.at [ "id" ] Decode.string)
+trashMyTopic =
+    doWithId
+        "trashTopic"
+        TrashMyTopic
+
+
+{-| 彻底删除主题
+-}
+deleteMyTopic :
+    String
+    -> Cmd Msg
+deleteMyTopic =
+    doWithId
+        "deleteTopic"
+        DeleteMyTopic
+
+
+{-| 恢复放入垃圾箱的主题
+-}
+restoreMyTrashedTopic :
+    String
+    -> Cmd Msg
+restoreMyTrashedTopic =
+    doWithId
+        "restoreTrashedTopic"
+        RestoreMyTrashedTopic
 
 
 
 -- ----------------------------------------------
+
+
+doWithId :
+    String
+    -> (String -> (Result Http.Error String -> Msg))
+    -> String
+    -> Cmd Msg
+doWithId path toMsg id =
+    LocalStore.get
+        { path = path
+        , args = Encode.string id
+        }
+        (toMsg id)
+        (Decode.at [ "id" ] Decode.string)

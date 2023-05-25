@@ -31,21 +31,26 @@ import View.Topic.Layer.NewTopic
 import View.Topic.List as TopicList
 
 
-view : AppState.State -> Html Msg
-view app =
+view : Bool -> AppState.State -> Html Msg
+view trashed app =
     div
         [ class "w-full h-full"
         , class "flex"
         , class "overflow-hidden"
         ]
-        [ div
+        (div
             [ class "w-full h-full"
             , class "overflow-y-auto"
             , class "px-6 md:px-20 pt-8 pb-4"
             ]
             [ TopicList.view app ]
-        , tools app
-        ]
+            :: (if trashed then
+                    []
+
+                else
+                    [ tools app ]
+               )
+        )
 
 
 tools : AppState.State -> Html Msg
@@ -53,20 +58,25 @@ tools _ =
     div
         [ class "absolute right-0"
         , class "h-full w-14 md:w-20"
-        , class "flex flex-col"
+        , class "flex flex-col gap-2"
         , class "items-center justify-center"
         , class "pointer-events-none"
         ]
         [ span
-            [ class "w-12 h-12 md:w-14 md:h-14"
-            , class "flex"
-            , class "items-center justify-center"
-            , class "rounded-full cursor-pointer"
-            , class "text-white"
+            [ class "tw-float-icon-btn"
+            , class "w-10 h-10 md:w-12 md:h-12"
+            , class "bg-sky-700 hover:bg-sky-600"
+            , onClick
+                (Msg.fromApp <|
+                    AppMsg.ShowTashedTopics
+                )
+            ]
+            [ Outlined.recycling 32 Inherit
+            ]
+        , span
+            [ class "tw-float-icon-btn"
+            , class "w-12 h-12 md:w-14 md:h-14"
             , class "bg-blue-600 hover:bg-blue-500"
-            , class "shadow-md hover:shadow-lg"
-            , class "transition-colors duration-300 transform"
-            , class "pointer-events-auto"
             , onClick
                 (Msg.batch
                     [ Msg.fromApp <|

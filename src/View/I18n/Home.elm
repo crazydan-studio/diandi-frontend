@@ -90,7 +90,17 @@ rootTranslator texts =
 
         [ "数据正在移除中，请稍等片刻 ..." ] ->
             ok En_US
-                "The data is removing, please wait a minute ..."
+                "The data is moving to trash, please wait a minute ..."
+                :: default
+
+        [ "数据正在删除中，请稍等片刻 ..." ] ->
+            ok En_US
+                "The data is removing forever, please wait a minute ..."
+                :: default
+
+        [ "数据正在恢复中，请稍等片刻 ..." ] ->
+            ok En_US
+                "The data is restoring from trash, please wait a minute ..."
                 :: default
 
         [ "数据正在保存中，请稍等片刻 ..." ] ->
@@ -103,9 +113,19 @@ rootTranslator texts =
                 "No Title"
                 :: default
 
+        [ "* 移除失败 - " ] ->
+            ok En_US
+                "* Failed to move to trash - "
+                :: default
+
         [ "* 删除失败 - " ] ->
             ok En_US
-                "* Removing failed - "
+                "* Failed to delete forever - "
+                :: default
+
+        [ "* 恢复失败 - " ] ->
+            ok En_US
+                "* Failed to restore from trash - "
                 :: default
 
         _ ->

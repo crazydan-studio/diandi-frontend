@@ -35,6 +35,8 @@ type alias Store =
     , add : Int -> Topic -> Cmd Msg
     , update : Int -> Topic -> Cmd Msg
     , trash : String -> Cmd Msg
+    , delete : String -> Cmd Msg
+    , trashRestore : String -> Cmd Msg
     }
 
 
@@ -46,6 +48,8 @@ store mode =
             , add = LocalStore.saveMyNewTopic
             , update = LocalStore.saveMyEditTopic
             , trash = LocalStore.trashMyTopic
+            , delete = LocalStore.deleteMyTopic
+            , trashRestore = LocalStore.restoreMyTrashedTopic
             }
 
         _ ->
@@ -53,4 +57,6 @@ store mode =
             , add = JingWeiStore.saveMyNewTopic
             , update = JingWeiStore.saveMyEditTopic
             , trash = JingWeiStore.trashMyTopic
+            , delete = JingWeiStore.deleteMyTopic
+            , trashRestore = JingWeiStore.restoreMyTrashedTopic
             }

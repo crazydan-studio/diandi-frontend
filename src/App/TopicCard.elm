@@ -20,19 +20,29 @@
 module App.TopicCard exposing
     ( Msg(..)
     , TopicCard
+    , TopicCardOp(..)
     , create
+    , getOpStatus
     , update
     )
 
-import App.Operation as Operation exposing (Operation)
+import App.Operation as Operation
 import App.Topic exposing (Topic)
 
 
 type alias TopicCard =
     { topic : Topic
     , config : Config
-    , trashOp : Operation
+    , op : TopicCardOp
     }
+
+
+type Msg
+    = Expand Bool
+    | Select Bool
+    | Trash Operation.Status
+    | Delete Operation.Status
+    | Restore Operation.Status
 
 
 type alias Config =
@@ -41,10 +51,11 @@ type alias Config =
     }
 
 
-type Msg
-    = Expand Bool
-    | Select Bool
-    | Trash Operation
+type TopicCardOp
+    = TrashOp Operation.Status
+    | DeleteOp Operation.Status
+    | RestoreOp Operation.Status
+    | None
 
 
 create : Topic -> TopicCard
@@ -54,7 +65,7 @@ create topic =
         { expanded = False
         , selected = False
         }
-    , trashOp = Operation.NoOp
+    , op = None
     }
 
 
@@ -78,4 +89,26 @@ update msg ({ config } as topicCard) =
             }
 
         Trash op ->
-            { topicCard | trashOp = op }
+            { topicCard | op = TrashOp op }
+
+        Delete op ->
+            { topicCard | op = DeleteOp op }
+
+        Restore op ->
+            { topicCard | op = RestoreOp op }
+
+
+getOpStatus : TopicCardOp -> Operation.Status
+getOpStatus op =
+    case op of
+        TrashOp o ->
+            o
+
+        DeleteOp o ->
+            o
+
+        RestoreOp o ->
+            o
+
+        _ ->
+            Operation.NoOp

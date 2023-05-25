@@ -21,7 +21,7 @@ module View.Page exposing (Type(..))
 
 
 type Type
-    = Home
+    = Home Bool
     | NotFound
     | Forbidden
     | Loading

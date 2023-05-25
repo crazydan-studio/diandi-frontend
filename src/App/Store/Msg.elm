@@ -19,8 +19,8 @@
 
 module App.Store.Msg exposing (Msg(..))
 
-import Http
 import App.Topic exposing (Topic)
+import Http
 
 
 type Msg
@@ -29,3 +29,5 @@ type Msg
     | SaveMyNewTopic Int (Result Http.Error Topic)
     | SaveMyEditTopic Int (Result Http.Error Topic)
     | TrashMyTopic String (Result Http.Error String)
+    | DeleteMyTopic String (Result Http.Error String)
+    | RestoreMyTrashedTopic String (Result Http.Error String)

@@ -89,5 +89,5 @@ createPage app =
         Page.Blank ->
             View.Page.Blank.view app
 
-        Page.Home ->
-            View.Page.Home.view app
+        Page.Home trashed ->
+            View.Page.Home.view trashed app

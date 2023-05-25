@@ -29,3 +29,12 @@
 .topic-tag {
   @apply cursor-pointer font-bold text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 transition-colors duration-300;
 }
+
+.tw-float-icon-btn {
+  @apply flex items-center justify-center;
+  @apply rounded-full cursor-pointer;
+  @apply text-white;
+  @apply shadow-md hover:shadow-lg;
+  @apply transition-colors duration-300 transform;
+  @apply pointer-events-auto;
+}

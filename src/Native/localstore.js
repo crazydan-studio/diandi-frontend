@@ -90,6 +90,34 @@ export function setup(enabled) {
 
     return { id };
   });
+  ns.register("restoreTrashedTopic", ({ args }) => {
+    const id = args;
+    const topics = getData(topicsKey);
+    const now = new Date().getTime();
+
+    saveData(
+      topicsKey,
+      topics.map((t) => {
+        if (t.id === id) {
+          return { ...t, trashed: false, updated_at: now };
+        }
+        return t;
+      })
+    );
+
+    return { id };
+  });
+  ns.register("deleteTopic", ({ args }) => {
+    const id = args;
+    const topics = getData(topicsKey);
+
+    saveData(
+      topicsKey,
+      topics.filter((t) => t.id !== id)
+    );
+
+    return { id };
+  });
 }
 
 function containsAnyIn(check, s) {

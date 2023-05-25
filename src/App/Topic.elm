@@ -30,6 +30,7 @@ module App.Topic exposing
 import Json.Decode as Decode
     exposing
         ( Decoder
+        , bool
         , int
         , list
         , nullable
@@ -52,6 +53,7 @@ type alias Topic =
     , title : Maybe String
     , content : String
     , tags : List String
+    , trashed : Bool
     , updatedAt : Maybe Posix
     }
 
@@ -62,6 +64,7 @@ init =
     , title = Nothing
     , content = ""
     , tags = []
+    , trashed = False
     , updatedAt = Nothing
     }
 
@@ -78,6 +81,7 @@ topicDecoder =
         |> optional "title" (nullable string) Nothing
         |> required "content" string
         |> optional "tags" (list string) []
+        |> optional "trashed" bool False
         |> optional "updated_at"
             (nullable
                 (Decode.map Time.millisToPosix int)

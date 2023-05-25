@@ -75,7 +75,7 @@ goto404 =
 
 
 filterTopics : TopicFilter -> Nav.Key -> Cmd msg
-filterTopics { keyword, tags } =
+filterTopics { trashed, keyword, tags } =
     let
         params =
             (case trim (keyword |> Maybe.withDefault "") of
@@ -94,6 +94,12 @@ filterTopics { keyword, tags } =
     in
     goto
         ("/topics"
+            ++ (if trashed then
+                    "/trashed"
+
+                else
+                    ""
+               )
             ++ (if params |> List.isEmpty then
                     ""
 
@@ -107,22 +113,42 @@ filterTopics { keyword, tags } =
 -- --------------------------------------------------------------
 
 
+goto : String -> Nav.Key -> Cmd msg
+goto url navKey =
+    Nav.pushUrl navKey url
+
+
 routeHelper : Parser (Route -> a) a
 routeHelper =
     -- https://package.elm-lang.org/packages/elm/url/latest/Url-Parser
     oneOf
         [ map Home top
         , map TopicsFilter
-            (map TopicFilter
+            (map
+                (\keyword tags ->
+                    { keyword = keyword
+                    , tags = tags
+                    , trashed = False
+                    }
+                )
                 (s "topics"
+                    <?> Query.string "q"
+                    <?> Query.custom "tags" identity
+                )
+            )
+        , map TopicsFilter
+            (map
+                (\keyword tags ->
+                    { keyword = keyword
+                    , tags = tags
+                    , trashed = True
+                    }
+                )
+                (s "topics"
+                    </> s "trashed"
                     <?> Query.string "q"
                     <?> Query.custom "tags" identity
                 )
             )
         , map Forbidden (s "error" </> s "403")
         ]
-
-
-goto : String -> Nav.Key -> Cmd msg
-goto url navKey =
-    Nav.pushUrl navKey url

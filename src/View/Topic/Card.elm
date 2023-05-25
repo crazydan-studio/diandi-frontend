@@ -22,7 +22,12 @@ module View.Topic.Card exposing (view)
 import App.Msg as AppMsg
 import App.Operation as Operation
 import App.State as AppState
-import App.TopicCard as TopicCard exposing (TopicCard)
+import App.TopicCard as TopicCard
+    exposing
+        ( TopicCard
+        , TopicCardOp(..)
+        , getOpStatus
+        )
 import Html
     exposing
         ( Html
@@ -51,13 +56,16 @@ view :
     AppState.State
     -> TopicCard
     -> Html Msg
-view { lang, timeZone } { config, topic, trashOp } =
+view { lang, timeZone } { config, topic, op } =
     let
         i18nText =
             I18n.htmlText lang
+
+        opStatus =
+            getOpStatus op
     in
     div
-        ((case trashOp of
+        ((case opStatus of
             Operation.Done ->
                 [ class "animate-zoom-in"
                 , on "animationend"
@@ -92,7 +100,7 @@ view { lang, timeZone } { config, topic, trashOp } =
             ]
             [ Mask.create
                 { show =
-                    case trashOp of
+                    case opStatus of
                         Operation.Doing ->
                             True
 
@@ -103,7 +111,19 @@ view { lang, timeZone } { config, topic, trashOp } =
                     [ Loading.ripple { width = 64, height = 64 }
                     , span
                         []
-                        [ [ "数据正在移除中，请稍等片刻 ..." ]
+                        [ [ case op of
+                                TrashOp _ ->
+                                    "数据正在移除中，请稍等片刻 ..."
+
+                                DeleteOp _ ->
+                                    "数据正在删除中，请稍等片刻 ..."
+
+                                RestoreOp _ ->
+                                    "数据正在恢复中，请稍等片刻 ..."
+
+                                _ ->
+                                    ""
+                          ]
                             |> i18nText
                         ]
                     ]
@@ -221,7 +241,7 @@ view { lang, timeZone } { config, topic, trashOp } =
 
                       else
                         div [] []
-                    , case trashOp of
+                    , case opStatus of
                         Operation.Error e ->
                             div
                                 [ class "mt-2"
@@ -229,7 +249,19 @@ view { lang, timeZone } { config, topic, trashOp } =
                                 , class "whitespace-pre-wrap"
                                 , class "text-red-500 dark:text-red-600"
                                 ]
-                                [ [ "* 删除失败 - " ]
+                                [ [ case op of
+                                        TrashOp _ ->
+                                            "* 移除失败 - "
+
+                                        DeleteOp _ ->
+                                            "* 删除失败 - "
+
+                                        RestoreOp _ ->
+                                            "* 恢复失败 - "
+
+                                        _ ->
+                                            ""
+                                  ]
                                     |> i18nText
                                 , textWith e
                                 ]
@@ -247,23 +279,50 @@ view { lang, timeZone } { config, topic, trashOp } =
                                 (Msg.fromApp <|
                                     AppMsg.TopicCardMsg
                                         topic.id
-                                        (TopicCard.Trash Operation.Doing)
+                                        (if topic.trashed then
+                                            TopicCard.Delete Operation.Doing
+
+                                         else
+                                            TopicCard.Trash Operation.Doing
+                                        )
                                 )
                             ]
-                            [ Outlined.delete 20 Inherit ]
-                        , span
-                            [ class "tw-icon-btn"
-                            , tabindex 0
-                            , onClick
-                                (Msg.batch
-                                    [ Msg.fromApp <|
-                                        AppMsg.EditTopicPending topic.id
-                                    , Msg.pageLayerOpen
-                                        View.Topic.Layer.EditTopic.create
-                                    ]
-                                )
+                            [ (if topic.trashed then
+                                Outlined.delete_forever
+
+                               else
+                                Outlined.delete
+                              )
+                                20
+                                Inherit
                             ]
-                            [ Outlined.edit 20 Inherit ]
+                        , if topic.trashed then
+                            span
+                                [ class "tw-icon-btn"
+                                , tabindex 0
+                                , onClick
+                                    (Msg.fromApp <|
+                                        AppMsg.TopicCardMsg
+                                            topic.id
+                                            (TopicCard.Restore Operation.Doing)
+                                    )
+                                ]
+                                [ Outlined.undo 20 Inherit ]
+
+                          else
+                            span
+                                [ class "tw-icon-btn"
+                                , tabindex 0
+                                , onClick
+                                    (Msg.batch
+                                        [ Msg.fromApp <|
+                                            AppMsg.EditTopicPending topic.id
+                                        , Msg.pageLayerOpen
+                                            View.Topic.Layer.EditTopic.create
+                                        ]
+                                    )
+                                ]
+                                [ Outlined.edit 20 Inherit ]
                         , span
                             [ class "tw-icon-btn"
                             , tabindex 0

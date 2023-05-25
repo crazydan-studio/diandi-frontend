@@ -38,7 +38,7 @@ type Msg
     | FocusOn String
     | SwitchToDarkTheme Bool
     | AdjustTimeZone Time.Zone
-      -- 远端消息
+      -- 数据持久化消息
     | StoreMsg StoreMsg.Msg
       -- 国际化Port消息
     | I18nPortMsg I18n.Port.Msg
@@ -47,6 +47,7 @@ type Msg
     | FilterTopicKeywordInputing String
     | FilterTopicTagSelected String
     | FilterTopicTagDeleted String
+    | ShowTashedTopics
     | TopicCardMsg String TopicCard.Msg
     | RemoveTopicCard String
     | NewTopicPending
@@ -59,7 +60,7 @@ type Msg
     | EditTopicCleaned
 
 
-{-| 发起远程请求
+{-| 发起存储请求
 -}
 fromStoreCmd : Cmd StoreMsg.Msg -> Cmd Msg
 fromStoreCmd msg =

@@ -17,12 +17,12 @@
 -}
 
 
-module App.Operation exposing (Operation(..))
+module App.Operation exposing (Status(..))
 
 import I18n.Translator exposing (TranslateResult)
 
 
-type Operation
+type Status
     = Doing
     | Done
     | Error TranslateResult

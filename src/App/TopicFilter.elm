@@ -26,6 +26,7 @@ module App.TopicFilter exposing
 type alias TopicFilter =
     { keyword : Maybe String
     , tags : List String
+    , trashed : Bool
     }
 
 
@@ -33,4 +34,5 @@ all : TopicFilter
 all =
     { keyword = Nothing
     , tags = []
+    , trashed = False
     }

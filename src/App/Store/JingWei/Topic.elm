@@ -18,8 +18,10 @@
 
 
 module App.Store.JingWei.Topic exposing
-    ( getMyAllTopics
+    ( deleteMyTopic
+    , getMyAllTopics
     , queryMyTopics
+    , restoreMyTrashedTopic
     , saveMyEditTopic
     , saveMyNewTopic
     , trashMyTopic
@@ -35,6 +37,7 @@ import App.Topic
 import App.TopicFilter as TopicFilter exposing (TopicFilter)
 import GraphQl
 import GraphQl.Http
+import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Widget.Util.Basic exposing (trim)
@@ -49,7 +52,7 @@ getMyAllTopics =
 queryMyTopics :
     TopicFilter
     -> Cmd Msg
-queryMyTopics { keyword, tags } =
+queryMyTopics { trashed, keyword, tags } =
     -- https://package.elm-lang.org/packages/ghivert/elm-graphql/5.0.0/GraphQl
     GraphQl.query
         (GraphQl.named "TopicsQuery"
@@ -63,7 +66,7 @@ queryMyTopics { keyword, tags } =
                           )
                         , ( "trashed"
                           , GraphQl.input
-                                [ ( "equal", GraphQl.string "false" )
+                                [ ( "equal", GraphQl.variable "trashed" )
                                 ]
                           )
                         , ( "or"
@@ -95,16 +98,27 @@ queryMyTopics { keyword, tags } =
                     , GraphQl.field "title"
                     , GraphQl.field "content"
                     , GraphQl.field "tags"
+                    , GraphQl.field "trashed"
                     , GraphQl.field "updated_at"
                     ]
             ]
             |> GraphQl.withVariables
                 [ ( "keywords", "[String!]" )
                 , ( "tags", "[String!]" )
+                , ( "trashed", "String!" )
                 ]
         )
         |> GraphQl.addVariables
-            [ ( "keywords"
+            [ ( "trashed"
+              , Encode.string
+                    (if trashed then
+                        "true"
+
+                     else
+                        "false"
+                    )
+              )
+            , ( "keywords"
               , keyword
                     |> Maybe.andThen trim
                     |> Maybe.map
@@ -233,11 +247,52 @@ saveMyEditTopic nextMsgId topic =
 trashMyTopic :
     String
     -> Cmd Msg
-trashMyTopic id =
+trashMyTopic =
+    doWithId
+        "TopicTrash"
+        "trashTopic"
+        TrashMyTopic
+
+
+{-| 彻底删除主题
+-}
+deleteMyTopic :
+    String
+    -> Cmd Msg
+deleteMyTopic =
+    doWithId
+        "TopicDelete"
+        "deleteTopic"
+        DeleteMyTopic
+
+
+{-| 恢复放入垃圾箱的主题
+-}
+restoreMyTrashedTopic :
+    String
+    -> Cmd Msg
+restoreMyTrashedTopic =
+    doWithId
+        "TrashedTopicRestore"
+        "restoreTrashedTopic"
+        RestoreMyTrashedTopic
+
+
+
+-- ----------------------------------------------
+
+
+doWithId :
+    String
+    -> String
+    -> (String -> (Result Http.Error String -> Msg))
+    -> String
+    -> Cmd Msg
+doWithId name field toMsg id =
     -- https://package.elm-lang.org/packages/ghivert/elm-graphql/5.0.0/GraphQl
     GraphQl.mutation
-        (GraphQl.named "TopicTrash"
-            [ GraphQl.field "trashTopic"
+        (GraphQl.named name
+            [ GraphQl.field field
                 |> GraphQl.withArgument "id" (GraphQl.variable "id")
                 |> GraphQl.withSelectors
                     [ GraphQl.field "id"
@@ -253,9 +308,5 @@ trashMyTopic id =
               )
             ]
         |> GraphQl.Http.send { url = "/api/graphql", headers = [] }
-            (TrashMyTopic id)
-            (Decode.at [ "trashTopic", "id" ] Decode.string)
-
-
-
--- ----------------------------------------------
+            (toMsg id)
+            (Decode.at [ field, "id" ] Decode.string)

@@ -17,40 +17,40 @@
 -}
 
 
-module View.Page.RemoteData exposing
+module View.Page.DataLoading exposing
     ( noDataView
     , noDataViewWith
     , view
     )
 
+import App.Store.Data as StoreData
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 import I18n.Html exposing (textWith)
 import I18n.Lang exposing (Lang)
-import App.Remote.Data as RemoteData
-import View.I18n.RemoteData as I18n
+import View.I18n.DataLoading as I18n
 
 
 view :
     { lang : Lang
     }
     -> (a -> Html msg)
-    -> RemoteData.Status a
+    -> StoreData.Status a
     -> Html msg
 view { lang } dataView dataStatus =
     case dataStatus of
-        RemoteData.LoadWaiting ->
+        StoreData.LoadWaiting ->
             errorView
                 ([ "数据未加载" ] |> I18n.htmlText lang)
 
-        RemoteData.Loading ->
+        StoreData.Loading ->
             errorView
                 ([ "数据加载中，请稍候..." ] |> I18n.htmlText lang)
 
-        RemoteData.Loaded data ->
+        StoreData.Loaded data ->
             dataView data
 
-        RemoteData.LoadingError error ->
+        StoreData.LoadingError error ->
             errorView (error |> textWith)
 
 

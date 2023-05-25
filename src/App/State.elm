@@ -29,26 +29,36 @@ import App.I18n.App as I18n
 import App.Msg as Msg exposing (Msg)
 import App.Operation as Operation
 import App.Operation.EditTopic as EditTopic exposing (EditTopic)
-import App.Remote as Remote
-import App.Remote.Data as RemoteData
-import App.Remote.GraphQL.Topic as RemoteTopic
-import App.Remote.Msg as RemoteMsg
+import App.Store as Store
+import App.Store.Data as StoreData
+import App.Store.Mode as StoreMode
+import App.Store.Msg as StoreMsg
 import App.Topic exposing (Topic)
+import App.Topic.Store as TopicStore
 import App.TopicCard as TopicCard exposing (TopicCard)
 import App.TopicFilter as TopicFilter exposing (TopicFilter)
 import Browser.Navigation as Nav
-import Data.TreeStore as TreeStore exposing (TreeStore)
+import Data.Tree as Tree exposing (Tree)
 import Http
 import I18n.Lang exposing (Lang)
 import I18n.Port
-import I18n.Translator exposing (TextsNeedToBeTranslated, TranslateResult)
+import I18n.Translator
+    exposing
+        ( TextsNeedToBeTranslated
+        , TranslateResult
+        )
 import Task
 import Time
 import Url
 import View.I18n.Default
 import View.Page as Page
 import View.Route
-import Widget.Util.Basic exposing (appendToUniqueList, removeFromList, trim)
+import Widget.Util.Basic
+    exposing
+        ( appendToUniqueList
+        , removeFromList
+        , trim
+        )
 
 
 type alias State =
@@ -66,11 +76,14 @@ type alias State =
     , navUrl : Url.Url
 
     -- 远程请求错误信息
-    , remoteError : Maybe TranslateResult
+    , storeError : Maybe TranslateResult
     , currentPage : Page.Type
 
     -- 业务数据
-    , topicCards : RemoteTopicCards
+    , store :
+        { topic : TopicStore.Store
+        }
+    , topicCards : StoredTopicCards
 
     -- 操作数据
     , topicFilter : TopicFilter
@@ -86,11 +99,12 @@ type alias Config =
     , lang : String
     , navKey : Nav.Key
     , navUrl : Url.Url
+    , storeMode : StoreMode.Mode
     }
 
 
-type alias RemoteTopicCards =
-    RemoteData.Status (TreeStore TopicCard)
+type alias StoredTopicCards =
+    StoreData.Status (Tree TopicCard)
 
 
 init : Config -> ( State, Cmd Msg )
@@ -114,11 +128,15 @@ init config =
             , navUrl = config.navUrl
 
             --
-            , remoteError = Nothing
+            , storeError = Nothing
             , currentPage = Page.Loading
 
             --
-            , topicCards = RemoteData.LoadWaiting
+            , store =
+                { topic =
+                    TopicStore.store config.storeMode
+                }
+            , topicCards = StoreData.LoadWaiting
 
             --
             , topicFilter = TopicFilter.all
@@ -146,8 +164,8 @@ sub state =
 update : Msg -> Int -> State -> ( State, Cmd Msg, Maybe ( Int, Bool ) )
 update msg nextMsgId ({ topicFilter } as state) =
     case msg of
-        Msg.RemoteMsg remoteMsg ->
-            remoteUpdateHelper remoteMsg state
+        Msg.StoreMsg storeMsg ->
+            storeUpdateHelper storeMsg state
 
         Msg.UrlChanged url ->
             withOutNextMsg <|
@@ -277,8 +295,8 @@ withOutNextMsg ( state, msg ) =
 getTopic : String -> State -> Maybe Topic
 getTopic topicId { topicCards } =
     topicCards
-        |> RemoteData.andThen
-            (TreeStore.get topicId)
+        |> StoreData.andThen
+            (Tree.get topicId)
         |> Maybe.map .topic
 
 
@@ -296,8 +314,8 @@ removeTopicCard topicId ({ topicCards } as state) =
     { state
         | topicCards =
             topicCards
-                |> RemoteData.update
-                    (TreeStore.removeById topicId)
+                |> StoreData.update
+                    (Tree.removeById topicId)
     }
 
 
@@ -356,7 +374,7 @@ updateSavedNewTopic result ({ lang } as state) =
             state
                 |> updateNewTopic
                     (EditTopic.error
-                        (Remote.parseError lang error)
+                        (Store.parseError lang error)
                     )
                 |> updateNewTopic (\t -> { t | updating = False })
 
@@ -431,7 +449,7 @@ updateSavedEditTopic result ({ lang } as state) =
             state
                 |> updateEditTopic
                     (EditTopic.error
-                        (Remote.parseError lang error)
+                        (Store.parseError lang error)
                     )
                 |> updateEditTopic (\t -> { t | updating = False })
 
@@ -448,9 +466,9 @@ addTopicHelper topic ({ topicCards } as state) =
     let
         addTopicToStore topic_ store =
             store
-                |> TreeStore.add
+                |> Tree.add
                     (store
-                        |> TreeStore.get topic_.id
+                        |> Tree.get topic_.id
                         |> Maybe.map
                             (\topicCard ->
                                 { topicCard | topic = topic_ }
@@ -461,7 +479,7 @@ addTopicHelper topic ({ topicCards } as state) =
     { state
         | topicCards =
             topicCards
-                |> RemoteData.update
+                |> StoreData.update
                     (addTopicToStore topic)
     }
 
@@ -473,15 +491,15 @@ updateTopicCardHelper :
     -> State
 updateTopicCardHelper topicId updater ({ topicCards } as state) =
     topicCards
-        |> RemoteData.andThen
-            (TreeStore.get topicId)
+        |> StoreData.andThen
+            (Tree.get topicId)
         |> Maybe.map
             (\topicCard ->
                 { state
                     | topicCards =
                         topicCards
-                            |> RemoteData.update
-                                (TreeStore.add
+                            |> StoreData.update
+                                (Tree.add
                                     (updater topicCard)
                                 )
                 }
@@ -489,7 +507,7 @@ updateTopicCardHelper topicId updater ({ topicCards } as state) =
         |> Maybe.withDefault state
 
 
-createTopicCardsHelper : List Topic -> TreeStore TopicCard
+createTopicCardsHelper : List Topic -> Tree TopicCard
 createTopicCardsHelper topics =
     let
         posixToMillis posixMaybe =
@@ -497,7 +515,7 @@ createTopicCardsHelper topics =
                 |> Maybe.map Time.posixToMillis
                 |> Maybe.withDefault 0
     in
-    TreeStore.create
+    Tree.create
         { idGetter = \{ topic } -> topic.id
         , parentGetter = \_ -> Nothing
         , sorter =
@@ -513,25 +531,25 @@ createTopicCardsHelper topics =
 
 {-| 远程请求更新
 -}
-remoteUpdateHelper :
-    RemoteMsg.Msg
+storeUpdateHelper :
+    StoreMsg.Msg
     -> State
     -> ( State, Cmd Msg, Maybe ( Int, Bool ) )
-remoteUpdateHelper msg state =
+storeUpdateHelper msg state =
     case msg of
-        RemoteMsg.QueryMyTopics result ->
+        StoreMsg.QueryMyTopics result ->
             withOutNextMsg <|
                 ( { state
                     | topicCards =
                         result
-                            |> RemoteData.from
+                            |> StoreData.from
                                 state.lang
                                 createTopicCardsHelper
                   }
                 , Cmd.none
                 )
 
-        RemoteMsg.SaveMyNewTopic nextMsgId result ->
+        StoreMsg.SaveMyNewTopic nextMsgId result ->
             ( state
                 |> updateSavedNewTopic result
             , Cmd.none
@@ -546,7 +564,7 @@ remoteUpdateHelper msg state =
                 )
             )
 
-        RemoteMsg.SaveMyEditTopic nextMsgId result ->
+        StoreMsg.SaveMyEditTopic nextMsgId result ->
             ( state
                 |> updateSavedEditTopic result
             , Cmd.none
@@ -561,7 +579,7 @@ remoteUpdateHelper msg state =
                 )
             )
 
-        RemoteMsg.TrashMyTopic topicId result ->
+        StoreMsg.TrashMyTopic topicId result ->
             withOutNextMsg <|
                 ( state
                     |> updateTopicCard topicId
@@ -572,7 +590,7 @@ remoteUpdateHelper msg state =
                             Err e ->
                                 TopicCard.Trash
                                     (Operation.Error
-                                        (Remote.parseError state.lang e)
+                                        (Store.parseError state.lang e)
                                     )
                         )
                 , Cmd.none
@@ -592,7 +610,7 @@ routeUpdateHelper navUrl state =
                     let
                         ( s, c ) =
                             state
-                                |> doRemoteQueryMyTopics
+                                |> doStoreQueryMyTopics
                                     TopicFilter.all
                     in
                     ( Page.Home, s, c )
@@ -601,7 +619,7 @@ routeUpdateHelper navUrl state =
                     let
                         ( s, c ) =
                             state
-                                |> doRemoteQueryMyTopics
+                                |> doStoreQueryMyTopics
                                     filter
                     in
                     ( Page.Home, s, c )
@@ -639,15 +657,15 @@ topicCardUpdateHelper :
     -> TopicCard.Msg
     -> State
     -> ( State, Cmd Msg )
-topicCardUpdateHelper topicId msg state =
+topicCardUpdateHelper topicId msg ({ store } as state) =
     ( state
         |> updateTopicCard topicId msg
     , case msg of
         TopicCard.Trash op ->
             case op of
                 Operation.Doing ->
-                    Msg.fromRemoteCmd
-                        (RemoteTopic.trashMyTopic topicId)
+                    Msg.fromStoreCmd
+                        (store.topic.trash topicId)
 
                 _ ->
                     Cmd.none
@@ -678,7 +696,7 @@ newTopicSavingHelper :
     Int
     -> State
     -> ( State, Cmd Msg )
-newTopicSavingHelper nextMsgId state =
+newTopicSavingHelper nextMsgId ({ store } as state) =
     let
         ( newTopic, topic ) =
             prepareSavingNewTopic state
@@ -688,8 +706,8 @@ newTopicSavingHelper nextMsgId state =
     , topic
         |> Maybe.map
             (\t ->
-                Msg.fromRemoteCmd
-                    (RemoteTopic.saveMyNewTopic nextMsgId t)
+                Msg.fromStoreCmd
+                    (store.topic.add nextMsgId t)
             )
         |> Maybe.withDefault
             Cmd.none
@@ -700,7 +718,7 @@ editTopicSavingHelper :
     Int
     -> State
     -> ( State, Cmd Msg )
-editTopicSavingHelper nextMsgId state =
+editTopicSavingHelper nextMsgId ({ store } as state) =
     let
         ( editTopic, topic ) =
             prepareSavingEditTopic state
@@ -710,8 +728,8 @@ editTopicSavingHelper nextMsgId state =
     , topic
         |> Maybe.map
             (\t ->
-                Msg.fromRemoteCmd
-                    (RemoteTopic.saveMyEditTopic nextMsgId t)
+                Msg.fromStoreCmd
+                    (store.topic.update nextMsgId t)
             )
         |> Maybe.withDefault
             Cmd.none
@@ -735,19 +753,17 @@ editTopicUpdateHelper msg state =
     )
 
 
-doRemoteQueryMyTopics :
+doStoreQueryMyTopics :
     TopicFilter
     -> State
     -> ( State, Cmd Msg )
-doRemoteQueryMyTopics topicFilter state =
+doStoreQueryMyTopics topicFilter ({ store } as state) =
     ( { state
-        | topicCards = RemoteData.Loading
+        | topicCards = StoreData.Loading
         , topicFilter = topicFilter
       }
     , Cmd.batch
-        [ Msg.fromRemoteCmd
-            (RemoteTopic.queryMyTopics
-                topicFilter
-            )
+        [ Msg.fromStoreCmd
+            (store.topic.query topicFilter)
         ]
     )

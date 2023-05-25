@@ -17,15 +17,9 @@
 -}
 
 
-module App.Remote.Msg exposing (Msg(..))
-
-import Http
-import App.Topic exposing (Topic)
+module App.Store.Mode exposing (Mode(..))
 
 
-type Msg
-    = NoOp
-    | QueryMyTopics (Result Http.Error (List Topic))
-    | SaveMyNewTopic Int (Result Http.Error Topic)
-    | SaveMyEditTopic Int (Result Http.Error Topic)
-    | TrashMyTopic String (Result Http.Error String)
+type Mode
+    = Remote
+    | Local

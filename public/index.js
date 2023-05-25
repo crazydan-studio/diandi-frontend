@@ -10,7 +10,12 @@ import {
 import "../src/Native/event";
 import "../src/Native/webcomponents";
 
+import * as LocalStore from "../src/Native/localstore";
+
 import "./index.css";
+
+const useLocalStore = window.enableUseLocalStore === "true";
+LocalStore.setup(useLocalStore);
 
 // Note: 采用 Browser.application 方式初始化，无需挂载到dom节点
 const app = Elm.Main.init({
@@ -19,6 +24,7 @@ const app = Elm.Main.init({
     title: pkg.title,
     description: pkg.description,
     lang: getFirstBrowserLanguage(),
+    useLocalStore,
     screen: {
       height: window.innerHeight,
       width: window.innerWidth,

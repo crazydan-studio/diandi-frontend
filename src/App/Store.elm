@@ -17,7 +17,7 @@
 -}
 
 
-module App.Remote exposing (parseError)
+module App.Store exposing (parseError)
 
 import Http
 import I18n.Lang exposing (Lang)

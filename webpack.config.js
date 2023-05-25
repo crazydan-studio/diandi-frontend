@@ -15,12 +15,14 @@ const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const MODE =
   process.env.npm_lifecycle_event === "prod" ? "production" : "development";
 const WEB_CONTEXT_ROOT_PATH = process.env.WEB_CONTEXT_ROOT_PATH;
+const ENABLE_USE_LOCAL_STORE = process.env.ENABLE_USE_LOCAL_STORE;
 const withDebug = !process.env.npm_config_nodebug && MODE === "development";
+const enableUseLocalStore = ENABLE_USE_LOCAL_STORE === "true";
 // this may help for Yarn users
 // const withDebug = !npmParams.includes("--nodebug");
 console.log(
   "\x1b[36m%s\x1b[0m",
-  `** elm-webpack-starter: mode "${MODE}", withDebug: ${withDebug}\n`
+  `** elm-webpack-starter: mode "${MODE}", withDebug: ${withDebug}, enableUseLocalStore: ${enableUseLocalStore}\n`
 );
 
 const srcDir = "src";
@@ -54,6 +56,7 @@ const common = {
       image: packageJson.image,
       lang: packageJson.lang,
       description: packageJson.description,
+      enableUseLocalStore,
       loading: Buffer.from(loadingSvg, "utf-8").toString("base64"),
 
       // Use this template to get basic responsive meta tags

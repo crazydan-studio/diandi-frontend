@@ -30,6 +30,9 @@
   <title><%= htmlWebpackPlugin.options.description %></title>
   <link rel="canonical" href="<%= htmlWebpackPlugin.options.url %>">
   <link rel="icon" type="image/x-icon" href="<%= htmlWebpackPlugin.options.publicPath %>icon.svg">
+  <script>
+    window.enableUseLocalStore = "<%= htmlWebpackPlugin.options.enableUseLocalStore %>";
+  </script>
   <style>
     html,
     body,

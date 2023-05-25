@@ -1,4 +1,4 @@
-module View.I18n.RemoteData exposing
+module View.I18n.DataLoading exposing
     ( htmlAttr
     , htmlText
     , translate

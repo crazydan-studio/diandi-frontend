@@ -20,6 +20,7 @@
 module Main exposing (main)
 
 import App.State as AppState
+import App.Store.Mode as StoreMode
 import Browser
 import Browser.Navigation as Nav
 import Msg exposing (Msg)
@@ -42,6 +43,7 @@ type alias Config =
     { title : String
     , description : String
     , lang : String
+    , useLocalStore : Bool
     }
 
 
@@ -73,6 +75,12 @@ init config navUrl navKey =
                 , lang = config.lang
                 , navKey = navKey
                 , navUrl = navUrl
+                , storeMode =
+                    if config.useLocalStore then
+                        StoreMode.Local
+
+                    else
+                        StoreMode.Remote
                 }
     in
     ( { app = app

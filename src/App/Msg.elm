@@ -17,10 +17,10 @@
 -}
 
 
-module App.Msg exposing (Msg(..), focusOn, fromRemoteCmd)
+module App.Msg exposing (Msg(..), focusOn, fromStoreCmd)
 
 import App.Operation.EditTopic as EditTopic
-import App.Remote.Msg as RemoteMsg
+import App.Store.Msg as StoreMsg
 import App.TopicCard as TopicCard
 import Browser
 import Browser.Dom as Dom
@@ -39,7 +39,7 @@ type Msg
     | SwitchToDarkTheme Bool
     | AdjustTimeZone Time.Zone
       -- 远端消息
-    | RemoteMsg RemoteMsg.Msg
+    | StoreMsg StoreMsg.Msg
       -- 国际化Port消息
     | I18nPortMsg I18n.Port.Msg
       -- 数据操作
@@ -61,9 +61,9 @@ type Msg
 
 {-| 发起远程请求
 -}
-fromRemoteCmd : Cmd RemoteMsg.Msg -> Cmd Msg
-fromRemoteCmd msg =
-    Cmd.map RemoteMsg msg
+fromStoreCmd : Cmd StoreMsg.Msg -> Cmd Msg
+fromStoreCmd msg =
+    Cmd.map StoreMsg msg
 
 
 {-| 获取焦点

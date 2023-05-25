@@ -17,7 +17,7 @@
 -}
 
 
-module App.Remote.Demo.Topic exposing
+module App.Store.Demo.Topic exposing
     ( deleteMyTopic
     , getMyAllTopics
     , queryMyTopics
@@ -25,7 +25,7 @@ module App.Remote.Demo.Topic exposing
     , saveMyNewTopic
     )
 
-import App.Remote.Msg exposing (Msg(..))
+import App.Store.Msg exposing (Msg(..))
 import App.Topic exposing (Topic, topicListDecoder)
 import Http
 import Json.Decode as Decode

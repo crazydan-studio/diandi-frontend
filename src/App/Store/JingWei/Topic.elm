@@ -17,7 +17,7 @@
 -}
 
 
-module App.Remote.GraphQL.Topic exposing
+module App.Store.JingWei.Topic exposing
     ( getMyAllTopics
     , queryMyTopics
     , saveMyEditTopic
@@ -25,7 +25,7 @@ module App.Remote.GraphQL.Topic exposing
     , trashMyTopic
     )
 
-import App.Remote.Msg exposing (Msg(..))
+import App.Store.Msg exposing (Msg(..))
 import App.Topic
     exposing
         ( Topic

@@ -17,10 +17,10 @@
 -}
 
 
-module Data.TreeStore exposing
-    ( TreeConfig
+module Data.Tree exposing
+    ( Tree
+    , TreeConfig
     , TreeSorter
-    , TreeStore
     , TreeTraveller
     , add
     , create
@@ -40,7 +40,7 @@ module Data.TreeStore exposing
 import Dict exposing (Dict)
 
 
-type TreeStore dataType
+type Tree dataType
     = Tree (TreeConfig dataType) (TreeData dataType)
 
 
@@ -81,7 +81,7 @@ type alias TreeData dataType =
     }
 
 
-empty : TreeConfig dataType -> TreeStore dataType
+empty : TreeConfig dataType -> Tree dataType
 empty config =
     Tree config
         { data = Dict.empty
@@ -93,18 +93,18 @@ empty config =
 create :
     TreeConfig dataType
     -> List dataType
-    -> TreeStore dataType
+    -> Tree dataType
 create config =
     empty config
         |> List.foldl add
 
 
-isEmpty : TreeStore dataType -> Bool
+isEmpty : Tree dataType -> Bool
 isEmpty (Tree _ treeData) =
     treeData.data |> Dict.isEmpty
 
 
-get : String -> TreeStore dataType -> Maybe dataType
+get : String -> Tree dataType -> Maybe dataType
 get id (Tree _ treeData) =
     treeData.data |> Dict.get id
 
@@ -114,7 +114,7 @@ get id (Tree _ treeData) =
 已存在的数据将更新其数据值和排序等
 
 -}
-add : dataType -> TreeStore dataType -> TreeStore dataType
+add : dataType -> Tree dataType -> Tree dataType
 add data ((Tree { sorter } _) as tree) =
     let
         treeDataDictUpdater id =
@@ -128,7 +128,7 @@ add data ((Tree { sorter } _) as tree) =
         |> updateHelper data treeDataDictUpdater nodeIdListUpdater
 
 
-remove : dataType -> TreeStore dataType -> TreeStore dataType
+remove : dataType -> Tree dataType -> Tree dataType
 remove data tree =
     let
         treeDataDictUpdater =
@@ -141,7 +141,7 @@ remove data tree =
         |> updateHelper data treeDataDictUpdater nodeIdListUpdater
 
 
-removeById : String -> TreeStore dataType -> TreeStore dataType
+removeById : String -> Tree dataType -> Tree dataType
 removeById dataId tree =
     tree
         |> get dataId
@@ -156,7 +156,7 @@ removeById dataId tree =
 -}
 traverse :
     TreeTraveller dataType resultType
-    -> TreeStore dataType
+    -> Tree dataType
     -> List resultType
 traverse traverler tree =
     traverseDepth -1 traverler tree
@@ -167,7 +167,7 @@ traverse traverler tree =
 traverseDepth :
     Int
     -> TreeTraveller dataType resultType
-    -> TreeStore dataType
+    -> Tree dataType
     -> List resultType
 traverseDepth maxDepth traverler ((Tree _ { roots }) as tree) =
     traverseHelper
@@ -184,7 +184,7 @@ traverseDepth maxDepth traverler ((Tree _ { roots }) as tree) =
 -}
 traverseWithSingleRoot :
     TreeTraveller dataType resultType
-    -> TreeStore dataType
+    -> Tree dataType
     -> Maybe resultType
 traverseWithSingleRoot traverler tree =
     tree
@@ -196,7 +196,7 @@ traverseWithSingleRoot traverler tree =
 -}
 getAllByParentPath :
     String
-    -> TreeStore dataType
+    -> Tree dataType
     -> List dataType
 getAllByParentPath dataId =
     getAllByParentPathHelper dataId []
@@ -210,8 +210,8 @@ updateHelper :
     dataType
     -> (String -> Dict String dataType -> Dict String dataType)
     -> (String -> Dict String dataType -> List String -> List String)
-    -> TreeStore dataType
-    -> TreeStore dataType
+    -> Tree dataType
+    -> Tree dataType
 updateHelper data treeDataDictUpdater nodeIdListUpdater tree =
     let
         (Tree ({ idGetter, parentGetter } as treeConfig) treeData) =
@@ -359,7 +359,7 @@ traverseHelper :
     TreeTraveller dataType resultType
     -> { depth : Int, maxDepth : Int, nodesIndex : Int }
     -> List String
-    -> TreeStore dataType
+    -> Tree dataType
     -> List resultType
 traverseHelper traverler opts nodeIds ((Tree _ { data, nodes }) as tree) =
     let
@@ -418,7 +418,7 @@ traverseHelper traverler opts nodeIds ((Tree _ { data, nodes }) as tree) =
 getAllByParentPathHelper :
     String
     -> List dataType
-    -> TreeStore dataType
+    -> Tree dataType
     -> List dataType
 getAllByParentPathHelper dataId results ((Tree { parentGetter } _) as tree) =
     case get dataId tree of

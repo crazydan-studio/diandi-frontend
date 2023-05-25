@@ -21,6 +21,7 @@ module App.Topic exposing
     ( Topic
     , init
     , topicDecoder
+    , topicEncoder
     , topicListDecoder
     )
 
@@ -35,6 +36,7 @@ import Json.Decode as Decode
         , string
         )
 import Json.Decode.Pipeline exposing (optional, required)
+import Json.Encode as Encode
 import Time exposing (Posix)
 
 
@@ -81,3 +83,25 @@ topicDecoder =
                 (Decode.map Time.millisToPosix int)
             )
             Nothing
+
+
+topicEncoder : Topic -> Encode.Value
+topicEncoder topic =
+    Encode.object
+        [ ( "id", Encode.string topic.id )
+        , ( "title"
+          , topic.title
+                |> Maybe.map Encode.string
+                |> Maybe.withDefault Encode.null
+          )
+        , ( "content", Encode.string topic.content )
+        , ( "tags", Encode.list Encode.string topic.tags )
+        , ( "updated_at"
+          , topic.updatedAt
+                |> Maybe.map
+                    (\t ->
+                        Encode.int (Time.posixToMillis t)
+                    )
+                |> Maybe.withDefault Encode.null
+          )
+        ]

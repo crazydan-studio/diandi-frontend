@@ -21,20 +21,20 @@ module View.Topic.List exposing (view)
 
 import App.State as AppState
 import App.TopicCard exposing (TopicCard)
-import Data.TreeStore as TreeStore exposing (TreeStore)
+import Data.Tree as Tree exposing (Tree)
 import Html exposing (Html)
 import Html.Attributes exposing (class)
 import Html.Keyed
 import Html.Lazy
 import Msg exposing (Msg)
-import View.Page.RemoteData as RemoteDataPage
+import View.Page.DataLoading as DataLoadingPage
 import View.Topic.Card as TopicCardView
 
 
 view : AppState.State -> Html Msg
 view app =
     app.topicCards
-        |> RemoteDataPage.view
+        |> DataLoadingPage.view
             { lang = app.lang
             }
             (topicListView app)
@@ -46,11 +46,11 @@ view app =
 
 topicListView :
     AppState.State
-    -> TreeStore TopicCard
+    -> Tree TopicCard
     -> Html Msg
 topicListView app topicCards =
-    if TreeStore.isEmpty topicCards then
-        RemoteDataPage.noDataView
+    if Tree.isEmpty topicCards then
+        DataLoadingPage.noDataView
             { lang = app.lang
             }
 
@@ -62,7 +62,7 @@ topicListView app topicCards =
             , class "flex-wrap min-h-fit content-start"
             ]
             (topicCards
-                |> TreeStore.traverseDepth 1
+                |> Tree.traverseDepth 1
                     (\_ topicCard _ ->
                         ( topicCard.topic.id
                         , Html.Lazy.lazy2

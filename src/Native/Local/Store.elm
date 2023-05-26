@@ -17,7 +17,7 @@
 -}
 
 
-module Native.LocalStore exposing (get)
+module Native.Local.Store exposing (execute)
 
 -- https://github.com/lobanov/elm-localstorage/blob/1.0.1/src/LocalStorage.elm
 
@@ -42,14 +42,14 @@ inNS =
     inNamespace "elm-native/localstore" moduleVersion
 
 
-get :
+execute :
     { path : String
     , args : Encode.Value
     }
     -> (Result Http.Error a -> msg)
     -> Decode.Decoder a
     -> Cmd msg
-get { path, args } toMsg decoder =
+execute { path, args } toMsg decoder =
     TaskPort.callNS
         { function = inNS path
         , valueDecoder = decoder

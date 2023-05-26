@@ -36,11 +36,10 @@ import App.Topic
         , topicListDecoder
         )
 import App.TopicFilter as TopicFilter exposing (TopicFilter)
-import Html.Attributes exposing (download)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Native.LocalStore as LocalStore
+import Native.Local.Store as LocalStore
 
 
 getMyAllTopics : Cmd Msg
@@ -53,7 +52,7 @@ queryMyTopics :
     TopicFilter
     -> Cmd Msg
 queryMyTopics { trashed, keyword, tags } =
-    LocalStore.get
+    LocalStore.execute
         { path = "queryTopics"
         , args =
             Encode.object
@@ -77,7 +76,7 @@ saveMyNewTopic :
     -> Topic
     -> Cmd Msg
 saveMyNewTopic nextMsgId topic =
-    LocalStore.get
+    LocalStore.execute
         { path = "createTopic"
         , args = topicEncoder topic
         }
@@ -92,7 +91,7 @@ saveMyEditTopic :
     -> Topic
     -> Cmd Msg
 saveMyEditTopic nextMsgId topic =
-    LocalStore.get
+    LocalStore.execute
         { path = "updateTopic"
         , args = topicEncoder topic
         }
@@ -143,7 +142,7 @@ doWithId :
     -> String
     -> Cmd Msg
 doWithId path toMsg id =
-    LocalStore.get
+    LocalStore.execute
         { path = path
         , args = Encode.string id
         }

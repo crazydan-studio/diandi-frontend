@@ -1,4 +1,4 @@
-import * as TaskPort from "elm-taskport";
+import * as TaskPort from "./taskport";
 import { v4 as uuid } from "uuid";
 
 const PACKAGE_VERSION = "0.1.0";
@@ -10,9 +10,8 @@ export function setup(enabled) {
     return;
   }
 
-  TaskPort.install();
-
-  const ns = TaskPort.createNamespace(PACKAGE_NAMESPACE, PACKAGE_VERSION);
+  const port = TaskPort.create();
+  const portNs = port.createNamespace(PACKAGE_NAMESPACE, PACKAGE_VERSION);
 
   const getDataJson = (key) => window.localStorage.getItem(key) || "[]";
   const getData = (key) => JSON.parse(getDataJson(key));
@@ -20,7 +19,7 @@ export function setup(enabled) {
     window.localStorage.setItem(key, JSON.stringify(data));
 
   const topicsKey = "topics";
-  ns.register("queryTopics", ({ args }) => {
+  portNs.register("queryTopics", ({ args }) => {
     const { keyword, tags, trashed } = args;
     const topics = getData(topicsKey);
 
@@ -41,7 +40,7 @@ export function setup(enabled) {
       return true;
     });
   });
-  ns.register("createTopic", ({ args }) => {
+  portNs.register("createTopic", ({ args }) => {
     const topic = args;
     const topics = getData(topicsKey);
     const now = new Date().getTime();
@@ -53,7 +52,7 @@ export function setup(enabled) {
 
     return newTopic;
   });
-  ns.register("updateTopic", ({ args }) => {
+  portNs.register("updateTopic", ({ args }) => {
     const topic = args;
     const topics = getData(topicsKey);
     const now = new Date().getTime();
@@ -73,7 +72,7 @@ export function setup(enabled) {
 
     return newTopic;
   });
-  ns.register("trashTopic", ({ args }) => {
+  portNs.register("trashTopic", ({ args }) => {
     const id = args;
     const topics = getData(topicsKey);
     const now = new Date().getTime();
@@ -90,7 +89,7 @@ export function setup(enabled) {
 
     return { id };
   });
-  ns.register("restoreTrashedTopic", ({ args }) => {
+  portNs.register("restoreTrashedTopic", ({ args }) => {
     const id = args;
     const topics = getData(topicsKey);
     const now = new Date().getTime();
@@ -107,7 +106,7 @@ export function setup(enabled) {
 
     return { id };
   });
-  ns.register("deleteTopic", ({ args }) => {
+  portNs.register("deleteTopic", ({ args }) => {
     const id = args;
     const topics = getData(topicsKey);
 

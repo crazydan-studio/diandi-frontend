@@ -10,7 +10,7 @@ import {
 import "../src/Native/event";
 import "../src/Native/webcomponents";
 
-import * as LocalStore from "../src/Native/localstore";
+import * as LocalStore from "../src/Native/Local/store";
 
 import "./index.css";
 

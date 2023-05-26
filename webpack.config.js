@@ -119,7 +119,8 @@ if (MODE === "development") {
             {
               loader: "css-loader",
               options: {
-                url: false,
+                // 启用对 css 中资源的引用路径处理
+                url: true,
               },
             },
             "postcss-loader",
@@ -217,7 +218,8 @@ if (MODE === "production") {
             {
               loader: "css-loader",
               options: {
-                url: false,
+                // 启用对 css 中资源的引用路径处理
+                url: true,
               },
             },
             "postcss-loader",

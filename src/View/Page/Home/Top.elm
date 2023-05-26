@@ -51,7 +51,7 @@ import Widget.Html exposing (onEnter)
 
 
 view : AppState.State -> Html Msg
-view { lang, themeDark, topicFilter } =
+view { lang, webCtxRootPath, themeDark, topicFilter } =
     let
         i18nAttr =
             I18n.htmlAttr lang
@@ -63,16 +63,16 @@ view { lang, themeDark, topicFilter } =
         , class "bg-white dark:bg-gray-800"
         ]
         [ a
-            [ href "/"
+            [ href (webCtxRootPath ++ "/")
             ]
             [ img
                 [ class "h-10 md:hidden"
-                , src "/icon.svg"
+                , src (webCtxRootPath ++ "/icon.svg")
                 ]
                 []
             , img
                 [ class "h-10 hidden md:inline"
-                , src "/logo.svg"
+                , src (webCtxRootPath ++ "/logo.svg")
                 ]
                 []
             ]

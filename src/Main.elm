@@ -43,6 +43,7 @@ type alias Config =
     { title : String
     , description : String
     , lang : String
+    , webCtxRootPath : String
     , useLocalStore : Bool
     }
 
@@ -73,6 +74,7 @@ init config navUrl navKey =
                 { title = config.title
                 , description = config.description
                 , lang = config.lang
+                , webCtxRootPath = config.webCtxRootPath
                 , navKey = navKey
                 , navUrl = navUrl
                 , storeMode =

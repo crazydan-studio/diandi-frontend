@@ -67,6 +67,7 @@ type alias State =
 
     -- 国际化
     , lang : Lang
+    , webCtxRootPath : String
     , textsWithoutI18n : List TextsNeedToBeTranslated
     , timeZone : Time.Zone
     , themeDark : Bool
@@ -97,6 +98,7 @@ type alias Config =
     { title : String
     , description : String
     , lang : String
+    , webCtxRootPath : String
     , navKey : Nav.Key
     , navUrl : Url.Url
     , storeMode : StoreMode.Mode
@@ -119,6 +121,7 @@ init config =
                 I18n.Lang.fromStringWithDefault
                     View.I18n.Default.lang
                     config.lang
+            , webCtxRootPath = config.webCtxRootPath
             , textsWithoutI18n = []
             , timeZone = Time.utc
             , themeDark = True

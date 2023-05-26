@@ -24,6 +24,7 @@ const app = Elm.Main.init({
     title: pkg.title,
     description: pkg.description,
     lang: getFirstBrowserLanguage(),
+    webCtxRootPath: window.webCtxRootPath || "",
     useLocalStore,
     screen: {
       height: window.innerHeight,

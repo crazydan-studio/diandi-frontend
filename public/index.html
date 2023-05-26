@@ -29,8 +29,9 @@
   <meta name="twitter:image:src" content="<%= htmlWebpackPlugin.options.image %>">
   <title><%= htmlWebpackPlugin.options.description %></title>
   <link rel="canonical" href="<%= htmlWebpackPlugin.options.url %>">
-  <link rel="icon" type="image/x-icon" href="<%= htmlWebpackPlugin.options.publicPath %>icon.svg">
+  <link rel="icon" type="image/x-icon" href="<%= htmlWebpackPlugin.options.publicPath %>/icon.svg">
   <script>
+    window.webCtxRootPath = "<%= htmlWebpackPlugin.options.publicPath %>";
     window.enableUseLocalStore = "<%= htmlWebpackPlugin.options.enableUseLocalStore %>";
   </script>
   <style>

@@ -16,7 +16,7 @@ const MODE =
   process.env.npm_lifecycle_event === "prod" ? "production" : "development";
 const WEB_CONTEXT_ROOT_PATH = process.env.WEB_CONTEXT_ROOT_PATH;
 const ENABLE_USE_LOCAL_STORE = process.env.ENABLE_USE_LOCAL_STORE;
-const webCtxRootPath = WEB_CONTEXT_ROOT_PATH ? WEB_CONTEXT_ROOT_PATH : "/";
+const webCtxRootPath = WEB_CONTEXT_ROOT_PATH ? WEB_CONTEXT_ROOT_PATH : "";
 const withDebug = !process.env.npm_config_nodebug && MODE === "development";
 const enableUseLocalStore = ENABLE_USE_LOCAL_STORE === "true";
 // this may help for Yarn users

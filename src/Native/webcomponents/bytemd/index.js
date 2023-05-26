@@ -49,7 +49,7 @@ const mermaidLocales = loadPluginLocales(
 );
 
 // https://prismjs.com/plugins/autoloader/
-Prism.plugins.autoloader.languages_path = "prism/grammars/";
+Prism.plugins.autoloader.languages_path = "/prism/grammars/";
 // https://prismjs.com/plugins/normalize-whitespace/
 Prism.plugins.NormalizeWhitespace.setDefaults({
   "remove-trailing": true,

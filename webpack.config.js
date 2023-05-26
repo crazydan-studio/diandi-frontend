@@ -16,6 +16,7 @@ const MODE =
   process.env.npm_lifecycle_event === "prod" ? "production" : "development";
 const WEB_CONTEXT_ROOT_PATH = process.env.WEB_CONTEXT_ROOT_PATH;
 const ENABLE_USE_LOCAL_STORE = process.env.ENABLE_USE_LOCAL_STORE;
+const webCtxRootPath = WEB_CONTEXT_ROOT_PATH ? WEB_CONTEXT_ROOT_PATH : "/";
 const withDebug = !process.env.npm_config_nodebug && MODE === "development";
 const enableUseLocalStore = ENABLE_USE_LOCAL_STORE === "true";
 // this may help for Yarn users
@@ -43,7 +44,9 @@ const common = {
   entry: filepath(publicDir, "index.js"),
   output: {
     path: filepath("dist"),
-    publicPath: "",
+    // 必须指定，否则，动态导入的 js 路径采用的是相对路径，
+    // 在浏览器路由到其他子路径时，会出现 js 无法加载的问题
+    publicPath: webCtxRootPath,
     // FIXME webpack -p automatically adds hash when building for production
     filename: MODE === "production" ? "[name]-[hash].js" : "index.js",
   },
@@ -61,7 +64,7 @@ const common = {
 
       // Use this template to get basic responsive meta tags
       template: filepath(publicDir, "index.html"),
-      publicPath: WEB_CONTEXT_ROOT_PATH ? WEB_CONTEXT_ROOT_PATH : "/",
+      publicPath: webCtxRootPath,
       // disable css and js inject to allow to put the resources at any location manually
       inject: false,
     }),

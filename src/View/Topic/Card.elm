@@ -130,86 +130,22 @@ view { lang, timeZone } { config, topic, op } =
                 }
             , div
                 [ class "px-4 py-3"
-                , class "divide-y divide-gray-100 dark:divide-gray-700"
+                , class "divide-y divide-gray-200 dark:divide-gray-600"
                 ]
                 [ div
-                    [ class "relative"
-                    ]
-                    [ span
-                        [ class "cursor-pointer"
-                        , class "absolute -top-2.5 -right-3.5"
-                        , class "dark:text-white hover:text-blue-400"
-                        , class "hidden"
-                        , class
-                            (if config.selected then
-                                "text-blue-400"
+                    ([ class "p-4"
+                     , class "text-sm whitespace-pre-wrap break-words"
+                     , class "text-gray-600 dark:text-gray-300"
+                     , class "overflow-y-auto"
+                     , class "min-h-[12rem] h-48"
+                     ]
+                        ++ (if config.expanded then
+                                [ class "max-h-96" ]
 
-                             else
-                                "text-gray-300"
-                            )
-                        , onClick
-                            (Msg.fromApp <|
-                                AppMsg.TopicCardMsg
-                                    topic.id
-                                    (TopicCard.Select (not config.selected))
-                            )
-                        ]
-                        [ if config.selected then
-                            Round.check_circle 20 Inherit
-
-                          else
-                            Round.radio_button_unchecked 20 Inherit
-                        ]
-                    , h1
-                        [ class "flex-1"
-                        , class "text-lg font-semibold"
-                        , class "whitespace-pre-wrap break-all"
-                        , class
-                            (topic.title
-                                |> Maybe.map (\_ -> "text-blue-400 dark:text-white")
-                                |> Maybe.withDefault "text-gray-400 dark:text-gray-300"
-                            )
-                        ]
-                        [ topic.title
-                            |> Maybe.map
-                                (\t ->
-                                    text t
-                                )
-                            |> Maybe.withDefault
-                                ([ "无标题" ]
-                                    |> i18nText
-                                )
-                        ]
-                    , h2
-                        [ class "text-sm"
-                        , class "text-gray-600 dark:text-gray-400"
-                        ]
-                        [ text
-                            ("@"
-                                ++ (topic.updatedAt
-                                        |> Maybe.map
-                                            (DateTime.format
-                                                "yyyy-MM-dd HH:mm:ss"
-                                                timeZone
-                                            )
-                                        |> Maybe.withDefault ""
-                                   )
-                            )
-                        ]
-                    ]
-                , div
-                    [ class "mt-2 p-4"
-                    , class "text-sm whitespace-pre-wrap break-words"
-                    , class "text-gray-600 dark:text-gray-300"
-                    , class "overflow-y-auto"
-                    , class
-                        (if config.expanded then
-                            "max-h-96"
-
-                         else
-                            "max-h-48"
-                        )
-                    ]
+                            else
+                                []
+                           )
+                    )
                     [ Markdown.viewer
                         { value = topic.content
                         , styles = []
@@ -218,12 +154,12 @@ view { lang, timeZone } { config, topic, op } =
                     ]
                 , div
                     []
-                    [ if not (List.isEmpty topic.tags) then
-                        div
-                            [ class "mt-2 flex"
-                            , class "flex-wrap items-center gap-2"
-                            ]
-                            (topic.tags
+                    [ div
+                        [ class "mt-2 flex"
+                        , class "flex-wrap items-center gap-2"
+                        ]
+                        (if not (List.isEmpty topic.tags) then
+                            topic.tags
                                 |> List.map
                                     (\tag ->
                                         span
@@ -237,10 +173,13 @@ view { lang, timeZone } { config, topic, op } =
                                             ]
                                             [ text ("#" ++ tag) ]
                                     )
-                            )
 
-                      else
-                        div [] []
+                         else
+                            [ span
+                                [ class "topic-tag" ]
+                                [ text "#" ]
+                            ]
+                        )
                     , case opStatus of
                         Operation.Error e ->
                             div
@@ -270,76 +209,96 @@ view { lang, timeZone } { config, topic, op } =
                             div [] []
                     , div
                         [ class "mt-2 flex"
-                        , class "items-center justify-end gap-1"
+                        , class "items-center justify-between gap-1"
                         ]
-                        [ span
-                            [ class "tw-icon-btn"
-                            , tabindex 0
-                            , onClick
-                                (Msg.fromApp <|
-                                    AppMsg.TopicCardMsg
-                                        topic.id
-                                        (if topic.trashed then
-                                            TopicCard.Delete Operation.Doing
-
-                                         else
-                                            TopicCard.Trash Operation.Doing
-                                        )
+                        [ h2
+                            [ class "text-gray-600 dark:text-gray-400"
+                            ]
+                            [ text
+                                ("@"
+                                    ++ (topic.updatedAt
+                                            |> Maybe.map
+                                                (DateTime.format
+                                                    "yyyy-MM-dd HH:mm:ss"
+                                                    timeZone
+                                                )
+                                            |> Maybe.withDefault ""
+                                       )
                                 )
                             ]
-                            [ (if topic.trashed then
-                                Round.delete_forever
-
-                               else
-                                Round.delete
-                              )
-                                20
-                                Inherit
+                        , div
+                            [ class "flex"
+                            , class "items-center justify-end gap-1"
                             ]
-                        , if topic.trashed then
-                            span
+                            [ span
                                 [ class "tw-icon-btn"
                                 , tabindex 0
                                 , onClick
                                     (Msg.fromApp <|
                                         AppMsg.TopicCardMsg
                                             topic.id
-                                            (TopicCard.Restore Operation.Doing)
+                                            (if topic.trashed then
+                                                TopicCard.Delete Operation.Doing
+
+                                             else
+                                                TopicCard.Trash Operation.Doing
+                                            )
                                     )
                                 ]
-                                [ Round.undo 20 Inherit ]
+                                [ (if topic.trashed then
+                                    Round.delete_forever
 
-                          else
-                            span
+                                   else
+                                    Round.delete
+                                  )
+                                    20
+                                    Inherit
+                                ]
+                            , if topic.trashed then
+                                span
+                                    [ class "tw-icon-btn"
+                                    , tabindex 0
+                                    , onClick
+                                        (Msg.fromApp <|
+                                            AppMsg.TopicCardMsg
+                                                topic.id
+                                                (TopicCard.Restore Operation.Doing)
+                                        )
+                                    ]
+                                    [ Round.undo 20 Inherit ]
+
+                              else
+                                span
+                                    [ class "tw-icon-btn"
+                                    , tabindex 0
+                                    , onClick
+                                        (Msg.batch
+                                            [ Msg.fromApp <|
+                                                AppMsg.EditTopicPending topic.id
+                                            , Msg.pageLayerOpen
+                                                View.Topic.Layer.EditTopic.create
+                                            ]
+                                        )
+                                    ]
+                                    [ Round.edit 20 Inherit ]
+                            , span
                                 [ class "tw-icon-btn"
                                 , tabindex 0
                                 , onClick
-                                    (Msg.batch
-                                        [ Msg.fromApp <|
-                                            AppMsg.EditTopicPending topic.id
-                                        , Msg.pageLayerOpen
-                                            View.Topic.Layer.EditTopic.create
-                                        ]
+                                    (Msg.fromApp <|
+                                        AppMsg.TopicCardMsg topic.id
+                                            (TopicCard.Expand
+                                                (not config.expanded)
+                                            )
                                     )
                                 ]
-                                [ Round.edit 20 Inherit ]
-                        , span
-                            [ class "tw-icon-btn"
-                            , tabindex 0
-                            , onClick
-                                (Msg.fromApp <|
-                                    AppMsg.TopicCardMsg topic.id
-                                        (TopicCard.Expand
-                                            (not config.expanded)
-                                        )
+                                (if config.expanded then
+                                    [ Round.close_fullscreen 20 Inherit ]
+
+                                 else
+                                    [ Round.open_in_full 20 Inherit ]
                                 )
                             ]
-                            (if config.expanded then
-                                [ Round.close_fullscreen 20 Inherit ]
-
-                             else
-                                [ Round.open_in_full 20 Inherit ]
-                            )
                         ]
                     ]
                 ]

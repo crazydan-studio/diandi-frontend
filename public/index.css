@@ -31,7 +31,10 @@
 }
 
 .topic-tag {
-  @apply cursor-pointer font-bold text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 transition-colors duration-300;
+  @apply cursor-pointer;
+  @apply text-sm font-bold;
+  @apply text-sky-400 hover:text-sky-500 dark:text-gray-300 dark:hover:text-gray-200;
+  @apply transition-colors duration-300 transform;
 }
 
 .tw-float-icon-btn {

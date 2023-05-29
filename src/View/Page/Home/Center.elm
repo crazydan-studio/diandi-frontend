@@ -24,7 +24,7 @@ import App.State as AppState
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
-import Material.Icons.Outlined as Outlined
+import Material.Icons.Round as Round
 import Material.Icons.Types exposing (Coloring(..))
 import Msg exposing (Msg)
 import View.Topic.Layer.NewTopic
@@ -38,23 +38,18 @@ view trashed app =
         , class "flex"
         , class "overflow-hidden"
         ]
-        (div
+        [ div
             [ class "w-full h-full"
             , class "overflow-y-auto"
             , class "px-6 md:px-20 pt-8 pb-4"
             ]
             [ TopicList.view app ]
-            :: (if trashed then
-                    []
-
-                else
-                    [ tools app ]
-               )
-        )
+        , tools trashed app
+        ]
 
 
-tools : AppState.State -> Html Msg
-tools _ =
+tools : Bool -> AppState.State -> Html Msg
+tools trashed state =
     div
         [ class "absolute right-0"
         , class "h-full w-14 md:w-20"
@@ -62,30 +57,53 @@ tools _ =
         , class "items-center justify-center"
         , class "pointer-events-none"
         ]
-        [ span
-            [ class "tw-float-icon-btn"
-            , class "w-10 h-10 md:w-12 md:h-12"
-            , class "bg-sky-700 hover:bg-sky-600"
-            , onClick
-                (Msg.fromApp <|
-                    AppMsg.ShowTashedTopics
+        (if trashed then
+            [ span
+                ([ class "tw-float-icon-btn"
+                 , class "w-12 h-12 md:w-14 md:h-14"
+                 , class "bg-red-600 hover:bg-red-500"
+                 ]
+                    ++ (if AppState.isEmptyTopicCards state then
+                            [ class "hover:bg-red-600 disabled" ]
+
+                        else
+                            [ onClick
+                                (Msg.fromApp <|
+                                    AppMsg.ClearTrashedTopics
+                                )
+                            ]
+                       )
                 )
+                [ Round.delete_outline 40 Inherit
+                ]
             ]
-            [ Outlined.recycling 32 Inherit
+
+         else
+            [ span
+                [ class "tw-float-icon-btn"
+                , class "w-10 h-10 md:w-12 md:h-12"
+                , class "bg-sky-700 hover:bg-sky-600"
+                , onClick
+                    (Msg.fromApp <|
+                        AppMsg.ShowTashedTopics
+                    )
+                ]
+                [ Round.recycling 32 Inherit
+                ]
+            , span
+                [ class "tw-float-icon-btn"
+                , class "w-12 h-12 md:w-14 md:h-14"
+                , class "bg-blue-600 hover:bg-blue-500"
+                , onClick
+                    (Msg.batch
+                        [ Msg.fromApp <|
+                            AppMsg.NewTopicPending
+                        , Msg.pageLayerOpen
+                            View.Topic.Layer.NewTopic.create
+                        ]
+                    )
+                ]
+                [ Round.add 48 Inherit
+                ]
             ]
-        , span
-            [ class "tw-float-icon-btn"
-            , class "w-12 h-12 md:w-14 md:h-14"
-            , class "bg-blue-600 hover:bg-blue-500"
-            , onClick
-                (Msg.batch
-                    [ Msg.fromApp <|
-                        AppMsg.NewTopicPending
-                    , Msg.pageLayerOpen
-                        View.Topic.Layer.NewTopic.create
-                    ]
-                )
-            ]
-            [ Outlined.add 48 Inherit
-            ]
-        ]
+        )

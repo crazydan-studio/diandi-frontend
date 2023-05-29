@@ -38,6 +38,7 @@ type Msg
     | FocusOn String
     | SwitchToDarkTheme Bool
     | AdjustTimeZone Time.Zone
+    | NavBackTo Int
       -- 数据持久化消息
     | StoreMsg StoreMsg.Msg
       -- 国际化Port消息
@@ -48,6 +49,7 @@ type Msg
     | FilterTopicTagSelected String
     | FilterTopicTagDeleted String
     | ShowTashedTopics
+    | ClearTrashedTopics
     | TopicCardMsg String TopicCard.Msg
     | RemoveTopicCard String
     | NewTopicPending

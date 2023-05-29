@@ -23,6 +23,7 @@ module Data.Tree exposing
     , TreeSorter
     , TreeTraveller
     , add
+    , clear
     , create
     , empty
     , get
@@ -30,6 +31,7 @@ module Data.Tree exposing
     , isEmpty
     , remove
     , removeById
+    , size
     , traverse
     , traverseDepth
     , traverseWithSingleRoot
@@ -104,6 +106,11 @@ isEmpty (Tree _ treeData) =
     treeData.data |> Dict.isEmpty
 
 
+size : Tree dataType -> Int
+size (Tree _ treeData) =
+    treeData.data |> Dict.size
+
+
 get : String -> Tree dataType -> Maybe dataType
 get id (Tree _ treeData) =
     treeData.data |> Dict.get id
@@ -126,6 +133,11 @@ add data ((Tree { sorter } _) as tree) =
     -- Note: 对于更新，不能先删除再添加，因为在无排序函数时，删除后添加会造成相对位置发生变化
     tree
         |> updateHelper data treeDataDictUpdater nodeIdListUpdater
+
+
+clear : Tree dataType -> Tree dataType
+clear (Tree config _) =
+    empty config
 
 
 remove : dataType -> Tree dataType -> Tree dataType

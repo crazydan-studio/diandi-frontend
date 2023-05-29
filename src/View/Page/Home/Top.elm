@@ -43,7 +43,7 @@ import Html.Attributes
         , value
         )
 import Html.Events exposing (onClick, onInput)
-import Material.Icons.Outlined as Outlined
+import Material.Icons.Round as Round
 import Material.Icons.Types exposing (Coloring(..))
 import Msg exposing (Msg)
 import View.I18n.Home as I18n
@@ -51,7 +51,7 @@ import Widget.Html exposing (onEnter)
 
 
 view : AppState.State -> Html Msg
-view { lang, webCtxRootPath, themeDark, topicFilter } =
+view { navs, lang, webCtxRootPath, themeDark, topicFilter } =
     let
         i18nAttr =
             I18n.htmlAttr lang
@@ -62,20 +62,31 @@ view { lang, webCtxRootPath, themeDark, topicFilter } =
         , class "items-center"
         , class "bg-white dark:bg-gray-800"
         ]
-        [ a
-            [ href (webCtxRootPath ++ "/")
-            ]
-            [ img
-                [ class "h-10 md:hidden"
-                , src (webCtxRootPath ++ "/icon.svg")
+        [ if List.isEmpty navs then
+            a
+                [ href (webCtxRootPath ++ "/")
                 ]
-                []
-            , img
-                [ class "h-10 hidden md:inline"
-                , src (webCtxRootPath ++ "/logo.svg")
+                [ img
+                    [ class "h-10 md:hidden"
+                    , src (webCtxRootPath ++ "/icon.svg")
+                    ]
+                    []
+                , img
+                    [ class "h-10 hidden md:inline"
+                    , src (webCtxRootPath ++ "/logo.svg")
+                    ]
+                    []
                 ]
-                []
-            ]
+
+          else
+            span
+                [ class "tw-icon-btn"
+                , onClick
+                    (Msg.fromApp <|
+                        AppMsg.NavBackTo 1
+                    )
+                ]
+                [ Round.arrow_back 24 Inherit ]
         , div
             [ class "grow"
             , class "flex justify-center"
@@ -90,7 +101,7 @@ view { lang, webCtxRootPath, themeDark, topicFilter } =
                     , class "flex items-center pl-3"
                     , class "text-gray-500 dark:text-gray-300"
                     ]
-                    [ Outlined.search 24 Inherit
+                    [ Round.search 24 Inherit
                     ]
                 , input
                     ([ class "w-full"
@@ -138,14 +149,14 @@ view { lang, webCtxRootPath, themeDark, topicFilter } =
                     )
                 ]
                 [ if themeDark then
-                    Outlined.dark_mode 24 Inherit
+                    Round.dark_mode 24 Inherit
 
                   else
-                    Outlined.light_mode 24 Inherit
+                    Round.light_mode 24 Inherit
                 ]
             , span
                 [ class "tw-icon-btn"
                 ]
-                [ Outlined.menu 24 Inherit ]
+                [ Round.menu 24 Inherit ]
             ]
         ]

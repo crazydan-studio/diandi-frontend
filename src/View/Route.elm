@@ -49,6 +49,7 @@ type Route
     | Forbidden
     | NotFound
     | TopicsFilter TopicFilter
+    | TrashedTopicsFilter TopicFilter
 
 
 {-| 解析URL得到路由信息
@@ -136,7 +137,7 @@ routeHelper =
                     <?> Query.custom "tags" identity
                 )
             )
-        , map TopicsFilter
+        , map TrashedTopicsFilter
             (map
                 (\keyword tags ->
                     { keyword = keyword

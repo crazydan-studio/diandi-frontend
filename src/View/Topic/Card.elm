@@ -41,7 +41,7 @@ import Html.Attributes exposing (class, tabindex)
 import Html.Events exposing (on, onClick)
 import I18n.Html exposing (textWith)
 import Json.Decode as Decode
-import Material.Icons.Outlined as Outlined
+import Material.Icons.Round as Round
 import Material.Icons.Types exposing (Coloring(..))
 import Msg exposing (Msg)
 import View.I18n.Home as I18n
@@ -155,10 +155,10 @@ view { lang, timeZone } { config, topic, op } =
                             )
                         ]
                         [ if config.selected then
-                            Outlined.check_circle 20 Inherit
+                            Round.check_circle 20 Inherit
 
                           else
-                            Outlined.radio_button_unchecked 20 Inherit
+                            Round.radio_button_unchecked 20 Inherit
                         ]
                     , h1
                         [ class "flex-1"
@@ -288,10 +288,10 @@ view { lang, timeZone } { config, topic, op } =
                                 )
                             ]
                             [ (if topic.trashed then
-                                Outlined.delete_forever
+                                Round.delete_forever
 
                                else
-                                Outlined.delete
+                                Round.delete
                               )
                                 20
                                 Inherit
@@ -307,7 +307,7 @@ view { lang, timeZone } { config, topic, op } =
                                             (TopicCard.Restore Operation.Doing)
                                     )
                                 ]
-                                [ Outlined.undo 20 Inherit ]
+                                [ Round.undo 20 Inherit ]
 
                           else
                             span
@@ -322,7 +322,7 @@ view { lang, timeZone } { config, topic, op } =
                                         ]
                                     )
                                 ]
-                                [ Outlined.edit 20 Inherit ]
+                                [ Round.edit 20 Inherit ]
                         , span
                             [ class "tw-icon-btn"
                             , tabindex 0
@@ -335,10 +335,10 @@ view { lang, timeZone } { config, topic, op } =
                                 )
                             ]
                             (if config.expanded then
-                                [ Outlined.close_fullscreen 20 Inherit ]
+                                [ Round.close_fullscreen 20 Inherit ]
 
                              else
-                                [ Outlined.open_in_full 20 Inherit ]
+                                [ Round.open_in_full 20 Inherit ]
                             )
                         ]
                     ]

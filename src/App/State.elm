@@ -21,6 +21,7 @@ module App.State exposing
     ( Config
     , State
     , init
+    , isEmptyTopicCards
     , sub
     , update
     )
@@ -75,6 +76,7 @@ type alias State =
     -- 路由
     , navKey : Nav.Key
     , navUrl : Url.Url
+    , navs : List (Cmd Msg)
 
     -- 远程请求错误信息
     , storeError : Maybe TranslateResult
@@ -129,6 +131,7 @@ init config =
             --
             , navKey = config.navKey
             , navUrl = config.navUrl
+            , navs = []
 
             --
             , storeError = Nothing
@@ -190,6 +193,10 @@ update msg nextMsgId ({ topicFilter } as state) =
                 , Cmd.none
                 )
 
+        Msg.NavBackTo level ->
+            withOutNextMsg <|
+                navBackToHelper level state
+
         Msg.FilterTopicKeywordInputing keyword ->
             withOutNextMsg <|
                 ( { state
@@ -245,6 +252,16 @@ update msg nextMsgId ({ topicFilter } as state) =
                         | trashed = True
                     }
                     state.navKey
+                )
+
+        Msg.ClearTrashedTopics ->
+            withOutNextMsg <|
+                ( { state
+                    | topicCards =
+                        state.topicCards
+                            |> StoreData.update Tree.clear
+                  }
+                , Cmd.none
                 )
 
         Msg.TopicCardMsg topicId topicCardMsg ->
@@ -307,6 +324,13 @@ update msg nextMsgId ({ topicFilter } as state) =
 withOutNextMsg : ( State, Cmd Msg ) -> ( State, Cmd Msg, Maybe ( Int, Bool ) )
 withOutNextMsg ( state, msg ) =
     ( state, msg, Nothing )
+
+
+isEmptyTopicCards : State -> Bool
+isEmptyTopicCards { topicCards } =
+    topicCards
+        |> StoreData.map Tree.isEmpty
+        |> Maybe.withDefault True
 
 
 getTopic : String -> State -> Maybe Topic
@@ -661,7 +685,7 @@ routeUpdateHelper navUrl state =
                     let
                         ( s, c ) =
                             state
-                                |> doStoreQueryMyTopics
+                                |> doQueryMyTopics
                                     TopicFilter.all
                     in
                     ( Page.Home False, s, c )
@@ -670,10 +694,19 @@ routeUpdateHelper navUrl state =
                     let
                         ( s, c ) =
                             state
-                                |> doStoreQueryMyTopics
+                                |> doQueryMyTopics
                                     filter
                     in
-                    ( Page.Home filter.trashed, s, c )
+                    ( Page.Home False, s, c )
+
+                View.Route.TrashedTopicsFilter filter ->
+                    let
+                        ( s, c ) =
+                            state
+                                |> doQueryMyTopics
+                                    filter
+                    in
+                    ( Page.Home True, s, c )
 
                 View.Route.Forbidden ->
                     ( Page.Forbidden, state, Cmd.none )
@@ -681,13 +714,10 @@ routeUpdateHelper navUrl state =
                 View.Route.NotFound ->
                     ( Page.NotFound, state, Cmd.none )
     in
-    ( newState
-        |> (\app ->
-                { app
-                    | currentPage = page
-                    , navUrl = navUrl
-                }
-           )
+    ( { newState
+        | currentPage = page
+        , navUrl = navUrl
+      }
     , cmd
     )
 
@@ -701,6 +731,26 @@ i18nUpdateHelper msg state =
               }
             , m
             )
+
+
+navBackToHelper : Int -> State -> ( State, Cmd Msg )
+navBackToHelper level ({ navs } as state) =
+    let
+        leftNavAmount =
+            List.length navs - level
+
+        leftNavs =
+            navs
+                |> List.take leftNavAmount
+
+        newNav =
+            navs
+                |> List.drop leftNavAmount
+                |> List.take 1
+    in
+    ( { state | navs = leftNavs }
+    , Cmd.batch newNav
+    )
 
 
 topicCardUpdateHelper :
@@ -822,14 +872,26 @@ editTopicUpdateHelper msg state =
     )
 
 
-doStoreQueryMyTopics :
+doQueryMyTopics :
     TopicFilter
     -> State
     -> ( State, Cmd Msg )
-doStoreQueryMyTopics topicFilter ({ store } as state) =
+doQueryMyTopics ({ trashed } as topicFilter) ({ store } as state) =
     ( { state
         | topicCards = StoreData.Loading
         , topicFilter = topicFilter
+        , navs =
+            if not trashed then
+                []
+
+            else if List.isEmpty state.navs then
+                [ View.Route.filterTopics
+                    state.topicFilter
+                    state.navKey
+                ]
+
+            else
+                state.navs
       }
     , Cmd.batch
         [ Msg.fromStoreCmd

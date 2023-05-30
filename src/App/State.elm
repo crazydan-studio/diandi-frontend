@@ -685,7 +685,7 @@ routeUpdateHelper navUrl state =
                     let
                         ( s, c ) =
                             state
-                                |> doQueryMyTopics
+                                |> doStoreQueryMyTopics
                                     TopicFilter.all
                     in
                     ( Page.Home False, s, c )
@@ -694,7 +694,7 @@ routeUpdateHelper navUrl state =
                     let
                         ( s, c ) =
                             state
-                                |> doQueryMyTopics
+                                |> doStoreQueryMyTopics
                                     filter
                     in
                     ( Page.Home False, s, c )
@@ -703,7 +703,7 @@ routeUpdateHelper navUrl state =
                     let
                         ( s, c ) =
                             state
-                                |> doQueryMyTopics
+                                |> doStoreQueryMyTopics
                                     filter
                     in
                     ( Page.Home True, s, c )
@@ -872,11 +872,11 @@ editTopicUpdateHelper msg state =
     )
 
 
-doQueryMyTopics :
+doStoreQueryMyTopics :
     TopicFilter
     -> State
     -> ( State, Cmd Msg )
-doQueryMyTopics ({ trashed } as topicFilter) ({ store } as state) =
+doStoreQueryMyTopics ({ trashed } as topicFilter) ({ store } as state) =
     ( { state
         | topicCards = StoreData.Loading
         , topicFilter = topicFilter

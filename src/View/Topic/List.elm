@@ -27,6 +27,7 @@ import Html.Attributes exposing (class)
 import Html.Keyed
 import Html.Lazy
 import Msg exposing (Msg)
+import View.I18n.Home as I18n
 import View.Page.DataLoading as DataLoadingPage
 import View.Topic.Card as TopicCardView
 
@@ -48,11 +49,15 @@ topicListView :
     AppState.State
     -> Tree TopicCard
     -> Html Msg
-topicListView app topicCards =
+topicListView ({ lang, topicFilter } as app) topicCards =
     if Tree.isEmpty topicCards then
         DataLoadingPage.noDataView
-            { lang = app.lang
-            }
+            (if topicFilter.trashed then
+                [ "回收站还是空空如也的哟～～" ] |> I18n.translate lang
+
+             else
+                [ "还未添加主题，请点击添加按钮创建 ..." ] |> I18n.translate lang
+            )
 
     else
         -- 列表增删改性能提升方案，同时lazy可确保在刷新页面时，有滚动条的列表的滚动位置可被浏览器记录，刷新后能够自动恢复浏览位置

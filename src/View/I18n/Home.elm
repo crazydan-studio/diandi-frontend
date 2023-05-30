@@ -93,6 +93,16 @@ rootTranslator texts =
                 "You can add a conspicuous title here ..."
                 :: default
 
+        [ "回收站还是空空如也的哟～～" ] ->
+            ok En_US
+                "The trash is empty yet~~"
+                :: default
+
+        [ "还未添加主题，请点击添加按钮创建 ..." ] ->
+            ok En_US
+                "No topics here, please click the Add button to create new one ..."
+                :: default
+
         [ "数据正在移除中，请稍等片刻 ..." ] ->
             ok En_US
                 "The data is moving to trash, please wait a minute ..."

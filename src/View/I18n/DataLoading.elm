@@ -48,9 +48,5 @@ translator texts =
             ok En_US "Loading data, please wait a monment ..."
                 :: default
 
-        [ "数据已加载，但结果为空" ] ->
-            ok En_US "Data is loaded, but the result is empty"
-                :: default
-
         _ ->
             default

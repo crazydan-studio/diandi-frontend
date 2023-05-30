@@ -28,6 +28,7 @@ import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 import I18n.Html exposing (textWith)
 import I18n.Lang exposing (Lang)
+import I18n.Translator exposing (TranslateResult)
 import View.I18n.DataLoading as I18n
 
 
@@ -55,19 +56,17 @@ view { lang } dataView dataStatus =
 
 
 noDataView :
-    { lang : Lang
-    }
+    TranslateResult
     -> Html msg
-noDataView { lang } =
-    errorView
-        ([ "数据已加载，但结果为空" ] |> I18n.htmlText lang)
+noDataView info =
+    errorView (info |> textWith)
 
 
 noDataViewWith :
     String
     -> Html msg
-noDataViewWith error =
-    errorView (text error)
+noDataViewWith info =
+    errorView (text info)
 
 
 

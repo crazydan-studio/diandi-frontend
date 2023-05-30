@@ -127,6 +127,10 @@
   @apply p-0;
 }
 
+.markdown-body img {
+  @apply max-h-40;
+}
+
 .markdown-body .code-toolbar > .toolbar {
   @apply top-0.5;
 }

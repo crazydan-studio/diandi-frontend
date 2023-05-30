@@ -86,7 +86,7 @@ view { lang, timeZone } { config, topic, op } =
                         "basis-auto lg:basis-1/2"
 
                      else
-                        "basis-auto md:basis-1/2 xl:basis-1/4"
+                        "basis-auto md:basis-1/2 xl:basis-1/3"
                     )
                ]
         )
@@ -137,13 +137,13 @@ view { lang, timeZone } { config, topic, op } =
                      , class "text-sm whitespace-pre-wrap break-words"
                      , class "text-gray-600 dark:text-gray-300"
                      , class "overflow-y-auto"
-                     , class "min-h-[14rem]"
+                     , class "min-h-[13rem]"
                      ]
                         ++ (if config.expanded then
                                 [ class "max-h-96" ]
 
                             else
-                                [ class "h-56" ]
+                                [ class "h-52" ]
                            )
                     )
                     [ Markdown.viewer
@@ -177,7 +177,8 @@ view { lang, timeZone } { config, topic, op } =
 
                          else
                             [ span
-                                [ class "topic-tag" ]
+                                [ class "topic-tag none"
+                                ]
                                 [ text "#" ]
                             ]
                         )
@@ -212,7 +213,7 @@ view { lang, timeZone } { config, topic, op } =
                         , class "items-center justify-between gap-1"
                         ]
                         [ h2
-                            [ class "text-gray-600 dark:text-gray-400"
+                            [ class "text-sm text-gray-500"
                             ]
                             [ text
                                 ("@"

@@ -11,23 +11,55 @@
 }
 
 .tw-primary-btn {
-  @apply px-4 py-2.5 tracking-wide text-sm font-medium capitalize text-white bg-blue-600 hover:bg-blue-500 rounded-md focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 transition-colors duration-300 transform;
+  @apply px-4 py-2.5;
+  @apply tracking-wide;
+  @apply text-white text-sm font-medium capitalize;
+  @apply bg-blue-600 hover:bg-blue-500;
+  @apply rounded-md;
+  @apply focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40;
+  @apply transition-colors duration-300 transform;
 }
 
 .tw-secondary-btn {
-  @apply px-4 py-2.5 tracking-wide text-sm font-medium capitalize text-white bg-sky-600 hover:bg-sky-500 rounded-md focus:outline-none focus:ring focus:ring-sky-300 focus:ring-opacity-40 transition-colors duration-300 transform;
+  @apply px-4 py-2.5;
+  @apply tracking-wide;
+  @apply text-white text-sm font-medium capitalize;
+  @apply bg-sky-600 hover:bg-sky-500;
+  @apply rounded-md;
+  @apply focus:outline-none focus:ring focus:ring-sky-300 focus:ring-opacity-40;
+  @apply transition-colors duration-300 transform;
 }
 
 .tw-normal-btn {
-  @apply px-4 py-2.5 tracking-wide rounded-md border text-sm font-medium capitalize text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 border-gray-200 dark:border-gray-600 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40 transition-colors duration-300 transform;
+  @apply px-4 py-2.5;
+  @apply tracking-wide;
+  @apply rounded-md border;
+  @apply text-sm font-medium capitalize;
+  @apply text-gray-700 dark:text-gray-200;
+  @apply hover:bg-gray-100 dark:hover:bg-gray-700;
+  @apply border-gray-200 dark:border-gray-600;
+  @apply focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40;
+  @apply transition-colors duration-300 transform;
 }
 
 .tw-text-input {
-  @apply px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border rounded-md dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40;
+  @apply px-4 py-2;
+  @apply text-gray-700 dark:text-gray-300;
+  @apply bg-white dark:bg-gray-900;
+  @apply border rounded-md;
+  @apply dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300;
+  @apply focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40;
+  @apply transition-colors duration-300 transform;
 }
 
 .tw-icon-btn {
-  @apply p-1.5 cursor-pointer text-gray-500 transition-colors duration-300 transform rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none;
+  @apply p-1.5;
+  @apply cursor-pointer;
+  @apply text-gray-500;
+  @apply rounded-lg;
+  @apply hover:bg-gray-100 dark:hover:bg-gray-700;
+  @apply focus:outline-none;
+  @apply transition-colors duration-300 transform;
 }
 
 .topic-tag {
@@ -35,6 +67,12 @@
   @apply text-sm font-bold;
   @apply text-sky-400 hover:text-sky-500 dark:text-gray-300 dark:hover:text-gray-200;
   @apply transition-colors duration-300 transform;
+}
+
+.topic-tag.none {
+  @apply cursor-default;
+  @apply text-sky-200 dark:text-gray-600;
+  @apply hover:text-sky-200 dark:hover:text-gray-600;
 }
 
 .tw-float-icon-btn {

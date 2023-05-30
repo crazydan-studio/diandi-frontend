@@ -60,9 +60,6 @@ create config app =
         i18nAttr =
             I18n.htmlAttr app.lang
 
-        title =
-            config.topic |> fromMaybe "" .title
-
         content =
             config.topic |> fromMaybe "" .content
 
@@ -97,16 +94,6 @@ create config app =
                     ]
                 ]
             }
-        , input
-            ([ class "tw-text-input"
-             , value title
-             , onInput config.onTitleChange
-             ]
-                ++ i18nAttr
-                    placeholder
-                    [ "可以在这里添加一个醒目的标题哦 ..." ]
-            )
-            []
         , Markdown.editor
             { value = content
             , styles =
@@ -157,7 +144,7 @@ create config app =
                  ]
                     ++ i18nAttr
                         placeholder
-                        [ "请输入标签名称，并按回车确认" ]
+                        [ "请输入标签，并按回车确认" ]
                 )
                 []
             ]

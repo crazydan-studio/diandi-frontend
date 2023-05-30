@@ -78,6 +78,11 @@ rootTranslator texts =
                 "Have any amazing ideas? Get it down right now :)"
                 :: default
 
+        [ "请输入标签，并按回车确认" ] ->
+            ok En_US
+                "Please input the tag, and press Enter key to confirm"
+                :: default
+
         [ "请输入关键字查询 ..." ] ->
             ok En_US
                 "Searching ..."

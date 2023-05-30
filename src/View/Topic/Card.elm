@@ -32,7 +32,6 @@ import Html
     exposing
         ( Html
         , div
-        , h1
         , h2
         , span
         , text

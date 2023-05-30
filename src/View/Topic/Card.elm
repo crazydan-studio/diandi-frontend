@@ -133,17 +133,17 @@ view { lang, timeZone } { config, topic, op } =
                 , class "divide-y divide-gray-200 dark:divide-gray-600"
                 ]
                 [ div
-                    ([ class "p-4"
+                    ([ class "pb-4 px-2"
                      , class "text-sm whitespace-pre-wrap break-words"
                      , class "text-gray-600 dark:text-gray-300"
                      , class "overflow-y-auto"
-                     , class "min-h-[12rem] h-48"
+                     , class "min-h-[14rem]"
                      ]
                         ++ (if config.expanded then
                                 [ class "max-h-96" ]
 
                             else
-                                []
+                                [ class "h-56" ]
                            )
                     )
                     [ Markdown.viewer
@@ -153,9 +153,10 @@ view { lang, timeZone } { config, topic, op } =
                         }
                     ]
                 , div
-                    []
+                    [ class "pt-1 flex flex-col"
+                    ]
                     [ div
-                        [ class "mt-2 flex"
+                        [ class "py-0.5 flex"
                         , class "flex-wrap items-center gap-2"
                         ]
                         (if not (List.isEmpty topic.tags) then
@@ -183,8 +184,7 @@ view { lang, timeZone } { config, topic, op } =
                     , case opStatus of
                         Operation.Error e ->
                             div
-                                [ class "mt-2"
-                                , class "text-sm"
+                                [ class "text-sm"
                                 , class "whitespace-pre-wrap"
                                 , class "text-red-500 dark:text-red-600"
                                 ]
@@ -206,9 +206,9 @@ view { lang, timeZone } { config, topic, op } =
                                 ]
 
                         _ ->
-                            div [] []
+                            div [ class "hidden" ] []
                     , div
-                        [ class "mt-2 flex"
+                        [ class "flex"
                         , class "items-center justify-between gap-1"
                         ]
                         [ h2

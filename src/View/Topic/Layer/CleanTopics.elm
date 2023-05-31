@@ -107,7 +107,7 @@ confirm pagerId lang tips =
             I18n.htmlText lang
     in
     div
-        [ class "mt-12 p-6"
+        [ class "mt-16 p-6"
         , class "w-1/3 h-fit"
         , class "flex flex-col items-stretch justify-center gap-8"
         , class "rounded-md"

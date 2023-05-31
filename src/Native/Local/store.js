@@ -18,8 +18,7 @@ export function setup(enabled) {
   const saveData = (key, data) =>
     window.localStorage.setItem(key, JSON.stringify(data));
 
-  const topicsKey = "topics";
-  portNs.register("queryTopics", ({ args }) => {
+  const filterTopics = ({ args }) => {
     const { keyword, tags, trashed } = args;
     const topics = getData(topicsKey);
 
@@ -39,6 +38,29 @@ export function setup(enabled) {
       }
       return true;
     });
+  };
+  const deleteTopics = (targets) => {
+    if (!targets || targets.length === 0) {
+      return;
+    }
+
+    const topics = getData(topicsKey);
+    const ids = targets.map(({ id }) => id);
+
+    saveData(
+      topicsKey,
+      topics.filter((t) => !ids.includes(t.id))
+    );
+  };
+
+  const topicsKey = "topics";
+  portNs.register("queryTopics", filterTopics);
+  portNs.register("deleteTopics", ({ args }) => {
+    const topics = filterTopics({ args });
+
+    deleteTopics(topics);
+
+    return { success: true };
   });
   portNs.register("createTopic", ({ args }) => {
     const topic = args;
@@ -108,12 +130,8 @@ export function setup(enabled) {
   });
   portNs.register("deleteTopic", ({ args }) => {
     const id = args;
-    const topics = getData(topicsKey);
 
-    saveData(
-      topicsKey,
-      topics.filter((t) => t.id !== id)
-    );
+    deleteTopics([{ id }]);
 
     return { id };
   });

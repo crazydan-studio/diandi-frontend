@@ -19,6 +19,7 @@
 
 module App.Store.JingWei.Topic exposing
     ( deleteMyTopic
+    , deleteMyTopics
     , getMyAllTopics
     , queryMyTopics
     , restoreMyTrashedTopic
@@ -27,7 +28,11 @@ module App.Store.JingWei.Topic exposing
     , trashMyTopic
     )
 
-import App.Store.Msg exposing (Msg(..))
+import App.Store.Msg
+    exposing
+        ( Msg(..)
+        , opResultDecoder
+        )
 import App.Topic
     exposing
         ( Topic
@@ -35,12 +40,16 @@ import App.Topic
         , topicListDecoder
         )
 import App.TopicFilter as TopicFilter exposing (TopicFilter)
-import GraphQl
+import GraphQl exposing (Field, Request)
 import GraphQl.Http
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Widget.Util.Basic exposing (trim)
+
+
+
+-- https://package.elm-lang.org/packages/ghivert/elm-graphql/5.0.0/GraphQl
 
 
 getMyAllTopics : Cmd Msg
@@ -52,54 +61,45 @@ getMyAllTopics =
 queryMyTopics :
     TopicFilter
     -> Cmd Msg
-queryMyTopics { trashed, keyword, tags } =
-    -- https://package.elm-lang.org/packages/ghivert/elm-graphql/5.0.0/GraphQl
+queryMyTopics topicFilter =
+    let
+        field =
+            "topics"
+    in
     GraphQl.query
         (GraphQl.named "TopicsQuery"
-            [ GraphQl.field "topics"
-                |> GraphQl.withArgument "filter"
-                    (GraphQl.input
-                        [ ( "tags"
-                          , GraphQl.input
-                                [ ( "has_all_members_in", GraphQl.variable "tags" )
-                                ]
-                          )
-                        , ( "trashed"
-                          , GraphQl.input
-                                [ ( "equal", GraphQl.variable "trashed" )
-                                ]
-                          )
-                        , ( "or"
-                          , GraphQl.nestedInput
-                                [ [ ( "title"
-                                    , GraphQl.input
-                                        [ ( "contains_any_in", GraphQl.variable "keywords" )
-                                        ]
-                                    )
-                                  ]
-                                , [ ( "content"
-                                    , GraphQl.input
-                                        [ ( "contains_any_in", GraphQl.variable "keywords" )
-                                        ]
-                                    )
-                                  ]
-                                , [ ( "tags"
-                                    , GraphQl.input
-                                        [ ( "contains_any_in", GraphQl.variable "keywords" )
-                                        ]
-                                    )
-                                  ]
-                                ]
-                          )
-                        ]
-                    )
+            [ GraphQl.field field
+                |> createTopicFilterArgument
+                |> topicSelectors
+            ]
+            |> GraphQl.withVariables
+                [ ( "keywords", "[String!]" )
+                , ( "tags", "[String!]" )
+                , ( "trashed", "String!" )
+                ]
+        )
+        |> createTopicFilterVariables topicFilter
+        |> GraphQl.Http.send { url = "/api/graphql", headers = [] }
+            QueryMyTopics
+            (Decode.field field topicListDecoder)
+
+
+deleteMyTopics :
+    Int
+    -> TopicFilter
+    -> Cmd Msg
+deleteMyTopics nextMsgId topicFilter =
+    let
+        field =
+            "deleteAllFilteredTopics"
+    in
+    GraphQl.mutation
+        (GraphQl.named "TopicsDelete"
+            [ GraphQl.field field
+                |> createTopicFilterArgument
                 |> GraphQl.withSelectors
-                    [ GraphQl.field "id"
-                    , GraphQl.field "title"
-                    , GraphQl.field "content"
-                    , GraphQl.field "tags"
-                    , GraphQl.field "trashed"
-                    , GraphQl.field "updated_at"
+                    [ GraphQl.field "success"
+                    , GraphQl.field "msg"
                     ]
             ]
             |> GraphQl.withVariables
@@ -108,41 +108,10 @@ queryMyTopics { trashed, keyword, tags } =
                 , ( "trashed", "String!" )
                 ]
         )
-        |> GraphQl.addVariables
-            [ ( "trashed"
-              , Encode.string
-                    (if trashed then
-                        "true"
-
-                     else
-                        "false"
-                    )
-              )
-            , ( "keywords"
-              , keyword
-                    |> Maybe.andThen trim
-                    |> Maybe.map
-                        (\s ->
-                            Encode.list Encode.string
-                                (s
-                                    |> String.split " "
-                                    |> List.filter ((/=) "")
-                                )
-                        )
-                    |> Maybe.withDefault Encode.null
-              )
-            , ( "tags"
-              , if tags |> List.isEmpty then
-                    Encode.null
-
-                else
-                    tags
-                        |> Encode.list Encode.string
-              )
-            ]
+        |> createTopicFilterVariables topicFilter
         |> GraphQl.Http.send { url = "/api/graphql", headers = [] }
-            QueryMyTopics
-            (Decode.field "topics" topicListDecoder)
+            (DeleteMyTopics nextMsgId)
+            (Decode.field field opResultDecoder)
 
 
 {-| 保存新增主题
@@ -152,20 +121,17 @@ saveMyNewTopic :
     -> Topic
     -> Cmd Msg
 saveMyNewTopic nextMsgId topic =
-    -- https://package.elm-lang.org/packages/ghivert/elm-graphql/5.0.0/GraphQl
+    let
+        field =
+            "createTopic"
+    in
     GraphQl.mutation
         (GraphQl.named "TopicCreate"
-            [ GraphQl.field "createTopic"
+            [ GraphQl.field field
                 |> GraphQl.withArgument "title" (GraphQl.variable "title")
                 |> GraphQl.withArgument "content" (GraphQl.variable "content")
                 |> GraphQl.withArgument "tags" (GraphQl.variable "tags")
-                |> GraphQl.withSelectors
-                    [ GraphQl.field "id"
-                    , GraphQl.field "title"
-                    , GraphQl.field "content"
-                    , GraphQl.field "tags"
-                    , GraphQl.field "updated_at"
-                    ]
+                |> topicSelectors
             ]
             |> GraphQl.withVariables
                 [ ( "title", "String" )
@@ -188,7 +154,7 @@ saveMyNewTopic nextMsgId topic =
             ]
         |> GraphQl.Http.send { url = "/api/graphql", headers = [] }
             (SaveMyNewTopic nextMsgId)
-            (Decode.field "createTopic" topicDecoder)
+            (Decode.field field topicDecoder)
 
 
 {-| 保存编辑主题
@@ -198,21 +164,18 @@ saveMyEditTopic :
     -> Topic
     -> Cmd Msg
 saveMyEditTopic nextMsgId topic =
-    -- https://package.elm-lang.org/packages/ghivert/elm-graphql/5.0.0/GraphQl
+    let
+        field =
+            "updateTopic"
+    in
     GraphQl.mutation
         (GraphQl.named "TopicUpdate"
-            [ GraphQl.field "updateTopic"
+            [ GraphQl.field field
                 |> GraphQl.withArgument "id" (GraphQl.variable "id")
                 |> GraphQl.withArgument "title" (GraphQl.variable "title")
                 |> GraphQl.withArgument "content" (GraphQl.variable "content")
                 |> GraphQl.withArgument "tags" (GraphQl.variable "tags")
-                |> GraphQl.withSelectors
-                    [ GraphQl.field "id"
-                    , GraphQl.field "title"
-                    , GraphQl.field "content"
-                    , GraphQl.field "tags"
-                    , GraphQl.field "updated_at"
-                    ]
+                |> topicSelectors
             ]
             |> GraphQl.withVariables
                 [ ( "id", "ID!" )
@@ -239,7 +202,7 @@ saveMyEditTopic nextMsgId topic =
             ]
         |> GraphQl.Http.send { url = "/api/graphql", headers = [] }
             (SaveMyEditTopic nextMsgId)
-            (Decode.field "updateTopic" topicDecoder)
+            (Decode.field field topicDecoder)
 
 
 {-| 主题放入垃圾箱
@@ -289,7 +252,6 @@ doWithId :
     -> String
     -> Cmd Msg
 doWithId name field toMsg id =
-    -- https://package.elm-lang.org/packages/ghivert/elm-graphql/5.0.0/GraphQl
     GraphQl.mutation
         (GraphQl.named name
             [ GraphQl.field field
@@ -310,3 +272,94 @@ doWithId name field toMsg id =
         |> GraphQl.Http.send { url = "/api/graphql", headers = [] }
             (toMsg id)
             (Decode.at [ field, "id" ] Decode.string)
+
+
+topicSelectors : Field a -> Field a
+topicSelectors =
+    GraphQl.withSelectors
+        [ GraphQl.field "id"
+        , GraphQl.field "title"
+        , GraphQl.field "content"
+        , GraphQl.field "tags"
+        , GraphQl.field "trashed"
+        , GraphQl.field "updated_at"
+        ]
+
+
+createTopicFilterArgument : Field a -> Field a
+createTopicFilterArgument =
+    GraphQl.withArgument "filter"
+        (GraphQl.input
+            [ ( "tags"
+              , GraphQl.input
+                    [ ( "has_all_members_in", GraphQl.variable "tags" )
+                    ]
+              )
+            , ( "trashed"
+              , GraphQl.input
+                    [ ( "equal", GraphQl.variable "trashed" )
+                    ]
+              )
+            , ( "or"
+              , GraphQl.nestedInput
+                    [ [ ( "title"
+                        , GraphQl.input
+                            [ ( "contains_any_in", GraphQl.variable "keywords" )
+                            ]
+                        )
+                      ]
+                    , [ ( "content"
+                        , GraphQl.input
+                            [ ( "contains_any_in", GraphQl.variable "keywords" )
+                            ]
+                        )
+                      ]
+                    , [ ( "tags"
+                        , GraphQl.input
+                            [ ( "contains_any_in", GraphQl.variable "keywords" )
+                            ]
+                        )
+                      ]
+                    ]
+              )
+            ]
+        )
+
+
+createTopicFilterVariables :
+    TopicFilter
+    -> Request a b
+    -> Request a b
+createTopicFilterVariables { trashed, keyword, tags } =
+    GraphQl.addVariables
+        [ ( "trashed"
+          , Encode.string
+                (if trashed then
+                    "true"
+
+                 else
+                    "false"
+                )
+          )
+        , ( "keywords"
+          , keyword
+                |> Maybe.andThen trim
+                |> Maybe.map
+                    (\s ->
+                        Encode.list Encode.string
+                            (s
+                                |> String.split " "
+                                |> List.filter ((/=) "")
+                            )
+                    )
+                |> Maybe.withDefault Encode.null
+          )
+        , ( "tags"
+          , if tags |> List.isEmpty then
+                Encode.null
+
+            else
+                tags
+                    |> Encode.list Encode.string
+          )
+        ]

@@ -29,6 +29,7 @@ module App.State exposing
 import App.I18n.App as I18n
 import App.Msg as Msg exposing (Msg)
 import App.Operation as Operation
+import App.Operation.CleanTopics as CleanTopics exposing (TopicsCleaner)
 import App.Operation.EditTopic as EditTopic exposing (EditTopic)
 import App.Store as Store
 import App.Store.Data as StoreData
@@ -93,6 +94,7 @@ type alias State =
     , newTopic : Maybe EditTopic
     , editTopic : Maybe EditTopic
     , topicTagEditInputId : String
+    , topicsCleaner : Maybe TopicsCleaner
     }
 
 
@@ -149,6 +151,7 @@ init config =
             , newTopic = Nothing
             , editTopic = Nothing
             , topicTagEditInputId = "topic-tag-edit-input"
+            , topicsCleaner = Nothing
             }
                 |> routeUpdateHelper config.navUrl
     in
@@ -254,16 +257,6 @@ update msg nextMsgId ({ topicFilter } as state) =
                     state.navKey
                 )
 
-        Msg.ClearTrashedTopics ->
-            withOutNextMsg <|
-                ( { state
-                    | topicCards =
-                        state.topicCards
-                            |> StoreData.update Tree.clear
-                  }
-                , Cmd.none
-                )
-
         Msg.TopicCardMsg topicId topicCardMsg ->
             withOutNextMsg <|
                 topicCardUpdateHelper topicId topicCardMsg state
@@ -315,6 +308,10 @@ update msg nextMsgId ({ topicFilter } as state) =
                 ( { state | editTopic = Nothing }
                 , Cmd.none
                 )
+
+        Msg.CleanTopicsMsg cleanTopicsMsg ->
+            withOutNextMsg <|
+                cleanTopicsUpdateHelper nextMsgId cleanTopicsMsg state
 
         _ ->
             withOutNextMsg <|
@@ -495,6 +492,14 @@ updateSavedEditTopic result ({ lang } as state) =
                 |> updateEditTopic (\t -> { t | updating = False })
 
 
+updateTopicsCleaner :
+    (TopicsCleaner -> TopicsCleaner)
+    -> State
+    -> State
+updateTopicsCleaner updater ({ topicsCleaner } as state) =
+    { state | topicsCleaner = topicsCleaner |> Maybe.map updater }
+
+
 
 -- --------------------------------------------------------------------
 
@@ -576,7 +581,7 @@ storeUpdateHelper :
     StoreMsg.Msg
     -> State
     -> ( State, Cmd Msg, Maybe ( Int, Bool ) )
-storeUpdateHelper msg state =
+storeUpdateHelper msg ({ lang, store, topicFilter } as state) =
     case msg of
         StoreMsg.QueryMyTopics result ->
             withOutNextMsg <|
@@ -584,7 +589,7 @@ storeUpdateHelper msg state =
                     | topicCards =
                         result
                             |> StoreData.from
-                                state.lang
+                                lang
                                 createTopicCardsHelper
                   }
                 , Cmd.none
@@ -631,7 +636,7 @@ storeUpdateHelper msg state =
                             Err e ->
                                 TopicCard.Trash
                                     (Operation.Error
-                                        (Store.parseError state.lang e)
+                                        (Store.parseError lang e)
                                     )
                         )
                 , Cmd.none
@@ -648,7 +653,7 @@ storeUpdateHelper msg state =
                             Err e ->
                                 TopicCard.Delete
                                     (Operation.Error
-                                        (Store.parseError state.lang e)
+                                        (Store.parseError lang e)
                                     )
                         )
                 , Cmd.none
@@ -665,11 +670,36 @@ storeUpdateHelper msg state =
                             Err e ->
                                 TopicCard.Restore
                                     (Operation.Error
-                                        (Store.parseError state.lang e)
+                                        (Store.parseError lang e)
                                     )
                         )
                 , Cmd.none
                 )
+
+        StoreMsg.DeleteMyTopics nextMsgId result ->
+            case result of
+                Ok _ ->
+                    ( state
+                    , Msg.fromStoreCmd
+                        (store.topic.query topicFilter)
+                    , Just
+                        ( nextMsgId, True )
+                    )
+
+                Err e ->
+                    let
+                        ( s, c ) =
+                            state
+                                |> cleanTopicsUpdateHelper nextMsgId
+                                    (CleanTopics.CleanError
+                                        (Store.parseError lang e)
+                                    )
+                    in
+                    ( s
+                    , c
+                    , Just
+                        ( nextMsgId, False )
+                    )
 
         _ ->
             withOutNextMsg <|
@@ -870,6 +900,41 @@ editTopicUpdateHelper msg state =
         _ ->
             Cmd.none
     )
+
+
+cleanTopicsUpdateHelper :
+    Int
+    -> CleanTopics.Msg
+    -> State
+    -> ( State, Cmd Msg )
+cleanTopicsUpdateHelper nextMsgId msg ({ store, topicFilter } as state) =
+    case msg of
+        CleanTopics.CleanPending ->
+            ( { state
+                | topicsCleaner = Just CleanTopics.create
+              }
+            , Cmd.none
+            )
+
+        CleanTopics.CleanDoing ->
+            ( state
+                |> updateTopicsCleaner
+                    (CleanTopics.update msg)
+            , Msg.fromStoreCmd
+                (store.topic.deleteFiltered nextMsgId topicFilter)
+            )
+
+        CleanTopics.CleanCancel ->
+            ( { state | topicsCleaner = Nothing }
+            , Cmd.none
+            )
+
+        _ ->
+            ( state
+                |> updateTopicsCleaner
+                    (CleanTopics.update msg)
+            , Cmd.none
+            )
 
 
 doStoreQueryMyTopics :

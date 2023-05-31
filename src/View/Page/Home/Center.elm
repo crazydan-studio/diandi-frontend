@@ -20,6 +20,7 @@
 module View.Page.Home.Center exposing (view)
 
 import App.Msg as AppMsg
+import App.Operation.CleanTopics as CleanTopics
 import App.State as AppState
 import Html exposing (Html, div, span)
 import Html.Attributes exposing (class)
@@ -27,7 +28,8 @@ import Html.Events exposing (onClick)
 import Material.Icons.Round as Round
 import Material.Icons.Types exposing (Coloring(..))
 import Msg exposing (Msg)
-import View.Topic.Layer.NewTopic
+import View.Topic.Layer.CleanTopics as CleanTopicsLayer
+import View.Topic.Layer.NewTopic as NewTopicLayer
 import View.Topic.List as TopicList
 
 
@@ -68,8 +70,13 @@ tools trashed state =
 
                         else
                             [ onClick
-                                (Msg.fromApp <|
-                                    AppMsg.ClearTrashedTopics
+                                (Msg.batch
+                                    [ Msg.fromApp <|
+                                        AppMsg.CleanTopicsMsg
+                                            CleanTopics.CleanPending
+                                    , Msg.pageLayerOpen
+                                        CleanTopicsLayer.create
+                                    ]
                                 )
                             ]
                        )
@@ -99,7 +106,7 @@ tools trashed state =
                         [ Msg.fromApp <|
                             AppMsg.NewTopicPending
                         , Msg.pageLayerOpen
-                            View.Topic.Layer.NewTopic.create
+                            NewTopicLayer.create
                         ]
                     )
                 ]

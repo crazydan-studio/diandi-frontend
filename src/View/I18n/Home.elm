@@ -110,7 +110,7 @@ rootTranslator texts =
 
         [ "数据正在删除中，请稍等片刻 ..." ] ->
             ok En_US
-                "The data is removing forever, please wait a minute ..."
+                "The data is deleting forever, please wait a minute ..."
                 :: default
 
         [ "数据正在恢复中，请稍等片刻 ..." ] ->
@@ -123,9 +123,24 @@ rootTranslator texts =
                 "The data is saving, please wait a minute ..."
                 :: default
 
+        [ "正在删除当前查询结果，请稍等片刻 ..." ] ->
+            ok En_US
+                "The filtered data is deleting, please wait a minute ..."
+                :: default
+
+        [ "当前查询结果将被永久删除，无法恢复，是否继续？" ] ->
+            ok En_US
+                "The filtered data will be deleted and can never be resumed, do it any way?"
+                :: default
+
         [ "无标题" ] ->
             ok En_US
                 "No Title"
+                :: default
+
+        [ "操作异常 - " ] ->
+            ok En_US
+                "Exception - "
                 :: default
 
         [ "* 移除失败 - " ] ->
@@ -176,6 +191,10 @@ buttonTranslator texts =
 
         [ "确定" ] ->
             ok En_US "OK"
+                :: default
+
+        [ "继续" ] ->
+            ok En_US "Do it!"
                 :: default
 
         [ "取消" ] ->

@@ -34,7 +34,12 @@ module App.Operation.EditTopic exposing
 import App.Error as Error exposing (Error)
 import App.Topic as Topic exposing (Topic)
 import I18n.Translator exposing (TranslateResult)
-import Widget.Util.Basic exposing (appendToUniqueList, removeFromList, trim)
+import Widget.Util.Basic
+    exposing
+        ( appendToUniqueList
+        , removeFromList
+        , trim
+        )
 
 
 type alias EditTopic =

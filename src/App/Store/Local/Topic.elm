@@ -19,6 +19,7 @@
 
 module App.Store.Local.Topic exposing
     ( deleteMyTopic
+    , deleteMyTopics
     , getMyAllTopics
     , queryMyTopics
     , restoreMyTrashedTopic
@@ -27,7 +28,11 @@ module App.Store.Local.Topic exposing
     , trashMyTopic
     )
 
-import App.Store.Msg exposing (Msg(..))
+import App.Store.Msg
+    exposing
+        ( Msg(..)
+        , opResultDecoder
+        )
 import App.Topic
     exposing
         ( Topic
@@ -67,6 +72,28 @@ queryMyTopics { trashed, keyword, tags } =
         }
         QueryMyTopics
         topicListDecoder
+
+
+deleteMyTopics :
+    Int
+    -> TopicFilter
+    -> Cmd Msg
+deleteMyTopics nextMsgId { trashed, keyword, tags } =
+    LocalStore.execute
+        { path = "deleteTopics"
+        , args =
+            Encode.object
+                [ ( "keyword"
+                  , keyword
+                        |> Maybe.map Encode.string
+                        |> Maybe.withDefault Encode.null
+                  )
+                , ( "tags", Encode.list Encode.string tags )
+                , ( "trashed", Encode.bool trashed )
+                ]
+        }
+        (DeleteMyTopics nextMsgId)
+        opResultDecoder
 
 
 {-| 保存新增主题

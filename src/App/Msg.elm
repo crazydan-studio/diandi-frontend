@@ -19,6 +19,7 @@
 
 module App.Msg exposing (Msg(..), focusOn, fromStoreCmd)
 
+import App.Operation.CleanTopics as CleanTopics
 import App.Operation.EditTopic as EditTopic
 import App.Store.Msg as StoreMsg
 import App.TopicCard as TopicCard
@@ -49,7 +50,6 @@ type Msg
     | FilterTopicTagSelected String
     | FilterTopicTagDeleted String
     | ShowTashedTopics
-    | ClearTrashedTopics
     | TopicCardMsg String TopicCard.Msg
     | RemoveTopicCard String
     | NewTopicPending
@@ -60,6 +60,7 @@ type Msg
     | EditTopicMsg EditTopic.Msg
     | EditTopicSaving
     | EditTopicCleaned
+    | CleanTopicsMsg CleanTopics.Msg
 
 
 {-| 发起存储请求

@@ -37,6 +37,7 @@ type alias Store =
     , trash : String -> Cmd Msg
     , delete : String -> Cmd Msg
     , trashRestore : String -> Cmd Msg
+    , deleteFiltered : Int -> TopicFilter -> Cmd Msg
     }
 
 
@@ -50,6 +51,7 @@ store mode =
             , trash = LocalStore.trashMyTopic
             , delete = LocalStore.deleteMyTopic
             , trashRestore = LocalStore.restoreMyTrashedTopic
+            , deleteFiltered = LocalStore.deleteMyTopics
             }
 
         _ ->
@@ -59,4 +61,5 @@ store mode =
             , trash = JingWeiStore.trashMyTopic
             , delete = JingWeiStore.deleteMyTopic
             , trashRestore = JingWeiStore.restoreMyTrashedTopic
+            , deleteFiltered = JingWeiStore.deleteMyTopics
             }

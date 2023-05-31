@@ -44,7 +44,7 @@ import Material.Icons.Round as Round
 import Material.Icons.Types exposing (Coloring(..))
 import Msg exposing (Msg)
 import View.I18n.Home as I18n
-import View.Topic.Layer.EditTopic
+import View.Topic.Layer.EditTopic as EditTopicLayer
 import Widget.Bytemd as Markdown
 import Widget.Loading as Loading
 import Widget.Mask as Mask
@@ -276,7 +276,7 @@ view { lang, timeZone } { config, topic, op } =
                                             [ Msg.fromApp <|
                                                 AppMsg.EditTopicPending topic.id
                                             , Msg.pageLayerOpen
-                                                View.Topic.Layer.EditTopic.create
+                                                EditTopicLayer.create
                                             ]
                                         )
                                     ]

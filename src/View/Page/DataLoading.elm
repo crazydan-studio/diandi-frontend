@@ -78,7 +78,7 @@ errorView :
     -> Html msg
 errorView errorText =
     div
-        [ class "w-full"
+        [ class "pt-4 w-full"
         , class "flex"
         , class "items-center justify-center"
         , class "text-gray-500 dark:text-gray-300"

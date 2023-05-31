@@ -17,17 +17,37 @@
 -}
 
 
-module App.Store.Msg exposing (Msg(..))
+module App.Store.Msg exposing (Msg(..), opResultDecoder)
 
 import App.Topic exposing (Topic)
 import Http
+import Json.Decode as Decode
+    exposing
+        ( Decoder
+        , bool
+        , nullable
+        , string
+        )
+import Json.Decode.Pipeline exposing (optional, required)
 
 
 type Msg
     = NoOp
     | QueryMyTopics (Result Http.Error (List Topic))
+    | DeleteMyTopics Int (Result Http.Error OpResult)
     | SaveMyNewTopic Int (Result Http.Error Topic)
     | SaveMyEditTopic Int (Result Http.Error Topic)
     | TrashMyTopic String (Result Http.Error String)
     | DeleteMyTopic String (Result Http.Error String)
     | RestoreMyTrashedTopic String (Result Http.Error String)
+
+
+type alias OpResult =
+    { success : Bool, msg : Maybe String }
+
+
+opResultDecoder : Decoder OpResult
+opResultDecoder =
+    Decode.succeed OpResult
+        |> required "success" bool
+        |> optional "msg" (nullable string) Nothing

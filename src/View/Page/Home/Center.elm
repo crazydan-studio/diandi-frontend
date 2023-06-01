@@ -22,7 +22,7 @@ module View.Page.Home.Center exposing (view)
 import App.Msg as AppMsg
 import App.Operation.CleanTopics as CleanTopics
 import App.State as AppState
-import Html exposing (Html, div, span)
+import Html exposing (Html, div, span, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Material.Icons.Round as Round
@@ -51,7 +51,7 @@ view trashed app =
 
 
 tools : Bool -> AppState.State -> Html Msg
-tools trashed state =
+tools trashed ({ trashedTopicStats } as state) =
     div
         [ class "absolute right-0"
         , class "h-full w-14 md:w-20"
@@ -86,16 +86,37 @@ tools trashed state =
             ]
 
          else
-            [ span
-                [ class "tw-float-icon-btn"
-                , class "w-10 h-10 md:w-12 md:h-12"
-                , class "bg-sky-700 hover:bg-sky-600"
-                , onClick
-                    (Msg.fromApp <|
-                        AppMsg.ShowTashedTopics
-                    )
+            [ div
+                [ class "relative"
+                , class "flex flex-col"
+                , class "items-center"
                 ]
-                [ Round.recycling 32 Inherit
+                [ span
+                    [ class "tw-float-icon-btn"
+                    , class "w-10 h-10 md:w-12 md:h-12"
+                    , class "bg-sky-700 hover:bg-sky-600"
+                    , onClick
+                        (Msg.fromApp <|
+                            AppMsg.ShowTashedTopics
+                        )
+                    ]
+                    [ Round.recycling 32 Inherit
+                    ]
+                , span
+                    [ class "absolute -top-3"
+                    , class "inline px-2 py-0.5 rounded-2xl"
+                    , class "text-xs"
+                    , class "text-gray-500 dark:text-gray-300"
+                    , class "bg-slate-200 dark:bg-slate-700"
+                    ]
+                    [ text
+                        (if trashedTopicStats.size > 900 then
+                            "900+"
+
+                         else
+                            String.fromInt trashedTopicStats.size
+                        )
+                    ]
                 ]
             , span
                 [ class "tw-float-icon-btn"

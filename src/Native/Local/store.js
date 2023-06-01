@@ -55,6 +55,11 @@ export function setup(enabled) {
 
   const topicsKey = "topics";
   portNs.register("queryTopics", filterTopics);
+  portNs.register("countTopics", ({ args }) => {
+    const topics = filterTopics({ args });
+
+    return { size: topics.length };
+  });
   portNs.register("deleteTopics", ({ args }) => {
     const topics = filterTopics({ args });
 

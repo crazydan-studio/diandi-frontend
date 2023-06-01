@@ -18,9 +18,9 @@
 
 
 module App.Store.JingWei.Topic exposing
-    ( deleteMyTopic
+    ( countMyTopics
+    , deleteMyTopic
     , deleteMyTopics
-    , getMyAllTopics
     , queryMyTopics
     , restoreMyTrashedTopic
     , saveMyEditTopic
@@ -32,6 +32,7 @@ import App.Store.Msg
     exposing
         ( Msg(..)
         , opResultDecoder
+        , statsResultDecoder
         )
 import App.Topic
     exposing
@@ -39,7 +40,7 @@ import App.Topic
         , topicDecoder
         , topicListDecoder
         )
-import App.TopicFilter as TopicFilter exposing (TopicFilter)
+import App.TopicFilter exposing (TopicFilter)
 import GraphQl exposing (Field, Request)
 import GraphQl.Http
 import Http
@@ -50,12 +51,6 @@ import Widget.Util.Basic exposing (trim)
 
 
 -- https://package.elm-lang.org/packages/ghivert/elm-graphql/5.0.0/GraphQl
-
-
-getMyAllTopics : Cmd Msg
-getMyAllTopics =
-    queryMyTopics
-        TopicFilter.all
 
 
 queryMyTopics :
@@ -84,6 +79,34 @@ queryMyTopics topicFilter =
             (Decode.field field topicListDecoder)
 
 
+countMyTopics :
+    TopicFilter
+    -> Cmd Msg
+countMyTopics topicFilter =
+    let
+        field =
+            "countTopics"
+    in
+    GraphQl.query
+        (GraphQl.named "TopicsCount"
+            [ GraphQl.field field
+                |> createTopicFilterArgument
+                |> GraphQl.withSelectors
+                    [ GraphQl.field "size"
+                    ]
+            ]
+            |> GraphQl.withVariables
+                [ ( "keywords", "[String!]" )
+                , ( "tags", "[String!]" )
+                , ( "trashed", "String!" )
+                ]
+        )
+        |> createTopicFilterVariables topicFilter
+        |> GraphQl.Http.send { url = "/api/graphql", headers = [] }
+            (CountMyTopics topicFilter.trashed)
+            (Decode.field field statsResultDecoder)
+
+
 deleteMyTopics :
     Int
     -> TopicFilter
@@ -91,7 +114,7 @@ deleteMyTopics :
 deleteMyTopics nextMsgId topicFilter =
     let
         field =
-            "deleteAllFilteredTopics"
+            "deleteFilteredTopics"
     in
     GraphQl.mutation
         (GraphQl.named "TopicsDelete"

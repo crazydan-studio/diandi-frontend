@@ -18,9 +18,9 @@
 
 
 module App.Store.Local.Topic exposing
-    ( deleteMyTopic
+    ( countMyTopics
+    , deleteMyTopic
     , deleteMyTopics
-    , getMyAllTopics
     , queryMyTopics
     , restoreMyTrashedTopic
     , saveMyEditTopic
@@ -32,6 +32,7 @@ import App.Store.Msg
     exposing
         ( Msg(..)
         , opResultDecoder
+        , statsResultDecoder
         )
 import App.Topic
     exposing
@@ -40,57 +41,45 @@ import App.Topic
         , topicEncoder
         , topicListDecoder
         )
-import App.TopicFilter as TopicFilter exposing (TopicFilter)
+import App.TopicFilter exposing (TopicFilter)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Native.Local.Store as LocalStore
 
 
-getMyAllTopics : Cmd Msg
-getMyAllTopics =
-    queryMyTopics
-        TopicFilter.all
-
-
 queryMyTopics :
     TopicFilter
     -> Cmd Msg
-queryMyTopics { trashed, keyword, tags } =
+queryMyTopics topicFilter =
     LocalStore.execute
         { path = "queryTopics"
-        , args =
-            Encode.object
-                [ ( "keyword"
-                  , keyword
-                        |> Maybe.map Encode.string
-                        |> Maybe.withDefault Encode.null
-                  )
-                , ( "tags", Encode.list Encode.string tags )
-                , ( "trashed", Encode.bool trashed )
-                ]
+        , args = topicFilterArgs topicFilter
         }
         QueryMyTopics
         topicListDecoder
+
+
+countMyTopics :
+    TopicFilter
+    -> Cmd Msg
+countMyTopics topicFilter =
+    LocalStore.execute
+        { path = "countTopics"
+        , args = topicFilterArgs topicFilter
+        }
+        (CountMyTopics topicFilter.trashed)
+        statsResultDecoder
 
 
 deleteMyTopics :
     Int
     -> TopicFilter
     -> Cmd Msg
-deleteMyTopics nextMsgId { trashed, keyword, tags } =
+deleteMyTopics nextMsgId topicFilter =
     LocalStore.execute
         { path = "deleteTopics"
-        , args =
-            Encode.object
-                [ ( "keyword"
-                  , keyword
-                        |> Maybe.map Encode.string
-                        |> Maybe.withDefault Encode.null
-                  )
-                , ( "tags", Encode.list Encode.string tags )
-                , ( "trashed", Encode.bool trashed )
-                ]
+        , args = topicFilterArgs topicFilter
         }
         (DeleteMyTopics nextMsgId)
         opResultDecoder
@@ -175,3 +164,18 @@ doWithId path toMsg id =
         }
         (toMsg id)
         (Decode.at [ "id" ] Decode.string)
+
+
+topicFilterArgs :
+    TopicFilter
+    -> Encode.Value
+topicFilterArgs { trashed, keyword, tags } =
+    Encode.object
+        [ ( "keyword"
+          , keyword
+                |> Maybe.map Encode.string
+                |> Maybe.withDefault Encode.null
+          )
+        , ( "tags", Encode.list Encode.string tags )
+        , ( "trashed", Encode.bool trashed )
+        ]

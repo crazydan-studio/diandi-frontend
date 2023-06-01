@@ -91,6 +91,7 @@ type alias State =
 
     -- 操作数据
     , topicFilter : TopicFilter
+    , trashedTopicStats : TopicStats
     , newTopic : Maybe EditTopic
     , editTopic : Maybe EditTopic
     , topicTagEditInputId : String
@@ -111,6 +112,11 @@ type alias Config =
 
 type alias StoredTopicCards =
     StoreData.Status (Tree TopicCard)
+
+
+type alias TopicStats =
+    { size : Int
+    }
 
 
 init : Config -> ( State, Cmd Msg )
@@ -148,6 +154,7 @@ init config =
 
             --
             , topicFilter = TopicFilter.all
+            , trashedTopicStats = { size = 0 }
             , newTopic = Nothing
             , editTopic = Nothing
             , topicTagEditInputId = "topic-tag-edit-input"
@@ -595,6 +602,23 @@ storeUpdateHelper msg ({ lang, store, topicFilter } as state) =
                 , Cmd.none
                 )
 
+        StoreMsg.CountMyTopics trashed result ->
+            withOutNextMsg <|
+                ( case result of
+                    Ok stats ->
+                        if trashed then
+                            { state
+                                | trashedTopicStats = stats
+                            }
+
+                        else
+                            state
+
+                    Err _ ->
+                        state
+                , Cmd.none
+                )
+
         StoreMsg.SaveMyNewTopic nextMsgId result ->
             ( state
                 |> updateSavedNewTopic result
@@ -639,7 +663,9 @@ storeUpdateHelper msg ({ lang, store, topicFilter } as state) =
                                         (Store.parseError lang e)
                                     )
                         )
-                , Cmd.none
+                , Cmd.batch
+                    [ countTrashedTopicsCmd state
+                    ]
                 )
 
         StoreMsg.DeleteMyTopic topicId result ->
@@ -961,5 +987,16 @@ doStoreQueryMyTopics ({ trashed } as topicFilter) ({ store } as state) =
     , Cmd.batch
         [ Msg.fromStoreCmd
             (store.topic.query topicFilter)
+        , countTrashedTopicsCmd state
         ]
     )
+
+
+countTrashedTopicsCmd : State -> Cmd Msg
+countTrashedTopicsCmd { store } =
+    let
+        filter =
+            TopicFilter.all
+    in
+    Msg.fromStoreCmd
+        (store.topic.count { filter | trashed = True })

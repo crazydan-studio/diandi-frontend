@@ -32,6 +32,7 @@ import App.TopicFilter exposing (TopicFilter)
 
 type alias Store =
     { query : TopicFilter -> Cmd Msg
+    , count : TopicFilter -> Cmd Msg
     , add : Int -> Topic -> Cmd Msg
     , update : Int -> Topic -> Cmd Msg
     , trash : String -> Cmd Msg
@@ -46,6 +47,7 @@ store mode =
     case mode of
         Local ->
             { query = LocalStore.queryMyTopics
+            , count = LocalStore.countMyTopics
             , add = LocalStore.saveMyNewTopic
             , update = LocalStore.saveMyEditTopic
             , trash = LocalStore.trashMyTopic
@@ -56,6 +58,7 @@ store mode =
 
         _ ->
             { query = JingWeiStore.queryMyTopics
+            , count = JingWeiStore.countMyTopics
             , add = JingWeiStore.saveMyNewTopic
             , update = JingWeiStore.saveMyEditTopic
             , trash = JingWeiStore.trashMyTopic

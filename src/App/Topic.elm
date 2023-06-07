@@ -54,6 +54,7 @@ type alias Topic =
     , content : String
     , tags : List String
     , trashed : Bool
+    , createdAt : Maybe Posix
     , updatedAt : Maybe Posix
     }
 
@@ -65,6 +66,7 @@ init =
     , content = ""
     , tags = []
     , trashed = False
+    , createdAt = Nothing
     , updatedAt = Nothing
     }
 
@@ -82,6 +84,11 @@ topicDecoder =
         |> required "content" string
         |> optional "tags" (list string) []
         |> optional "trashed" bool False
+        |> optional "created_at"
+            (nullable
+                (Decode.map Time.millisToPosix int)
+            )
+            Nothing
         |> optional "updated_at"
             (nullable
                 (Decode.map Time.millisToPosix int)
@@ -100,6 +107,14 @@ topicEncoder topic =
           )
         , ( "content", Encode.string topic.content )
         , ( "tags", Encode.list Encode.string topic.tags )
+        , ( "created_at"
+          , topic.createdAt
+                |> Maybe.map
+                    (\t ->
+                        Encode.int (Time.posixToMillis t)
+                    )
+                |> Maybe.withDefault Encode.null
+          )
         , ( "updated_at"
           , topic.updatedAt
                 |> Maybe.map

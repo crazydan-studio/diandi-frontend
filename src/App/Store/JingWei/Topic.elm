@@ -305,6 +305,7 @@ topicSelectors =
         , GraphQl.field "content"
         , GraphQl.field "tags"
         , GraphQl.field "trashed"
+        , GraphQl.field "created_at"
         , GraphQl.field "updated_at"
         ]
 

@@ -216,7 +216,7 @@ view { lang, timeZone } { config, topic, op } =
                             ]
                             [ text
                                 ("@"
-                                    ++ (topic.updatedAt
+                                    ++ (topic.createdAt
                                             |> Maybe.map
                                                 (DateTime.format
                                                     "yyyy-MM-dd HH:mm:ss"

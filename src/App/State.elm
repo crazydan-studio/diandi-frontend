@@ -575,8 +575,8 @@ createTopicCardsHelper topics =
             Just
                 (\a b ->
                     compare
-                        (posixToMillis b.topic.updatedAt)
-                        (posixToMillis a.topic.updatedAt)
+                        (posixToMillis b.topic.createdAt)
+                        (posixToMillis a.topic.createdAt)
                 )
         }
         (topics |> List.map TopicCard.create)

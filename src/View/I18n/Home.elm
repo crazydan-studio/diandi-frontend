@@ -95,7 +95,7 @@ rootTranslator texts =
 
         [ "回收站还是空空如也的哟～～" ] ->
             ok En_US
-                "The trash is empty yet~~"
+                "The recycle bin is empty yet~~"
                 :: default
 
         [ "还未添加主题，请点击添加按钮创建 ..." ] ->
@@ -105,7 +105,7 @@ rootTranslator texts =
 
         [ "数据正在移除中，请稍等片刻 ..." ] ->
             ok En_US
-                "The data is moving to trash, please wait a minute ..."
+                "The data is moving to recycle bin, please wait a minute ..."
                 :: default
 
         [ "数据正在删除中，请稍等片刻 ..." ] ->
@@ -115,7 +115,7 @@ rootTranslator texts =
 
         [ "数据正在恢复中，请稍等片刻 ..." ] ->
             ok En_US
-                "The data is restoring from trash, please wait a minute ..."
+                "The data is restoring from recycle bin, please wait a minute ..."
                 :: default
 
         [ "数据正在保存中，请稍等片刻 ..." ] ->
@@ -145,7 +145,7 @@ rootTranslator texts =
 
         [ "* 移除失败 - " ] ->
             ok En_US
-                "* Failed to move to trash - "
+                "* Failed to move to recycle bin - "
                 :: default
 
         [ "* 删除失败 - " ] ->
@@ -155,7 +155,7 @@ rootTranslator texts =
 
         [ "* 恢复失败 - " ] ->
             ok En_US
-                "* Failed to restore from trash - "
+                "* Failed to restore from recycle bin - "
                 :: default
 
         _ ->
